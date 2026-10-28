@@ -1,0 +1,11 @@
+# Edge nginx: the library at http://kobo.local, and Kobo's hostnames proxied to
+# kobo-docker's nginx on 127.0.0.1:8080. Host networking so it owns port 80 on
+# every interface (the field Wi-Fi included) without touching Kobo's networks.
+services:
+  edge:
+    image: ${EDGE_IMAGE}
+    network_mode: host
+    restart: unless-stopped
+    volumes:
+      - ./nginx/edge.conf:/etc/nginx/conf.d/default.conf:ro
+      - ${LIBRARY_DIR}:/srv/library:ro

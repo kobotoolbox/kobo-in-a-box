@@ -20,13 +20,19 @@ offline.sh on|off   block/restore all outbound traffic (simulated field conditio
 park.sh             snapshot + destroy (powered-off droplets are still billed)
 remote/
   bootstrap.sh          on droplet: Docker, NVIDIA toolkit, kobo-install, images, weights
-  kobo-setup.py         on droplet: kobo-install answered for a field laptop (HTTP, kobo.local)
+  kobo-setup.py         on droplet: kobo-install answered for a field laptop (HTTP, kobo.local,
+                        behind the edge nginx)
   ai.env                which models, thinking on/off, GPU layers, threads, memory caps
   ai.sh up gpu|cpu      start llama.cpp + whisper.cpp on the kobo-docker network
   docker-compose.ai.yml
   smoke-test.py         transcription / translation / qual benchmark using KPI's prompts
   eval/fleurs-*.tsv     reference clips (transcript + English) fetched by bootstrap.sh
   results/              JSON per run, for comparing tiers
+  library/
+    manifest.tsv        installers and docs served at http://kobo.local (pinned versions, SHA-256)
+    library.sh          build (fetch + docs + render) | check | up|down|logs (edge nginx on :80)
+    render.py           landing page from the manifest and what's on disk
+    nginx/edge.conf     kf/kc/ee.* → Kobo on :8080; everything else → /srv/library
 ```
 
 ## Workflow
@@ -38,13 +44,19 @@ ssh root@<ip> 'bash /root/kobo-box-ai/bootstrap.sh'      # ~25GB of downloads
 
 # 2. Install Kobo like on the laptop (non-interactive, ~15 min)
 ssh root@<ip> 'python3 -I /root/kobo-box-ai/kobo-setup.py'
-#   Production mode over plain HTTP on port 80, with kf/kc/ee.kobo.local mapped to
-#   the droplet IP inside the containers. Prints the super_admin password at the end
-#   (also in /root/kobo-install/.run.conf). Then point those hostnames at the droplet
-#   IP in /etc/hosts on your machine/phone (the field router's local DNS does this
-#   on the laptop):
-#     <ip>  kf.kobo.local kc.kobo.local ee.kobo.local
-#   Afterwards manage it with run.py as usual (--stop, --logs, --setup)
+#   Production mode over plain HTTP, with kf/kc/ee.kobo.local mapped to the droplet IP
+#   inside the containers. Kobo's nginx listens on 8080, behind the edge nginx (step 2b).
+#   Prints the super_admin password at the end (also in /root/kobo-install/.run.conf).
+#   Then point those hostnames at the droplet IP in /etc/hosts on your machine/phone
+#   (the box's own DNS does this in the field):
+#     <ip>  kobo.local kf.kobo.local kc.kobo.local ee.kobo.local
+#   Afterwards manage it with run.py as usual (--stop, --logs, --setup).
+#   An install from before the edge proxy: kobo-setup.py --reconfigure moves it to 8080
+
+# 2b. Offline library + edge nginx on port 80 (~4GB of downloads)
+ssh root@<ip> '/root/kobo-box-ai/library/library.sh build'   # pin any UNPINNED checksums it prints
+ssh root@<ip> '/root/kobo-box-ai/library/library.sh up'
+#   http://kobo.local: landing page with installers and guides; http://kf.kobo.local: Kobo
 
 # 3. Start inference and test while online
 cd /root/kobo-box-ai && ./ai.sh up gpu
@@ -61,6 +73,7 @@ ssh root@<ip> 'cd /root/kobo-box-ai && python3 -I smoke-test.py'
 # later: set REGION in config.env to the snapshot's region, then
 ./provision.sh --from-snapshot
 ssh root@<new-ip> 'cd /root/kobo-install && python3 run.py'   # Kobo follows the new IP
+ssh root@<new-ip> '/root/kobo-box-ai/library/library.sh up'
 ```
 
 Add real test clips (any format ffmpeg reads) to `/opt/models/audio/` on the droplet.
@@ -110,7 +123,8 @@ field-laptop estimate, add roughly 20–40W for the rest of the system over the 
 
 ## Not covered here
 
-- Local Wi-Fi, avahi/mDNS, serving the APK, phones joining over the LAN (already proven on the v0.1 laptop)
+- Local Wi-Fi, DNS for `*.kobo.local`, phones joining over the LAN and installing APKs
+  from the library (proven on the v0.1 laptop and in Jamaica; to retest on the box, PLAN W8)
 - Laptop thermals, sustained-load throttling, real battery life
 - **KPI integration.** These scripts only stand up the model endpoints (`http://llm:8080`,
   `http://whisper:8080` on the Kobo network). The next step is a KPI branch that replaces:

@@ -68,7 +68,7 @@ Prices are approximate and unverified for Oct 2026. Speeds are community-reporte
                     ┌──────────────── field LAN (Wi-Fi AP) ────────────────┐
  KoboCollect/Enketo │  staff browsers: Kobo UI · OpenCode web · (OpenWork) │
                     └───────────────┬──────────────────────────────────────┘
-                                    │ nginx (kobo.local, opencode.local)
+                                    │ edge nginx :80 (kobo.local library, kf/kc/ee → Kobo :8080, opencode.local)
  ┌──────────────────────────────────┴──────────────────────────────────────┐
  │ kobo-docker: KPI · Enketo · Postgres · Mongo · Redis · Celery           │
  │   └─ subsequences (local NLP backend) ──┐                               │
@@ -174,6 +174,59 @@ The agent's shell tool runs in a container with everything pre-installed. Nothin
 - Passwords on OpenCode web and every service. Wi-Fi with WPA3 or a strong WPA2 passphrase. No services exposed beyond the LAN.
 - The box has no internet, so nothing leaks out. The risk is on-device access: a stolen box, or an untrusted device joining the Wi-Fi.
 
+### 3g. Offline library and edge proxy
+
+Proven in the Jamaica pilot (2026-03): nginx serving a folder at `kobo.local`, so staff
+downloaded the KoboCollect APK from the laptop. This makes it part of the build.
+
+- **One landing page at `http://kobo.local`** for any device on the box's Wi-Fi: a link
+  to Kobo, the KoboCollect server URL, user guides, and installers grouped by Android,
+  Windows and macOS, each with version, size and SHA-256. Nothing on it loads from the
+  internet.
+- **Edge nginx owns port 80.** kobo-install runs in its reverse-proxy mode (`proxy: True`,
+  `nginx_proxy_port: 8080`, set in `kobo-setup.py`), so Kobo's nginx config is never
+  edited and survives upgrades. The edge sends `kf.*`/`kc.*`/`ee.*` to `127.0.0.1:8080`
+  and everything else to the library. OpenCode web (W4) and a health page join here later.
+- **Manifest-driven content** (`remote/library/manifest.tsv`): id, section, version, URL,
+  SHA-256. `library.sh fetch` downloads and verifies; sources without published checksums
+  (QGIS) are pinned from the first download. `library.sh docs` builds the Kobo user guide
+  from `kobotoolbox/docs` (Sphinx; en, es, fr) with the Google Analytics tag removed.
+  `render.py` writes the landing page. `library.sh check` fails if any page would load an
+  external script, stylesheet, font or image.
+- **First set (~4 GB):** KoboCollect; QField (arm64 + 32-bit), the field app for QGIS
+  projects; QGIS 3.44 LTR (Windows, macOS); LibreOffice (Windows, macOS on Apple silicon
+  and Intel), for editing XLSForms and opening exports with no internet; Kobo user guide;
+  QGIS documentation (HTML, en/es/fr), plus the training manual and the introduction to
+  GIS as PDFs.
+- **Later candidates:** ODK Collect docs, Kiwix (`kiwix-serve` + ZIMs such as WikiMed and
+  Wikipedia in the pilot languages), Organic Maps with regional map files, offline
+  basemaps (MBTiles) for QGIS/QField, a read-only shared folder for the team.
+- **Local DNS for phones.** Android browsers don't reliably resolve multi-label mDNS names
+  like `kf.kobo.local`, so avahi (v0.1) isn't enough. When the box is the access point
+  (a USB Wi-Fi dongle, as in Jamaica), NetworkManager's hotspot plus dnsmasq answers
+  `kobo.local` and `*.kobo.local` with the box's IP. Keep avahi as a fallback for when
+  the box joins another router.
+
+#### Provisioning new boxes
+
+Content is downloaded **once on an online build machine** into a *content pack* (library,
+model weights, `docker save` image tarballs, `.deb`s) and copied to each box. Nothing is
+fetched in the field.
+
+1. **Script (now):** `install.sh --pack <dir>` on stock Ubuntu: debs, `docker load`,
+   `kobo-setup.py`, library + models, systemd units so everything starts on boot. On the
+   DigitalOcean rig the droplet is the build machine (`library.sh build`).
+2. **One USB, unattended (target):** stock Ubuntu 26.04 LTS ISO plus autoinstall, not a
+   remastered ISO. The stick holds the ISO, a `CIDATA` partition with `autoinstall.yaml`
+   (LUKS with TPM unlock, user, packages), and a `KOBOPACK` partition with the content
+   pack; `late-commands` runs `install.sh` from it. Updating a kit means copying a new
+   pack, not rebuilding an ISO. Remaster (Cubic, livefs-editor) only if a single `.iso` is
+   required.
+3. **First boot, per box:** `firstboot.sh` generates the secrets every box must not share
+   (Kobo passwords and Django secret, Wi-Fi SSID and passphrase, LUKS recovery key,
+   hostname) and prints a label card with the Wi-Fi QR code, admin password and recovery
+   key. This is why we don't clone a golden disk image: every clone would share secrets.
+
 ## 4. Testing on DigitalOcean (extends README)
 
 The DigitalOcean rig covers **functional and offline** testing. Performance numbers only count from a real Strix Halo unit.
@@ -237,10 +290,23 @@ Current status and next steps: [STATUS.md](STATUS.md).
 - [ ] Ask the OpenWork maintainers about a supported browser/server mode (today it's only a dev launcher)
 
 ### W7. Package and pilot
-- [ ] One install from USB; weights preloaded; services start on boot; health page
+- [ ] One install from USB; weights preloaded; services start on boot; health page (built in W8)
 - [ ] Skills pack (weekly digest, data quality review, donor one-pager, cleaning log)
 - [ ] Staff quick-start guide (connect to the Wi-Fi, open Kobo and OpenCode in the browser)
 - [ ] Pilot with one partner (FAO Tanzania or SGDD Turkey), with power and heat logging
+
+### W8. Offline library and edge proxy (~1–2 weeks; see 3g)
+- [x] `remote/library/`: manifest (Collect, QField, QGIS LTR, LibreOffice, QGIS docs), `library.sh` fetch/docs/render/check, edge nginx compose
+- [x] `kobo-setup.py`: kobo-install proxy mode (Kobo nginx on 8080); `--reconfigure` for existing installs
+- [ ] On the droplet: `library.sh build`, pin the QGIS checksums it prints, `kobo-setup.py --reconfigure`, `library.sh up`
+- [ ] Check through the edge: Kobo login, form deploy, Enketo, KoboCollect submission with media; library downloads resume (range requests)
+- [ ] `offline.sh on`, then `library.sh check` and load every guide with outbound blocked
+- [ ] Wi-Fi hotspot + dnsmasq for `kobo.local`/`*.kobo.local` (physical box or a spare laptop with a USB Wi-Fi dongle); install the APKs on a real Android phone over HTTP
+- [ ] Landing page: KoboCollect configuration QR code and Wi-Fi QR code (per box, from firstboot)
+- [ ] Content pack layout + `install.sh --pack` (debs, `docker save` images, models, library)
+- [ ] Ubuntu 26.04 autoinstall USB (`CIDATA` + `KOBOPACK` partitions), LUKS + TPM
+- [ ] `firstboot.sh`: per-box secrets and label card
+- [ ] Second content batch: pick from the 3g candidates once pilot languages are known
 
 ## 6. Risks
 
@@ -252,6 +318,8 @@ Current status and next steps: [STATUS.md](STATUS.md).
 | Hidden internet dependencies (update checks, model catalogues, fonts, cloud calls) | Offline mode on the droplet (W1, W4) |
 | Maintaining a fork of KPI and kobo-mcp | Aim to merge the provider-neutral NLP backend and the kobo-mcp offline profile upstream |
 | Weights are 5–65 GB | Preload on the image or USB stick; never download in the field |
+| Phones can't resolve `*.kobo.local` (mDNS) | The box runs DNS (dnsmasq) when it is the access point; the bare IP still serves the library |
+| Installers and docs go stale on boxes in the field | Versions pinned in `manifest.tsv`; the landing page shows the build date; refresh the content pack before each deployment |
 | Power and heat in the field | Batch jobs on mains or solar; capped TDP on battery; measure in the pilot |
 | x86-only images lock out cheap ARM boards | Accept for now; revisit if Kobo publishes multi-arch images |
 
