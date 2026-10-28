@@ -59,12 +59,15 @@ done
 INBOUND="protocol:tcp,ports:22,address:$MY_IP/32 protocol:tcp,ports:80,address:$MY_IP/32 protocol:tcp,ports:443,address:$MY_IP/32 protocol:tcp,ports:8000-8100,address:$MY_IP/32"
 OUTBOUND="protocol:tcp,ports:all,address:0.0.0.0/0,address:::/0 protocol:udp,ports:all,address:0.0.0.0/0,address:::/0 protocol:icmp,address:0.0.0.0/0,address:::/0"
 
-if ! doctl compute firewall list --format Name --no-header | grep -qx "$NAME-fw"; then
+FW_ID=$(doctl compute firewall list --format ID,Name --no-header | awk -v n="$NAME-fw" '$2 == n {print $1}')
+if [[ -z "$FW_ID" ]]; then
     doctl compute firewall create --name "$NAME-fw" --tag-names "$NAME" \
         --inbound-rules "$INBOUND" --outbound-rules "$OUTBOUND" >/dev/null
 else
-    # Re-provisioning: ensure outbound is open again for setup
-    ./offline.sh off
+    # Re-provisioning: replace all rules, so inbound follows your current IP and
+    # outbound is open again for setup
+    doctl compute firewall update "$FW_ID" --name "$NAME-fw" --tag-names "$NAME" \
+        --inbound-rules "$INBOUND" --outbound-rules "$OUTBOUND" >/dev/null
 fi
 
 IP=$(doctl compute droplet get "$DROPLET_ID" --format PublicIPv4 --no-header)
