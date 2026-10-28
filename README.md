@@ -9,7 +9,8 @@ Use test data only. This is a cloud VM, not a field device.
 
 See [PLAN.md](PLAN.md) for the overall plan: hardware choice, KPI changes, and
 OpenCode/OpenWork agents with kobo-mcp. [STATUS.md](STATUS.md) tracks where the work
-stands and the next steps.
+stands and the next steps. [docs/concept-note.md](docs/concept-note.md) is the
+non-technical overview for partners and donors.
 
 ## Layout
 
