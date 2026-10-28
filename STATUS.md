@@ -29,13 +29,28 @@ After restoring a snapshot the droplet has a new IP: run
 `cd /root/kobo-install && python3 run.py` once so Kobo's hostnames follow it.
 
 ### 2. W2: KPI local NLP backend (2–4 weeks)
-- [ ] Clone `kobotoolbox/kpi` (`main`) to `~/code/kpi`; branch `local-nlp-backend`
-- [ ] Read `kobo/apps/subsequences/`: `AutomaticBedrockQual.get_response_from_llm()`, the
+- [x] Clone `kobotoolbox/kpi` (`main`) to `~/code/kpi`; branch `local-nlp-backend`
+- [x] Read `kobo/apps/subsequences/`: `AutomaticBedrockQual.get_response_from_llm()`, the
       Google transcription/translation services, and how a service is selected
 - [ ] `NLP_BACKEND=local` setting; qual analysis → OpenAI-compatible `http://llm:8080`
+      (code + tests committed, `f4b670fce`; tests not yet run)
 - [ ] Translation → `llm`; transcription → `whisper` as Celery tasks
 - [ ] Seed language tables for the pilot languages
 - [ ] Deploy the branch to the CPU droplet and test through the UI while offline
+
+How KPI wires NLP (as of kpi `bb33f41a8`):
+- **Qual** (`actions/automatic_bedrock_qual.py`) runs synchronously inside the request,
+  so its timeout must stay under uWSGI's 120 s harakiri. The request body is already
+  OpenAI chat format, so llama-server takes it almost as-is.
+- **Transcription / translation** (`actions/automatic_google_*.py`) go through
+  `get_nlp_service_class()` → a service with `process_data()` returning
+  `in_progress` / `complete` / `failed`; `allow_async=True` makes Celery poll while
+  `in_progress`. A local service plugs in at the same place.
+- **Access:** Constance `ASR_MT_INVITEE_USERNAMES` (`*` = everyone) gates the transcribe
+  and translate buttons. Usage limits only apply with Stripe enabled, so self-hosted is
+  unlimited. Automatic qual has no extra frontend gate.
+- **Action IDs stay the same** (`automatic_bedrock_qual`, `automatic_google_*`), so the
+  frontend needs no changes.
 
 ### 3. W3: kobo-mcp offline profile (2–3 days, parallel with W2)
 - [ ] Clone kobo-mcp
