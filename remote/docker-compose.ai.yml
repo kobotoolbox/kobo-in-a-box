@@ -1,0 +1,84 @@
+# Local inference services for Kobo-in-a-box.
+# Both expose OpenAI-compatible endpoints:
+#   llm      http://llm:8080/v1/chat/completions
+#   whisper  http://whisper:8080/v1/audio/transcriptions
+# They join the kobo-docker frontend network so KPI can reach them by name,
+# and are published on the host at 8081/8082 for testing.
+
+x-limits: &limits
+  mem_limit: ${AI_MEM_LIMIT}
+  cpus: ${AI_CPUS}
+  restart: unless-stopped
+  volumes:
+    - /opt/models:/models:ro
+  networks:
+    - kobo
+
+x-gpu: &gpu
+  deploy:
+    resources:
+      reservations:
+        devices:
+          - driver: nvidia
+            count: all
+            capabilities: [gpu]
+
+services:
+  llm-gpu:
+    <<: [*limits, *gpu]
+    profiles: [gpu]
+    image: ghcr.io/ggml-org/llama.cpp:server-cuda
+    networks:
+      kobo:
+        aliases: [llm]
+    ports: ["8081:8080"]
+    command: >-
+      -m /models/${LLM_MODEL} ${LLM_MMPROJ:+--mmproj /models/${LLM_MMPROJ}}
+      --host 0.0.0.0 --port 8080 -c ${LLM_CTX} -ngl ${LLM_NGL} -t ${LLM_THREADS}
+      --metrics
+
+  whisper-gpu:
+    <<: [*limits, *gpu]
+    profiles: [gpu]
+    image: ghcr.io/ggml-org/whisper.cpp:main-cuda
+    networks:
+      kobo:
+        aliases: [whisper]
+    ports: ["8082:8080"]
+    command:
+      - >-
+        whisper-server -m /models/${WHISPER_MODEL} --host 0.0.0.0 --port 8080
+        -t ${WHISPER_THREADS} --convert -l auto
+        --inference-path /v1/audio/transcriptions
+
+  llm-cpu:
+    <<: *limits
+    profiles: [cpu]
+    image: ghcr.io/ggml-org/llama.cpp:server
+    networks:
+      kobo:
+        aliases: [llm]
+    ports: ["8081:8080"]
+    command: >-
+      -m /models/${LLM_MODEL} ${LLM_MMPROJ:+--mmproj /models/${LLM_MMPROJ}}
+      --host 0.0.0.0 --port 8080 -c ${LLM_CTX} -t ${LLM_THREADS}
+      --metrics
+
+  whisper-cpu:
+    <<: *limits
+    profiles: [cpu]
+    image: ghcr.io/ggml-org/whisper.cpp:main
+    networks:
+      kobo:
+        aliases: [whisper]
+    ports: ["8082:8080"]
+    command:
+      - >-
+        whisper-server -m /models/${WHISPER_MODEL} --host 0.0.0.0 --port 8080
+        -t ${WHISPER_THREADS} --convert -l auto --no-gpu
+        --inference-path /v1/audio/transcriptions
+
+networks:
+  kobo:
+    external: true
+    name: ${KOBO_NETWORK}

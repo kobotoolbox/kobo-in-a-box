@@ -1,0 +1,22 @@
+# OS / editor
+.DS_Store
+*.swp
+.vscode/
+.idea/
+
+# Local overrides and secrets
+*.local
+*.local.env
+.env
+*.pem
+*.key
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Model weights and downloads
+*.gguf
+*.bin
+models/
