@@ -71,7 +71,10 @@ IP=$(doctl compute droplet get "$DROPLET_ID" --format PublicIPv4 --no-header)
 echo "Waiting for SSH on $IP..."
 until ssh -o StrictHostKeyChecking=accept-new -o ConnectTimeout=5 "root@$IP" true 2>/dev/null; do sleep 5; done
 
-scp -r remote "root@$IP:/root/kobo-box-ai"
+# Copy the contents of remote/ (scp -r would nest it as kobo-box-ai/remote when
+# restoring a snapshot). Results stay on the droplet; park.sh pulls them down.
+tar -C remote --exclude results --exclude __pycache__ -cf - . \
+    | ssh "root@$IP" 'mkdir -p /root/kobo-box-ai && tar -C /root/kobo-box-ai -xf -'
 echo
 echo "Droplet ready: $IP"
 if $FROM_SNAPSHOT; then

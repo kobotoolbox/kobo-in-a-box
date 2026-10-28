@@ -8,7 +8,8 @@ and hardware before buying anything.
 Use test data only. This is a cloud VM, not a field device.
 
 See [PLAN.md](PLAN.md) for the overall plan: hardware choice, KPI changes, and
-OpenCode/OpenWork agents with kobo-mcp.
+OpenCode/OpenWork agents with kobo-mcp. [STATUS.md](STATUS.md) tracks where the work
+stands and the next steps.
 
 ## Layout
 

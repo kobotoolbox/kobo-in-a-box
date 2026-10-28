@@ -195,10 +195,11 @@ Additions to the scripts once the plan is approved:
 Effort figures are rough, for one developer. W1, W2 and W3 can run in parallel.
 
 ### W1. DigitalOcean rig: Kobo + models offline (~1 week, ~$30–50 of GPU time)
-- [ ] `./provision.sh`, then `bootstrap.sh` on the droplet (`README.md`)
-- [ ] Install a current Kobo release with kobo-install (same answers as the v0.1 laptop)
-- [ ] `./ai.sh up gpu` and `smoke-test.py` online, then again after `./offline.sh on`
-- [ ] Add real test clips for the pilot languages to `/opt/models/audio/`
+Current status and next steps: [STATUS.md](STATUS.md).
+- [x] `./provision.sh`, then `bootstrap.sh` on the droplet (`README.md`). CPU droplet only so far: no GPU stock
+- [x] Install a current Kobo release with kobo-install (`kobo-setup.py`)
+- [ ] `./ai.sh up gpu` and `smoke-test.py` online, then again after `./offline.sh on` (done on CPU)
+- [ ] Add real test clips for the pilot languages to `/opt/models/audio/` (FLEURS Spanish added)
 - [ ] Run the tier recipes in the README (CPU-only, 8 GB GPU, 20 GB GPU) and keep the `results/*.json`
 - [ ] Record whether Gemma audio input works in llama.cpp, and the qual `PARSE FAIL` rate per model
 - [ ] `./park.sh` after every session

@@ -14,6 +14,12 @@ read -r -p "Snapshot and destroy $NAME ($DROPLET_ID)? [y/N] " ok
 # Replace the previous snapshot only after the new one succeeds
 OLD_SNAPSHOTS=$(doctl compute snapshot list --format ID,Name --no-header | awk -v n="$SNAPSHOT_NAME" '$2 == n {print $1}')
 
+# The snapshot replaces the previous one, so keep a local copy of every run
+IP=$(doctl compute droplet get "$DROPLET_ID" --format PublicIPv4 --no-header)
+mkdir -p remote/results
+ssh "root@$IP" 'tar -C /root/kobo-box-ai -cf - results' | tar -C remote -xf -
+echo "Results pulled to remote/results/"
+
 doctl compute droplet-action power-off "$DROPLET_ID" --wait
 doctl compute droplet-action snapshot "$DROPLET_ID" --snapshot-name "$SNAPSHOT_NAME" --wait
 
