@@ -4,6 +4,8 @@ Goal: one field device that runs KoboToolbox fully offline, plus:
 
 1. **AI processing in KPI**: transcription, translation and qual analysis, served by local open-weight models.
 2. **AI agents**: OpenCode and OpenWork on a local model, using the Kobo MCP and data analysis tools, for field staff with no internet.
+3. **Dashboards**: the agent builds live analysis dashboards (kobo-dash, through kobo-mcp's dashboard tools) that anyone on the box's Wi-Fi can open (3h).
+4. **Local knowledge base**: a RAG over Kobo, ODK and XLSForm docs plus whatever the deployment adds, exposed to the agent as MCP tools (3i).
 
 Status (2026-10-22): scoping done. DigitalOcean test scripts are written (see `README.md`) but nothing has been run yet. No droplets or other cloud resources exist.
 
@@ -77,8 +79,14 @@ Prices are approximate and unverified for Oct 2026. Speeds are community-reporte
  │   batch model:  Gemma 4 E4B / 26B-A4B  (translation, qual)              │
  │   agent model:  gpt-oss-120b or Gemma 4 26B-A4B (tool calling)          │
  │                                         ▲                               │
- │ agents: OpenCode server(s) ─── kobo-mcp (stdio/HTTP) ── KPI API         │
+ │ agents: OpenCode server(s) ─┬─ kobo-mcp (HTTP, OAuth) ── KPI API         │
+ │          │                  │     └─ dashboard tools ── kobo-dash (web,  │
+ │          │                  │          worker) ── KPI API (view account) │
+ │          │                  └─ kobo-knowledge MCP ── pgvector + FTS      │
+ │          │                        └─ embeddings/reranker (llama-server)  │
  │          └─ analysis sandbox (Python, DuckDB, pandas, LibreOffice…)     │
+ │ box Postgres (kobo-dash, knowledge; separate from Kobo's own Postgres)  │
+ │ edge: dash.kobo.local · mcp.kobo.local · tiles (/tiles) · /docs         │
  └─────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -143,7 +151,7 @@ Changes needed:
 |---|---|
 | **Allow `http://` for trusted hosts.** `servers.py` rejects any non-https Kobo URL; add a flag that allows http for `EXTRA_KOBO_HOSTS` only (e.g. `kpi:8000` or `kf.kobo.local`) | The box runs over HTTP. The alternative is local HTTPS with a box-specific certificate authority, which also helps Enketo's offline mode but means installing a CA on every device |
 | Run in **stdio mode** per OpenCode instance (`KOBO_TOKEN`, `KOBO_BASE_URL`), or HTTP mode with a token header per user | Each user's agent acts only with that user's Kobo permissions |
-| Turn off email notifications (needs Resend, i.e. internet) and dashboards (`kobo-dash`) | Online-only features |
+| Turn off email notifications (needs Resend, i.e. internet). **Keep dashboards, pointed at the box's own kobo-dash** (3h) | Email is online-only; dashboards can run on the box |
 | `preview_form` falls back to a text outline in clients without MCP Apps support | OpenCode/OpenWork support for MCP Apps is unverified |
 | In OpenCode config, set `permission` to **deny** `delete_submissions` and `delete_project` by default, and **ask** before other write tools | Smaller local models make more mistakes, and Kobo has no trash |
 
@@ -229,6 +237,140 @@ fetched in the field.
    hostname) and prints a label card with the Wi-Fi QR code, admin password and recovery
    key. This is why we don't clone a golden disk image: every clone would share secrets.
 
+### 3h. Dashboards on the box (kobo-dash)
+
+Reviewed 2026-10-28: `kobo-mcp` `main` (45 commits ahead of `production`; all dashboard
+tools are on `main` only) and `kobo-dash` `main`. Neither calls an LLM, loads a CDN or
+sends telemetry; fonts and JS are bundled, and maps are kobo-dash's own SVG plus raster
+tiles. So the agent-built dashboards can run on the box. What stops them today:
+
+| Blocker | Where | Change |
+|---|---|---|
+| Dashboards only allowed on kf and eu | kobo-mcp `tools/dashboards.py:42` (`DASH_SERVERS`, hardcoded); kobo-dash `ALLOWED_SERVERS` (setting) and `assertions.py` | Make `DASH_SERVERS` a setting (e.g. defaulting to `ALLOWED_SERVERS`-style list); set both to the box's `kf.kobo.local`. kobo-dash plan already says private servers are "an allow-list change" |
+| https required to reach Kobo | kobo-mcp `servers.py` (also rejects IP literals; private addresses only via `EXTRA_KOBO_HOSTS`); kobo-dash `kobo.py:67` | Same trusted-host http flag as W3, in both repos. Or local HTTPS (see the open questions in section 7) |
+| Basemap tiles from tile.openstreetmap.org; `tile_origin` accepts only https | kobo-dash `config.py:62`, `TILE_URL` | Serve raster tiles for the deployment region from the box (`/tiles/{z}/{x}/{y}.png`); allow an http tile origin for trusted hosts. Render the tiles at build time from an OSM extract (Geofabrik + OpenMapTiles/tileserver-gl), not by scraping OSM's tile servers (their usage policy forbids bulk download). The same MBTiles serve QGIS/QField (3g's "offline basemaps"). Empty `TILE_URL` (no basemap; shapes and points still draw) is the fallback |
+| Admin boundaries fetched from the geoBoundaries API (redirects to GitHub) | kobo-dash `boundaries.py:36`, tool `fetch_dashboard_boundaries` | Pre-fetch ADM0–ADM2 GeoJSON for the deployment countries into the content pack; a `BOUNDARIES_DIR` setting makes the fetch read from it. Today's workaround is the admin GeoJSON upload (browser only, 3 MB / 5,000 features) |
+| `desk_review` relies on the agent's web search (OCHA, HDX, ReliefWeb); evidence sources must be https URLs with a dotted hostname | kobo-mcp `prompts.py`, kobo-dash `evidence.py:157` | Offline variant of the prompt that searches the local knowledge base (3i) instead, with documents such as the HNO, earlier assessments and cluster guidance loaded before deployment; accept `http://kobo.local/...` as an evidence source |
+| Owner sign-in to the dashboard admin goes through kobo-mcp's OAuth (`/sso/authorize`, PKCE); `dash_enabled` needs `OAUTH_KEYS` + `DASH_URL` + `DASH_SIGNING_KEY` | kobo-mcp `config.py:55`, kobo-dash `login.py` | Run **one** kobo-mcp in HTTP mode with OAuth on (`mcp.kobo.local`), not stdio per user. Users paste their Kobo token once on its `/login` page; OpenCode connects as an OAuth MCP client (to test: OpenCode's remote-MCP OAuth with no internet). This also answers part of open question 1 (how the user's token reaches their MCP session) |
+| Defaults point at kobolabs.dev | `PUBLIC_URL`, `MCP_URL`, `DASH_URL`, `ALLOWED_SERVERS` | Set in the box's env; per-box `SECRET_KEY`, `CRED_KEYS`, `OAUTH_KEYS`, Ed25519 dash key pair generated by `firstboot.sh` |
+
+Running it:
+- **Services:** kobo-dash `web` + `worker` (the poller) from one image, `alembic upgrade
+  head` on start, and a box Postgres 17 (shared with 3i, separate from Kobo's own Postgres
+  so Kobo upgrades never touch it). Images built online and `docker save`d into the pack;
+  the Dockerfiles need npm, PyPI and ghcr.io at build time only.
+- **Edge:** `dash.kobo.local` and `mcp.kobo.local` join the edge nginx. Dashboards open at
+  `dash.kobo.local/d/<slug>`; live updates use SSE, so the edge must not buffer
+  `/api/d/*/events`. Containers reach Kobo at `kf.kobo.local` via `extra_hosts`.
+- **Dashboard account:** kobo-dash reads data with a per-owner view-only Kobo account
+  (e.g. `alice_dash`) whose token the owner pastes in `/admin/kobo-access`. The box's
+  user-creation script creates the pair.
+- **Sharing on a LAN:** "public" means anyone on the box's Wi-Fi. Keep the default
+  (offline, i.e. unpublished) and use password-protected dashboards for anything sensitive.
+- **Hub kits:** dashboards run on the hub over the combined data; they refresh as field
+  kits sync in.
+
+Fit with local models (measured from the source):
+- kobo-mcp's 63 tool descriptions are ~60k characters (~15k tokens; ~20–25k with schemas),
+  on top of OpenCode's 10–20k. The dashboard and evidence tools are ~6.5k tokens of that,
+  and `update_dashboard`'s `ops` parameter alone embeds `SPEC_HELP` + `DATASETS_HELP`
+  (~4k tokens).
+- The spec is a nested JSON DSL (pages, rows, scrolly steps, datasets with
+  lookup/rollup/recode, calculated fields, shading), edited as op lists. `write_story` and
+  `desk_review` are long multi-step workflows. Expect gpt-oss-120b to cope and 26B-A4B to
+  struggle.
+- Mitigations: **tool profiles** (an env setting that registers only a named set, e.g.
+  `analysis`, `dashboards`, `forms`; today only dashboard and email tools are conditional);
+  start every dashboard from `generate_dashboard_layout` (server-side, no spec writing) and
+  have the model make small edits; a shorter `SPEC_HELP` for small models; 64k context per
+  agent slot. W4's task set gets ~10 dashboard tasks to measure this.
+- No MCP App is involved: the only one is the form preview. Dashboards are ordinary web
+  pages, so they work whatever the agent client supports.
+
+### 3i. Local knowledge base (RAG)
+
+Reviewed 2026-10-28: `kobo-support-bot-poc` `main` (Django; Voyage `voyage-3-lite`
+embeddings, Cloudflare Vectorize, Anthropic). Its older `migrate-django-bedrock-do` branch
+already has the shape we need offline but was never run: an OpenAI-compatible client for
+`/v1/embeddings` and chat, `bge-m3` at 1024-d, and a pgvector `DocChunk` table with an HNSW
+index and a `manage.py index` command. `main` reverted those parts.
+
+**Aim:** the agent answers "how do I…" questions about Kobo, KoboCollect, XLSForm, ODK and
+QGIS, and questions about the deployment's own documents (SOPs, protocols, the assessment
+ToR, sector guidance), from material on the box, citing pages that open offline.
+
+Design:
+- **One small service, `kobo-knowledge`** (in this repo, `remote/knowledge/`): an indexer,
+  a search API and an MCP server (streamable HTTP at `mcp.kobo.local/knowledge`, registered
+  in OpenCode next to kobo-mcp). Not the support bot's Django app: its forum search, token
+  budgets, widget and analytics are cloud-service concerns. Keep it separate from kobo-mcp,
+  because knowledge is box-wide while kobo-mcp acts per Kobo account.
+- **Tools:** `search_knowledge(query, collections?, lang?, k=8)` → chunks with title,
+  section, collection, language, score and a local URL; `read_document(url)` → the whole
+  page or file as text; `list_collections()`. An OpenCode instruction (AGENTS.md / skill):
+  use `search_knowledge` before answering how-to questions, cite the local URLs, say so when
+  the knowledge base doesn't cover it (the bot's `[NO_DOCS]` rule).
+- **Reuse from the support bot:** the heading-aware chunker (`indexer.py`: split at H2–H4,
+  merge to ~1,600 chars, split above ~2,400, prefix `[Article] [Section]`); the per-source
+  boost and one-language-per-article ranking (`backend/chat/rag.py`, re-tuned: the 0.35
+  threshold and boosts were set for Voyage); the system-prompt rules and terminology list
+  (`backend/chat/prompts.py`); the ~68 eval cases and deterministic checks
+  (`backend/evals/`), including multilingual, hallucination-bait and prompt-injection
+  cases.
+- **Models** (all run on llama-server, permissive licences):
+  - embeddings: **bge-m3** (MIT, ~0.6 GB at Q8, 1024-d, 100+ languages, so a question in
+    Swahili finds an English page). Qwen3-Embedding-0.6B (Apache 2.0) as the alternative;
+    pick by retrieval recall on the eval set;
+  - reranking: **bge-reranker-v2-m3** (Apache 2.0) via `llama-server --reranking`, if the
+    evals show it is worth the latency;
+  - answers come from the agent model itself; the service only retrieves.
+- **Store:** pgvector (HNSW, cosine) plus Postgres full-text search for hybrid retrieval
+  (rank fusion), in the box Postgres from 3h. Exact terms (`select_one_from_file`,
+  `pulldata`, error messages) are where pure vector search misses. A few thousand chunks;
+  size is not an issue.
+- **Index once, ship it:** the build machine embeds the standard corpus and the pack ships
+  the index (a `pg_dump` with the embedding model's name and hash). The box only embeds
+  what is added locally, with the same model; changing the model means re-embedding
+  everything.
+- **Citations open offline:** index the same pages the library serves, so a citation is
+  `http://kobo.local/docs/kobo/es/...` and not support.kobotoolbox.org. The library
+  manifest gets an `index` column; `library.sh docs` output feeds the indexer.
+
+Corpus (check each licence before shipping):
+
+| Collection | Source | Notes |
+|---|---|---|
+| Kobo user guide (en, es, fr) | `kobotoolbox/docs`, already built by `library.sh docs` | Same source as the support bot's `kobo-docs/` (118 en, 141 es, 141 fr pages) |
+| XLSForm | xlsform.org + its reference table | Scraped by the bot's `scraper.py` |
+| ODK | `getodk/docs` (Collect, form design, maps) | The bot takes 22 curated pages; take the repo |
+| ODK XForms spec | getodk.github.io/xforms-spec | Low boost: for edge cases |
+| QGIS / QField | Already in the library (3g) | |
+| KoboToolbox Academy, kobotoolbox.org | `scraper.py` | Ask whether the Academy content may be redistributed |
+| Community forum | — | Not indexed by the bot (it searches Discourse live). An offline snapshot of solved threads needs permission; treat as later |
+| **Deployment knowledge** | Added per kit | See below |
+
+Adding local knowledge:
+- **Phase 1:** a `knowledge/<collection>/` folder per kit, filled before deployment (or by
+  the focal point). `knowledge.sh add <dir> --collection <name>` converts PDF, DOCX, ODT,
+  HTML and Markdown to text (pdftotext, pandoc, LibreOffice headless; OCR off by default),
+  copies the original to the library so citations open it, and embeds. A small sidecar
+  (`collection.yml`) gives a title, language and boost.
+- **Phase 2:** an upload page on the library (behind the focal point's password), and
+  an admin-maintained local FAQ (the bot's `FaqEntry` idea: short answers that always win,
+  e.g. "which project do I submit to", "who to call").
+- **Not for personal data.** The knowledge base is shared by everyone who uses the agent.
+  Submissions stay in Kobo and reach the agent only through kobo-mcp with the user's own
+  permissions.
+- **Prompt injection.** Added documents are untrusted text that the agent reads while it
+  holds write tools. Mark retrieved text as quoted material in the tool output, and rely on
+  the existing safety net (deletes denied, writes ask first). Run the bot's injection
+  cases against the local setup.
+
+Later: the support bot's chat widget on the `kobo.local` landing page and in KPI, backed by
+`kobo-knowledge` and the box's model, for staff who never open the agent. If the support
+bot finishes the pgvector + OpenAI-compatible path (its `django-admin-logging.md` "Later"
+item), the online bot and the box can share one retrieval backend.
+
 ## 4. Testing on DigitalOcean (extends README)
 
 The DigitalOcean rig covers **functional and offline** testing. Performance numbers only count from a real Strix Halo unit.
@@ -270,7 +412,8 @@ Current status and next steps: [STATUS.md](STATUS.md).
 
 ### W3. kobo-mcp offline profile (~2–3 days)
 - [ ] Flag to allow `http://` for `EXTRA_KOBO_HOSTS` only (`src/kobo_mcp/servers.py`)
-- [ ] Offline config profile: email notifications and dashboards off
+- [ ] Offline config profile: email notifications off; dashboards on and pointed at the box (W9)
+- [ ] Tool profiles: register only a named set of tools, to shorten the prompt for small models (3h)
 - [ ] Recommended OpenCode `permission` config: deny the delete tools, ask before writes
 
 ### W4. Agents on the rig (~1–2 weeks, after W1 + W3)
@@ -311,6 +454,27 @@ Current status and next steps: [STATUS.md](STATUS.md).
 - [ ] `firstboot.sh`: per-box secrets and label card
 - [ ] Second content batch: pick from the 3g candidates once pilot languages are known
 
+### W9. Dashboards on the box (~2 weeks, after W3; see 3h)
+- [ ] kobo-mcp: `DASH_SERVERS` as a setting; offline `desk_review` that uses `search_knowledge` (W10)
+- [ ] kobo-dash: trusted-host http for Kobo and tiles (or local HTTPS); `BOUNDARIES_DIR` for pre-fetched geoBoundaries; local evidence URLs
+- [ ] Propose all of the above upstream as settings, not a fork
+- [ ] Compose: box Postgres, kobo-dash web + worker, kobo-mcp in HTTP + OAuth mode; edge routes for `dash.` and `mcp.kobo.local` (SSE unbuffered); per-box keys in `firstboot.sh`
+- [ ] Content pack: raster MBTiles and ADM0–2 boundaries for the deployment countries; prebuilt images
+- [ ] OpenCode as an OAuth MCP client of the box's kobo-mcp, offline
+- [ ] User script creates each owner's view-only `_dash` account
+- [ ] ~10 dashboard tasks in W4's task set (layout from a form, shaded map, combine two projects, a story); score on 26B-A4B and gpt-oss-120b
+- [ ] `offline.sh on`: create, view, live-update and share a dashboard with no outbound traffic
+
+### W10. Local knowledge base (~2–3 weeks; can start now, see 3i)
+- [ ] `remote/knowledge/`: indexer (support-bot chunker), pgvector + FTS schema, search API, MCP server
+- [ ] Embedding (bge-m3) and reranker llama-servers in `docker-compose.ai.yml`
+- [ ] Corpus build from the library's docs plus XLSForm, ODK docs and the XForms spec; licence check per source
+- [ ] Port the support bot's eval cases; measure retrieval recall@k (`retrieve_any`/`cite_any`) and answer quality with the local agent model; re-tune threshold and boosts; with and without the reranker
+- [ ] `knowledge.sh add` for PDF/DOCX/ODT/HTML/Markdown; originals served by the library
+- [ ] OpenCode registration and AGENTS.md instructions; injection cases pass
+- [ ] Ship the prebuilt index in the content pack
+- [ ] Phase 2: upload page, local FAQ, chat widget on the landing page
+
 ## 6. Risks
 
 | Risk | Mitigation |
@@ -325,10 +489,16 @@ Current status and next steps: [STATUS.md](STATUS.md).
 | Installers and docs go stale on boxes in the field | Versions pinned in `manifest.tsv`; the landing page shows the build date; refresh the content pack before each deployment |
 | Power and heat in the field | Batch jobs on mains or solar; capped TDP on battery; measure in the pilot |
 | x86-only images lock out cheap ARM boards | Accept for now; revisit if Kobo publishes multi-arch images |
+| Dashboard specs and long workflows are too hard for smaller agent models | `generate_dashboard_layout` first, small edits after; tool profiles; shorter help text; measure in W4/W9 |
+| Knowledge answers go stale, or cite a page the user can't open | Index the library's own copies; show the build date in answers' sources; refresh with the content pack |
+| Documents added to the knowledge base carry personal data or injected instructions | Box-wide by design, so a "no personal data" rule for collections; retrieved text marked as untrusted; deletes denied, writes ask |
+| Offline basemaps and boundaries only cover what was loaded | Choose regions with the partner before deployment; shapes and points still draw with no basemap |
 
 ## 7. Open questions
 
 - Multi-user OpenCode: one instance per user, or a shared server with workspaces? How is a user's Kobo token passed into their MCP session?
 - Which 3–6 languages for the pilot? This drives the transcription and translation evaluation and any fine-tuning (e.g. Padauk for Burmese).
 - Does Kobo want to publish multi-arch (ARM) images upstream? That would reopen Raspberry Pi, Jetson and Mac for no-AI kits.
-- HTTP vs local HTTPS on the box. Affects Enketo offline mode, kobo-mcp, and secure cookies.
+- HTTP vs local HTTPS on the box. Affects Enketo offline mode, kobo-mcp, and secure cookies, and now kobo-dash too (Kobo URL, tile origin, evidence URLs). Three apps that insist on https tilts this toward a box CA.
+- Licences for redistributing the knowledge corpus on kits: Kobo Academy, the ODK docs, a forum snapshot.
+- One MCP server for the agent or two (kobo-mcp plus kobo-knowledge)? Two is planned; merge only if OpenCode's per-server overhead matters.

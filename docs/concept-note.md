@@ -27,7 +27,7 @@ combines their data for analysis and reporting, still with no internet. And when
 a connection is available, a kit or hub can sync its data to a KoboToolbox server in the
 cloud. Each organisation decides, project by project, how far its data travels.
 
-The new generation of the kit adds three things:
+The new generation of the kit adds four things:
 
 1. **Local AI processing inside KoboToolbox.** Transcription of recorded interviews,
    translation, and qualitative analysis run on the box itself using open AI models.
@@ -35,15 +35,22 @@ The new generation of the kit adds three things:
 2. **AI assistants for field analysis.** Field staff can ask questions about their data
    in plain language ("summarise this week's submissions by district", "find likely
    duplicates", "draft a one-page update") and get answers on the spot, without an
-   analyst or a connection.
-3. **An offline library.** Any device on the box's Wi-Fi can open a local web page with
+   analyst or a connection. The assistant can also build **live dashboards**: maps,
+   charts and short data stories that update as new submissions arrive, and that anyone
+   on the box's Wi-Fi can open in a browser.
+3. **A local knowledge base.** The assistant draws on the KoboToolbox, KoboCollect,
+   XLSForm and ODK guides, and on whatever documents an organisation adds (procedures,
+   protocols, sector guidance, earlier assessments), so it can answer "how do I…?" and
+   "what does our protocol say…?" questions, pointing to the page it used.
+4. **An offline library.** Any device on the box's Wi-Fi can open a local web page with
    the apps (KoboCollect, QGIS, QField, LibreOffice) and guides (the KoboToolbox user
    guide in English, Spanish and French; QGIS manuals) that teams need, so phones and
    laptops can be set up from scratch in the field.
 
 The basic kit has already been used in the field, most recently in Kobo's response to
 Hurricane Melissa in Jamaica. The AI and library components are working in a simulated
-offline test environment, as described below. The next step is a **field pilot with one
+offline test environment, as described below; dashboards and the knowledge base are
+built for KoboToolbox's online services and are being adapted to run on the box. The next step is a **field pilot with one
 partner organisation**, followed by a packaged kit that can be installed on new hardware
 from a single USB stick.
 
@@ -117,11 +124,39 @@ submissions, view maps and reports, and export to Excel, CSV or GIS formats.
 - **AI-assisted qualitative analysis**, which suggests answers to analysis questions
   ("Which water sources does the respondent mention?") for staff to review and accept;
 - **An AI assistant** that can query, summarise and check the project's data, and draft
-  reports, in plain language.
+  reports, in plain language;
+- **Live dashboards** built by the assistant from a request such as "a dashboard of this
+  assessment by district, with a map of reported damage". Staff refine them by asking,
+  and share them with colleagues on the box's Wi-Fi, open or behind a password. They
+  update as enumerators sync, and can combine several projects.
 
 **Everyone** has an offline library of installers and guides: the KoboToolbox user guide,
 QGIS and QField for mapping, LibreOffice for editing forms and opening exports, and
 more as each deployment needs.
+
+**Anyone who is stuck** can ask the assistant. With no internet there is no help centre,
+forum or helpdesk to turn to, so the knowledge base stands in for them: "how do I make
+this question appear only for women over 18?", "why does KoboCollect say the form has an
+error?", "what does our referral protocol say about urgent cases?". Answers cite the page
+they came from, which opens on the box.
+
+### Dashboards and the knowledge base
+
+Both components already exist as KoboToolbox online services: Kobo's dashboard service,
+which its assistant tools drive, and the support chatbot on Kobo's help centre, which
+answers from the user guides. On the kit they run with the same local AI model as the
+assistant:
+
+- **Dashboards** read data from the kit's own KoboToolbox. Map backgrounds and
+  administrative boundaries for the deployment's regions are loaded before the mission
+  (maps still show points and shaded areas without a background). Desk research, which
+  online uses the web, uses the documents in the knowledge base instead.
+- **The knowledge base** holds the official guides in English, Spanish and French and
+  works across languages: a question asked in another language still finds the right
+  page. Each kit's focal point can add documents before or during a deployment; they are
+  indexed on the box. It is for reference material, not personal data: survey responses
+  stay in KoboToolbox, where the assistant reaches them only with the user's own
+  permissions.
 
 ### Three ways to run it: alone, as a network, or connected
 
@@ -278,6 +313,8 @@ risk to a single physical device. Both sides need managing.
 | An untrusted device joins the Wi-Fi | Strong, regularly changed Wi-Fi password; every KoboToolbox user needs their own account and permissions; the AI assistant works with the logged-in user's own permissions only |
 | A single point of failure | Backups to a second device; sync to the cloud when possible; the hardware is standard and replaceable, and the software can be reinstalled from USB |
 | AI assistants keep conversation histories containing personal data | Stored only on the encrypted device; a retention and deletion policy for each deployment |
+| A dashboard shows more than intended to people on the Wi-Fi | New dashboards start unpublished; sensitive ones use a password; dashboards show summaries, and the owner chooses what goes on them |
+| Documents added to the knowledge base contain personal data, or text written to mislead the assistant | The knowledge base is for reference material only; the assistant treats document text as information, not instructions, and still can't delete data or make changes without confirmation |
 
 **Responsible data practice still applies in full.** The kit makes it easier, not
 optional: informed consent (including for audio recording), data minimisation, access
@@ -296,6 +333,9 @@ control, retention limits, and a data-sharing plan for when data moves to the cl
   for specific languages can be added or adapted.
 - **Errors are expected and measured.** We publish measured error rates per language
   and per hardware tier, so teams know how much checking is needed.
+- **Answers show their sources.** The assistant cites the guide or document behind each
+  answer, and says so when the knowledge base doesn't cover a question rather than
+  guessing.
 - **Transparency with respondents.** Consent wording should explain that recordings may
   be transcribed and translated automatically, on a device the organisation controls.
 - **No hidden costs or lock-in.** The models run locally under open licences that allow
@@ -381,6 +421,9 @@ Being clear about limits is part of using the kit responsibly:
   once cleaning is finished.
 - **KoboCollect runs on Android.** Staff with iPhones or laptops can still collect data
   through web forms in the browser.
+- **The knowledge base and maps are only as complete and current as what was loaded**
+  before deployment. Desk research is limited to documents brought on the kit, and maps
+  cover the regions prepared for the mission.
 - **AI quality in many languages is not yet proven**, and real field recordings (noise,
   overlapping speakers, dialects) will perform worse than benchmarks.
 - **How many people one box can serve at once** (enumerators syncing, staff using the AI
@@ -420,6 +463,15 @@ supervisor asks the AI assistant for a check on missing data and likely duplicat
 gets a list of follow-ups for the next visit. At the end of the mission, the data is
 synced to the ministry's server.
 
+**A new supervisor, no help desk.** A supervisor who joined the team last week needs to
+add a question to the form that only appears for clinics with a maternity ward, and
+then wants to know what the ministry's facility standards say about cold-chain
+equipment. The supervisor asks the assistant on the kit. It explains the skip logic step by step,
+citing the KoboToolbox guide, and quotes the relevant section of the ministry's
+standards, which the team loaded onto the kit before leaving. That evening, the supervisor asks for
+a dashboard comparing clinics against those standards and shares it with the team
+leader on the kit's Wi-Fi.
+
 ---
 
 ## 6. Hardware approach
@@ -448,6 +500,8 @@ confirm speed, power draw and heat before buying pilot kits.
 | **Offline library** | Local landing page, app installers and guides; checked to work with no internet | ✅ Working in testing |
 | **AI processing in KoboToolbox** | Qualitative analysis on local AI: working end to end. Translation and transcription: in progress | 2–4 weeks of development |
 | **AI assistant** | Assistant connected to KoboToolbox data, with safety limits on what it can change | 2–3 weeks after the above |
+| **Dashboards** | Kobo's dashboard service running on the kit, built by the assistant; offline maps and boundaries for the deployment's regions | About 2 weeks, after the assistant connection |
+| **Knowledge base** | Guides indexed on the box and searchable by the assistant, across languages; the deployment's own documents added before or during a mission; tested with the support chatbot's question set | 2–3 weeks; can start now |
 | **Hardware** | Buy and test one recommended unit; measure speed, power and heat | Next |
 | **Multi-site sync** | Kit-to-hub and hub-to-cloud syncing with kobo-transfer, automated and shown on the kit's status page; identical forms on every kit | Sync to a cloud server tested on the prototype; hub workflow to build and test |
 | **Packaging** | One-USB installation; per-kit passwords and keys; health check page; quick-start guide | 2–4 weeks |
@@ -477,7 +531,10 @@ confirm speed, power draw and heat before buying pilot kits.
 - **Fund kits and the pilot:** a development unit, pilot kits (computer, power, Wi-Fi,
   case, optional Android devices), and field costs for the pilot.
 - **Fund development:** completing local transcription and translation in KoboToolbox,
-  the AI assistant, and the one-USB installer.
+  the AI assistant, dashboards and the knowledge base on the kit, and the one-USB
+  installer.
+- **Share reference material:** procedures, protocols and sector guidance (in the
+  languages your teams use) that should travel with a kit's knowledge base.
 - **Help with languages:** recordings and reference transcripts in the languages your
   operations use, so we can measure and improve AI quality for them.
 - **Host a pilot:** an operation where offline data collection, qualitative interviews or
@@ -521,6 +578,10 @@ those using a kit.
          │  AI assistant (OpenCode) ── KoboToolbox data tools │
          │   with an analysis workspace (spreadsheets,        │
          │   charts, reports)                                 │
+         │       ├── Dashboards ── kobo.local, on the Wi-Fi   │
+         │       │    (offline maps and boundaries)           │
+         │       └── Knowledge base: guides + local documents │
+         │            (search across languages, cited pages)  │
          │                                                    │
          │  Encrypted disk · no internet required             │
          └────────────────────────────────────────────────────┘
@@ -539,6 +600,14 @@ those using a kit.
 - **AI assistant:** OpenCode (open source), connected to KoboToolbox through Kobo's MCP
   server (a standard way for AI assistants to use tools) with the logged-in user's
   permissions. Deleting data is blocked, and changes need confirmation.
+- **Dashboards:** Kobo's dashboard service (kobo-dash), driven by the MCP server's
+  dashboard tools and reading data from the kit's KoboToolbox through a view-only
+  account. Map backgrounds come from OpenStreetMap data prepared for the deployment's
+  regions; administrative boundaries from geoBoundaries.
+- **Knowledge base:** the guides and local documents split into sections and indexed
+  with an open multilingual search model (bge-m3, MIT licence) in PostgreSQL, using both
+  meaning and exact-word search. The assistant searches it through its own MCP server.
+  Built on the chunking, ranking and test questions of Kobo's help-centre chatbot.
 - **Sync:** kobo-transfer (open source, by Kobo), preinstalled on every kit. It copies new
   submissions, attachments, validation statuses and analysis results between KoboToolbox
   servers, one project at a time, keeping each submission's unique ID so repeat runs
@@ -567,6 +636,8 @@ those using a kit.
 | **Full-disk encryption** | Everything on the computer's storage is unreadable without the key |
 | **TPM** | A security chip in the computer that holds the disk encryption key |
 | **Sync** | Copying new data from one KoboToolbox server to another: from a field kit to a hub, or to a cloud server once a connection is available |
+| **Dashboard** | A web page of charts, maps and figures that updates as new data arrives |
+| **Knowledge base** | Documents the AI assistant searches to answer questions, citing the source (sometimes called RAG, retrieval-augmented generation) |
 | **Hub kit** | A kit at a base location that combines data from several field kits for analysis and reporting |
 | **Federated** | Several independent kits that each work on their own and share data with a hub when they can |
 | **kobo-transfer** | Kobo's open-source tool for copying projects and submissions between KoboToolbox servers |

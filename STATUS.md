@@ -95,6 +95,11 @@ Testing W2 on the CPU droplet (state kept in the snapshot):
 - [ ] Clone kobo-mcp
 - [ ] Allow `http://` only for `EXTRA_KOBO_HOSTS` (`src/kobo_mcp/servers.py`)
 - [ ] Offline config profile; recommended OpenCode permissions (deny deletes, ask before writes)
+- [ ] Dashboards stay on, pointed at the box (PLAN 3h, W9). Reviewed 2026-10-28: dashboards are on
+      kobo-mcp `main` only, and `DASH_SERVERS` hardcodes kf/eu (`tools/dashboards.py:42`)
+
+### 3b. W10: local knowledge base (PLAN 3i), can start now
+- [ ] `remote/knowledge/`: support-bot chunker, bge-m3 on llama-server, pgvector + FTS, MCP server; port its eval cases
 
 ### 4. GPU tiers (W1, when stock returns)
 - [ ] Check stock each session; when available, fresh `./provision.sh` (not the CPU snapshot)
