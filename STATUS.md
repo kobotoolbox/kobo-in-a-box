@@ -32,8 +32,11 @@ After restoring a snapshot the droplet has a new IP: run
 - [x] Clone `kobotoolbox/kpi` (`main`) to `~/code/kpi`; branch `local-nlp-backend`
 - [x] Read `kobo/apps/subsequences/`: `AutomaticBedrockQual.get_response_from_llm()`, the
       Google transcription/translation services, and how a service is selected
-- [ ] `NLP_BACKEND=local` setting; qual analysis → OpenAI-compatible `http://llm:8080`
-      (code + tests committed, `f4b670fce`; tests not yet run)
+- [x] `NLP_BACKEND=local` setting; qual analysis → OpenAI-compatible `http://llm:8080`
+      (kpi `f4b670fce`). Qual test file 69/69 pass on current kpi `main` with
+      `--ds kobo.settings.testing` (not yet run with `testing_no_stripe`).
+      `remote/e2e-qual.py` passes online and offline: 3/3 correct, 10–17 s each
+      through the full API (cold).
 - [ ] Translation → `llm`; transcription → `whisper` as Celery tasks
 - [ ] Seed language tables for the pilot languages
 - [ ] Deploy the branch to the CPU droplet and test through the UI while offline
@@ -51,6 +54,19 @@ How KPI wires NLP (as of kpi `bb33f41a8`):
   unlimited. Automatic qual has no extra frontend gate.
 - **Action IDs stay the same** (`automatic_bedrock_qual`, `automatic_google_*`), so the
   frontend needs no changes.
+
+Testing W2 on the CPU droplet (state kept in the snapshot):
+- **Unit tests:** `/root/kpi-test.sh` runs the qual test file against `/root/kpi-src`
+  (kpi `main` + the branch as a patch) in a `python:3.12` container with PostGIS and
+  Redis, as CI does. It needs a JRE (pyxform validates forms with Java), which GitHub's
+  runners have preinstalled. To update the code: send `git format-patch` from
+  `~/code/kpi` and `git am` it there (a `git archive` of the partial clone is very slow).
+- **Running Kobo is release `2.026.37c`,** which predates `main`'s qual refactor, so the
+  branch can't be dropped in. A backport of the same change is mounted into the kpi
+  container by `/root/kobo-docker/docker-compose.frontend.custom.yml` (with
+  `NLP_BACKEND=local`; `use_frontend_custom_yml` is on in `.run.conf`). Remove both to
+  get stock KPI back. For a real deploy, build a kpi image from the branch instead.
+- **E2E user:** `e2e`, a regular user, password in `/root/e2e-user.pw`.
 
 ### 3. W3: kobo-mcp offline profile (2–3 days, parallel with W2)
 - [ ] Clone kobo-mcp
