@@ -94,12 +94,35 @@ Testing W2 on the CPU droplet (state kept in the snapshot):
   `92.184.112.x`) the address can change within minutes; allowing SSH only from that
   /24 for the session works, and the next `provision.sh` resets the rules anyway.
 
-### 3. W3: kobo-mcp offline profile (2–3 days, parallel with W2)
-- [ ] Clone kobo-mcp
-- [ ] Allow `http://` only for `EXTRA_KOBO_HOSTS` (`src/kobo_mcp/servers.py`)
-- [ ] Offline config profile; recommended OpenCode permissions (deny deletes, ask before writes)
-- [ ] Dashboards stay on, pointed at the box (PLAN 3h, W9). Reviewed 2026-10-28: dashboards are on
-      kobo-mcp `main` only, and `DASH_SERVERS` hardcodes kf/eu (`tools/dashboards.py:42`)
+### 3. W3: kobo-mcp offline profile ✅ done 2026-10-28 (droplet-tested, online and offline)
+kobo-mcp branch `w3-offline-box` in `~/Desktop/work/repos/kobo-mcp` (local, not pushed;
+962 unit tests pass, ruff clean):
+- [x] `HTTP_KOBO_HOSTS` (`9023390`): plain http only for hosts also in `EXTRA_KOBO_HOSTS`
+      (checked at startup). Bare `kf.kobo.local` gets `http://`; the token goes over http only
+      to such a host; the connection guard trusts port 80 for them only. Sign-in page links
+      use each server's scheme.
+- [x] Offline config: email is already off unless `RELAY_KEYS` + `RESEND_API_KEY` are set
+      (documented, no code). `DASH_KOBO_HOSTS` (`b89e94f`) replaces the hardcoded kf/eu
+      dashboard servers. **kobo-dash still needs its half** (PLAN 3h): `ALLOWED_SERVERS` plus
+      accepting `http://` base URLs in `kobo.py`, which kobo-mcp now sends in `srv`.
+- [x] `TOOL_PROFILES` (`9d705ce`): `analysis`, `forms`, `data`, `sharing`, `integrations`,
+      `dashboards`, `deletes`, `all`, and/or tool names; always with whoami, list_projects,
+      get_project, describe_form. All 73 tools ≈ 38k tokens; `analysis` ≈ 7k;
+      `analysis,forms,data` = 32 tools ≈ 15k. Deletes only via `deletes`. A test fails if a
+      new tool isn't in a profile. Follow-up: `INSTRUCTIONS` (~1.3k tokens) still describes
+      every tool.
+- [x] OpenCode config: `remote/agents/opencode.json` (+ README): delete tools off via the
+      documented `tools` map, `kobo_*` → ask with the 36 read-only tools allowed, web tools
+      denied, no autoupdate. ⚠ Whether `permission` keys apply to MCP tools is unverified in
+      OpenCode's docs: test in W4.
+- [x] Droplet check: `remote/agents/run-mcp-check.sh` builds kobo-mcp's image on the box and
+      runs `mcp-check.py` against it in HTTP header mode with the box settings. 19/19 pass
+      online and with egress blocked: `/healthz`, 32 tools and no delete tools, whoami on
+      `http://kf.kobo.local`, reads (projects, form, stats, summary, submissions), a
+      reversible write (`set_validation_status` → on_hold → restored), and refusals of
+      foreign servers and of http to non-HTTP hosts.
+- Not done here: OAuth sign-in (`/login`, `mcp.kobo.local` behind the edge) and an actual
+      OpenCode client; both belong to W4.
 
 ### 3b. W10: local knowledge base (PLAN 3i), can start now
 - [ ] `remote/knowledge/`: support-bot chunker, bge-m3 on llama-server, pgvector + FTS, MCP server; port its eval cases

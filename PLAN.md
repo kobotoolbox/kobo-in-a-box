@@ -411,10 +411,11 @@ Current status and next steps: [STATUS.md](STATUS.md).
 - [ ] Talk to the KPI team about merging a provider-neutral backend upstream
 
 ### W3. kobo-mcp offline profile (~2–3 days)
-- [ ] Flag to allow `http://` for `EXTRA_KOBO_HOSTS` only (`src/kobo_mcp/servers.py`)
-- [ ] Offline config profile: email notifications off; dashboards on and pointed at the box (W9)
-- [ ] Tool profiles: register only a named set of tools, to shorten the prompt for small models (3h)
-- [ ] Recommended OpenCode `permission` config: deny the delete tools, ask before writes
+Done 2026-10-28 on kobo-mcp branch `w3-offline-box`; details in [STATUS.md](STATUS.md).
+- [x] Flag to allow `http://` for `EXTRA_KOBO_HOSTS` only (`HTTP_KOBO_HOSTS`)
+- [x] Offline config profile: email notifications off; dashboards on and pointed at the box (`DASH_KOBO_HOSTS`; kobo-dash's half still to do, W9)
+- [x] Tool profiles: register only a named set of tools, to shorten the prompt for small models (`TOOL_PROFILES`)
+- [x] Recommended OpenCode `permission` config: deny the delete tools, ask before writes (`remote/agents/opencode.json`; MCP permission keys to verify in W4)
 
 ### W4. Agents on the rig (~1–2 weeks, after W1 + W3)
 - [ ] `agents` compose profile: OpenCode web (password, `autoupdate: false`, explicit provider and model), kobo-mcp, analysis sandbox image

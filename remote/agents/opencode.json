@@ -1,0 +1,58 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "autoupdate": false,
+  "mcp": {
+    "kobo": {
+      "type": "remote",
+      "url": "http://mcp.kobo.local/mcp",
+      "enabled": true,
+      "oauth": {}
+    }
+  },
+  "tools": {
+    "kobo_delete_submissions": false,
+    "kobo_delete_project": false,
+    "kobo_delete_dashboard": false
+  },
+  "permission": {
+    "kobo_*": "ask",
+    "kobo_compare_form_versions": "allow",
+    "kobo_convert_xlsform": "allow",
+    "kobo_describe_dashboard_sources": "allow",
+    "kobo_describe_form": "allow",
+    "kobo_export_data": "allow",
+    "kobo_find_duplicates": "allow",
+    "kobo_get_attachment": "allow",
+    "kobo_get_dashboard": "allow",
+    "kobo_get_dashboard_data": "allow",
+    "kobo_get_email_notification": "allow",
+    "kobo_get_enketo_link": "allow",
+    "kobo_get_form_content": "allow",
+    "kobo_get_hook_logs": "allow",
+    "kobo_get_narrative_context": "allow",
+    "kobo_get_project": "allow",
+    "kobo_get_project_activity": "allow",
+    "kobo_get_submission": "allow",
+    "kobo_get_submission_count": "allow",
+    "kobo_get_submission_stats": "allow",
+    "kobo_get_submissions": "allow",
+    "kobo_get_xlsform": "allow",
+    "kobo_list_attachments": "allow",
+    "kobo_list_dashboard_revisions": "allow",
+    "kobo_list_dashboard_tables": "allow",
+    "kobo_list_dashboards": "allow",
+    "kobo_list_evidence": "allow",
+    "kobo_list_exports": "allow",
+    "kobo_list_form_media": "allow",
+    "kobo_list_hooks": "allow",
+    "kobo_list_permissions": "allow",
+    "kobo_list_projects": "allow",
+    "kobo_preview_dataset": "allow",
+    "kobo_preview_email_notification": "allow",
+    "kobo_preview_form": "allow",
+    "kobo_summarize_submissions": "allow",
+    "kobo_whoami": "allow",
+    "webfetch": "deny",
+    "websearch": "deny"
+  }
+}
