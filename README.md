@@ -24,6 +24,7 @@ remote/
   ai.sh up gpu|cpu      start llama.cpp + whisper.cpp on the kobo-docker network
   docker-compose.ai.yml
   smoke-test.py         transcription / translation / qual benchmark using KPI's prompts
+  eval/fleurs-*.tsv     reference clips (transcript + English) fetched by bootstrap.sh
   results/              JSON per run, for comparing tiers
 ```
 
@@ -90,6 +91,15 @@ field-laptop estimate, add roughly 20–40W for the rest of the system over the 
   needs adapting for that model.
 - **Translation** covers fr/es/sw/pt sample sentences. Replace them with your target
   languages and have a speaker judge the results.
+- **Scored clips.** Clips listed in `eval/*.tsv` get a word error rate (WER) against
+  the reference transcript, and a chrF score (0–100) for the English translation,
+  both from the reference text (`mt_chrf`, translation alone) and from Whisper's
+  output (`pipeline_chrf`, what KPI would produce). `eval/fleurs-es_419.tsv` has 16
+  [FLEURS](https://huggingface.co/datasets/google/fleurs) Spanish clips on health,
+  water, food, disasters and children, 8 female and 8 male speakers. Add a language
+  by adding `eval/fleurs-<config>.tsv` with the same columns. FLEURS is clean read
+  speech, so treat these scores as a best case; numbers written as digits vs words
+  also count as WER errors.
 - **Thinking mode** is off by default (`LLM_THINKING=false`). With it on, Gemma 4
   spends 200–500 hidden tokens per call; with `--reasoning-budget 0` instead, the
   reasoning leaks into the answer and every qual case is a `PARSE FAIL`.

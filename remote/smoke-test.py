@@ -8,6 +8,9 @@ Checks:
   * whether outbound internet is reachable (should FAIL once ./offline.sh on)
   * whisper transcription of every clip in --audio-dir, with real-time factor
   * LLM translation of a few sample sentences
+  * for clips listed in eval/*.tsv (e.g. FLEURS): word error rate against the
+    reference transcript, and chrF of the English translation, both from the
+    reference text (MT only) and from whisper's output (the full KPI pipeline)
   * LLM qual analysis using KPI's own prompt templates and response parsers
     (kobo/apps/subsequences/prompts.py on kpi main), so a pass here means KPI
     would accept the answer
@@ -24,8 +27,10 @@ import shutil
 import socket
 import subprocess
 import time
+import unicodedata
 import urllib.request
 import uuid
+from collections import Counter
 from datetime import datetime
 from pathlib import Path
 
@@ -136,6 +141,59 @@ TRANSLATIONS = [
 ]
 
 
+def load_references():
+    """{clip file name: manifest row} from every eval/*.tsv next to this script."""
+    refs = {}
+    for manifest in sorted((HERE / 'eval').glob('*.tsv')):
+        header, *rows = manifest.read_text(encoding='utf-8').splitlines()
+        cols = header.split('\t')
+        for line in rows:
+            row = dict(zip(cols, line.split('\t')))
+            refs[row['file']] = row
+    return refs
+
+
+def words(text):
+    """Lowercase, punctuation and symbols removed. Digits are kept as written, so
+    '6000' vs 'seis mil' still counts as an error."""
+    text = unicodedata.normalize('NFC', text).lower()
+    return ''.join(' ' if unicodedata.category(c)[0] in 'PS' else c for c in text).split()
+
+
+def wer(hyp, ref):
+    h, r = words(hyp), words(ref)
+    prev = list(range(len(h) + 1))
+    for i, rw in enumerate(r, 1):
+        cur = [i]
+        for j, hw in enumerate(h, 1):
+            cur.append(min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (rw != hw)))
+        prev = cur
+    return prev[-1] / max(len(r), 1)
+
+
+def chrf(hyp, ref, order=6, beta=2):
+    """Character n-gram F-score (0-100), as sacrebleu's default chrF."""
+    hyp, ref = (re.sub(r'\s+', '', s) for s in (hyp, ref))
+    precisions, recalls = [], []
+    for n in range(1, order + 1):
+        h = Counter(hyp[i:i + n] for i in range(len(hyp) - n + 1))
+        r = Counter(ref[i:i + n] for i in range(len(ref) - n + 1))
+        if not h or not r:
+            continue
+        match = sum((h & r).values())
+        precisions.append(match / sum(h.values()))
+        recalls.append(match / sum(r.values()))
+    if not precisions:
+        return 0.0
+    p, r = sum(precisions) / len(precisions), sum(recalls) / len(recalls)
+    return 100 * (1 + beta ** 2) * p * r / (beta ** 2 * p + r) if p + r else 0.0
+
+
+def mean(values):
+    values = [v for v in values if v is not None]
+    return round(sum(values) / len(values), 3) if values else None
+
+
 def post_json(url, payload, timeout=600):
     req = urllib.request.Request(
         url, json.dumps(payload).encode(), {'Content-Type': 'application/json'}
@@ -153,6 +211,14 @@ def chat(content, max_tokens=1000):
         'max_tokens': max_tokens,
     })
     return body['choices'][0]['message']['content'].strip(), secs, body.get('usage', {})
+
+
+def translate(lang, text):
+    out, secs, _ = chat(
+        f'Translate the following text from language code "{lang}" to English. '
+        f'Respond with the translation only.\n\n{text}'
+    )
+    return out, secs
 
 
 def post_multipart(url, fields, file_field, path, timeout=1800):
@@ -263,20 +329,28 @@ def main():
 
     section('Transcription (whisper)')
     results['transcription'] = []
+    refs = load_references()
     clips = sorted(p for p in Path(args.audio_dir).glob('*') if p.is_file())
     for clip in clips:
         dur = audio_duration(clip)
+        ref = refs.get(clip.name)
+        fields = {'response_format': 'json', 'temperature': '0'}
+        if ref:
+            # KPI knows the source language, so don't make whisper guess it
+            fields['language'] = ref['lang']
         try:
             body, secs = post_multipart(
-                f'{WHISPER}/v1/audio/transcriptions',
-                {'response_format': 'json', 'temperature': '0'}, 'file', clip,
+                f'{WHISPER}/v1/audio/transcriptions', fields, 'file', clip,
             )
             text = body.get('text', '').strip()
             rtf = dur / secs if dur else None
+            score = wer(text, ref['transcript']) if ref else None
             print(f'{clip.name}: {dur or 0:.0f}s audio in {secs:.1f}s '
-                  f'({rtf or 0:.1f}x real time)\n  {text[:200]}')
+                  f'({rtf or 0:.1f}x real time)'
+                  + (f'  WER {score:.0%}' if ref else '') + f'\n  {text[:200]}')
             results['transcription'].append(
-                {'clip': clip.name, 'audio_s': dur, 'secs': secs, 'x_realtime': rtf, 'text': text}
+                {'clip': clip.name, 'audio_s': dur, 'secs': secs, 'x_realtime': rtf, 'text': text,
+                 'wer': score}
             )
         except Exception as e:  # noqa
             print(f'{clip.name}: FAILED {e}')
@@ -285,12 +359,27 @@ def main():
     section('Translation (LLM)')
     results['translation'] = []
     for lang, src in TRANSLATIONS:
-        out, secs, usage = chat(
-            f'Translate the following text from language code "{lang}" to English. '
-            f'Respond with the translation only.\n\n{src}'
-        )
+        out, secs = translate(lang, src)
         print(f'[{lang}] {secs:.1f}s  {out}')
         results['translation'].append({'lang': lang, 'source': src, 'output': out, 'secs': secs})
+
+    transcribed = [t for t in results['transcription'] if t['clip'] in refs and 'text' in t]
+    if transcribed:
+        section('Translation of reference clips (chrF vs reference English)')
+        results['ref_translation'] = []
+        for t in transcribed:
+            ref = refs[t['clip']]
+            # MT alone (from the reference transcript), then the KPI pipeline
+            # (from whisper's transcript, so transcription errors carry through)
+            mt, mt_secs = translate(ref['lang'], ref['transcript'])
+            pipe, pipe_secs = translate(ref['lang'], t['text'])
+            mt_score, pipe_score = chrf(mt, ref['english']), chrf(pipe, ref['english'])
+            print(f"{t['clip']}: MT chrF {mt_score:.0f}, pipeline chrF {pipe_score:.0f}"
+                  f'  ({mt_secs:.1f}s + {pipe_secs:.1f}s)\n  {pipe[:200]}')
+            results['ref_translation'].append({
+                'clip': t['clip'], 'mt': mt, 'mt_chrf': mt_score, 'mt_secs': mt_secs,
+                'pipeline': pipe, 'pipeline_chrf': pipe_score, 'pipeline_secs': pipe_secs,
+            })
 
     section('Qual analysis (LLM, KPI prompts + parsers)')
     results['qual'] = []
@@ -340,11 +429,28 @@ def main():
                     ]}],
                 })
                 text = body['choices'][0]['message']['content'].strip()
-                print(f'{clip.name}: {secs:.1f}s\n  {text[:200]}')
-                results['gemma_audio'].append({'clip': clip.name, 'secs': secs, 'text': text})
+                ref = refs.get(clip.name)
+                # Only scored when the clip fits in the 30s cut
+                score = (wer(text, ref['transcript'])
+                         if ref and float(ref['seconds']) <= 30 else None)
+                print(f'{clip.name}: {secs:.1f}s'
+                      + (f'  WER {score:.0%}' if score is not None else '') + f'\n  {text[:200]}')
+                results['gemma_audio'].append(
+                    {'clip': clip.name, 'secs': secs, 'text': text, 'wer': score})
             except Exception as e:  # noqa
                 print(f'{clip.name}: FAILED {e}')
                 results['gemma_audio'].append({'clip': clip.name, 'error': str(e)})
+
+    if transcribed:
+        scores = {
+            'whisper_wer': mean(t.get('wer') for t in results['transcription']),
+            'gemma_audio_wer': mean(t.get('wer') for t in results.get('gemma_audio', [])),
+            'mt_chrf': mean(t['mt_chrf'] for t in results.get('ref_translation', [])),
+            'pipeline_chrf': mean(t['pipeline_chrf'] for t in results.get('ref_translation', [])),
+        }
+        results['scores'] = scores
+        section('Scores on reference clips (mean)')
+        print('  '.join(f'{k}: {v}' for k, v in scores.items()))
 
     results['gpu_power'] = sampler.stop()
     results['gpu_after'] = gpu_stats()
