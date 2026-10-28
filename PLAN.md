@@ -190,7 +190,9 @@ downloaded the KoboCollect APK from the laptop. This makes it part of the build.
 - **Manifest-driven content** (`remote/library/manifest.tsv`): id, section, version, URL,
   SHA-256. `library.sh fetch` downloads and verifies; sources without published checksums
   (QGIS) are pinned from the first download. `library.sh docs` builds the Kobo user guide
-  from `kobotoolbox/docs` (Sphinx; en, es, fr) with the Google Analytics tag removed.
+  from `kobotoolbox/docs` (Sphinx; en, es, fr) for offline use: the Google Analytics tag
+  removed, Google Fonts downloaded and served locally, and absolute `support.kobotoolbox.org`
+  links pointed at the local copy.
   `render.py` writes the landing page. `library.sh check` fails if any page would load an
   external script, stylesheet, font or image.
 - **First set (~4 GB):** KoboCollect; QField (arm64 + 32-bit), the field app for QGIS
@@ -298,7 +300,8 @@ Current status and next steps: [STATUS.md](STATUS.md).
 ### W8. Offline library and edge proxy (~1–2 weeks; see 3g)
 - [x] `remote/library/`: manifest (Collect, QField, QGIS LTR, LibreOffice, QGIS docs), `library.sh` fetch/docs/render/check, edge nginx compose
 - [x] `kobo-setup.py`: kobo-install proxy mode (Kobo nginx on 8080); `--reconfigure` for existing installs
-- [ ] On the droplet: `library.sh build`, pin the QGIS checksums it prints, `kobo-setup.py --reconfigure`, `library.sh up`
+- [x] Tested locally (Docker): edge routing by Host, 60 MB upload through the proxy, range requests, APK MIME type, dotfiles blocked; Kobo guide + QGIS docs build, pass `check`, and crawl clean apart from upstream's own broken links
+- [ ] On the droplet: `library.sh build`, pin the QGIS checksums it prints (installers, es/fr docs), `kobo-setup.py --reconfigure`, `library.sh up`
 - [ ] Check through the edge: Kobo login, form deploy, Enketo, KoboCollect submission with media; library downloads resume (range requests)
 - [ ] `offline.sh on`, then `library.sh check` and load every guide with outbound blocked
 - [ ] Wi-Fi hotspot + dnsmasq for `kobo.local`/`*.kobo.local` (physical box or a spare laptop with a USB Wi-Fi dongle); install the APKs on a real Android phone over HTTP

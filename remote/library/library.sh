@@ -32,7 +32,8 @@ fetch() {
     docker pull -q "$EDGE_IMAGE" >/dev/null
     mkdir -p "$LIBRARY_DIR/.sums"
     local unpinned=0
-    while IFS=$'\t' read -r id section kind name version file url sha notes; do
+    # Rows come in on fd 3 so nothing in the loop can read them from stdin
+    while IFS=$'\t' read -r -u 3 id section kind name version file url sha notes; do
         local rel="files/$section/$file" dest="$LIBRARY_DIR/files/$section/$file"
         mkdir -p "$(dirname "$dest")"
         if [[ -s "$dest" ]]; then
@@ -61,11 +62,13 @@ fetch() {
             if [[ "$(cat "$site/.source-sha256" 2>/dev/null)" != "$actual" ]]; then
                 echo "  unpacking into docs/$id/"
                 rm -rf "$site"; mkdir -p "$site"
-                unzip -q "$dest" -d "$site"
+                # -o: never prompt (paths that differ only in case collide on macOS).
+                # Sphinx's build cache is never served.
+                unzip -q -o "$dest" -d "$site" -x '*/.doctrees/*' '*/.buildinfo*' < /dev/null
                 echo "$actual" > "$site/.source-sha256"
             fi
         fi
-    done < <(manifest "$@")
+    done 3< <(manifest "$@")
     # Rebuilt from the whole manifest, so a partial fetch keeps the other entries
     manifest | cut -f1 | while read -r id; do
         cat "$LIBRARY_DIR/.sums/$id" 2>/dev/null || true
@@ -87,11 +90,38 @@ docs() {
     docker run --rm -v "$src:/docs" -w /docs -e LOCALES="$KOBO_DOCS_LOCALES" "$DOCS_IMAGE" sh -ec '
         pip install -q --root-user-action=ignore -r requirements.txt
         opts="-q -b html -D html_theme_options.analytics_id="
-        sphinx-build $opts source _build/html
-        for lang in $LOCALES; do sphinx-build $opts "locales/$lang" "_build/html/$lang"; done'
+        sphinx-build $opts -d _build/doctrees source _build/html
+        for lang in $LOCALES; do
+            sphinx-build $opts -d "_build/doctrees/$lang" "locales/$lang" "_build/html/$lang"
+        done'
     rm -rf "$out"; mkdir -p "$(dirname "$out")"
     cp -a "$src/_build/html" "$out"
+    vendor_fonts "$out"
+    # Pages link to each other by absolute support.kobotoolbox.org URLs; point
+    # those at the local copy so they work offline
+    find "$out" -name '*.html' -exec sed -i.bak -E \
+        's#(href|content)="https://support\.kobotoolbox\.org/?#\1="/docs/kobo/#g' {} +
+    find "$out" -name '*.html.bak' -delete
     echo "$commit" > "$out/.source-commit"
+}
+
+vendor_fonts() {  # vendor_fonts <site dir>: swap Google Fonts @imports for local copies
+    local css url dir
+    while IFS= read -r css; do
+        url=$(grep -oE 'https://fonts\.googleapis\.com/[^")'"'"' ]+' "$css" | head -1)
+        dir="$(dirname "$css")/fonts"
+        mkdir -p "$dir"
+        echo "  vendoring fonts for ${css#"$LIBRARY_DIR/"}"
+        # A current browser User-Agent gets woff2 files
+        curl -fsS -A 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36' \
+            "$url" > "$dir/google-fonts.css"
+        grep -oE 'https://fonts\.gstatic\.com/[^)]+' "$dir/google-fonts.css" | sort -u | while read -r font; do
+            curl -fsS -o "$dir/$(basename "$font")" "$font"
+        done
+        sed -i.bak -E 's#https://fonts\.gstatic\.com/[^)]*/([^/)]+)#\1#g' "$dir/google-fonts.css"
+        sed -i.bak "s#$url#fonts/google-fonts.css#" "$css"
+        rm -f "$dir"/*.bak "$css.bak"
+    done < <(grep -rlE --include='*.css' '@import url\("?https://fonts\.googleapis\.com' "$1")
 }
 
 check() {
@@ -101,6 +131,7 @@ check() {
     hits=$(grep -rhoE --include='*.html' --include='*.css' \
         '(<script[^>]+src|<link[^>]+href|<img[^>]+src|@import|url\()[^>]{0,20}https?://[^"'"'"' )>]+' \
         "$LIBRARY_DIR/docs" "$LIBRARY_DIR/index.html" 2>/dev/null \
+        | grep -vE 'rel="(canonical|alternate)"' \
         | grep -oE 'https?://[^/"'"'"' )>]+' | sort | uniq -c | sort -rn || true)
     if [[ -z "$hits" ]]; then
         echo "OK: no external assets"
