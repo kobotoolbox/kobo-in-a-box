@@ -19,8 +19,13 @@ cloud services.
 and a portable power supply that together run the full KoboToolbox platform with **no
 internet at all**. Enumerators' phones and tablets connect to the box's own Wi-Fi to
 download forms, submit data and install the apps they need. Supervisors design forms,
-monitor submissions, clean data and export results on site. When a connection becomes
-available, the data can be synced to a KoboToolbox server in the cloud.
+monitor submissions, clean data and export results on site.
+
+Kits work alone or together. A single kit can run a whole project and never connect to
+anything. Several kits at different sites can feed one **hub kit** at a base, which
+combines their data for analysis and reporting, still with no internet. And whenever
+a connection is available, a kit or hub can sync its data to a KoboToolbox server in the
+cloud. Each organisation decides, project by project, how far its data travels.
 
 The new generation of the kit adds three things:
 
@@ -118,10 +123,46 @@ submissions, view maps and reports, and export to Excel, CSV or GIS formats.
 QGIS and QField for mapping, LibreOffice for editing forms and opening exports, and
 more as each deployment needs.
 
-**Afterwards**, data can be synced to a cloud KoboToolbox server (for example
-KoboToolbox's global or EU servers, or an organisation's private server) once a
-connection is available, so the offline deployment joins the organisation's normal
-data management.
+### Three ways to run it: alone, as a network, or connected
+
+```
+  Site A kit ──┐
+  Site B kit ──┼── (at base, over a cable or local Wi-Fi) ──▶  Hub kit  ──(when online)──▶  KoboToolbox
+  Site C kit ──┘                                            analysis,                     cloud server
+                                                            reports                       (optional)
+```
+
+1. **Standalone.** One kit runs a project from start to finish: data collection,
+   cleaning, AI processing, analysis and reports. Nothing ever leaves the device. This
+   suits short assessments and the most sensitive data.
+2. **Networked (federated).** Several kits run at different sites with the same forms.
+   When a kit comes back to base (or is connected by cable or a local link), its new
+   submissions are copied to a hub kit. The hub holds the combined dataset from all sites,
+   and its AI assistant analyses and reports across them, still fully offline. Field kits
+   can be the cheaper budget tier; only the hub needs the recommended hardware.
+3. **Connected.** When any connection is available (even briefly, or over satellite), a
+   kit or the hub syncs to a cloud KoboToolbox server: KoboToolbox's Global or EU servers,
+   or the organisation's own private server. The offline deployment then joins the
+   organisation's normal data management.
+
+Organisations can mix these: for example, keep a protection project standalone while a
+needs assessment syncs to the cloud every time the hub gets a connection.
+
+**How syncing works.** Syncing uses **kobo-transfer**, Kobo's open-source tool for copying
+projects and submissions between KoboToolbox servers. It already handles what field
+syncing needs:
+- **Safe to repeat.** Every submission keeps its original unique ID, so syncing again
+  only sends new submissions. Nothing is duplicated, even when data from many kits ends
+  up in one project.
+- **Complete.** Photos, audio and other attachments, validation statuses, and the
+  results of analysis (transcripts, translations, qualitative coding) travel with the
+  data, so AI processing done offline is not lost.
+- **Robust on poor links.** Large projects are sent in batches, and failed submissions
+  can be retried on their own.
+- **One direction.** Data flows from field kits to the hub to the cloud. Forms are
+  deployed identically on every kit before the mission, and each kit marks its
+  submissions with its own site identifier, so the combined data shows where each
+  record came from.
 
 ### Design principles
 
@@ -150,7 +191,8 @@ data management.
 - **Prototype (v0.1).** A second-hand ThinkPad laptop (8 GB of memory), a donated
   Wi-Fi router, a 155 Wh power station and a hard-shell case. It ran KoboToolbox fully
   offline over the local Wi-Fi, with custom branding, scripts to create user accounts,
-  and tested sync of collected data to a cloud server afterwards.
+  and a tested sync of the collected data to a cloud KoboToolbox server afterwards
+  with kobo-transfer.
 - **Hurricane Melissa response, Jamaica.** As part of Kobo's response, the offline setup
   was used in the field: KoboToolbox running on a laptop, a USB Wi-Fi adapter in place of
   a separate router, and staff downloading the KoboCollect app straight from the laptop
@@ -198,6 +240,9 @@ contexts where it matters most.
   can be transcribed and translated overnight. Today, many organisations limit
   qualitative work because manual transcription and translation cost too much and take
   too long.
+- **Many sites, one picture.** With a hub kit, coordinators see combined data from every
+  site as teams rotate back to base, and can compare districts, spot gaps and adjust
+  plans across the whole operation without a connection.
 - **Setup time.** Phones and laptops can be set up entirely from the box: apps,
   KoboCollect project settings and guides, with no app store or internet needed.
 
@@ -216,6 +261,10 @@ risk to a single physical device. Both sides need managing.
   weeks.
 - **No exposure on monitored networks.** Data doesn't cross local or national networks
   that may be monitored, and the kit keeps working through internet shutdowns.
+- **Control over where data goes.** Syncing is a deliberate choice for each project,
+  not a default: some projects can stay on the kits for good, others go only as far as
+  the hub, others on to a named cloud server. Syncing uses a dedicated account with
+  access only to the projects being sent.
 - **Data sovereignty.** Data can stay in-country, under the organisation's and
   community's control, which helps where national rules restrict sending personal data
   abroad or to cloud providers.
@@ -308,6 +357,9 @@ control, retention limits, and a data-sharing plan for when data moves to the cl
     assistant): about **$800–1,200**.
   - Plus power station, solar panel, Wi-Fi equipment and case. These will be costed from
     pilot power measurements.
+- **Field kits and hubs can differ.** In a networked deployment, only the hub needs the
+  recommended hardware for AI assistants. Field kits can be the budget tier, which still
+  runs KoboToolbox and overnight transcription and translation.
 - **Kits can be reused** across deployments and organisations, and refurbished between
   uses.
 - **No proprietary licences.** Every software component is open source. Our changes to
@@ -320,8 +372,13 @@ Being clear about limits is part of using the kit responsibly:
 
 - It does **not replace connectivity for coordination**: emails, cluster reporting and
   calls with headquarters still need a connection, even an occasional one.
-- It serves **one site at a time**. Teams spread across several locations need several
-  kits, or a routine of returning to base to sync.
+- Each kit serves **one site at a time**, over its own Wi-Fi. Combining sites needs a
+  kit to come back to base or a physical link (cable, local radio link) to the hub;
+  sites with no link at all are combined when the kit is carried back.
+- **Syncing is one-way, for new data.** Edits made on a field kit after its data has
+  already reached the hub or the cloud may not be carried across automatically. This is
+  being tested; the likely practice is to clean data in one place (the hub) or sync
+  once cleaning is finished.
 - **KoboCollect runs on Android.** Staff with iPhones or laptops can still collect data
   through web forms in the browser.
 - **AI quality in many languages is not yet proven**, and real field recordings (noise,
@@ -347,6 +404,14 @@ local language with consent. Overnight, the kit transcribes and translates them.
 morning, a protection officer reviews the translations alongside AI-suggested themes
 (safety concerns, access to services), corrects them, and flags urgent cases. No
 recording leaves the camp, and nothing passes through a third-party service.
+
+**Multi-district assessment with a hub.** Four teams cover four districts, each with a
+budget kit, and rotate back to a field base every few days. At the base, each kit is
+plugged into the hub, and its new submissions, photos and transcribed interviews are
+copied across in minutes. The hub's AI assistant produces a weekly cross-district
+summary for the coordination meeting. Once a week, when the base gets a satellite
+window, the hub syncs everything to the organisation's KoboToolbox server, so
+headquarters sees the same data.
 
 **Remote health facility survey.** A ministry and NGO team visits clinics across a
 mountainous region over three weeks with no connectivity. The kit travels with the
@@ -384,6 +449,7 @@ confirm speed, power draw and heat before buying pilot kits.
 | **AI processing in KoboToolbox** | Qualitative analysis on local AI: working end to end. Translation and transcription: in progress | 2–4 weeks of development |
 | **AI assistant** | Assistant connected to KoboToolbox data, with safety limits on what it can change | 2–3 weeks after the above |
 | **Hardware** | Buy and test one recommended unit; measure speed, power and heat | Next |
+| **Multi-site sync** | Kit-to-hub and hub-to-cloud syncing with kobo-transfer, automated and shown on the kit's status page; identical forms on every kit | Sync to a cloud server tested on the prototype; hub workflow to build and test |
 | **Packaging** | One-USB installation; per-kit passwords and keys; health check page; quick-start guide | 2–4 weeks |
 | **Field pilot** | One partner organisation, 3–6 languages, real conditions | After the above |
 | **Scale-up** | Kits available to partners; changes merged into the main KoboToolbox product | After the pilot |
@@ -396,7 +462,8 @@ confirm speed, power draw and heat before buying pilot kits.
 - **Languages:** 3–6 languages chosen with the partner. For each, 5–10 practice
   interviews recorded on field phones through KoboCollect let us measure transcription
   and translation quality before the pilot starts.
-- **What we will measure:** setup time; uptime; power use and battery life; temperatures;
+- **What we will measure:** setup time; uptime; how long syncing takes (kit to hub, and
+  over the available connection to the cloud); power use and battery life; temperatures;
   how many enumerators and staff one box supports; transcription and translation
   accuracy per language; time saved compared with manual transcription and translation;
   field staff experience; and any data protection incidents.
@@ -458,7 +525,8 @@ those using a kit.
          │  Encrypted disk · no internet required             │
          └────────────────────────────────────────────────────┘
                  │
-         Sync to a cloud KoboToolbox server when online (optional)
+         Optional: sync to a hub kit at base, and/or
+         to a cloud KoboToolbox server when online
 ```
 
 - **KoboToolbox:** the standard open-source release, installed with KoboToolbox's own
@@ -471,6 +539,10 @@ those using a kit.
 - **AI assistant:** OpenCode (open source), connected to KoboToolbox through Kobo's MCP
   server (a standard way for AI assistants to use tools) with the logged-in user's
   permissions. Deleting data is blocked, and changes need confirmation.
+- **Sync:** kobo-transfer (open source, by Kobo), preinstalled on every kit. It copies new
+  submissions, attachments, validation statuses and analysis results between KoboToolbox
+  servers, one project at a time, keeping each submission's unique ID so repeat runs
+  don't create duplicates.
 - **Offline library:** a list of each app and guide, its exact version and its digital
   fingerprint, used to download and check everything before deployment. Pages are
   checked automatically to make sure nothing tries to load from the internet.
@@ -494,4 +566,7 @@ those using a kit.
 | **Word error rate** | Share of words a transcription gets wrong; lower is better |
 | **Full-disk encryption** | Everything on the computer's storage is unreadable without the key |
 | **TPM** | A security chip in the computer that holds the disk encryption key |
-| **Sync** | Copying data from the kit to a cloud server once a connection is available |
+| **Sync** | Copying new data from one KoboToolbox server to another: from a field kit to a hub, or to a cloud server once a connection is available |
+| **Hub kit** | A kit at a base location that combines data from several field kits for analysis and reporting |
+| **Federated** | Several independent kits that each work on their own and share data with a hub when they can |
+| **kobo-transfer** | Kobo's open-source tool for copying projects and submissions between KoboToolbox servers |
