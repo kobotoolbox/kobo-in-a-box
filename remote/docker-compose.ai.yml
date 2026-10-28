@@ -35,7 +35,7 @@ services:
     command: >-
       -m /models/${LLM_MODEL} ${LLM_MMPROJ:+--mmproj /models/${LLM_MMPROJ}}
       --host 0.0.0.0 --port 8080 -c ${LLM_CTX} -ngl ${LLM_NGL} -t ${LLM_THREADS}
-      --metrics
+      --chat-template-kwargs '{"enable_thinking":${LLM_THINKING:-true}}' --metrics
 
   whisper-gpu:
     <<: [*limits, *gpu]
@@ -62,7 +62,7 @@ services:
     command: >-
       -m /models/${LLM_MODEL} ${LLM_MMPROJ:+--mmproj /models/${LLM_MMPROJ}}
       --host 0.0.0.0 --port 8080 -c ${LLM_CTX} -t ${LLM_THREADS}
-      --metrics
+      --chat-template-kwargs '{"enable_thinking":${LLM_THINKING:-true}}' --metrics
 
   whisper-cpu:
     <<: *limits

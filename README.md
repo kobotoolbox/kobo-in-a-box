@@ -19,7 +19,8 @@ offline.sh on|off   block/restore all outbound traffic (simulated field conditio
 park.sh             snapshot + destroy (powered-off droplets are still billed)
 remote/
   bootstrap.sh          on droplet: Docker, NVIDIA toolkit, kobo-install, images, weights
-  ai.env                which models, GPU layers, threads, memory caps
+  kobo-setup.py         on droplet: kobo-install answered for a field laptop (HTTP, kobo.local)
+  ai.env                which models, thinking on/off, GPU layers, threads, memory caps
   ai.sh up gpu|cpu      start llama.cpp + whisper.cpp on the kobo-docker network
   docker-compose.ai.yml
   smoke-test.py         transcription / translation / qual benchmark using KPI's prompts
@@ -33,13 +34,15 @@ remote/
 ./provision.sh
 ssh root@<ip> 'bash /root/kobo-box-ai/bootstrap.sh'      # ~25GB of downloads
 
-# 2. Install Kobo like on the laptop (interactive)
-ssh root@<ip>
-cd /root/kobo-install && python3 run.py
-#   Answer the same way as on the v0.1 laptop (HTTP, same hostnames), but use the
-#   droplet's public IP. Then point those hostnames at the droplet IP in /etc/hosts
-#   on your machine/phone (the field router's local DNS does this on the laptop).
-#   Use the current release so you get the new subsequences code (see below)
+# 2. Install Kobo like on the laptop (non-interactive, ~15 min)
+ssh root@<ip> 'python3 -I /root/kobo-box-ai/kobo-setup.py'
+#   Production mode over plain HTTP on port 80, with kf/kc/ee.kobo.local mapped to
+#   the droplet IP inside the containers. Prints the super_admin password at the end
+#   (also in /root/kobo-install/.run.conf). Then point those hostnames at the droplet
+#   IP in /etc/hosts on your machine/phone (the field router's local DNS does this
+#   on the laptop):
+#     <ip>  kf.kobo.local kc.kobo.local ee.kobo.local
+#   Afterwards manage it with run.py as usual (--stop, --logs, --setup)
 
 # 3. Start inference and test while online
 cd /root/kobo-box-ai && ./ai.sh up gpu
@@ -87,6 +90,9 @@ field-laptop estimate, add roughly 20–40W for the rest of the system over the 
   needs adapting for that model.
 - **Translation** covers fr/es/sw/pt sample sentences. Replace them with your target
   languages and have a speaker judge the results.
+- **Thinking mode** is off by default (`LLM_THINKING=false`). With it on, Gemma 4
+  spends 200–500 hidden tokens per call; with `--reasoning-budget 0` instead, the
+  reasoning leaks into the answer and every qual case is a `PARSE FAIL`.
 - **Gemma audio** runs only if `LLM_MMPROJ` is set. It tests Gemma as the
   transcription model (clips are capped at 30s), compared with Whisper.
 

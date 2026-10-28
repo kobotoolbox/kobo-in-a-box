@@ -1,0 +1,101 @@
+{
+  "started": "2026-10-28T10:22:43",
+  "llm_model": "gemma-4-E4B-it-Q4_0.gguf",
+  "egress": "ONLINE",
+  "transcription": [
+    {
+      "clip": "jfk.wav",
+      "audio_s": 11.0,
+      "secs": 23.077561479999986,
+      "x_realtime": 0.4766534804612297,
+      "text": "And so, my fellow Americans, ask not what your country can do for you, ask what you can do for your country."
+    }
+  ],
+  "translation": [
+    {
+      "lang": "fr",
+      "source": "Nous avons besoin d'eau potable et de médicaments pour les enfants.",
+      "output": "We need drinking water and medicine for the children.",
+      "secs": 17.056390556999986
+    },
+    {
+      "lang": "es",
+      "source": "La carretera está bloqueada desde las inundaciones de la semana pasada.",
+      "output": "The road has been blocked since last week's floods.",
+      "secs": 2.04317517100003
+    },
+    {
+      "lang": "sw",
+      "source": "Tunahitaji msaada wa chakula kwa sababu mavuno yameharibika.",
+      "output": "We need food aid because the harvest has been destroyed.",
+      "secs": 21.820543971000006
+    },
+    {
+      "lang": "pt",
+      "source": "A clínica mais próxima fica a três horas de caminhada.",
+      "output": "The nearest clinic is a three-hour walk away.",
+      "secs": 1.8954923649999955
+    }
+  ],
+  "qual": [
+    {
+      "type": "qualSelectOne",
+      "raw": "FALSE,TRUE,FALSE,FALSE",
+      "value": [
+        1
+      ],
+      "status": "CORRECT",
+      "secs": 47.688290111000015,
+      "usage": {
+        "completion_tokens": 494,
+        "prompt_tokens": 374,
+        "total_tokens": 868,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      }
+    },
+    {
+      "type": "qualSelectMultiple",
+      "raw": "TRUE,FALSE,TRUE,FALSE",
+      "value": [
+        0,
+        2
+      ],
+      "status": "CORRECT",
+      "secs": 47.94354542200006,
+      "usage": {
+        "completion_tokens": 500,
+        "prompt_tokens": 343,
+        "total_tokens": 843,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      }
+    },
+    {
+      "type": "qualInteger",
+      "raw": "5",
+      "value": 5,
+      "status": "CORRECT",
+      "secs": 19.262026540999955,
+      "usage": {
+        "completion_tokens": 171,
+        "prompt_tokens": 231,
+        "total_tokens": 402,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      }
+    }
+  ],
+  "gemma_audio": [
+    {
+      "clip": "jfk.wav",
+      "secs": 10.22230726600003,
+      "text": "And so my fellow Americans ask not what your country can do for you ask what you can do for your country."
+    }
+  ],
+  "gpu_power": null,
+  "gpu_after": null
+}
