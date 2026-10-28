@@ -25,7 +25,17 @@ case "${1:-}" in
         compose down --remove-orphans
         docker compose -p kobo-ai -f docker-compose.ai.yml --profile "$profile" up -d
         echo "Network: $KOBO_NETWORK. Waiting for LLM to load..."
-        until curl -fsS localhost:8081/health >/dev/null 2>&1; do sleep 3; done
+        # Large models can take a few minutes to load; give up after 10 so a crashed
+        # container doesn't hang here.
+        for _ in $(seq 200); do
+            curl -fsS localhost:8081/health >/dev/null 2>&1 && break
+            sleep 3
+        done
+        curl -fsS localhost:8081/health >/dev/null 2>&1 || {
+            echo "LLM not healthy after 10 min. Recent logs:" >&2
+            compose logs --tail 30 "llm-$profile" >&2
+            exit 1
+        }
         echo "LLM ready ($LLM_MODEL); whisper on :8082 ($WHISPER_MODEL)"
         ;;
     down) compose down --remove-orphans ;;

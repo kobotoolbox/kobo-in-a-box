@@ -28,7 +28,7 @@ if $HAS_GPU && ! command -v nvidia-ctk >/dev/null; then
     nvidia-ctk runtime configure --runtime=docker
     systemctl restart docker
 fi
-apt-get install -y git python3 jq ffmpeg
+apt-get update && apt-get install -y git python3 jq ffmpeg
 
 # --- kobo-install (run interactively afterwards, see README) ---------------
 if [[ ! -d /root/kobo-install ]]; then
