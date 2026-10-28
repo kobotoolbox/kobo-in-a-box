@@ -47,7 +47,8 @@ After restoring a snapshot the droplet has a new IP: run
       FLEURS Spanish clip through an OpenRosa audio submission: 0% WER (online only).
 - [x] Whole `kobo/apps/subsequences/` suite on kpi `main` + the three commits: 425 passed
       (`testing`), 414 passed (`testing_no_stripe`), no failures
-- [ ] E2E offline for translation and transcription (needs `offline.sh`, coordinate first)
+- [x] E2E offline (2026-10-28, restored snapshot): with egress confirmed blocked, qual 3/3,
+      translation via Celery and transcription (0% WER) all pass, same as online
 - [ ] Build a kpi image from the branch and run it instead of the backport
 - [ ] Seed language tables for the pilot languages
 - [ ] Deploy the branch to the CPU droplet and test through the UI while offline
@@ -87,9 +88,11 @@ Testing W2 on the CPU droplet (state kept in the snapshot):
 - **E2E:** `remote/e2e-nlp.py` covers qual, translation and transcription. Run it as
   `e2e`, a regular user, password in `/root/e2e-user.pw`.
 - **Firewall:** this network's outgoing IP rotates (several changes on 2026-10-28).
-  When SSH times out, compare `curl ifconfig.me` with the firewall's inbound rules and
+  When SSH times out, compare `curl -4 ifconfig.me` with the firewall's inbound rules and
   add the new IP with `doctl compute firewall add-rules` (don't replace the list: the
-  other agent's IPs are in it too).
+  other agent's IPs are in it too). On a mobile connection (carrier NAT, e.g.
+  `92.184.112.x`) the address can change within minutes; allowing SSH only from that
+  /24 for the session works, and the next `provision.sh` resets the rules anyway.
 
 ### 3. W3: kobo-mcp offline profile (2–3 days, parallel with W2)
 - [ ] Clone kobo-mcp
