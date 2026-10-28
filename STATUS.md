@@ -13,18 +13,20 @@ are in [PLAN.md](PLAN.md); per-run results are in [remote/results/NOTES.md](remo
   - Qual analysis passes KPI's parser 3/3 *only with thinking off* (`LLM_THINKING=false`).
     `--reasoning-budget 0` leaks reasoning into the answer and fails every case.
   - Translation ~2 s and qual 6–11 s per call: usable for KPI's AI features.
-  - Whisper ~0.5× real time; medium is barely faster. CPU-only is too slow for transcription.
+  - Whisper ~2% WER on FLEURS Spanish. Speed is ~13–15 s per 30 s window with the language
+    set (~2× real time on long audio); auto-detect doubles that on short clips. Usable
+    for overnight batches on CPU, slow for interactive use.
   - Prompt processing ~31 tokens/s: CPU-only can't run agents (10–20k-token prompts).
 
 ## Next steps
 
-### 1. Spanish benchmark (W1, ~30 min, ~$0.15)
-- [ ] `provision.sh` copies `remote/` into the existing dir on snapshot restore
-- [ ] `park.sh` pulls `results/` down before the snapshot
-- [ ] Restore: `SIZE=s-8vcpu-32gb-amd ./provision.sh --from-snapshot`
-- [ ] `bootstrap.sh` again (fetches the 16 FLEURS clips only)
-- [ ] `smoke-test.py` online, then after `./offline.sh on`; confirm whisper-server accepts `language`
-- [ ] Record WER / chrF in `remote/results/NOTES.md`, then `./park.sh`
+### 1. Spanish benchmark (W1) ✅ done 2026-10-28
+Whisper and Gemma audio ~2% WER on FLEURS Spanish; translation correct (chrF ~59, see
+[NOTES](remote/results/NOTES.md) for why that's not low); whisper ~13–15 s per 30 s window
+with `language` set. All passes offline.
+
+After restoring a snapshot the droplet has a new IP: run
+`cd /root/kobo-install && python3 run.py` once so Kobo's hostnames follow it.
 
 ### 2. W2: KPI local NLP backend (2–4 weeks)
 - [ ] Clone `kobotoolbox/kpi` (`main`) to `~/code/kpi`; branch `local-nlp-backend`

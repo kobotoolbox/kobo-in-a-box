@@ -60,6 +60,7 @@ ssh root@<ip> 'cd /root/kobo-box-ai && python3 -I smoke-test.py'
 ./park.sh
 # later: set REGION in config.env to the snapshot's region, then
 ./provision.sh --from-snapshot
+ssh root@<new-ip> 'cd /root/kobo-install && python3 run.py'   # Kobo follows the new IP
 ```
 
 Add real test clips (any format ffmpeg reads) to `/opt/models/audio/` on the droplet.
