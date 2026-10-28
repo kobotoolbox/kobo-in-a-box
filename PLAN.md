@@ -301,8 +301,8 @@ Current status and next steps: [STATUS.md](STATUS.md).
 - [x] `remote/library/`: manifest (Collect, QField, QGIS LTR, LibreOffice, QGIS docs), `library.sh` fetch/docs/render/check, edge nginx compose
 - [x] `kobo-setup.py`: kobo-install proxy mode (Kobo nginx on 8080); `--reconfigure` for existing installs
 - [x] Tested locally (Docker): edge routing by Host, 60 MB upload through the proxy, range requests, APK MIME type, dotfiles blocked; Kobo guide + QGIS docs build, pass `check`, and crawl clean apart from upstream's own broken links
-- [ ] On the droplet: `library.sh build`, pin the QGIS checksums it prints (installers, es/fr docs), `kobo-setup.py --reconfigure`, `library.sh up`
-- [ ] Check through the edge: Kobo login, form deploy, Enketo, KoboCollect submission with media; library downloads resume (range requests)
+- [x] On the droplet (2026-10-28): `library.sh build` (13 files, 5.3 GB with docs, all checksums pinned), `kobo-setup.py --reconfigure`, edge up
+- [x] Through the edge: form deploy, OpenRosa submission, qual 3/3 (`e2e-nlp.py`); 42 MB audio submission downloaded back byte-identical; KPI login and Enketo online/offline links 200; APK MIME type and resumable downloads from outside
 - [ ] `offline.sh on`, then `library.sh check` and load every guide with outbound blocked
 - [ ] Wi-Fi hotspot + dnsmasq for `kobo.local`/`*.kobo.local` (physical box or a spare laptop with a USB Wi-Fi dongle); install the APKs on a real Android phone over HTTP
 - [ ] Landing page: KoboCollect configuration QR code and Wi-Fi QR code (per box, from firstboot)

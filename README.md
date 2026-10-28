@@ -45,7 +45,8 @@ ssh root@<ip> 'bash /root/kobo-box-ai/bootstrap.sh'      # ~25GB of downloads
 # 2. Install Kobo like on the laptop (non-interactive, ~15 min)
 ssh root@<ip> 'python3 -I /root/kobo-box-ai/kobo-setup.py'
 #   Production mode over plain HTTP, with kf/kc/ee.kobo.local mapped to the droplet IP
-#   inside the containers. Kobo's nginx listens on 8080, behind the edge nginx (step 2b).
+#   inside the containers. Kobo's nginx listens on 8080; kobo-setup.py also starts the
+#   edge nginx on port 80 (library/library.sh up), which kobo-install needs to see Kobo.
 #   Prints the super_admin password at the end (also in /root/kobo-install/.run.conf).
 #   Then point those hostnames at the droplet IP in /etc/hosts on your machine/phone
 #   (the box's own DNS does this in the field):

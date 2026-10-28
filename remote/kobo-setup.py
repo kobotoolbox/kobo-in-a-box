@@ -19,17 +19,24 @@ passwords) and restarts Kobo. Otherwise use run.py as normal
 (`python3 run.py --stop`, `--logs`, `--setup` to change answers).
 """
 import os
+import subprocess
 import sys
 
+HERE = os.path.dirname(os.path.abspath(__file__))
 KOBO_INSTALL = '/root/kobo-install'
 sys.path.insert(0, KOBO_INSTALL)
 os.chdir(KOBO_INSTALL)
 
+from helpers.cli import CLI  # noqa: E402
 from helpers.command import Command  # noqa: E402
 from helpers.config import Config  # noqa: E402
 from helpers.network import Network  # noqa: E402
 from helpers.setup import Setup  # noqa: E402
 from helpers.template import Template  # noqa: E402
+
+# kobo-install still asks yes/no questions outside config.build() (e.g. whether
+# to review /etc/hosts); take their defaults so this runs without a terminal
+CLI.yes_no_question = staticmethod(lambda question, default=True, **kwargs: default)
 
 reconfigure = '--reconfigure' in sys.argv
 config = Config()
@@ -72,8 +79,9 @@ else:
 Template.render(config, force=True)
 Setup.update_hosts(dict_)
 config.validate_passwords()
+# kobo-install waits for Kobo on port 80, which the edge nginx serves
+subprocess.run([os.path.join(HERE, 'library', 'library.sh'), 'up'], check=True)
 Command.start(force_setup=True)
 
-print(f'\nKobo is up on port 8080 (IP {ip}). Start the edge nginx so that')
-print('http://kf.kobo.local works: /root/kobo-box-ai/library/library.sh up')
+print(f'\nKobo is up on http://kf.kobo.local (IP {ip}), behind the edge nginx.')
 print(f"Superuser: {dict_['super_user_username']} / password in {KOBO_INSTALL}/.run.conf")
