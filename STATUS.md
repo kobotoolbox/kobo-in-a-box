@@ -33,11 +33,22 @@ After restoring a snapshot the droplet has a new IP: run
 - [x] Read `kobo/apps/subsequences/`: `AutomaticBedrockQual.get_response_from_llm()`, the
       Google transcription/translation services, and how a service is selected
 - [x] `NLP_BACKEND=local` setting; qual analysis → OpenAI-compatible `http://llm:8080`
-      (kpi `f4b670fce`). Qual test file 69/69 pass on current kpi `main` with
-      `--ds kobo.settings.testing` (not yet run with `testing_no_stripe`).
-      `remote/e2e-qual.py` passes online and offline: 3/3 correct, 10–17 s each
+      (kpi `f4b670fce`).
+      `remote/e2e-nlp.py` passes online and offline: 3/3 correct, 10–17 s each
       through the full API (cold).
-- [ ] Translation → `llm`; transcription → `whisper` as Celery tasks
+- [x] Translation → `llm` (kpi `353a22dc1`): `LocalTranslationService`, same interface
+      as Google's, only runs in a Celery worker (or with eager Celery) so slow boxes
+      don't hit the request timeout. Qual and translation share
+      `integrations/local/client.py`. E2E: the PATCH returns `in_progress`, a worker
+      translates, and the result is a faithful Spanish translation (online only so far;
+      another agent was using the droplet, so no offline run).
+- [x] Transcription → `whisper` (kpi `5f521db04`): `LocalTranscriptionService` posts the
+      transcoded audio to `LOCAL_WHISPER_URL`; worker-only like translation. E2E with a
+      FLEURS Spanish clip through an OpenRosa audio submission: 0% WER (online only).
+- [x] Whole `kobo/apps/subsequences/` suite on kpi `main` + the three commits: 425 passed
+      (`testing`), 414 passed (`testing_no_stripe`), no failures
+- [ ] E2E offline for translation and transcription (needs `offline.sh`, coordinate first)
+- [ ] Build a kpi image from the branch and run it instead of the backport
 - [ ] Seed language tables for the pilot languages
 - [ ] Deploy the branch to the CPU droplet and test through the UI while offline
 
@@ -56,17 +67,29 @@ How KPI wires NLP (as of kpi `bb33f41a8`):
   frontend needs no changes.
 
 Testing W2 on the CPU droplet (state kept in the snapshot):
-- **Unit tests:** `/root/kpi-test.sh` runs the qual test file against `/root/kpi-src`
+- **Unit tests:** `remote/kpi-test.sh` runs `kobo/apps/subsequences/` (with both
+  `testing` and `testing_no_stripe`, as CI does) against `/root/kpi-src`
   (kpi `main` + the branch as a patch) in a `python:3.12` container with PostGIS and
   Redis, as CI does. It needs a JRE (pyxform validates forms with Java), which GitHub's
   runners have preinstalled. To update the code: send `git format-patch` from
   `~/code/kpi` and `git am` it there (a `git archive` of the partial clone is very slow).
 - **Running Kobo is release `2.026.37c`,** which predates `main`'s qual refactor, so the
-  branch can't be dropped in. A backport of the same change is mounted into the kpi
-  container by `/root/kobo-docker/docker-compose.frontend.custom.yml` (with
-  `NLP_BACKEND=local`; `use_frontend_custom_yml` is on in `.run.conf`). Remove both to
-  get stock KPI back. For a real deploy, build a kpi image from the branch instead.
-- **E2E user:** `e2e`, a regular user, password in `/root/e2e-user.pw`.
+  branch can't be dropped in. A backport of the same changes (`/root/kpi-e2e/`) is
+  mounted into the `kpi`, `worker` and `worker_low_priority` containers by
+  `/root/kobo-docker/docker-compose.frontend.custom.yml` (with `NLP_BACKEND=local`;
+  `use_frontend_custom_yml` is on in `.run.conf`). The workers need it too because they
+  run translation. Remove both to get stock KPI back. For a real deploy, build a kpi
+  image from the branch instead.
+- **Shared droplet:** another agent works on the same droplet (library / edge nginx on
+  port 80, Kobo's nginx on 8080). Only one person runs `offline.sh` at a time, nothing
+  runs during `kobo-setup.py --reconfigure`, and timings taken while their builds run
+  aren't benchmarks.
+- **E2E:** `remote/e2e-nlp.py` covers qual, translation and transcription. Run it as
+  `e2e`, a regular user, password in `/root/e2e-user.pw`.
+- **Firewall:** this network's outgoing IP rotates (several changes on 2026-10-28).
+  When SSH times out, compare `curl ifconfig.me` with the firewall's inbound rules and
+  add the new IP with `doctl compute firewall add-rules` (don't replace the list: the
+  other agent's IPs are in it too).
 
 ### 3. W3: kobo-mcp offline profile (2–3 days, parallel with W2)
 - [ ] Clone kobo-mcp
