@@ -124,6 +124,30 @@ kobo-mcp branch `w3-offline-box` in `~/Desktop/work/repos/kobo-mcp` (local, not 
 - Not done here: OAuth sign-in (`/login`, `mcp.kobo.local` behind the edge) and an actual
       OpenCode client; both belong to W4.
 
+### 3a. W9: dashboards on the box (PLAN 3h), server-side settings done 2026-10-29
+kobo-dash branch `w9-offline-box`, in a separate worktree `~/Desktop/work/repos/kobo-dash-w9`
+(the main `kobo-dash` checkout has someone's uncommitted map/theme work on `main`; untouched).
+Local, not pushed. Whole suite: 838 passed with the viewer built (`npm run build`);
+without the build, `test_indexing_and_embedding` fails and 4 tests skip, on `main` too.
+- [x] Kobo over http (`40002c7`): `ALLOWED_SERVERS` may list `http://kf.kobo.local`; the token
+      goes over http only to that exact server. Also fixes a gap: a scheme-switching `next`
+      link on an https server now stays https.
+- [x] Tiles over http (`661b22b`): an http `TILE_URL` is accepted only when `PUBLIC_URL` is
+      http too (an https page would block it as mixed content).
+- [x] `BOUNDARIES_DIR` (`a9e8d00`): "get administrative areas" reads pre-fetched layers and
+      never calls geoBoundaries. `scripts/fetch_boundaries.py OUT KEN UGA --levels ADM0,ADM1,ADM2`
+      fills it online (checked live: Lesotho ADM1, 10 areas, 0.2 MB, with its credit line).
+- [x] `LOCAL_EVIDENCE_ORIGINS` (`7bd2143`): evidence may cite e.g. `http://kobo.local/...`; the
+      viewer links http sources only on http pages. kobo-mcp's `save_evidence` wording matches
+      (kobo-mcp `f727031`, on `w3-offline-box`).
+- [ ] Still to do (PLAN W9): compose services, edge routes for `dash.`/`mcp.kobo.local`, OAuth
+      sign-in offline, the content pack (MBTiles, boundaries), `_dash` accounts, offline
+      `desk_review` (needs W10), and the offline end-to-end dashboard test.
+
+Box settings for kobo-dash: `ALLOWED_SERVERS=http://kf.kobo.local`, `PUBLIC_URL=http://dash.kobo.local`,
+`MCP_URL=http://mcp.kobo.local`, `TILE_URL=http://kobo.local/tiles/{z}/{x}/{y}.png` (or empty),
+`BOUNDARIES_DIR=/data/boundaries`, `LOCAL_EVIDENCE_ORIGINS=http://kobo.local`.
+
 ### 3b. W10: local knowledge base (PLAN 3i), can start now
 - [ ] `remote/knowledge/`: support-bot chunker, bge-m3 on llama-server, pgvector + FTS, MCP server; port its eval cases
 

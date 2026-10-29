@@ -456,8 +456,8 @@ Done 2026-10-28 on kobo-mcp branch `w3-offline-box`; details in [STATUS.md](STAT
 - [ ] Second content batch: pick from the 3g candidates once pilot languages are known
 
 ### W9. Dashboards on the box (~2 weeks, after W3; see 3h)
-- [ ] kobo-mcp: `DASH_SERVERS` as a setting; offline `desk_review` that uses `search_knowledge` (W10)
-- [ ] kobo-dash: trusted-host http for Kobo and tiles (or local HTTPS); `BOUNDARIES_DIR` for pre-fetched geoBoundaries; local evidence URLs
+- [ ] kobo-mcp: `DASH_SERVERS` as a setting (done: `DASH_KOBO_HOSTS`, W3); offline `desk_review` that uses `search_knowledge` (W10)
+- [x] kobo-dash: trusted-host http for Kobo and tiles (or local HTTPS); `BOUNDARIES_DIR` for pre-fetched geoBoundaries; local evidence URLs (2026-10-29, kobo-dash branch `w9-offline-box`; see STATUS.md)
 - [ ] Propose all of the above upstream as settings, not a fork
 - [ ] Compose: box Postgres, kobo-dash web + worker, kobo-mcp in HTTP + OAuth mode; edge routes for `dash.` and `mcp.kobo.local` (SSE unbuffered); per-box keys in `firstboot.sh`
 - [ ] Content pack: raster MBTiles and ADM0–2 boundaries for the deployment countries; prebuilt images
