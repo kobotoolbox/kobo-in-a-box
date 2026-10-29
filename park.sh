@@ -17,7 +17,7 @@ OLD_SNAPSHOTS=$(doctl compute snapshot list --format ID,Name --no-header | awk -
 # The snapshot replaces the previous one, so keep a local copy of every run
 IP=$(doctl compute droplet get "$DROPLET_ID" --format PublicIPv4 --no-header)
 mkdir -p remote/results
-ssh "root@$IP" 'tar -C /root/kobo-box-ai -cf - results' | tar -C remote -xf -
+ssh -p "$SSH_PORT" "root@$IP" 'tar -C /root/kobo-box-ai -cf - results' | tar -C remote -xf -
 echo "Results pulled to remote/results/"
 
 doctl compute droplet-action power-off "$DROPLET_ID" --wait

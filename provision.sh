@@ -37,6 +37,25 @@ if ! doctl compute ssh-key list --format FingerPrint --no-header | grep -qx "$FI
     doctl compute ssh-key import "$NAME-key" --public-key-file "$SSH_KEY_FILE"
 fi
 
+USER_DATA=()
+if [[ "$SSH_PORT" != 22 ]]; then
+    # Also listen on SSH_PORT. Ubuntu 24.04 starts sshd from ssh.socket, which ignores
+    # Port lines, so use the plain service instead (a no-op on older images).
+    cat > /tmp/kobo-box-user-data.yml <<EOF
+#cloud-config
+write_files:
+  - path: /etc/ssh/sshd_config.d/10-kobo-box-port.conf
+    content: |
+      Port 22
+      Port $SSH_PORT
+runcmd:
+  - systemctl disable --now ssh.socket || true
+  - systemctl enable ssh.service || true
+  - systemctl restart ssh.service || systemctl restart sshd
+EOF
+    USER_DATA=(--user-data-file /tmp/kobo-box-user-data.yml)
+fi
+
 MY_IP=$(curl -fsS https://api.ipify.org)
 echo "Creating $NAME ($SIZE, image $IMAGE, regions tried: ${REGIONS[*]}); inbound allowed from $MY_IP only"
 read -r -p "This starts billing. Continue? [y/N] " ok
@@ -46,7 +65,7 @@ DROPLET_ID=
 for region in "${REGIONS[@]}"; do
     if DROPLET_ID=$(doctl compute droplet create "$NAME" \
         --size "$SIZE" --region "$region" --image "$IMAGE" \
-        --ssh-keys "$FINGERPRINT" --tag-name "$NAME" \
+        --ssh-keys "$FINGERPRINT" --tag-name "$NAME" ${USER_DATA[@]+"${USER_DATA[@]}"} \
         --wait --format ID --no-header 2>/tmp/doctl-create.err); then
         echo "Created in $region"
         break
@@ -57,6 +76,7 @@ done
 [[ -n "$DROPLET_ID" ]] || { echo "No region accepted $SIZE" >&2; exit 1; }
 
 INBOUND="protocol:tcp,ports:22,address:$MY_IP/32 protocol:tcp,ports:80,address:$MY_IP/32 protocol:tcp,ports:443,address:$MY_IP/32 protocol:tcp,ports:8000-8100,address:$MY_IP/32"
+case "$SSH_PORT" in 22|80|443) ;; *) INBOUND+=" protocol:tcp,ports:$SSH_PORT,address:$MY_IP/32" ;; esac
 OUTBOUND="protocol:tcp,ports:all,address:0.0.0.0/0,address:::/0 protocol:udp,ports:all,address:0.0.0.0/0,address:::/0 protocol:icmp,address:0.0.0.0/0,address:::/0"
 
 FW_ID=$(doctl compute firewall list --format ID,Name --no-header | awk -v n="$NAME-fw" '$2 == n {print $1}')
@@ -72,16 +92,16 @@ fi
 
 IP=$(doctl compute droplet get "$DROPLET_ID" --format PublicIPv4 --no-header)
 echo "Waiting for SSH on $IP..."
-until ssh -o StrictHostKeyChecking=accept-new -o ConnectTimeout=5 "root@$IP" true 2>/dev/null; do sleep 5; done
+until ssh -p "$SSH_PORT" -o StrictHostKeyChecking=accept-new -o ConnectTimeout=5 "root@$IP" true 2>/dev/null; do sleep 5; done
 
 # Copy the contents of remote/ (scp -r would nest it as kobo-box-ai/remote when
 # restoring a snapshot). Results stay on the droplet; park.sh pulls them down.
 tar -C remote --exclude results --exclude __pycache__ -cf - . \
-    | ssh "root@$IP" 'mkdir -p /root/kobo-box-ai && tar -C /root/kobo-box-ai -xf -'
+    | ssh -p "$SSH_PORT" "root@$IP" 'mkdir -p /root/kobo-box-ai && tar -C /root/kobo-box-ai -xf -'
 echo
 echo "Droplet ready: $IP"
 if $FROM_SNAPSHOT; then
     echo "Restored from snapshot. Run ./offline.sh on to cut internet access."
 else
-    echo "Next: ssh root@$IP 'bash /root/kobo-box-ai/bootstrap.sh'"
+    echo "Next: ssh -p $SSH_PORT root@$IP 'bash /root/kobo-box-ai/bootstrap.sh'"
 fi
