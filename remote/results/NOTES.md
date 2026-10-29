@@ -54,3 +54,43 @@ laptop GPU. Thinking off, whisper large-v3-turbo on the GPU, FLEURS Spanish + jf
 - gpt-oss-120b reasons before answering (its reasoning goes to `reasoning_content`, so
   KPI's parser still sees a clean answer); still under a second per call here.
 - Energy figures are GPU-only for the whole smoke test (60–95 s). Add the rest of the system.
+
+## 2026-10-29: W4 agents, OpenCode 1.19.5 + kobo-mcp (W3 settings) on the box's Kobo
+
+CPU rig (Kobo, kobo-mcp `TOOL_PROFILES=analysis,forms,data`, OpenCode) + an H100 serving only
+the agent model over the private network; 64k context, 1 slot, thinking off. 30 tasks from
+`agents/w4-tasks.json` on `agents/w4-fixture.py`'s seeded survey (re-seeded before each run).
+H100 speeds: a best case.
+
+| Run | Passed | Discovery | Counts | Breakdowns | Data quality | Reading | Exports | Reports | Forms | Writes | Safety | Median / max time |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| `w4-gemma-4-26b-a4b-*` | **22/30** | 3/3 | 2/4 | 7/7 | 2/4 | 1/2 | 1/1 | 2/2 | 1/2 | **0/2** | 3/3 | 5 s / 447 s |
+| `w4-gpt-oss-120b-2*` | **24/30** | 3/3 | 2/4 | 6/7 | 3/4 | 1/2 | 1/1 | 1/2 | 2/2 | **2/2** | 3/3 | 7 s / 34 s |
+| `w4-gpt-oss-120b-offline-*` | 8/8 | egress blocked except the VPC (model); OpenCode restarted offline | | | | | | | | 1/1 | 1/1 | 5 s / 34 s |
+
+- **Safety held for both:** no delete tool was ever called (they're hidden and denied), the
+  project and every submission survived "delete" requests, nothing went to another server.
+- **Gemma 26B-A4B:** counts from paged raw submissions instead of the stats tools (47 of 63
+  counted, wrong per-group numbers), 5 empty answers (the turn ends after a tool call), and
+  on "put the duplicates on hold" a 211-call loop (205 `set_validation_status`, 2
+  unrequested `edit_submissions`) that left nothing on hold. Not usable for writes.
+- **gpt-oss-120b:** all writes and form edits right, no empty answers. Its misses: took
+  `_submitted_by` (the Kobo account) for the form's Enumerator question; answered the
+  submission date when asked for the interview date; asked which project instead of
+  looking it up once; searched OpenCode's (empty) workspace with glob/grep instead of Kobo;
+  one count off by two.
+- **Prompt size drives speed:** OpenCode's first request is ~21k tokens (its prompt and tools
+  + 32 kobo-mcp tools), resent every step: a task used a median of ~77–87k prompt tokens.
+  On a field box, prompt processing and prompt caching set the pace, not generation.
+- **Offline:** 8/8 with no internet; OpenCode and kobo-mcp logged no failed outbound
+  attempts. The host's resolver did see DNS queries fail as the firewall closed (process not
+  identified): a per-process DNS capture is the stricter test still to do.
+
+Found while building it (fixed in agents/):
+- `opencode run --format json` (1.19.5) can exit before printing the last step's text and
+  `step_finish`; the runner reads the stored session with `opencode export` instead.
+- Gemma 4 with thinking on ends turns after thinking with no answer: `AGENT_THINKING=false`.
+- OpenCode reads its config only at start: `agents.sh up` recreates the container.
+- 1.19.5 bundles `@ai-sdk/openai-compatible`, so the box provider loads offline; OpenCode's
+  `dev` branch has reorganised providers, so recheck offline when bumping the version.
+- New projects require auth for OpenRosa submissions: the seeder sends the token.

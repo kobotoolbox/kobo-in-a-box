@@ -159,7 +159,7 @@ class Kobo:
                 f'filename="s.xml"\r\nContent-Type: text/xml\r\n\r\n{xml}\r\n--{boundary}--\r\n')
         req = urllib.request.Request(
             'http://127.0.0.1/submission', data=body.encode(), method='POST',
-            headers={'Host': KC, 'X-OpenRosa-Version': '1.0',
+            headers={'Host': KC, 'X-OpenRosa-Version': '1.0', 'Authorization': self.auth,
                      'Content-Type': f'multipart/form-data; boundary={boundary}'})
         with urllib.request.urlopen(req, timeout=60) as r:
             assert r.status == 201, r.status

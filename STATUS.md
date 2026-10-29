@@ -151,6 +151,26 @@ Box settings for kobo-dash: `ALLOWED_SERVERS=http://kf.kobo.local`, `PUBLIC_URL=
 ### 3b. W10: local knowledge base (PLAN 3i), can start now
 - [ ] `remote/knowledge/`: support-bot chunker, bge-m3 on llama-server, pgvector + FTS, MCP server; port its eval cases
 
+### 3c. W4: agents on the rig ✅ first runs 2026-10-29
+`remote/agents/`: agent model (own llama-server), kobo-mcp and OpenCode 1.19.5 as a compose
+profile; `w4-fixture.py` (seeded survey, known answers), `w4-tasks.json` (30 tasks),
+`w4-run.py` (runs each through `opencode run`, scores tools, answers and Kobo's state).
+Details in [NOTES](remote/results/NOTES.md).
+- [x] Gemma 4 26B-A4B: **22/30**. Safety 3/3, breakdowns 7/7, but writes 0/2 (a 211-call
+      loop), 5 empty answers, counts from paged submissions. Fine for reading, not for writes.
+- [x] gpt-oss-120b: **24/30**. Writes 2/2, forms 2/2, no empty answers; misses were field
+      confusion (`_submitted_by` vs the Enumerator question, submission vs interview date).
+- [x] Offline: 8/8 with the internet blocked (model over the VPC), OpenCode cold-started
+      offline; no failed outbound attempts in OpenCode's or kobo-mcp's logs.
+- [ ] Per-process DNS capture offline; OpenWork; multi-user (one OpenCode per user vs shared,
+      OAuth sign-in instead of the test rig's header token)
+- [ ] Shorter prompts: OpenCode's first request is ~21k tokens, resent each step (~80k per
+      task). Try fewer built-in tools / a smaller profile, and measure prompt speed on W5 hardware
+- [ ] Task fixes worth trying: tell the model the form's own Enumerator question exists
+      (skill or instructions), and re-run the write tasks on Gemma with a skill
+- Session: CPU rig + H100 (`NAME=kobo-box-gpu SSH_PORT=443`), ~50 min of H100 (~$4); H100
+  deleted, CPU rig parked (its snapshot now has the OpenCode image and the agent stack).
+
 ### 4. GPU tiers (W1) ✅ run on an H100, 2026-10-29
 RTX 4000/6000 Ada and L40S stayed out of stock, so `remote/gpu-tiers.sh` ran on
 `gpu-h100x1-80gb` (`NAME=kobo-box-gpu SSH_PORT=443 ./provision.sh`; deleted afterwards,

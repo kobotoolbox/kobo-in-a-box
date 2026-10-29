@@ -24,7 +24,7 @@ services:
     command: >-
       -m /models/${AGENT_MODEL} --alias agent --host 0.0.0.0 --port 8080
       -c ${AGENT_CTX} --parallel ${AGENT_SLOTS} -ngl ${AGENT_NGL} -t ${AGENT_THREADS}
-      --jinja --metrics
+      --jinja --chat-template-kwargs '{"enable_thinking":${AGENT_THINKING:-false}}' --metrics
 
   kobo-mcp:
     profiles: [agents]

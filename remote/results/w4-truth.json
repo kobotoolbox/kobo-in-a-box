@@ -1,0 +1,71 @@
+{
+  "project_name": "W4 household water survey",
+  "uid": "a8gQ28SoGwV77oknTv5sDa",
+  "total": 63,
+  "questions": 11,
+  "by_district": {
+    "likoni": 14,
+    "mvita": 16,
+    "nyali": 14,
+    "kisauni": 19
+  },
+  "by_enumerator": {
+    "amina": 24,
+    "chausiku": 13,
+    "daudi": 11,
+    "baraka": 15
+  },
+  "top_enumerator": "amina",
+  "top_enumerator_n": 24,
+  "by_source": {
+    "river": 18,
+    "borehole": 21,
+    "piped": 18,
+    "truck": 6
+  },
+  "top_source": "borehole",
+  "top_source_label": "Borehole",
+  "pct_treats": 55.6,
+  "mean_hh_size": 5.33,
+  "mean_children": 2.57,
+  "likoni_river": 8,
+  "top_need": "water",
+  "top_need_label": "Water repairs",
+  "busiest_date": "2026-10-18",
+  "duplicate_phones": [
+    "0751584926",
+    "0765062281",
+    "0771734011"
+  ],
+  "duplicate_groups": 3,
+  "missing_children": 5,
+  "children_over_hh": 2,
+  "borehole_comments": 21,
+  "labels": {
+    "enumerator": {
+      "amina": "Amina",
+      "baraka": "Baraka",
+      "chausiku": "Chausiku",
+      "daudi": "Daudi"
+    },
+    "district": {
+      "kisauni": "Kisauni",
+      "likoni": "Likoni",
+      "mvita": "Mvita",
+      "nyali": "Nyali"
+    },
+    "source": {
+      "borehole": "Borehole",
+      "river": "River or stream",
+      "piped": "Piped water",
+      "truck": "Water truck"
+    },
+    "needs": {
+      "water": "Water repairs",
+      "food": "Food",
+      "school_fees": "School fees",
+      "shelter": "Shelter",
+      "health": "Health care"
+    }
+  }
+}

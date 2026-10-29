@@ -71,7 +71,8 @@ case "${1:-}" in
     up)
         write_config
         export KOBO_TOKEN; KOBO_TOKEN=$(cat "$KOBO_TOKEN_FILE")
-        compose --profile agents up -d --build
+        # Recreate, so OpenCode reads the config just written (it reads it only at start)
+        compose --profile agents up -d --build --force-recreate
         wait_for http://localhost:4096/ 180
         echo "OpenCode on 127.0.0.1:4096 (model at $AGENT_LLM_URL); kobo-mcp for kf.kobo.local ($BOX_IP)" ;;
     down) compose --profile agents down ;;

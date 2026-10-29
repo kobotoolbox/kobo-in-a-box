@@ -68,23 +68,57 @@ def run_task(prompt, args):
         out = e.stdout.decode() if isinstance(e.stdout, bytes) else (e.stdout or '')
         timed_out = True
     secs = time.monotonic() - started
-    tools, texts, errors, steps = [], [], [], 0
-    tokens = defaultdict(int)
+    stream, errors, session = [], [], None
     for line in out.splitlines():
         try:
             event = json.loads(line)
         except ValueError:
             continue
-        part = event.get('part') or {}
+        session = session or event.get('sessionID') or None
         kind = event.get('type')
-        if kind == 'tool_use':
+        if kind == 'error':
+            err = event.get('error') or {}
+            errors.append(str((err.get('data') or {}).get('message') or err.get('message') or err))
+        elif kind in STREAM_PARTS:
+            stream.append({**(event.get('part') or {}), 'type': STREAM_PARTS[kind]})
+    # The stored session is the record: `opencode run --format json` (1.19.5) can exit
+    # before printing the last step's text and step_finish
+    parts = session_parts(session, args) if session else None
+    result = tally(parts if parts is not None else stream)
+    # Distinct errors only: OpenCode retries, e.g. on a context overflow, with the same one
+    return {**result, 'errors': list(dict.fromkeys(errors))[:5], 'session': session,
+            'from': 'session' if parts is not None else 'stream',
+            'secs': round(secs, 1), 'timed_out': timed_out}
+
+
+STREAM_PARTS = {'tool_use': 'tool', 'text': 'text', 'step_finish': 'step-finish'}
+
+
+def session_parts(session, args):
+    """The assistant's parts from `opencode export`, or None if it can't be read."""
+    cmd = ['docker', 'exec', '-e', f'OPENCODE_SERVER_PASSWORD={args.password}', CONTAINER,
+           'opencode', 'export', session]
+    try:
+        raw = subprocess.run(cmd, capture_output=True, text=True, timeout=60).stdout
+        exported = json.loads(raw[raw.index('{'):])
+    except (subprocess.TimeoutExpired, ValueError):
+        return None
+    return [p for m in exported.get('messages', []) if (m.get('info') or {}).get('role') == 'assistant'
+            for p in m.get('parts', [])]
+
+
+def tally(parts):
+    tools, texts, steps = [], [], 0
+    tokens = defaultdict(int)
+    for part in parts:
+        kind = part.get('type')
+        if kind == 'tool':
             # MCP tools are named <server>_<tool>; normalise the separator
             name = re.sub(r'^kobo[._-]+', 'kobo_', str(part.get('tool', '')))
-            status = (part.get('state') or {}).get('status')
-            tools.append({'name': name, 'status': status})
+            tools.append({'name': name, 'status': (part.get('state') or {}).get('status')})
         elif kind == 'text' and part.get('text'):
             texts.append(part['text'])
-        elif kind == 'step_finish':
+        elif kind == 'step-finish':
             steps += 1
             for k, v in (part.get('tokens') or {}).items():
                 if isinstance(v, (int, float)):
@@ -92,10 +126,7 @@ def run_task(prompt, args):
                 elif isinstance(v, dict):
                     for k2, v2 in v.items():
                         tokens[f'{k}.{k2}'] += v2 if isinstance(v2, (int, float)) else 0
-        elif kind == 'error':
-            errors.append((event.get('error') or {}).get('message', str(event)))
-    return {'answer': '\n'.join(texts), 'tools': tools, 'errors': errors, 'steps': steps,
-            'tokens': dict(tokens), 'secs': round(secs, 1), 'timed_out': timed_out}
+    return {'answer': '\n'.join(texts), 'tools': tools, 'steps': steps, 'tokens': dict(tokens)}
 
 
 # -- checks --------------------------------------------------------------------------------

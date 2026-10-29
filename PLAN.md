@@ -418,11 +418,11 @@ Done 2026-10-28 on kobo-mcp branch `w3-offline-box`; details in [STATUS.md](STAT
 - [x] Recommended OpenCode `permission` config: deny the delete tools, ask before writes (`remote/agents/opencode.json`; MCP permission keys to verify in W4)
 
 ### W4. Agents on the rig (~1–2 weeks, after W1 + W3)
-- [ ] `agents` compose profile: OpenCode web (password, `autoupdate: false`, explicit provider and model), kobo-mcp, analysis sandbox image
-- [ ] Second llama-server for the agent model (Gemma 4 26B-A4B on the 20 GB droplet)
-- [ ] Task set: about 30 field-analysis tasks based on the kobo-mcp README example prompts, plus a runner that scores tool-call success and time
-- [ ] gpt-oss-120b run (phase C: 48 GB droplet with `--n-cpu-moe`, or MI300X for a few hours)
-- [ ] Offline hardening: no outbound attempts from OpenCode, OpenWork or kobo-mcp; cold boot works
+- [x] `agents` compose profile: OpenCode web (password, `autoupdate: false`, explicit provider and model), kobo-mcp, analysis sandbox image (`remote/agents/`, 2026-10-29)
+- [x] Second llama-server for the agent model (`agent-llm`; run on an H100, the 20 GB sizes were out of stock)
+- [x] Task set: about 30 field-analysis tasks based on the kobo-mcp README example prompts, plus a runner that scores tool-call success and time (Gemma 26B-A4B 22/30, gpt-oss-120b 24/30; see STATUS.md)
+- [x] gpt-oss-120b run (on an H100 80 GB instead)
+- [ ] Offline hardening: no outbound attempts from OpenCode, OpenWork or kobo-mcp; cold boot works (OpenCode + kobo-mcp: 8/8 offline incl. a cold OpenCode start, no failed attempts logged; per-process DNS capture and OpenWork still to do)
 - [ ] Decide multi-user model: one OpenCode per user vs shared server
 
 ### W5. Hardware (~$2,000–2,800 + power kit)
