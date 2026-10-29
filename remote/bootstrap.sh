@@ -14,6 +14,9 @@ HAS_GPU=false
 command -v nvidia-smi >/dev/null && nvidia-smi >/dev/null 2>&1 && HAS_GPU=true
 echo "GPU present: $HAS_GPU"
 
+# A fresh droplet runs apt on first boot; wait for its lock instead of failing
+apt() { DEBIAN_FRONTEND=noninteractive apt-get -o DPkg::Lock::Timeout=600 "$@"; }
+
 # --- Docker ---------------------------------------------------------------
 if ! command -v docker >/dev/null; then
     curl -fsSL https://get.docker.com | sh
@@ -24,11 +27,17 @@ if $HAS_GPU && ! command -v nvidia-ctk >/dev/null; then
     curl -fsSL https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list \
         | sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' \
         > /etc/apt/sources.list.d/nvidia-container-toolkit.list
-    apt-get update && apt-get install -y nvidia-container-toolkit
+    apt update
+    apt install -y nvidia-container-toolkit
     nvidia-ctk runtime configure --runtime=docker
     systemctl restart docker
 fi
-apt-get update && apt-get install -y git python3 jq ffmpeg
+apt update
+apt install -y git python3 jq ffmpeg
+# The NVIDIA AI/ML image has Ubuntu's docker.io without Compose
+if ! docker compose version >/dev/null 2>&1; then
+    apt install -y docker-compose-v2 || apt install -y docker-compose-plugin
+fi
 
 # --- kobo-install (run interactively afterwards, see README) ---------------
 if [[ ! -d /root/kobo-install ]]; then

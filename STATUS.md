@@ -151,9 +151,21 @@ Box settings for kobo-dash: `ALLOWED_SERVERS=http://kf.kobo.local`, `PUBLIC_URL=
 ### 3b. W10: local knowledge base (PLAN 3i), can start now
 - [ ] `remote/knowledge/`: support-bot chunker, bge-m3 on llama-server, pgvector + FTS, MCP server; port its eval cases
 
-### 4. GPU tiers (W1, when stock returns)
-- [ ] Check stock each session; when available, fresh `./provision.sh` (not the CPU snapshot)
-- [ ] 8 GB and 20 GB recipes from the README, plus Gemma 4 26B-A4B, with power figures
+### 4. GPU tiers (W1) ✅ run on an H100, 2026-10-29
+RTX 4000/6000 Ada and L40S stayed out of stock, so `remote/gpu-tiers.sh` ran on
+`gpu-h100x1-80gb` (`NAME=kobo-box-gpu SSH_PORT=443 ./provision.sh`; deleted afterwards,
+no snapshot; ~1.5 h, ~$7). VRAM is what each tier needs; speeds are a best case.
+Details in [NOTES](remote/results/NOTES.md).
+- [x] E4B + whisper turbo: 6.3 GB → fits an 8 GB laptop GPU
+- [x] 26B-A4B on the GPU: 17.5 GB → a 20 GB card; 12 layers offloaded: 8.6 GB, just over
+      8 GB (use fewer layers, or whisper on the CPU)
+- [x] gpt-oss-120b: 62.8 GB → 80 GB card or a 128 GB unified-memory box (Strix Halo)
+- [x] All four: qual 3/3, whisper 2% WER, translation chrF ~57–59. Bigger models gain
+      nothing on these short tasks; their case is agents (W4).
+- [ ] Re-run on a real laptop-class GPU (or the W5 dev unit) for representative speeds
+- Lessons: the NVIDIA AI/ML image has docker.io without Compose, and first-boot apt holds
+  the lock (bootstrap now waits and installs `docker-compose-v2`). Some networks block
+  outgoing port 22: `SSH_PORT=443`.
 
 ## Open decisions
 

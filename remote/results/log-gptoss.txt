@@ -1,0 +1,98 @@
+
+=== Environment
+egress: ONLINE   llm: gpt-oss-120b-MXFP4.gguf
+gpu: {'gpu': 'NVIDIA H100 80GB HBM3', 'power_w': 128.37, 'vram_used_mb': 62763, 'vram_total_mb': 81559, 'util_pct': 0}
+
+=== Transcription (whisper)
+11557638029465577385.wav: 11s audio in 0.2s (50.2x real time)  WER 0%
+  Se acoge a los niños en hogares de guarda por una amplia variedad de motivos,
+ desde negligencia hasta abuso e incluso extorsión.
+12950053679025357827.wav: 13s audio in 0.1s (110.3x real time)  WER 0%
+  Es posible que los niños salvajes hayan sufrido situaciones traumáticas o abuso infantil grave antes de ser abandonados o de que huyeran.
+1432166472202574787.wav: 12s audio in 0.1s (103.7x real time)  WER 4%
+  En 2002, la lava del volcán Niragongo destruyó goma y dejó gran parte de sus calles sumergidas, especialmente en el centro de la ciudad.
+14853412566998329397.wav: 15s audio in 0.1s (114.3x real time)  WER 6%
+  Si bien existen informes que señalan que el número oficial de muertos es 8 y las autoridades han confirmado que cerca de 30 personas resultaron heridas, aún se desconocen las cifras oficiales.
+17795496440729368205.wav: 18s audio in 0.2s (118.0x real time)  WER 0%
+  Al día de hoy no se ha demostrado a ciencia cierta que algún fármaco sea adecuado para tratar la infección existente causada por ébola, aun cuando existe una vacuna experimental que pareciera ser capa
+17957000333653026721.wav: 10s audio in 0.1s (96.2x real time)  WER 0%
+  Los cerdos son los portadores de la enfermedad que luego migra a los humanos mediante los mosquitos.
+2027861869427386864.wav: 12s audio in 0.2s (81.4x real time)  WER 4%
+  Según estimaciones realizadas por el cuerpo de ingenieros de los Estados Unidos, hasta seis pulgadas de lluvia podrían filtrarse por los diques anteriormente dañados.
+3165183570881615798.wav: 20s audio in 0.1s (133.6x real time)  WER 2%
+  La cuestión que dio origen al debate fue la controversia en torno al presupuesto destinado al socorro y reconstrucción posteriores al huracán Katrina, medida que algunos conservadores fiscales etiquet
+3327916977671284207.wav: 13s audio in 0.1s (97.0x real time)  WER 3%
+  El gobierno local advierte a quienes residen en las cercanías de la planta que no salgan de sus hogares, manténgase apagados los aires acondicionados y no consuman agua del grifo.
+416124317841544182.wav: 11s audio in 0.1s (99.6x real time)  WER 0%
+  El hospital ha respetado el protocolo de control de infecciones, incluido el distanciamiento
+ del paciente de los demás para prevenir posibles infecciones.
+4963359825952343829.wav: 13s audio in 0.1s (107.4x real time)  WER 0%
+  Construimos nuestras casas a partir de las plantas y con ellas también fabricamos ropa.
+ La mayoría de los alimentos que ingerimos son plantas. Sin ellas los animales no sobrevivirían.
+5461838345498121315.wav: 27s audio in 0.2s (145.9x real time)  WER 9%
+  Pasados 5 minutos del inicio del espectáculo, se desató un viento que, aproximadamente un minuto después, había alcanzado los 70 km/h.
+ Luego llegó la lluvia, pero tan fuerte y tan densa que porforaba
+6861356578246274326.wav: 11s audio in 0.1s (109.8x real time)  WER 0%
+  En algunos lugares basta con hervir agua durante un minuto, en otros son necesarios varios más.
+705534160794720130.wav: 13s audio in 0.1s (109.9x real time)  WER 3%
+  El Dr. Moll cree que algunos pacientes podrían haber contraído el virus dentro del hospital y que al menos dos de los infectados eran trabajadores de salud de ese nosocomio.
+7661334745492112123.wav: 18s audio in 0.1s (124.7x real time)  WER 0%
+  Uno de los mecanismos más comúnmente usados para graficar la importancia de sociabilizar es analizar los pocos y lamentables casos de niños que, por negligencia, desgracia o abuso intencional, no fuer
+987988606766880060.wav: 14s audio in 0.1s (124.7x real time)  WER 0%
+  Con la construcción de la presa en 1963 se frenaron las inundaciones estacionales que dejaban sedimentos a lo largo del río.
+jfk.wav: 11s audio in 0.1s (78.9x real time)
+  And so, my fellow Americans, ask not what your country can do for you, ask what you can do for your country.
+
+=== Translation (LLM)
+[fr] 35.8s  We need drinking water and medication for the children.
+[es] 0.6s  The road has been blocked since last week's floods.
+[sw] 0.6s  We need food assistance because the harvest has been destroyed.
+[pt] 0.4s  The nearest clinic is a three‑hour walk away.
+
+=== Translation of reference clips (chrF vs reference English)
+11557638029465577385.wav: MT chrF 68, pipeline chrF 68  (0.9s + 0.6s)
+  Children are placed in foster homes for a wide variety of reasons, from neglect to abuse and even extortion.
+12950053679025357827.wav: MT chrF 53, pipeline chrF 53  (0.8s + 1.0s)
+  It is possible that the wild children have suffered traumatic situations or severe child abuse before being abandoned or fleeing.
+1432166472202574787.wav: MT chrF 45, pipeline chrF 35  (1.0s + 2.4s)
+  In 2002, the lava from Mount Niragongo destroyed rubber and left much of its streets submerged, especially in the city center.
+14853412566998329397.wav: MT chrF 49, pipeline chrF 48  (0.9s + 0.8s)
+  While there are reports indicating that the official death toll is 8 and authorities have confirmed that about 30 people were injured, the official figures remain unknown.
+17795496440729368205.wav: MT chrF 52, pipeline chrF 52  (1.0s + 0.9s)
+  To date, it has not been definitively proven that any drug is suitable for treating the existing Ebola infection, even though there is an experimental vaccine that appears capable of reducing the dise
+17957000333653026721.wav: MT chrF 50, pipeline chrF 54  (0.8s + 0.7s)
+  Pigs are the carriers of the disease that later spreads to humans through mosquitoes.
+2027861869427386864.wav: MT chrF 59, pipeline chrF 58  (0.8s + 0.7s)
+  According to estimates made by the United States Corps of Engineers, up to six inches of rain could seep through the previously damaged dikes.
+3165183570881615798.wav: MT chrF 61, pipeline chrF 61  (1.0s + 2.9s)
+  The issue that sparked the debate was the controversy over the budget allocated for relief and reconstruction after Hurricane Katrina, a measure that some fiscal conservatives jokingly labeled as the 
+3327916977671284207.wav: MT chrF 41, pipeline chrF 40  (0.8s + 1.1s)
+  The local government warns residents near the plant not to leave their homes, keep the air conditioners off, and not consume tap water.
+416124317841544182.wav: MT chrF 75, pipeline chrF 75  (0.7s + 0.7s)
+  The hospital has adhered to the infection control protocol, including distancing the patient from others to prevent possible infections.
+4963359825952343829.wav: MT chrF 63, pipeline chrF 62  (1.2s + 1.0s)
+  We build our houses from plants, and we also make clothing with them. Most of the food we eat comes from plants. Without them, animals would not survive.
+5461838345498121315.wav: MT chrF 49, pipeline chrF 52  (1.4s + 1.5s)
+  Five minutes after the start of the show, a wind broke out that, about a minute later, had reached 70 km/h.  
+Then the rain came, but it was so strong and dense that it pierced your skin like a needle
+6861356578246274326.wav: MT chrF 72, pipeline chrF 72  (0.8s + 0.8s)
+  In some places, boiling water for a minute is enough; in others, several more are needed.
+705534160794720130.wav: MT chrF 58, pipeline chrF 62  (0.8s + 1.0s)
+  Dr. Moll believes that some patients may have contracted the virus inside the hospital and that at least two of the infected were health workers at that hospital.
+7661334745492112123.wav: MT chrF 62, pipeline chrF 62  (1.1s + 1.0s)
+  One of the most commonly used ways to illustrate the importance of socialization is to examine the few and tragic cases of children who, because of negligence, misfortune, or intentional abuse, were n
+987988606766880060.wav: MT chrF 61, pipeline chrF 61  (0.7s + 0.7s)
+  With the construction of the dam in 1963, the seasonal floods that deposited sediment along the river were halted.
+
+=== Qual analysis (LLM, KPI prompts + parsers)
+qualSelectOne: CORRECT in 0.9s  raw='FALSE,TRUE,FALSE,FALSE'  prompt_tokens=414
+qualSelectMultiple: CORRECT in 1.2s  raw='TRUE,FALSE,TRUE,FALSE'  prompt_tokens=384
+qualInteger: CORRECT in 0.4s  raw='5'  prompt_tokens=275
+
+=== Scores on reference clips (mean)
+whisper_wer: 0.02  gemma_audio_wer: None  mt_chrf: 57.393  pipeline_chrf: 57.127
+
+=== GPU power during tests
+{'avg_w': 245.2, 'max_w': 395.7, 'secs': 75, 'gpu_wh': 5.12}
+
+Saved /root/kobo-box-ai/results/20261029-091730-gpt-oss-120b-MXFP4.gguf.json

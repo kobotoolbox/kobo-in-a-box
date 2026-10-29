@@ -1,0 +1,386 @@
+{
+  "started": "2026-10-29T09:16:14",
+  "llm_model": "gpt-oss-120b-MXFP4.gguf",
+  "egress": "ONLINE",
+  "transcription": [
+    {
+      "clip": "11557638029465577385.wav",
+      "audio_s": 10.68,
+      "secs": 0.21273622600006092,
+      "x_realtime": 50.20301525889127,
+      "text": "Se acoge a los niños en hogares de guarda por una amplia variedad de motivos,\n desde negligencia hasta abuso e incluso extorsión.",
+      "wer": 0.0
+    },
+    {
+      "clip": "12950053679025357827.wav",
+      "audio_s": 12.72,
+      "secs": 0.11529354999993302,
+      "x_realtime": 110.32707380427951,
+      "text": "Es posible que los niños salvajes hayan sufrido situaciones traumáticas o abuso infantil grave antes de ser abandonados o de que huyeran.",
+      "wer": 0.0
+    },
+    {
+      "clip": "1432166472202574787.wav",
+      "audio_s": 12.12,
+      "secs": 0.11682004799990864,
+      "x_realtime": 103.74931535732188,
+      "text": "En 2002, la lava del volcán Niragongo destruyó goma y dejó gran parte de sus calles sumergidas, especialmente en el centro de la ciudad.",
+      "wer": 0.041666666666666664
+    },
+    {
+      "clip": "14853412566998329397.wav",
+      "audio_s": 14.52,
+      "secs": 0.12707835899982456,
+      "x_realtime": 114.2602101119361,
+      "text": "Si bien existen informes que señalan que el número oficial de muertos es 8 y las autoridades han confirmado que cerca de 30 personas resultaron heridas, aún se desconocen las cifras oficiales.",
+      "wer": 0.0625
+    },
+    {
+      "clip": "17795496440729368205.wav",
+      "audio_s": 17.88,
+      "secs": 0.15158079800016822,
+      "x_realtime": 117.95689319421683,
+      "text": "Al día de hoy no se ha demostrado a ciencia cierta que algún fármaco sea adecuado para tratar la infección existente causada por ébola, aun cuando existe una vacuna experimental que pareciera ser capaz de disminuir la mortalidad causada por esa enfermedad.",
+      "wer": 0.0
+    },
+    {
+      "clip": "17957000333653026721.wav",
+      "audio_s": 9.84,
+      "secs": 0.10230430899991916,
+      "x_realtime": 96.18363191337107,
+      "text": "Los cerdos son los portadores de la enfermedad que luego migra a los humanos mediante los mosquitos.",
+      "wer": 0.0
+    },
+    {
+      "clip": "2027861869427386864.wav",
+      "audio_s": 12.24,
+      "secs": 0.15037627400010933,
+      "x_realtime": 81.39581913029113,
+      "text": "Según estimaciones realizadas por el cuerpo de ingenieros de los Estados Unidos, hasta seis pulgadas de lluvia podrían filtrarse por los diques anteriormente dañados.",
+      "wer": 0.041666666666666664
+    },
+    {
+      "clip": "3165183570881615798.wav",
+      "audio_s": 19.92,
+      "secs": 0.1491459339999892,
+      "x_realtime": 133.5604630026417,
+      "text": "La cuestión que dio origen al debate fue la controversia en torno al presupuesto destinado al socorro y reconstrucción posteriores al huracán Katrina, medida que algunos conservadores fiscales etiquetaron en torno de broma como el acuerdo de Nueva Orleans de Bosch.",
+      "wer": 0.024390243902439025
+    },
+    {
+      "clip": "3327916977671284207.wav",
+      "audio_s": 12.6,
+      "secs": 0.12996253699998306,
+      "x_realtime": 96.95101596856055,
+      "text": "El gobierno local advierte a quienes residen en las cercanías de la planta que no salgan de sus hogares, manténgase apagados los aires acondicionados y no consuman agua del grifo.",
+      "wer": 0.03333333333333333
+    },
+    {
+      "clip": "416124317841544182.wav",
+      "audio_s": 11.4,
+      "secs": 0.11449642000002314,
+      "x_realtime": 99.56643185872272,
+      "text": "El hospital ha respetado el protocolo de control de infecciones, incluido el distanciamiento\n del paciente de los demás para prevenir posibles infecciones.",
+      "wer": 0.0
+    },
+    {
+      "clip": "4963359825952343829.wav",
+      "audio_s": 13.44,
+      "secs": 0.1251444699998956,
+      "x_realtime": 107.3958761422795,
+      "text": "Construimos nuestras casas a partir de las plantas y con ellas también fabricamos ropa.\n La mayoría de los alimentos que ingerimos son plantas. Sin ellas los animales no sobrevivirían.",
+      "wer": 0.0
+    },
+    {
+      "clip": "5461838345498121315.wav",
+      "audio_s": 26.7,
+      "secs": 0.1830174280000847,
+      "x_realtime": 145.8877457287163,
+      "text": "Pasados 5 minutos del inicio del espectáculo, se desató un viento que, aproximadamente un minuto después, había alcanzado los 70 km/h.\n Luego llegó la lluvia, pero tan fuerte y tan densa que porforaba tu piel como una aguja.\n A continuación cayó granizo del cielo. La gente aterrorizada gritaba y corría por encima de otros.",
+      "wer": 0.08928571428571429
+    },
+    {
+      "clip": "6861356578246274326.wav",
+      "audio_s": 10.56,
+      "secs": 0.09621105199994417,
+      "x_realtime": 109.75870007123639,
+      "text": "En algunos lugares basta con hervir agua durante un minuto, en otros son necesarios varios más.",
+      "wer": 0.0
+    },
+    {
+      "clip": "705534160794720130.wav",
+      "audio_s": 12.84,
+      "secs": 0.11686079900005097,
+      "x_realtime": 109.87431294213896,
+      "text": "El Dr. Moll cree que algunos pacientes podrían haber contraído el virus dentro del hospital y que al menos dos de los infectados eran trabajadores de salud de ese nosocomio.",
+      "wer": 0.03333333333333333
+    },
+    {
+      "clip": "7661334745492112123.wav",
+      "audio_s": 18.48,
+      "secs": 0.1481386760001442,
+      "x_realtime": 124.74797601122081,
+      "text": "Uno de los mecanismos más comúnmente usados para graficar la importancia de sociabilizar es analizar los pocos y lamentables casos de niños que, por negligencia, desgracia o abuso intencional, no fueron socializados por adultos durante su crecimiento.",
+      "wer": 0.0
+    },
+    {
+      "clip": "987988606766880060.wav",
+      "audio_s": 13.68,
+      "secs": 0.109669624000162,
+      "x_realtime": 124.73827757428795,
+      "text": "Con la construcción de la presa en 1963 se frenaron las inundaciones estacionales que dejaban sedimentos a lo largo del río.",
+      "wer": 0.0
+    },
+    {
+      "clip": "jfk.wav",
+      "audio_s": 11.0,
+      "secs": 0.13946559900000466,
+      "x_realtime": 78.87249672228944,
+      "text": "And so, my fellow Americans, ask not what your country can do for you, ask what you can do for your country.",
+      "wer": null
+    }
+  ],
+  "translation": [
+    {
+      "lang": "fr",
+      "source": "Nous avons besoin d'eau potable et de médicaments pour les enfants.",
+      "output": "We need drinking water and medication for the children.",
+      "secs": 35.7535622219998
+    },
+    {
+      "lang": "es",
+      "source": "La carretera está bloqueada desde las inundaciones de la semana pasada.",
+      "output": "The road has been blocked since last week's floods.",
+      "secs": 0.5519739629999094
+    },
+    {
+      "lang": "sw",
+      "source": "Tunahitaji msaada wa chakula kwa sababu mavuno yameharibika.",
+      "output": "We need food assistance because the harvest has been destroyed.",
+      "secs": 0.5509144449999894
+    },
+    {
+      "lang": "pt",
+      "source": "A clínica mais próxima fica a três horas de caminhada.",
+      "output": "The nearest clinic is a three‑hour walk away.",
+      "secs": 0.4175960560000931
+    }
+  ],
+  "ref_translation": [
+    {
+      "clip": "11557638029465577385.wav",
+      "mt": "Children are placed in foster homes for a wide variety of reasons, from neglect to abuse and even extortion.",
+      "mt_chrf": 68.49255241829178,
+      "mt_secs": 0.875721780999811,
+      "pipeline": "Children are placed in foster homes for a wide variety of reasons, from neglect to abuse and even extortion.",
+      "pipeline_chrf": 68.49255241829178,
+      "pipeline_secs": 0.6398719160001747
+    },
+    {
+      "clip": "12950053679025357827.wav",
+      "mt": "It is possible that the wild children have suffered traumatic situations or severe child abuse before being abandoned or fleeing.",
+      "mt_chrf": 53.19058695733877,
+      "mt_secs": 0.7634056009999313,
+      "pipeline": "It is possible that the wild children have suffered traumatic situations or severe child abuse before being abandoned or fleeing.",
+      "pipeline_chrf": 53.19058695733877,
+      "pipeline_secs": 1.0070298370001183
+    },
+    {
+      "clip": "1432166472202574787.wav",
+      "mt": "In 2002, the lava from Nyiragongo volcano destroyed Goma and left much of its streets submerged, especially in the city centre.",
+      "mt_chrf": 45.467062252226576,
+      "mt_secs": 1.0427568040001916,
+      "pipeline": "In 2002, the lava from Mount Niragongo destroyed rubber and left much of its streets submerged, especially in the city center.",
+      "pipeline_chrf": 35.365940191305064,
+      "pipeline_secs": 2.361541645999978
+    },
+    {
+      "clip": "14853412566998329397.wav",
+      "mt": "While there are reports indicating that the official death toll is eight and authorities have confirmed that about 30 people were injured, the official figures remain unknown.",
+      "mt_chrf": 48.829223186378115,
+      "mt_secs": 0.8685556699999779,
+      "pipeline": "While there are reports indicating that the official death toll is 8 and authorities have confirmed that about 30 people were injured, the official figures remain unknown.",
+      "pipeline_chrf": 47.91966668331833,
+      "pipeline_secs": 0.8258212939999794
+    },
+    {
+      "clip": "17795496440729368205.wav",
+      "mt": "To date, it has not been definitively proven that any drug is suitable for treating the existing Ebola infection, even though there is an experimental vaccine that appears capable of reducing the disease’s mortality.",
+      "mt_chrf": 51.50340627709184,
+      "mt_secs": 1.0157423660000404,
+      "pipeline": "To date, it has not been definitively proven that any drug is suitable for treating the existing Ebola infection, even though there is an experimental vaccine that appears capable of reducing the disease’s mortality.",
+      "pipeline_chrf": 51.50340627709184,
+      "pipeline_secs": 0.927279283000189
+    },
+    {
+      "clip": "17957000333653026721.wav",
+      "mt": "Pigs are the carriers of the disease, which then spreads to humans via mosquitoes.",
+      "mt_chrf": 50.23948388910107,
+      "mt_secs": 0.756276292999928,
+      "pipeline": "Pigs are the carriers of the disease that later spreads to humans through mosquitoes.",
+      "pipeline_chrf": 53.93464610704712,
+      "pipeline_secs": 0.6634924160000537
+    },
+    {
+      "clip": "2027861869427386864.wav",
+      "mt": "According to estimates made by the United States Army Corps of Engineers, up to 6 inches of rain could seep through the previously damaged dikes.",
+      "mt_chrf": 58.64690069870505,
+      "mt_secs": 0.7532090499998958,
+      "pipeline": "According to estimates made by the United States Corps of Engineers, up to six inches of rain could seep through the previously damaged dikes.",
+      "pipeline_chrf": 57.832091126314126,
+      "pipeline_secs": 0.7308411720000549
+    },
+    {
+      "clip": "3165183570881615798.wav",
+      "mt": "The issue that sparked the debate was the controversy over the budget allocated for relief and reconstruction after Hurricane Katrina, a measure that some fiscal conservatives jokingly labeled the “Bush New Orleans Agreement.”",
+      "mt_chrf": 61.16441374492476,
+      "mt_secs": 1.0233867019999252,
+      "pipeline": "The issue that sparked the debate was the controversy over the budget allocated for relief and reconstruction after Hurricane Katrina, a measure that some fiscal conservatives jokingly labeled as the Bosch New Orleans deal.",
+      "pipeline_chrf": 61.06290024931243,
+      "pipeline_secs": 2.949844774999974
+    },
+    {
+      "clip": "3327916977671284207.wav",
+      "mt": "The local government warns residents near the plant not to leave their homes, keep air conditioners turned off, and avoid drinking tap water.",
+      "mt_chrf": 41.441142852821976,
+      "mt_secs": 0.8320557389999976,
+      "pipeline": "The local government warns residents near the plant not to leave their homes, keep the air conditioners off, and not consume tap water.",
+      "pipeline_chrf": 39.85982934062401,
+      "pipeline_secs": 1.076398419999805
+    },
+    {
+      "clip": "416124317841544182.wav",
+      "mt": "The hospital has adhered to the infection control protocol, including keeping the patient separated from others to prevent possible infections.",
+      "mt_chrf": 74.88149599284066,
+      "mt_secs": 0.6696527890001107,
+      "pipeline": "The hospital has adhered to the infection control protocol, including distancing the patient from others to prevent possible infections.",
+      "pipeline_chrf": 74.68314728395332,
+      "pipeline_secs": 0.6676152410000213
+    },
+    {
+      "clip": "4963359825952343829.wav",
+      "mt": "We build our houses from plants and also make clothing with them. Most of the food we eat are plants. Without them, animals would not survive.",
+      "mt_chrf": 63.26690019876693,
+      "mt_secs": 1.230215606999991,
+      "pipeline": "We build our houses from plants, and we also make clothing with them. Most of the food we eat comes from plants. Without them, animals would not survive.",
+      "pipeline_chrf": 62.406520367068936,
+      "pipeline_secs": 1.0414839869999923
+    },
+    {
+      "clip": "5461838345498121315.wav",
+      "mt": "Five minutes after the show began, a wind erupted that, about a minute later, had reached 70 kilometers per hour (…) then the rain came, but so strong and so dense that it pierced your skin like a needle. Next, hail fell from the sky; the terrified crowd screamed and ran over one another.",
+      "mt_chrf": 48.95057663995556,
+      "mt_secs": 1.4179394039999806,
+      "pipeline": "Five minutes after the start of the show, a wind broke out that, about a minute later, had reached 70 km/h.  \nThen the rain came, but it was so strong and dense that it pierced your skin like a needle.  \nNext, hail fell from the sky. The terrified people screamed and ran over each other.",
+      "pipeline_chrf": 51.84336337337229,
+      "pipeline_secs": 1.50247123500003
+    },
+    {
+      "clip": "6861356578246274326.wav",
+      "mt": "In some places, boiling water for a minute is enough; in others, several more are needed.",
+      "mt_chrf": 71.71874915373729,
+      "mt_secs": 0.8250272440000117,
+      "pipeline": "In some places, boiling water for a minute is enough; in others, several more are needed.",
+      "pipeline_chrf": 71.71874915373729,
+      "pipeline_secs": 0.7856536740000593
+    },
+    {
+      "clip": "705534160794720130.wav",
+      "mt": "Dr. Moll believes that some patients may have contracted the virus inside the hospital and that at least two of the infected were health workers at that facility.",
+      "mt_chrf": 58.0828993830325,
+      "mt_secs": 0.8446018550000645,
+      "pipeline": "Dr. Moll believes that some patients may have contracted the virus inside the hospital and that at least two of the infected were health workers at that hospital.",
+      "pipeline_chrf": 61.80188313281621,
+      "pipeline_secs": 1.0009698070000468
+    },
+    {
+      "clip": "7661334745492112123.wav",
+      "mt": "One of the most commonly used ways to illustrate the importance of socialization is to examine the few and tragic cases of children who, because of negligence, misfortune, or intentional abuse, were not socialized by adults during their upbringing.",
+      "mt_chrf": 61.8812423470362,
+      "mt_secs": 1.0985405250000895,
+      "pipeline": "One of the most commonly used ways to illustrate the importance of socialization is to examine the few and tragic cases of children who, because of negligence, misfortune, or intentional abuse, were not socialized by adults during their upbringing.",
+      "pipeline_chrf": 61.8812423470362,
+      "pipeline_secs": 1.0075635199998487
+    },
+    {
+      "clip": "987988606766880060.wav",
+      "mt": "With the construction of the dam in 1963, the seasonal floods that deposited sediment along the river were halted.",
+      "mt_chrf": 60.53739078249213,
+      "mt_secs": 0.7419920840000032,
+      "pipeline": "With the construction of the dam in 1963, the seasonal floods that deposited sediment along the river were halted.",
+      "pipeline_chrf": 60.53739078249213,
+      "pipeline_secs": 0.7255743410000832
+    }
+  ],
+  "qual": [
+    {
+      "type": "qualSelectOne",
+      "raw": "FALSE,TRUE,FALSE,FALSE",
+      "value": [
+        1
+      ],
+      "status": "CORRECT",
+      "secs": 0.8669959380001728,
+      "usage": {
+        "completion_tokens": 134,
+        "prompt_tokens": 414,
+        "total_tokens": 548,
+        "prompt_tokens_details": {
+          "cached_tokens": 60
+        }
+      }
+    },
+    {
+      "type": "qualSelectMultiple",
+      "raw": "TRUE,FALSE,TRUE,FALSE",
+      "value": [
+        0,
+        2
+      ],
+      "status": "CORRECT",
+      "secs": 1.1542346310000084,
+      "usage": {
+        "completion_tokens": 189,
+        "prompt_tokens": 384,
+        "total_tokens": 573,
+        "prompt_tokens_details": {
+          "cached_tokens": 60
+        }
+      }
+    },
+    {
+      "type": "qualInteger",
+      "raw": "5",
+      "value": 5,
+      "status": "CORRECT",
+      "secs": 0.3792573379998885,
+      "usage": {
+        "completion_tokens": 43,
+        "prompt_tokens": 275,
+        "total_tokens": 318,
+        "prompt_tokens_details": {
+          "cached_tokens": 60
+        }
+      }
+    }
+  ],
+  "scores": {
+    "whisper_wer": 0.02,
+    "gemma_audio_wer": null,
+    "mt_chrf": 57.393,
+    "pipeline_chrf": 57.127
+  },
+  "gpu_power": {
+    "avg_w": 245.2,
+    "max_w": 395.7,
+    "secs": 75,
+    "gpu_wh": 5.12
+  },
+  "gpu_after": {
+    "gpu": "NVIDIA H100 80GB HBM3",
+    "power_w": 172.24,
+    "vram_used_mb": 63055,
+    "vram_total_mb": 81559,
+    "util_pct": 0
+  }
+}
