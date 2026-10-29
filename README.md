@@ -15,20 +15,26 @@ non-technical overview for partners and donors.
 ## Layout
 
 ```
-config.env          droplet size/region/image
+config.env          droplet size/region/image; NAME, SIZE and SSH_PORT can be overridden per run
 provision.sh        create droplet + firewall (online), copy remote/ to it   ← starts billing
-offline.sh on|off   block/restore all outbound traffic (simulated field conditions)
+offline.sh on|off   block/restore all outbound traffic (simulated field conditions);
+                    OFFLINE_KEEP=<cidr> keeps the VPC reachable (a model on another droplet)
 park.sh             snapshot + destroy (powered-off droplets are still billed)
 remote/
-  bootstrap.sh          on droplet: Docker, NVIDIA toolkit, kobo-install, images, weights
+  bootstrap.sh          on droplet: Docker (+ Compose), NVIDIA toolkit, kobo-install, images, weights
   kobo-setup.py         on droplet: kobo-install answered for a field laptop (HTTP, kobo.local,
                         behind the edge nginx)
   ai.env                which models, thinking on/off, GPU layers, threads, memory caps
   ai.sh up gpu|cpu      start llama.cpp + whisper.cpp on the kobo-docker network
   docker-compose.ai.yml
   smoke-test.py         transcription / translation / qual benchmark using KPI's prompts
+  gpu-tiers.sh          the GPU tier recipes below, one after another, with VRAM per run
   eval/fleurs-*.tsv     reference clips (transcript + English) fetched by bootstrap.sh
-  results/              JSON per run, for comparing tiers
+  e2e-nlp.py            KPI's automatic qual, translation and transcription through its real API
+  kpi-test.sh           KPI's test suite against a KPI branch, set up like KPI's CI
+  results/              JSON per run, for comparing tiers; NOTES.md maps runs to settings
+  agents/               W4: agent model, kobo-mcp and OpenCode; test data, 30 tasks, runner
+                        (agents/README.md)
   library/
     manifest.tsv        installers and docs served at http://kobo.local (pinned versions, SHA-256)
     library.sh          build (fetch + docs + render) | check | up|down|logs (edge nginx on :80)
@@ -39,7 +45,10 @@ remote/
 ## Workflow
 
 ```bash
-# 1. Create (asks before billing starts)
+# 1. Create (asks before billing starts). Overrides, e.g.:
+#   SIZE=s-8vcpu-32gb-amd   CPU only (also the default GPU sizes are often out of stock)
+#   NAME=kobo-box-gpu       a second rig with its own firewall and snapshot
+#   SSH_PORT=443            if your network blocks outgoing port 22 (then ssh -p 443 …)
 ./provision.sh
 ssh root@<ip> 'bash /root/kobo-box-ai/bootstrap.sh'      # ~25GB of downloads
 
@@ -76,6 +85,13 @@ ssh root@<ip> 'cd /root/kobo-box-ai && python3 -I smoke-test.py'
 ./provision.sh --from-snapshot
 ssh root@<new-ip> 'cd /root/kobo-install && python3 run.py'   # Kobo follows the new IP
 ssh root@<new-ip> '/root/kobo-box-ai/library/library.sh up'
+
+# KPI with local AI (W2): run the KPI branch's tests, and the end-to-end check through
+# KPI's API (needs KPI running NLP_BACKEND=local; see STATUS.md)
+ssh root@<ip> 'bash /root/kobo-box-ai/kpi-test.sh'
+ssh root@<ip> 'python3 -I /root/kobo-box-ai/e2e-nlp.py e2e "$(cat /root/e2e-user.pw)"'
+
+# Agents (W4): see remote/agents/README.md for the two-droplet session
 ```
 
 Add real test clips (any format ffmpeg reads) to `/opt/models/audio/` on the droplet.
@@ -87,15 +103,18 @@ is only an 11-second sanity check.
 Edit `remote/ai.env`, then `./ai.sh up …`. Each run's JSON records the model, timings,
 and GPU power, so tiers can be compared.
 
-| Target hardware | `ai.sh up` | ai.env changes |
-|---|---|---|
-| CPU-only laptop, 32GB, 4 cores | `cpu` | `LLM_THREADS=4 WHISPER_THREADS=4 AI_CPUS=4 AI_MEM_LIMIT=24g`, `WHISPER_MODEL=ggml-medium-q5_0.bin` |
-| Laptop with 8GB GPU (RTX 4060) | `gpu` | E4B Q4_0 + whisper turbo (~6GB total). Check `nvidia-smi` stays under 8GB |
-| Bigger LLM on 8GB GPU (partial offload) | `gpu` | `LLM_MODEL=gemma-4-26B-A4B-it-Q4_0.gguf LLM_MMPROJ= LLM_NGL=12` (tune until VRAM < 8GB) |
-| Field server / 20GB+ GPU | `gpu` | `LLM_MODEL=gemma-4-26B-A4B-it-Q4_0.gguf LLM_MMPROJ=` |
+| Target hardware | `ai.sh up` | ai.env changes | VRAM measured (with whisper turbo) |
+|---|---|---|---|
+| CPU-only laptop, 32GB, 4 cores | `cpu` | `LLM_THREADS=4 WHISPER_THREADS=4 AI_CPUS=4 AI_MEM_LIMIT=24g`, `WHISPER_MODEL=ggml-medium-q5_0.bin` | — |
+| Laptop with 8GB GPU (RTX 4060) | `gpu` | E4B Q4_0 + whisper turbo | 6.3 GB: fits |
+| Bigger LLM on 8GB GPU (partial offload) | `gpu` | `LLM_MODEL=gemma-4-26B-A4B-it-Q4_0.gguf LLM_MMPROJ= LLM_NGL=12` | 8.6 GB: just over; use fewer layers or whisper on the CPU |
+| Field server / 20GB+ GPU | `gpu` | `LLM_MODEL=gemma-4-26B-A4B-it-Q4_0.gguf LLM_MMPROJ=` | 17.5 GB: fits |
+| 80 GB GPU / 128 GB unified memory | `gpu` | `LLM_MODEL=gpt-oss-120b-MXFP4.gguf LLM_MMPROJ= AI_MEM_LIMIT=200g` | 62.8 GB |
 
-The RTX 4000 Ada is somewhat faster than a laptop RTX 4060, so treat GPU timings as a
-best case. CPU-tier results are more representative because thread count is capped.
+`remote/gpu-tiers.sh` runs all of them. The 20–48 GB GPU sizes have been out of stock, so
+the 2026-10-29 runs used an H100 (`gpu-h100x1-80gb`): VRAM is what each tier needs, but
+timings are far faster than a laptop GPU. CPU-tier results are more representative because
+thread count is capped.
 
 **Power:** `gpu_power.gpu_wh` in the results is GPU-only energy for the run. For a
 field-laptop estimate, add roughly 20–40W for the rest of the system over the same time.
@@ -128,14 +147,12 @@ field-laptop estimate, add roughly 20–40W for the rest of the system over the 
 - Local Wi-Fi, DNS for `*.kobo.local`, phones joining over the LAN and installing APKs
   from the library (proven on the v0.1 laptop and in Jamaica; to retest on the box, PLAN W8)
 - Laptop thermals, sustained-load throttling, real battery life
-- **KPI integration.** These scripts only stand up the model endpoints (`http://llm:8080`,
-  `http://whisper:8080` on the Kobo network). The next step is a KPI branch that replaces:
-  - `AutomaticBedrockQual.get_response_from_llm()` → OpenAI-compatible call to `llm`
-  - `GoogleTranscriptionService` / `GoogleTranslationService` → local services calling `whisper` / `llm`, run as Celery tasks
-  - Language tables seeded with only the supported languages
-
-  Keep the existing action IDs and switch with a setting (e.g. `NLP_BACKEND=local`) so
-  the frontend needs no changes.
+- **KPI's language tables** for the pilot languages, and a KPI image built from the branch.
+  The KPI changes themselves (`NLP_BACKEND=local`: qual, translation and transcription on
+  the local models, same action IDs) are on the `local-nlp-backend` branch and tested
+  (STATUS.md, W2); the running Kobo on the rig uses a backport mounted into the release.
+- **Multi-user agents:** the agent tests use one Kobo account through kobo-mcp's header
+  mode; OAuth sign-in and one OpenCode per user are still to test (PLAN W4).
 
 ## Cost
 
@@ -143,6 +160,7 @@ field-laptop estimate, add roughly 20–40W for the rest of the system over the 
 |---|---|---|
 | `gpu-4000adax1-20gb` | 0.76 | default; all tiers except 31B dense |
 | `gpu-6000adax1-48gb` | 1.57 | only for testing 31B / the field-server tier |
-| `s-8vcpu-32gb-amd` | 0.25 | Kobo-only work / KPI branch development |
+| `s-8vcpu-32gb-amd` | 0.25 | Kobo-only work / KPI branch development; the agent rig's Kobo side |
+| `gpu-h100x1-80gb` | 4.41 | what was in stock: the GPU tiers and the agent model (gpt-oss-120b fits). Delete it after the session rather than parking it (the models download again in minutes) |
 
 Park the droplet when not in use. Snapshots cost about $0.06/GB/month.

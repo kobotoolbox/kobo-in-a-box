@@ -48,9 +48,10 @@ The new generation of the kit adds four things:
    laptops can be set up from scratch in the field.
 
 The basic kit has already been used in the field, most recently in Kobo's response to
-Hurricane Melissa in Jamaica. The AI and library components are working in a simulated
-offline test environment, as described below; dashboards and the knowledge base are
-built for KoboToolbox's online services and are being adapted to run on the box. The next step is a **field pilot with one
+Hurricane Melissa in Jamaica. The AI processing, the AI assistant and the library are
+working in a simulated offline test environment, as described below; dashboards and the
+knowledge base are built for KoboToolbox's online services and are being adapted to run
+on the box. The next step is a **field pilot with one
 partner organisation**, followed by a packaged kit that can be installed on new hardware
 from a single USB stick.
 
@@ -238,21 +239,28 @@ syncing needs:
 ### Testing of the AI and library components (October 2026)
 
 We built a test environment in the cloud that simulates the field kit, including a
-switch that cuts all internet access. Results so far, on an ordinary 8-core computer
-with no graphics card (the slowest hardware tier we would consider):
+switch that cuts all internet access. We tested on two kinds of machine: an ordinary
+8-core computer with no graphics card (the slowest hardware tier we would consider), and
+a data-centre graphics card standing in for the recommended tier while it is out of stock
+(it shows how much memory each part needs, but runs faster than field hardware will).
 
 | What was tested | Result |
 |---|---|
 | KoboToolbox running fully offline with local AI | Works. All AI features and the full KoboToolbox workflow (create form, deploy, submit, analyse) pass with internet blocked |
+| AI features inside KoboToolbox | Qualitative analysis, translation and transcription all work through KoboToolbox's own interface on the local models, with internet blocked. Long jobs run in the background, so slow hardware doesn't time out. The changes pass KoboToolbox's own test suite |
 | Transcription accuracy (Spanish) | About **2% word error rate** on a standard public speech benchmark. This is clean read speech, so a best case: real interviews recorded on phones will be harder and need testing per language |
 | Translation | Correct translations, about 2 seconds per answer |
 | AI-assisted qualitative analysis | 3 out of 3 test questions answered correctly in KoboToolbox's own format, 6–17 seconds each |
 | Transcription speed | Roughly twice the length of the recording on this slow hardware: fine for overnight processing, too slow for instant results. Much faster on the recommended hardware |
-| AI assistant (agent) | Too slow on this basic hardware; needs the recommended hardware (see section 6) |
+| AI assistant (agent) | Too slow without a graphics card. With one, on 30 realistic field requests about a test survey ("how many households per district?", "find the duplicates", "put the duplicates on hold"): the larger model (gpt-oss-120b) got **24 of 30** right, including every change to data; the smaller one (Gemma 4 26B) got **22 of 30**, reliable for questions but not for changes |
+| AI assistant safety | Both models refused every request to delete data (deleting is blocked) and never touched another server, also with internet blocked. Changes are set to need the user's confirmation; checking that this applies to every KoboToolbox action is part of the next round |
+| Memory needed per tier | Transcription plus translation and analysis fit a laptop graphics card with 8 GB. The larger assistant model needs about 63 GB, so it runs only on the recommended 128 GB tier |
 | Offline library | 13 installers and documents (about 5 GB), each checked against a published or recorded fingerprint; guides load with no internet; large uploads (a 40 MB audio interview) and downloads work through the box |
 
 Performance on the recommended field hardware still needs to be confirmed on a real
-device: this is the first purchase in the next phase.
+device: this is the first purchase in the next phase. The assistant re-reads its
+instructions, about 15,000 words, at every step, and a request takes several steps, so how
+fast the hardware reads long inputs will matter more than how fast it writes answers.
 
 ---
 
@@ -324,7 +332,15 @@ control, retention limits, and a data-sharing plan for when data moves to the cl
 
 - **Human review is built in.** In KoboToolbox, automatic transcriptions, translations
   and qualitative analysis are suggestions that staff check and correct before they're
-  used. The AI assistant can't delete data, and must ask before making any change.
+  used. The AI assistant can't delete data, and must ask before making any change. In
+  testing, both assistant models refused every request to delete data.
+- **The assistant makes mistakes, so its answers need checking.** In our tests it
+  sometimes misread which question held the information (counting interviews by the
+  staff account that uploaded them rather than by the enumerator question), and the
+  smaller model sometimes stopped without answering or repeated an action many times.
+  We will measure this on each deployment's own forms, give the assistant guidance on
+  the form, and recommend the larger model wherever the assistant is allowed to change
+  data.
 - **Language coverage varies.** The AI models work well in major languages (we have
   measured Spanish, and have sample checks for French, Portuguese and Swahili) and less well,
   or not at all, in many minority languages. **Each deployment's languages must be
@@ -484,7 +500,7 @@ requires standard x86 processors.
 | Tier | Example | Supports | Approx. cost |
 |---|---|---|---|
 | **Recommended** | Mini PC or laptop with an AMD Ryzen AI Max+ 395 and 128 GB of unified memory | Everything: KoboToolbox, transcription, translation, qualitative analysis, and a capable AI assistant, using the same AI model KoboToolbox's cloud service uses for qualitative analysis | $2,000–2,800 |
-| **Budget** | Ryzen mini PC with 64–96 GB of memory | KoboToolbox and its AI processing; the assistant is slower | $800–1,200 |
+| **Budget** | Ryzen mini PC with 64–96 GB of memory | KoboToolbox and its AI processing; a smaller assistant model, good for questions about the data but not trusted to change it | $800–1,200 |
 | **KoboToolbox only** | Low-power mini PC with 16 GB of memory | Offline data collection and management, no AI | ~$200 |
 
 A single development unit of the recommended tier is the first hardware purchase, to
@@ -498,11 +514,11 @@ confirm speed, power draw and heat before buying pilot kits.
 |---|---|---|
 | **Foundations** | Offline KoboToolbox; cloud test environment with internet cut-off; AI models chosen and benchmarked | ✅ Done |
 | **Offline library** | Local landing page, app installers and guides; checked to work with no internet | ✅ Working in testing |
-| **AI processing in KoboToolbox** | Qualitative analysis on local AI: working end to end. Translation and transcription: in progress | 2–4 weeks of development |
-| **AI assistant** | Assistant connected to KoboToolbox data, with safety limits on what it can change | 2–3 weeks after the above |
+| **AI processing in KoboToolbox** | Qualitative analysis, translation and transcription on local AI: working end to end and offline in testing. Next: languages for the pilot, and proposing the changes to the main KoboToolbox product | ✅ Working in testing |
+| **AI assistant** | Assistant connected to KoboToolbox data, with safety limits on what it can change: working offline in testing, with a 30-task test set comparing models. Next: sign-in for several users, guidance about each form, shorter instructions for speed | ✅ Working in testing; 1–2 weeks more |
 | **Dashboards** | Kobo's dashboard service running on the kit, built by the assistant; offline maps and boundaries for the deployment's regions | About 2 weeks, after the assistant connection |
 | **Knowledge base** | Guides indexed on the box and searchable by the assistant, across languages; the deployment's own documents added before or during a mission; tested with the support chatbot's question set | 2–3 weeks; can start now |
-| **Hardware** | Buy and test one recommended unit; measure speed, power and heat | Next |
+| **Hardware** | Buy and test one recommended unit; measure speed, power and heat, re-running the same AI and assistant tests | Next |
 | **Multi-site sync** | Kit-to-hub and hub-to-cloud syncing with kobo-transfer, automated and shown on the kit's status page; identical forms on every kit | Sync to a cloud server tested on the prototype; hub workflow to build and test |
 | **Packaging** | One-USB installation; per-kit passwords and keys; health check page; quick-start guide | 2–4 weeks |
 | **Field pilot** | One partner organisation, 3–6 languages, real conditions | After the above |
@@ -599,7 +615,10 @@ those using a kit.
   llama.cpp and whisper.cpp engines.
 - **AI assistant:** OpenCode (open source), connected to KoboToolbox through Kobo's MCP
   server (a standard way for AI assistants to use tools) with the logged-in user's
-  permissions. Deleting data is blocked, and changes need confirmation.
+  permissions. Deleting data is blocked, and changes need confirmation. It uses its own
+  copy of the AI model: gpt-oss-120b on the recommended tier, Gemma 4 26B on smaller
+  ones, and is given only the KoboToolbox tools its job needs, which keeps its
+  instructions shorter.
 - **Dashboards:** Kobo's dashboard service (kobo-dash), driven by the MCP server's
   dashboard tools and reading data from the kit's KoboToolbox through a view-only
   account. Map backgrounds come from OpenStreetMap data prepared for the deployment's

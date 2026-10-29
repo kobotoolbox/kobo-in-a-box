@@ -114,9 +114,9 @@ All of these allow commercial use. **Avoid NLLB-200**: its licence is non-commer
 
 | Job | First choice | Alternatives / notes |
 |---|---|---|
-| Transcription | **Whisper large-v3-turbo** (MIT), via whisper.cpp | Gemma 4 E4B audio. The model card reports about 8% error on FLEURS, a standard multilingual speech benchmark, but **clips are capped at 30 s**, so you'd need your own chunking. Whisper medium for CPU-only boxes |
-| Translation | **Gemma 4** (Apache 2.0): E4B on small boxes, 26B-A4B on larger ones | Pre-trained on 140+ languages, about 35 supported out of the box. Minority languages need a LoRA fine-tune or community models (e.g. Padauk/AI4Burmese) |
-| Qual analysis | **gpt-oss-120b** on a 128 GB box: same model as KPI's cloud qual | Gemma 4 26B-A4B or E4B on smaller boxes |
+| Transcription | **Whisper large-v3-turbo** (MIT), via whisper.cpp. Measured: ~2% WER on FLEURS Spanish, ~2× real time on 8 vCPU | Gemma 4 E4B audio: measured 2.2% on the same clips, but **clips are capped at 30 s**, so you'd need your own chunking. Whisper medium was barely faster on CPU |
+| Translation | **Gemma 4** (Apache 2.0): E4B on small boxes, 26B-A4B on larger ones. Measured: chrF ~59 on FLEURS Spanish→English for E4B, 26B and gpt-oss alike | Pre-trained on 140+ languages, about 35 supported out of the box. Minority languages need a LoRA fine-tune or community models (e.g. Padauk/AI4Burmese) |
+| Qual analysis | **gpt-oss-120b** on a 128 GB box: same model as KPI's cloud qual | Gemma 4 26B-A4B or E4B on smaller boxes. Measured: all three 3/3 with KPI's strict parser, **with Gemma's thinking off through the chat template** (`--reasoning-budget 0` leaks reasoning into the answer and fails every case) |
 | Inference server | llama.cpp `llama-server`: OpenAI-compatible, CUDA/Vulkan/CPU | Ollama. Google's LiteRT-LM suits running inside an app more than serving several users |
 
 All GGUF files are on Hugging Face without login (`ggml-org/gemma-4-*-GGUF`, `ggerganov/whisper.cpp`). Sizes: E4B Q4_0 4.6 GB, 26B-A4B Q4_0 14.6 GB, whisper turbo q8 0.9 GB.
@@ -169,10 +169,11 @@ The agent's shell tool runs in a container with everything pre-installed. Nothin
 - **Two llama-server instances:**
   - batch NLP model (Gemma 4 E4B, or 26B-A4B for translation/qual), driven by a Celery queue with concurrency 1–2;
   - agent model with 2–4 parallel slots and a 32–64k context per slot.
-- **Agent model candidates**, tested on tool-call reliability with the kobo-mcp tools:
-  1. **gpt-oss-120b**: same model as KPI's cloud qual, ~63 GB, 128 GB box only.
-  2. **Gemma 4 26B-A4B**: native function calling, ~15 GB.
-  3. Qwen3-Coder-30B-A3B or gpt-oss-20b as fallbacks.
+- **Agent model candidates**, tested on tool-call reliability with the kobo-mcp tools (W4, 30 tasks):
+  1. **gpt-oss-120b**: same model as KPI's cloud qual, ~63 GB, 128 GB box only. **24/30**, every write and form edit right, no empty answers. The agent model to use wherever agents may change data.
+  2. **Gemma 4 26B-A4B**: native function calling, ~15 GB. **22/30**: good at questions, but 0/2 on writes (one 211-call loop), 5 empty answers, and it needs thinking off or it ends turns with no answer. Read-only agents on smaller boxes.
+  3. Qwen3-Coder-30B-A3B or gpt-oss-20b as fallbacks (not yet tested).
+- **Context:** OpenCode's first request is ~21k tokens (its prompt and tools + 32 kobo-mcp tools with `TOOL_PROFILES=analysis,forms,data`), resent each step, so 64k per slot; a task used ~80k prompt tokens in total. Prompt processing speed and caching decide how responsive agents are.
 - **Priority:** interactive agents first. Batch transcription runs overnight or when on mains or solar power.
 
 ### 3f. Security
@@ -481,8 +482,10 @@ Done 2026-10-28 on kobo-mcp branch `w3-offline-box`; details in [STATUS.md](STAT
 | Risk | Mitigation |
 |---|---|
 | Transcription and translation quality in pilot languages | Evaluate before buying: about 50 clips per language scored against human transcripts; fine-tune or pick a community model where needed |
-| Smaller models break qual analysis's strict answer format | The smoke test measures the parse-fail rate; adjust prompts or parsers per model; prefer gpt-oss-120b on 128 GB boxes |
-| Agents make mistakes with write tools | Delete tools denied, write tools ask first, read-only Kobo accounts by default |
+| Smaller models break qual analysis's strict answer format | Measured: Gemma 4 E4B and 26B pass 3/3 with thinking off (chat template), fail every case with `--reasoning-budget 0`. The smoke test checks each model |
+| Agents make mistakes with write tools | Delete tools hidden and denied (both models refused every delete in W4), write tools ask first, read-only Kobo accounts by default. Gemma 26B looped on a write (211 calls, nothing done): use gpt-oss-120b where agents may change data |
+| Agents misread a form (e.g. `_submitted_by` for the enumerator question, submission vs interview date) | Guidance about the form (a skill or instructions built from `describe_form`); re-run the W4 set per deployment |
+| OpenCode changes under us (it moved provider bundling on `dev`; 1.19.5's `run --format json` can drop the last step) | Pin the version; recheck offline and re-run the W4 set before each bump; the runner reads stored sessions |
 | Hidden internet dependencies (update checks, model catalogues, fonts, cloud calls) | Offline mode on the droplet (W1, W4) |
 | Maintaining a fork of KPI and kobo-mcp | Aim to merge the provider-neutral NLP backend and the kobo-mcp offline profile upstream |
 | Weights are 5–65 GB | Preload on the image or USB stick; never download in the field |

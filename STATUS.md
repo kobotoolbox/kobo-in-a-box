@@ -3,20 +3,43 @@
 Living reference for where the work stands. The overall plan and workstreams (W1–W7)
 are in [PLAN.md](PLAN.md); per-run results are in [remote/results/NOTES.md](remote/results/NOTES.md).
 
-## Where we are (2026-10-28)
+## Where we are (2026-10-29)
 
-- **Rig:** CPU droplet (`s-8vcpu-32gb-amd`) with Kobo (`kobo-setup.py`), Gemma 4 E4B and
-  Whisper large-v3-turbo, parked as `kobo-box-ai-snapshot` in ams3. GPU sizes (RTX 4000/6000
-  Ada, L40S) have been out of stock in every region.
-- **Works offline:** Kobo, both models, and KPI → `http://llm:8080` / `http://whisper:8080`.
-- **Findings so far (8 vCPU, CPU only):**
-  - Qual analysis passes KPI's parser 3/3 *only with thinking off* (`LLM_THINKING=false`).
-    `--reasoning-budget 0` leaks reasoning into the answer and fails every case.
-  - Translation ~2 s and qual 6–11 s per call: usable for KPI's AI features.
-  - Whisper ~2% WER on FLEURS Spanish. Speed is ~13–15 s per 30 s window with the language
-    set (~2× real time on long audio); auto-detect doubles that on short clips. Usable
-    for overnight batches on CPU, slow for interactive use.
-  - Prompt processing ~31 tokens/s: CPU-only can't run agents (10–20k-token prompts).
+- **Rigs:** the CPU rig (`s-8vcpu-32gb-amd`: Kobo, the KPI backport, kobo-mcp, OpenCode, test
+  data) is parked as `kobo-box-ai-snapshot` in ams3. GPU work runs on a separate H100
+  (`NAME=kobo-box-gpu`), deleted after each session: the 20–48 GB GPU sizes stay out of stock.
+- **Proven offline, end to end:**
+  - KoboToolbox, the offline library and the edge proxy (W8);
+  - KPI's automatic qual, translation and transcription on local models (W2, branch
+    `local-nlp-backend`; 425/414 tests pass);
+  - kobo-mcp against the box's Kobo over plain http, with a tool profile (W3);
+  - OpenCode agents doing field tasks through kobo-mcp (W4).
+- **Models:**
+  - KPI batch work: Gemma 4 E4B with thinking off (qual 3/3, translation chrF ~59) and
+    Whisper large-v3-turbo (~2% WER, Spanish). Together 6.3 GB: they fit an 8 GB GPU.
+  - Agent: gpt-oss-120b (24/30 tasks, all writes right; 63 GB, so the 128 GB box only).
+    Gemma 4 26B-A4B (22/30) is fine for questions, not for changing data.
+- **CPU only** (8 vCPU): KPI's AI features are usable (translation ~2 s, qual 6–11 s,
+  transcription ~2× real time, fine overnight). Agents aren't: OpenCode's ~21k-token prompt
+  at ~31 tokens/s means minutes per step.
+
+**Next, in order:**
+1. **W5 hardware:** buy the Strix Halo 128 GB dev unit and re-run the same tests on it
+   (`gpu-tiers.sh` equivalents, `w4-run.py`), at full power and capped. This decides the
+   kit; everything else so far is a cloud stand-in.
+2. **W4 follow-ups:** confirm OpenCode's `ask` rules really apply to the Kobo write tools
+   (the runner's `--auto` approves asks, so W4 didn't test it; check OpenCode's permission
+   log), shorter agent prompts (fewer built-in tools, smaller profiles), guidance about each
+   form (the enumerator-question mistakes), multi-user sign-in through kobo-mcp's OAuth,
+   OpenWork, and a per-process DNS check offline.
+3. **W9 deployment on the box:** kobo-dash and kobo-mcp as compose services behind the
+   edge (`dash.`/`mcp.kobo.local`), the maps/boundaries content pack, dashboard tasks in
+   the W4 set.
+4. **W2 to finish:** a KPI image from the branch, the pilot languages' tables, and
+   proposing the change upstream (talk to the KPI team).
+5. **W10 knowledge base**, and **W7 packaging** (one USB install, first boot keys).
+6. **Decisions needed:** the pilot languages and partner, mock interviews recorded on field
+   phones (FLEURS is a best case), and when to involve the KPI and kobo-mcp maintainers.
 
 ## Next steps
 
