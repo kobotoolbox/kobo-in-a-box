@@ -1,0 +1,71 @@
+# Agents on the box (W4): the agent model's llama-server, kobo-mcp and OpenCode.
+# Started by agents.sh, which writes opencode/opencode.json and sets the env.
+#
+#   agent-llm  profile `llm`: the agent model on the GPU, published on :8083
+#   kobo-mcp   kobo-mcp in HTTP header mode with the box settings (W3)
+#   opencode   `opencode serve` on :4096, its shell tools inside this container (the
+#              analysis sandbox, PLAN 3d), reaching the model at AGENT_LLM_URL
+
+services:
+  agent-llm:
+    profiles: [llm]
+    image: ghcr.io/ggml-org/llama.cpp:server-cuda
+    restart: unless-stopped
+    volumes:
+      - /opt/models:/models:ro
+    ports: ["8083:8080"]
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    command: >-
+      -m /models/${AGENT_MODEL} --alias agent --host 0.0.0.0 --port 8080
+      -c ${AGENT_CTX} --parallel ${AGENT_SLOTS} -ngl ${AGENT_NGL} -t ${AGENT_THREADS}
+      --jinja --metrics
+
+  kobo-mcp:
+    profiles: [agents]
+    image: kobo-mcp:box
+    build: ${KOBO_MCP_SRC}
+    restart: unless-stopped
+    extra_hosts:
+      - "kf.kobo.local:${BOX_IP}"
+    environment:
+      HOST: 0.0.0.0
+      PORT: "8080"
+      # Only kobo-mcp's own container name reaches it, from OpenCode
+      PUBLIC_URL: http://kobo-mcp:8080
+      EXTRA_KOBO_HOSTS: kf.kobo.local
+      HTTP_KOBO_HOSTS: kf.kobo.local
+      CUSTOM_KOBO_SERVERS: "false"
+      TOOL_PROFILES: ${TOOL_PROFILES}
+
+  opencode:
+    profiles: [agents]
+    image: kobo-box-opencode:${OPENCODE_VERSION}
+    build:
+      context: .
+      dockerfile: Dockerfile.opencode
+      args:
+        OPENCODE_VERSION: ${OPENCODE_VERSION}
+    restart: unless-stopped
+    ports: ["127.0.0.1:4096:4096"]
+    environment:
+      OPENCODE_CONFIG: /config/opencode.json
+      OPENCODE_SERVER_PASSWORD: ${OPENCODE_SERVER_PASSWORD}
+      OPENCODE_DISABLE_AUTOUPDATE: "true"
+      OPENCODE_DISABLE_MODELS_FETCH: "true"
+      OPENCODE_DISABLE_LSP_DOWNLOAD: "true"
+      OPENCODE_DISABLE_CLAUDE_CODE: "true"
+      KOBO_TOKEN: ${KOBO_TOKEN:-}
+    volumes:
+      - ./opencode:/config:ro
+      - opencode-workspace:/workspace
+      - opencode-data:/root/.local/share/opencode
+
+volumes:
+  opencode-workspace:
+  opencode-data:
