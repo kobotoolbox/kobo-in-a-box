@@ -27,7 +27,7 @@ combines their data for analysis and reporting, still with no internet. And when
 a connection is available, a kit or hub can sync its data to a KoboToolbox server in the
 cloud. Each organisation decides, project by project, how far its data travels.
 
-The new generation of the kit adds four things:
+The new generation of the kit adds five things:
 
 1. **Local AI processing inside KoboToolbox.** Transcription of recorded interviews,
    translation, and qualitative analysis run on the box itself using open AI models.
@@ -50,14 +50,18 @@ The new generation of the kit adds four things:
    reference material**: the Sphere Handbook and the companion standards for child
    protection and education, in English, French, Spanish and Arabic where available, so
    assessments and programmes can be checked against the standards on site.
+5. **Case management, where a deployment needs it.** Submissions that need follow-up
+   (a referral, a complaint, a protection concern) become cases automatically, routed to
+   the right team with a priority and a deadline, and staff work them through to an
+   outcome on the box, still with no internet.
 
 The basic kit has already been used in the field, most recently in Kobo's response to
-Hurricane Melissa in Jamaica. The AI processing, the AI assistant and the library are
-working in a simulated offline test environment, as described below; dashboards and the
-knowledge base are built for KoboToolbox's online services and are being adapted to run
-on the box. The next step is a **field pilot with one
-partner organisation**, followed by a packaged kit that can be installed on new hardware
-from a single USB stick.
+Hurricane Melissa in Jamaica. The AI processing, the AI assistant, the library and case
+management are working in a simulated offline test environment, as described below;
+dashboards and the knowledge base are built for KoboToolbox's online services and are
+being adapted to run on the box. The next step is a **field pilot with one partner
+organisation**, followed by a packaged kit that can be installed on new hardware from a
+single USB stick.
 
 ---
 
@@ -157,6 +161,12 @@ needs-assessment team can then check its questions and indicators against the re
 standard while designing the form, and compare results with it on site (litres of water
 per person per day, people per latrine, covered living space per person).
 
+**Case workers and referral teams** see the cases that need them. When a form shows a
+child with danger signs, a household reporting a protection concern or a complaint
+needing an answer, a case opens on the box within a minute, assigned to the right team,
+with how urgent it is and when it must be followed up. Staff record what happened and
+close it. Each worker sees only their own team's cases.
+
 **Anyone who is stuck** can ask the assistant. With no internet there is no help centre,
 forum or helpdesk to turn to, so the knowledge base stands in for them: "how do I make
 this question appear only for women over 18?", "why does KoboCollect say the form has an
@@ -176,10 +186,39 @@ assistant:
   online uses the web, uses the documents in the knowledge base instead.
 - **The knowledge base** holds the official guides in English, Spanish and French, and
   the humanitarian standards in the library, and works across languages: a question
-  asked in another language still finds the right page. Each kit's focal point can add documents before or during a deployment; they are
-  indexed on the box. It is for reference material, not personal data: survey responses
-  stay in KoboToolbox, where the assistant reaches them only with the user's own
-  permissions.
+  asked in another language still finds the right page. Each kit's focal point can add
+  documents before or during a deployment; they are indexed on the box. It is for
+  reference material, not personal data: survey responses stay in KoboToolbox, where the
+  assistant reaches them only with the user's own permissions.
+
+### Case management (optional)
+
+Many responses don't end with collecting data: a screening finds a child who needs
+referring, a feedback form records a complaint, a protection interview reveals a risk.
+Online, organisations follow these up in a case management system connected to
+KoboToolbox. The kit can run one too, **EspoCRM** (open source), switched on only for
+deployments that need it:
+
+- **Cases open by themselves.** A small bridge checks KoboToolbox every 30 seconds and
+  opens a case for each new submission that needs follow-up, using rules set per form:
+  which answers call for a case, which team gets it, its priority and how soon it must be
+  followed up. A submission with several reasons goes to every matching team, at the
+  highest priority.
+- **Staff work them on the box.** Case workers open `cases.kobo.local` on the Wi-Fi,
+  record the outcome (arrived and treated, admitted, did not arrive, refused…) and close
+  the case. Supervisors see every team's cases.
+- **Nothing to configure in KoboToolbox.** The bridge only reads submissions, with a
+  view-only account, so KoboToolbox stays standard. After either side has been off, it
+  catches up, and it never opens the same case twice.
+- **Limited by design.** Case workers can't delete or export cases; the bridge can only
+  create them; a caregiver's phone number reaches the case only if they agreed to be
+  called back.
+
+It was tested with a community health referral scenario: made-up home visits in a camp,
+where children are screened for danger signs and malnutrition, pregnant women for danger
+signs, and households for suspected cholera. The form works out the referral, and each
+one becomes a case for the referral coordinators, the nutrition team or surveillance,
+from urgent (6 hours, suspected cholera) to normal (7 days, moderate malnutrition).
 
 ### Three ways to run it: alone, as a network, or connected
 
@@ -277,6 +316,7 @@ a data-centre graphics card standing in for the recommended tier while it is out
 | AI assistant (agent) | Too slow without a graphics card. With one, on 30 realistic field requests about a test survey ("how many households per district?", "find the duplicates", "put the duplicates on hold"): the larger model (gpt-oss-120b) got **24 of 30** right, including every change to data; the smaller one (Gemma 4 26B) got **22 of 30**, reliable for questions but not for changes |
 | AI assistant safety | Both models refused every request to delete data (deleting is blocked) and never touched another server, also with internet blocked. Changes are set to need the user's confirmation; checking that this applies to every KoboToolbox action is part of the next round |
 | Memory needed per tier | Transcription plus translation and analysis fit a laptop graphics card with 8 GB. The larger assistant model needs about 63 GB, so it runs only on the recommended 128 GB tier |
+| Case management (optional) | All 27 checks of the health referral scenario passed online and offline, including a start with the internet already cut. Every expected case opened within 16–32 seconds, routed to the right team, with no duplicates; each role saw only what it should. A capture of the network traffic saw nothing leave the box. About 1.6 GB of software and 200 MB of memory |
 | Offline library | 13 installers and documents (about 5 GB), each checked against a published or recorded fingerprint; guides load with no internet; large uploads (a 40 MB audio interview) and downloads work through the box. Nine humanitarian standards (Sphere, child protection, education; 44 MB) have since been added from their publisher's open-access editions, with their fingerprints recorded |
 
 Performance on the recommended field hardware still needs to be confirmed on a real
@@ -344,6 +384,7 @@ risk to a single physical device. Both sides need managing.
 | A single point of failure | Backups to a second device; sync to the cloud when possible; the hardware is standard and replaceable, and the software can be reinstalled from USB |
 | AI assistants keep conversation histories containing personal data | Stored only on the encrypted device; a retention and deletion policy for each deployment |
 | A dashboard shows more than intended to people on the Wi-Fi | New dashboards start unpublished; sensitive ones use a password; dashboards show summaries, and the owner chooses what goes on them |
+| Case records hold names, phone numbers and health or protection details | Encrypted disk; case workers see only their team's cases and can't delete or export; phone numbers only with consent; backups readable only by the kit's administrator; a retention policy per deployment. Case logins still go over the Wi-Fi without encryption, which is to be fixed before field use |
 | Documents added to the knowledge base contain personal data, or text written to mislead the assistant | The knowledge base is for reference material only; the assistant treats document text as information, not instructions, and still can't delete data or make changes without confirmation |
 
 **Responsible data practice still applies in full.** The kit makes it easier, not
@@ -451,6 +492,10 @@ Being clear about limits is part of using the kit responsibly:
 
 - It does **not replace connectivity for coordination**: emails, cluster reporting and
   calls with headquarters still need a connection, even an occasional one.
+- **Case management works in one direction for now.** Cases are opened from KoboToolbox,
+  but a case's outcome doesn't flow back to the submission yet, and editing a submission
+  doesn't update its case. Its screens exist in Arabic, French, Portuguese, Spanish,
+  Turkish and about 30 other languages, but not Swahili.
 - Each kit serves **one site at a time**, over its own Wi-Fi. Combining sites needs a
   kit to come back to base or a physical link (cable, local radio link) to the hub;
   sites with no link at all are combined when the kit is carried back.
@@ -460,10 +505,11 @@ Being clear about limits is part of using the kit responsibly:
   once cleaning is finished.
 - **KoboCollect runs on Android.** Staff with iPhones or laptops can still collect data
   through web forms in the browser.
-- **The knowledge base, standards and maps are only as complete and current as what
-  was loaded** before deployment. A kit carries the edition of each standard that was
-  current when it was prepared, and the landing page shows the edition. Desk research is limited to documents brought on the kit, and maps
-  cover the regions prepared for the mission.
+- **The knowledge base, standards and maps are only as complete and current as what was
+  loaded** before deployment. A kit carries the edition of each standard that was
+  current when it was prepared, and the landing page shows the edition. Desk research is
+  limited to documents brought on the kit, and maps cover the regions prepared for the
+  mission.
 - **AI quality in many languages is not yet proven**, and real field recordings (noise,
   overlapping speakers, dialects) will perform worse than benchmarks.
 - **How many people one box can serve at once** (enumerators syncing, staff using the AI
@@ -489,6 +535,13 @@ morning, a protection officer reviews the translations alongside AI-suggested th
 (safety concerns, access to services), corrects them, and flags urgent cases, using the
 child protection minimum standards on the kit for cases involving children. No
 recording leaves the camp, and nothing passes through a third-party service.
+
+**Health referrals in a camp.** Community health workers visit households with a
+screening form. A child with severe malnutrition is found in the morning; by the time the
+worker syncs at the health post, a case is waiting for the nutrition team, due within 48
+hours. A suspected cholera case goes straight to surveillance, marked urgent. At the end
+of the week the supervisor sees which referrals arrived, which didn't, and which teams are
+behind, without the data leaving the camp.
 
 **Multi-district assessment with a hub.** Four teams cover four districts, each with a
 budget kit, and rotate back to a field base every few days. At the base, each kit is
@@ -544,6 +597,7 @@ confirm speed, power draw and heat before buying pilot kits.
 | **AI assistant** | Assistant connected to KoboToolbox data, with safety limits on what it can change: working offline in testing, with a 30-task test set comparing models. Next: sign-in for several users, guidance about each form, shorter instructions for speed | ✅ Working in testing; 1–2 weeks more |
 | **Dashboards** | Kobo's dashboard service running on the kit, built by the assistant; offline maps and boundaries for the deployment's regions | About 2 weeks, after the assistant connection |
 | **Knowledge base** | Guides indexed on the box and searchable by the assistant, across languages; the deployment's own documents added before or during a mission; tested with the support chatbot's question set | 2–3 weeks; can start now |
+| **Case management (optional)** | EspoCRM on the kit with a bridge that opens cases from KoboToolbox submissions, routed by rules per form: working online and offline in testing, with a health referral scenario. Next: case outcomes back to KoboToolbox, the assistant reading cases, interface languages for the pilot, encrypted logins | ✅ Working in testing |
 | **Hardware** | Buy and test one recommended unit; measure speed, power and heat, re-running the same AI and assistant tests | Next |
 | **Multi-site sync** | Kit-to-hub and hub-to-cloud syncing with kobo-transfer, automated and shown on the kit's status page; identical forms on every kit | Sync to a cloud server tested on the prototype; hub workflow to build and test |
 | **Packaging** | One-USB installation; per-kit passwords and keys; health check page; quick-start guide | 2–4 weeks |
@@ -573,8 +627,8 @@ confirm speed, power draw and heat before buying pilot kits.
 - **Fund kits and the pilot:** a development unit, pilot kits (computer, power, Wi-Fi,
   case, optional Android devices), and field costs for the pilot.
 - **Fund development:** completing local transcription and translation in KoboToolbox,
-  the AI assistant, dashboards and the knowledge base on the kit, and the one-USB
-  installer.
+  the AI assistant, dashboards, the knowledge base and case management on the kit, and
+  the one-USB installer.
 - **Share reference material:** procedures, protocols and sector guidance (in the
   languages your teams use) that should travel with a kit's library and knowledge base.
 - **Standards bodies:** permission to carry your publications, and their translations,
@@ -627,6 +681,9 @@ those using a kit.
          │       └── Knowledge base: guides + local documents │
          │            (search across languages, cited pages)  │
          │                                                    │
+         │  Optional: case management ── cases.kobo.local     │
+         │   (EspoCRM; a bridge opens cases from submissions) │
+         │                                                    │
          │  Encrypted disk · no internet required             │
          └────────────────────────────────────────────────────┘
                  │
@@ -655,6 +712,12 @@ those using a kit.
   with an open multilingual search model (bge-m3, MIT licence) in PostgreSQL, using both
   meaning and exact-word search. The assistant searches it through its own MCP server.
   Built on the chunking, ranking and test questions of Kobo's help-centre chatbot.
+- **Case management:** EspoCRM (open source, AGPL licence) with its database, off unless a
+  deployment needs it. A bridge reads new submissions through KoboToolbox's data API with
+  a view-only account and creates cases through EspoCRM's API, following rules in a file
+  per form (which submissions, field mapping, team, priority, follow-up time). The same
+  file sets up EspoCRM's teams and case fields; the roles are the same on every kit. EspoCRM's checks for new versions,
+  which would call out to the internet, are switched off.
 - **Sync:** kobo-transfer (open source, by Kobo), preinstalled on every kit. It copies new
   submissions, attachments, validation statuses and analysis results between KoboToolbox
   servers, one project at a time, keeping each submission's unique ID so repeat runs
@@ -693,4 +756,6 @@ those using a kit.
 | **Federated** | Several independent kits that each work on their own and share data with a hub when they can |
 | **Sphere Handbook** | The most widely used set of humanitarian standards: the Humanitarian Charter and minimum standards for water and sanitation, food and nutrition, shelter and health |
 | **Humanitarian Standards Partnership** | Sphere and the bodies behind its companion standards (child protection, education, livestock, economic recovery, market analysis, inclusion), which publish them together |
+| **Case management** | Following up individual people or households after data collection (referrals, complaints, protection cases) until each case is closed |
+| **EspoCRM** | An open-source system for managing cases and contacts, which the kit can run for case management |
 | **kobo-transfer** | Kobo's open-source tool for copying projects and submissions between KoboToolbox servers |
