@@ -33,7 +33,7 @@
       <a class="button button--filled" href="#field">How to use it</a>
       <a class="button button--light" href="#results">Measured results</a>
     </div>
-    <div class="shot"><img src="static/home/landing.jpg" width="1440" height="968" alt="The kit's home page at kobo.local in a laptop browser: a heading Kobo in a box, Everything here works without internet, on this Wi-Fi only; a button Open KoboToolbox and the KoboCollect server URL http://kc.kobo.local; then guides: the KoboToolbox user guide in English, Español and Français, QGIS documentation in three languages and two PDF manuals with their size and SHA-256."></div>
+    <div class="shot"><a href="static/home/landing.jpg"><img src="static/home/landing.jpg" width="1440" height="968" alt="The kit's home page at kobo.local in a laptop browser: a heading Kobo in a box, Everything here works without internet, on this Wi-Fi only; a button Open KoboToolbox and the KoboCollect server URL http://kc.kobo.local; then guides: the KoboToolbox user guide in English, Español and Français, QGIS documentation in three languages and two PDF manuals with their size and SHA-256."></a></div>
   </div>
 </section>
 
@@ -101,7 +101,7 @@
 <h3>Connect</h3>
 <p>Join the kit's Wi-Fi and open <code>kobo.local</code> in a browser. The page works the same on a phone. If a device can't find <code>kobo.local</code>, the kit's address (printed on its label card) shows the same page.</p>
 <div class="figures">
-<figure><img src="static/home/landing-phone.jpg" width="780" height="1688" alt="The same home page on a phone: Open KoboToolbox, the KoboCollect server URL, and the list of guides."><figcaption>The home page on a phone.</figcaption></figure>
+<figure><a href="static/home/landing-phone.jpg"><img src="static/home/landing-phone.jpg" width="780" height="1688" alt="The same home page on a phone: Open KoboToolbox, the KoboCollect server URL, and the list of guides."></a><figcaption>The home page on a phone.</figcaption></figure>
 <div>
 <h4>Set up a phone for data collection</h4>
 <ol>
@@ -119,9 +119,9 @@
 
 <h3>Supervise, clean and export</h3>
 <p><strong>Open KoboToolbox</strong> on the home page (<code>kf.kobo.local</code>) from any laptop on the Wi-Fi. Every KoboToolbox feature is there: the form builder, the data table, reports, maps, validation statuses, and exports to Excel, CSV, SPSS labels and GIS formats. Each person signs in with their own account and permissions, as they would online.</p>
-<!-- figure:kobo-table -->
+<figure><a href="static/home/kobo-table.jpg"><img src="static/home/kobo-table.jpg" width="1440" height="900" alt="KoboToolbox's data table for the household water survey, 63 results: columns for validation, enumerator, interview date, district, household head's name and phone number. The first three rows are marked On hold."></a><figcaption>KoboToolbox on the kit: the test survey's data table. The three rows on hold are duplicates the assistant was asked to hold (<a href="#assistant">see below</a>).</figcaption></figure>
 <p>The KoboToolbox user guide is on the kit in English, Spanish and French, with its links pointing at the local copy, so the help pages open with no internet.</p>
-<figure><img src="static/home/kobo-guide.jpg" width="1440" height="968" alt="The KoboToolbox help center home page, What do you need help with?, with topic cards for Getting Started, Account and Billing and Using the Formbuilder, served from kobo.local."><figcaption>The KoboToolbox user guide, served by the kit. Its pages load nothing from the internet.</figcaption></figure>
+<figure><a href="static/home/kobo-guide.jpg"><img src="static/home/kobo-guide.jpg" width="1440" height="968" alt="The KoboToolbox help center home page, What do you need help with?, with topic cards for Getting Started, Account and Billing and Using the Formbuilder, served from kobo.local."></a><figcaption>The KoboToolbox user guide, served by the kit. Its pages load nothing from the internet.</figcaption></figure>
 </section>
 
 <section id="ai">
@@ -133,7 +133,15 @@
   <li><strong>Qualitative analysis</strong>Analysis questions you define ("Which water sources does the respondent mention?") get a suggested answer for staff to accept or change. Gemma 4, with KoboToolbox's own prompts.</li>
   <li><strong>Background jobs</strong>Long recordings run in the background, so a slow kit doesn't time out; results appear when they're done, and can run overnight on mains or solar.</li>
 </ul>
-<!-- figure:kobo-ai -->
+<figure><a href="static/home/kobo-transcript.jpg"><img src="static/home/kobo-transcript.jpg" width="1440" height="497" alt="KoboToolbox's processing screen for an audio answer, Transcript tab: a Spanish transcript generated on the box, with Discard and Save buttons, next to the 18-second recording and the respondent's written answer."></a><figcaption><strong>Transcription.</strong> An 18-second Spanish recording (a test clip from FLEURS) transcribed by Whisper on the box. Staff can edit the text, then save or discard it.</figcaption></figure>
+<figure><a href="static/home/kobo-translation.jpg"><img src="static/home/kobo-translation.jpg" width="1440" height="576" alt="The Translations tab: the respondent's English answer about a broken borehole, daughters walking two hours to the river, five children and school fees, translated into Spanish."></a><figcaption><strong>Translation.</strong> An open-text answer translated into Spanish by Gemma 4 on the box.</figcaption></figure>
+<div class="figures figures--half">
+<figure><a href="static/home/kobo-analysis.jpg"><img src="static/home/kobo-analysis.jpg" width="1220" height="1600" alt="The Analysis tab with three questions answered and marked AI generated, Please verify if correct: main water source River or stream; needs mentioned Water infrastructure repair and School fees; number of children 5."></a><figcaption><strong>Qualitative analysis</strong> on the box.</figcaption></figure>
+<div>
+<p>Analysis questions are set up once per project: a single choice, multiple choices, a number, a tag or free text. For this interview, the box answered all three correctly: the main water source is a river or stream, the needs mentioned are repairing the borehole and school fees, and the respondent has five children.</p>
+<p>Each answer stays marked <em>AI generated</em>, with "Please verify if correct", until someone ticks <strong>Verified</strong> or changes it.</p>
+</div>
+</div>
 <p class="note">AI output is always a suggestion. Staff see it next to the source, correct it, and decide what is kept. How well it works depends on the language: <a href="#results">see the results</a>, and test each deployment's languages before relying on it.</p>
 </section>
 
@@ -165,7 +173,7 @@
     <tr><td>Windows and Mac</td><td>QGIS (long-term release) for maps from Kobo GPS data; LibreOffice for editing XLSForms and opening exports</td></tr>
   </tbody>
 </table></div>
-<!-- figure:standards -->
+<figure><a href="static/home/standards.jpg"><img src="static/home/standards.jpg" width="1000" height="1146" alt="The Humanitarian standards section of the kit's home page: the Sphere Handbook in English, French, Spanish and Arabic, the child protection minimum standards in the same four languages, and the INEE Minimum Standards for Education, each with its edition, size and SHA-256."></a><figcaption>Humanitarian standards on the kit's home page, each with its edition, size and fingerprint.</figcaption></figure>
 <p>PDFs open in the browser; installers download. Each deployment can add what its teams need: sector guidance, national protocols, guides in other languages, as long as their licences allow it. The standards come from the open-access editions of their publisher; Sphere and the child protection standards allow copies for programme activities, crediting the copyright holder.</p>
 </section>
 

@@ -110,6 +110,15 @@ Testing W2 on the CPU droplet (state kept in the snapshot):
   aren't benchmarks.
 - **E2E:** `remote/e2e-nlp.py` covers qual, translation and transcription. Run it as
   `e2e`, a regular user, password in `/root/e2e-user.pw`.
+- **Web sign-in fails offline for unverified emails (found 2026-10-30).** KPI runs with
+  `ACCOUNT_EMAIL_VERIFICATION = mandatory`, so signing in as a user whose email isn't
+  verified makes allauth send a confirmation mail; with no mail server the login POST
+  returns 500. API tokens are unaffected, which is why the tests never hit it. On the rig
+  `e2e`'s `EmailAddress` is now marked verified. For the kit: the user-creation script must
+  mark emails verified (or the box sets verification to `none`), and mail should go to a
+  backend that doesn't connect out.
+- **Homepage screenshots:** `site/kobo-shots.py` runs in the Playwright image on the
+  droplet (command in its docstring, plus `--add-host` for the four `*.kobo.local` names).
 - **Firewall:** this network's outgoing IP rotates (several changes on 2026-10-28).
   When SSH times out, compare `curl -4 ifconfig.me` with the firewall's inbound rules and
   add the new IP with `doctl compute firewall add-rules` (don't replace the list: the

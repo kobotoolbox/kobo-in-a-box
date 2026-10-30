@@ -497,3 +497,5 @@ details > div > :last-child { margin-bottom: 0; }
 .prose svg.chart { display: block; width: 100%; height: auto; margin: 0.5rem 0; }
 .prose figure svg.chart + figcaption { margin-top: 0.25rem; }
 .prose pre { font-size: 0.8rem; }
+.prose .figures--half { grid-template-columns: 1fr 1fr; }
+@media (max-width: 640px) { .prose .figures--half { grid-template-columns: 1fr; } }
