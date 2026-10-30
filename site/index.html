@@ -181,7 +181,13 @@
 <section id="cases">
 <h2>Case management (optional)</h2>
 <p>Some deployments need to follow up on what forms find: referrals, complaints, protection concerns. The kit can run <a href="https://www.espocrm.com">EspoCRM</a>, an open-source case management system, at <code>cases.kobo.local</code>, also with no internet. It's off unless a deployment needs it, and the home page links to it while it runs.</p>
+<div class="figures figures--half">
+<figure><a href="static/home/landing-cases.jpg"><img src="static/home/landing-cases.jpg" width="900" height="605" alt="The kit's home page with a Case management section under KoboToolbox: an Open case management button and the note Follow-up of referrals and other cases from Kobo forms. Staff accounts only."></a><figcaption>The home page while case management runs.</figcaption></figure>
+<div><p>Case workers and supervisors sign in with their own EspoCRM accounts. Enumerators don't need one: they keep collecting in KoboCollect, and the cases come from their submissions.</p></div>
+</div>
 <p>A small bridge checks KoboToolbox every 30 seconds and opens a case for each submission that needs follow-up, routed to the right team with a priority and a follow-up time. Staff work the cases in EspoCRM: record the outcome, then close them. KoboToolbox's own settings are unchanged, and after either side has been down the bridge catches up without duplicating a case.</p>
+<figure><a href="static/home/cases-supervisor.jpg"><img src="static/home/cases-supervisor.jpg" width="1440" height="900" alt="EspoCRM's Cases list as the supervisor, 30 cases: names such as Suspected cholera, Child danger signs, Severe acute malnutrition and Bloody diarrhoea, each with status New or Closed, priority Urgent, High or Normal, a follow-up time and the teams it was sent to."></a><figcaption>The supervisor's view: every case the bridge opened from the test visits, with its priority, follow-up deadline and teams. Made-up data.</figcaption></figure>
+<figure><a href="static/home/case-urgent.jpg"><img src="static/home/case-urgent.jpg" width="1280" height="1000" alt="An urgent case, Child danger signs: Child under 5, Zone 4, created by kobo-bridge for the Referral coordinators team. The description lists the danger signs and the CHW's notes; referral details give the follow-up time, referral reason, health post, visit date, CHW, zone, household ID, the child's age and sex, and the caregiver's name and phone number, recorded because they agreed to a call back."></a><figcaption>One case, as the bridge opened it from a home visit: what the health worker found, where the child was referred, and by when to follow up. The caregiver's phone is there because they agreed to a call back.</figcaption></figure>
 <h4>Tested with community health referrals</h4>
 <p>Made-up visits by community health workers in a camp: children screened for danger signs and malnutrition, diarrhoea and dehydration, pregnant women for danger signs. The form works out the referral; the bridge opens the case.</p>
 <div class="table-scroll"><table>
@@ -196,10 +202,11 @@
 </table></div>
 <ul>
   <li><strong>27 of 27 checks passed, online and offline</strong>, including a cold start with the internet blocked. Every expected case opened within 16–32 seconds, with no duplicates. A packet capture saw no outgoing traffic.</li>
-  <li><strong>Roles:</strong> case workers see only their own team's cases and can't delete or export; supervisors see all cases; the bridge can only create cases. A caregiver's phone number reaches the case only if they agreed to be called back.</li>
+  <li><strong>Roles:</strong> case workers see only their own team's cases (the nutrition team's worker sees 15 of the 30 below) and can't delete or export; supervisors see all cases; the bridge can only create cases. A caregiver's phone number reaches the case only if they agreed to be called back.</li>
   <li><strong>Small:</strong> about 1.6 GB of software and 200 MB of memory when idle.</li>
   <li><strong>Not yet:</strong> case status back to KoboToolbox, updates when a submission is edited, the assistant reading cases, and a Swahili interface (EspoCRM has Arabic, French, Portuguese, Spanish, Turkish and about 30 others).</li>
 </ul>
+<figure><a href="static/home/cases-worker.jpg"><img src="static/home/cases-worker.jpg" width="1440" height="900" alt="The same Cases list signed in as the nutrition team's case worker: 15 cases, each involving the Nutrition (OTP) team, such as malnutrition and suspected cholera cases shared with surveillance."></a><figcaption>Signed in as the nutrition team's case worker: only the 15 cases that involve their team.</figcaption></figure>
 </section>
 
 <section id="results">
