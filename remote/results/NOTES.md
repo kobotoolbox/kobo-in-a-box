@@ -95,10 +95,14 @@ Found while building it (fixed in agents/):
   `dev` branch has reorganised providers, so recheck offline when bumping the version.
 - New projects require auth for OpenRosa submissions: the seeder sends the token.
 
+Bring-up runs from before these fixes, kept for the record, not results:
+`w4-pipeline-check-*` (0/1, timed out at 400 s), `w4-smoke-gemma-*` (0/2 three times, at
+300 s then ~40 s, then 2/2 in 2.5 s once fixed) and `w4-smoke-gptoss-*` (1/1).
+
 ## 2026-10-30: W11 case management, CPU rig (`s-8vcpu-32gb-amd`)
 
-`espocrm/e2e-espo.py --edge` (health referral scenario, real Kobo through the edge). The
-`w11-e2e-*.json` files are on the rig in `/root/kobo-box-ai/results/`.
+`espocrm/e2e-espo.py --edge` (health referral scenario, real Kobo through the edge),
+`w11-e2e-*.json` (pulled from the rig by `park.sh`).
 
 | Run | Egress | Result | Notes |
 |---|---|---|---|

@@ -22,7 +22,7 @@ are in [PLAN.md](PLAN.md); per-run results are in [remote/results/NOTES.md](remo
   - Agent: gpt-oss-120b (24/30 tasks, all writes right; 63 GB, so the 128 GB box only).
     Gemma 4 26B-A4B (22/30) is fine for questions, not for changing data.
 - **CPU only** (8 vCPU): KPI's AI features are usable (translation ~2 s, qual 6–11 s,
-  transcription ~2× real time, fine overnight). Agents aren't: OpenCode's ~21k-token prompt
+  transcription ~2× faster than real time on long recordings, about clip length on short ones; fine overnight). Agents aren't: OpenCode's ~21k-token prompt
   at ~31 tokens/s means minutes per step.
 
 **Next, in order:**
@@ -116,9 +116,11 @@ Testing W2 on the CPU droplet (state kept in the snapshot):
   `ACCOUNT_EMAIL_VERIFICATION = mandatory`, so signing in as a user whose email isn't
   verified makes allauth send a confirmation mail; with no mail server the login POST
   returns 500. API tokens are unaffected, which is why the tests never hit it. On the rig
-  `e2e`'s `EmailAddress` is now marked verified. For the kit: the user-creation script must
-  mark emails verified (or the box sets verification to `none`), and mail should go to a
-  backend that doesn't connect out.
+  `e2e`'s `EmailAddress` is now marked verified. Fix in `kobo-setup.py` (`offline_mail`):
+  `ACCOUNT_EMAIL_VERIFICATION=none` and KPI's file email backend, in the env file that
+  sets `EMAIL_BACKEND`. **Not run yet** (the rig was parked): next session, run
+  `kobo-setup.py --reconfigure`, check which file it changed, and sign in in a browser as
+  a new user with an unverified email, with `offline.sh on`.
 - **Homepage screenshots:** `site/kobo-shots.py` runs in the Playwright image on the
   droplet (command in its docstring, plus `--add-host` for the four `*.kobo.local` names).
 - **Firewall:** this network's outgoing IP rotates (several changes on 2026-10-28).

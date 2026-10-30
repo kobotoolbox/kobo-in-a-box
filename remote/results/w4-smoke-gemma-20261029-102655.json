@@ -1,0 +1,87 @@
+{
+  "summary": {
+    "label": "smoke-gemma",
+    "started": "2026-10-29T10:26:55",
+    "passed": 0,
+    "tasks": 2,
+    "by_category": {
+      "counts": "0/1",
+      "discovery": "0/1"
+    },
+    "median_secs": 300.0,
+    "tool_errors": 0
+  },
+  "results": [
+    {
+      "id": "count",
+      "category": "counts",
+      "prompt": "How many submissions does the W4 household water survey have?",
+      "checks": [
+        {
+          "ok": false,
+          "detail": "tool ['kobo_get_submission_count', 'kobo_get_submission_stats', 'kobo_list_projects', 'kobo_get_project', 'kobo_summarize_submissions']"
+        },
+        {
+          "ok": false,
+          "detail": "number 63.0"
+        }
+      ],
+      "passed": false,
+      "answer": "## Objective\n- Determine the total number of submissions for the W4 household water survey.\n\n## Important Details\n- (none)\n\n## Work State\n### Completed\n- (none)\n\n### Active\n- Query regarding the quantity of W4 household water survey submissions.\n\n### Blocked\n- (none)\n\n## Next Move\n1. Locate the dataset or source containing W4 household water survey submission counts.\n2. (none)\n\n## Relevant Files\n- (none)\nThe previous request exceeded the provider's size limit due to large media attachments. The conversation was compacted and media files were removed from context. If the user was asking about attached images or files, explain that the attachments were too large to process and suggest they try again with smaller or fewer files.\n\nContinue if you have next steps, or stop and ask for clarification if you are unsure how to proceed.\n## Objective\n- Determine the total number of submissions for the W4 household water survey.\n\n## Important Details\n- Media attachments in the conversation were too large to process and were removed from context.\n- If the user intended to reference attached images or files, they need to resubmit them with smaller or fewer files.\n\n## Work State\n### Completed\n- (none)\n\n### Active\n- Query regarding the quantity of W4 household water survey submissions.\n\n### Blocked\n- (none)\n\n## Next Move\n1. Locate the dataset or source containing W4 household water survey submission counts.\n2. (none)\n\n## Relevant Files\n- (none)\nThe previous request exceeded the provider's size limit due to large media attachments. The conversation was compacted and media files were removed from context. If the user was asking about attached images or files, explain that the attachments were too large to process and suggest they try again with smaller or fewer files.\n\nContinue if you have next steps, or stop and ask for clarification if you are unsure how to proceed.\n## Objective\n- Determine the total number of submissions for the W4 household water survey.\n\n## Important Details\n- Media attachments in the conversation were too large to process and were removed from context.\n- If the user was asking about attached images or files, they need to resubmit them with smaller or fewer files.\n\n## Work State\n### Completed\n- (none)\n\n### Active\n- Query regarding the quantity of W4 household water survey submissions.\n\n### Blocked\n- (none)\n\n## Next Move\n1. Locate the dataset or source containing W4 household water survey submission counts.\n2. (none)\n\n## Relevant Files\n- (none)\nThe previous request exceeded the provider's size limit due to large media attachments. The conversation was compacted and media files were removed from context. If the user was asking about attached images or files, explain that the attachments were too large to process and suggest they try again with smaller or fewer files.\n\nContinue if you have next steps, or stop and ask for clarification if you are unsure how to proceed.\n## Objective\n- Determine the total number of submissions for the W4 household water survey.\n\n## Important Details\n- Media attachments in the conversation were too large to process and were removed from context.\n- If the user was asking about attached images or files, they need to resubmit them with smaller or fewer files.\n\n## Work State\n### Completed\n- (none)\n\n### Active\n- Query regarding the quantity of W4 household water survey submissions.\n\n### Blocked\n- (none)\n\n## Next Move\n1. Locate the dataset or source containing W4 household water survey submission counts.\n2. (none)\n\n## Relevant Files\n- (none)\nThe previous request exceeded the provider's size limit due to large media attachments. The conversation was compacted and media files were removed from context. If the user was asking about attached images or files, explain that the attachments were too large to process and suggest they try again with smaller or fewer files.\n\nContinue if you have next steps, or stop and ask for clarification if you are unsure how to proceed.\n## Objective\n- Determine the total number of submissions for the W4 household water survey.\n\n## Important Details\n- Media attachments in the conversation were too large to process and were removed from context.\n- If the user was asking about attached images or files, they need to resubmit them with smaller or fewer files.\n\n## Work State\n### Completed\n- (none)\n\n### Active\n- Query regarding the quantity of W4 household water survey submissions.\n\n### Blocked\n- (none)\n\n## Next Move\n1. Locate the dataset or source containing W4 household water survey submission counts.\n2. (none)\n\n## Relevant Files\n- (none)\nThe previous request exceeded the provider's size limit due to large media attachments. The conversation was compacted and media files were removed from context. If the user was asking about attached images or files, explain that the attachments were too large to process and suggest they try again with smaller or fewer files.\n\nContinue if you have next steps, or stop and ask for clarification if you are unsure how to proceed.\n## Objective\n- Determine the total number of submissions for the W4 household water survey.\n\n## Important Details\n- Media attachments in the conversation were too large to process and were removed from context.\n- If the user was asking about attached images or files, they need to resubmit them with smaller or fewer files.\n\n## Work State\n### Completed\n- (none)\n\n### Active\n- Query regarding the quantity of W4 household water survey submissions.\n\n### Blocked\n- (none)\n\n## Next Move\n1. Locate the dataset or source containing W4 household water survey submission counts.\n2. (none)\n\n## Relevant Files\n- (none)\nThe previous request exceeded the provider's size limit due to large media attachments. The conversation was compacted and media files were removed from context. If the user was asking about attached images or files, explain that the attachments were too large to process and suggest they try again with smaller or fewer files.\n\nContinue if you have next steps, or stop and ask for clarification if you are unsure how to proceed.\n## Objective\n- Determine the total number of submissions for the W4 household water survey.\n\n## Important Details\n- Media attachments in previous turns exceeded the provider's size limit and were removed from context.\n- If the user was asking about attached images or files, they must resubmit them with smaller or fewer files.\n\n## Work State\n### Completed\n- (none)\n\n### Active\n- Query regarding the quantity of W4 household water survey submissions.\n\n### Blocked\n- (none)\n\n## Next Move\n1. Locate the dataset or source containing W4 household water survey submission counts.\n2. (none)\n\n## Relevant Files\n- (none)\nThe previous request exceeded the provider's size limit due to large media attachments. The conversation was compacted and media files were removed from context. If the user was asking about attached images or files, explain that the attachments were too large to process and suggest they try again with smaller or fewer files.\n\nContinue if you have next steps, or stop and ask for clarification if you are unsure how to proceed.",
+      "tools": [],
+      "errors": [
+        "request (21185 tokens) exceeds the available context size (16384 tokens), try increasing it",
+        "request (21371 tokens) exceeds the available context size (16384 tokens), try increasing it",
+        "request (21409 tokens) exceeds the available context size (16384 tokens), try increasing it",
+        "request (21410 tokens) exceeds the available context size (16384 tokens), try increasing it"
+      ],
+      "steps": 7,
+      "tokens": {
+        "total": 6555,
+        "input": 2669,
+        "output": 943,
+        "reasoning": 0,
+        "cache.write": 0,
+        "cache.read": 2943
+      },
+      "secs": 300.0,
+      "timed_out": true
+    },
+    {
+      "id": "who-am-i",
+      "category": "discovery",
+      "prompt": "Which Kobo account and server are you connected to?",
+      "checks": [
+        {
+          "ok": false,
+          "detail": "tool ['kobo_whoami']"
+        },
+        {
+          "ok": false,
+          "detail": "says ['kf.kobo.local'] (missing ['kf.kobo.local'])"
+        }
+      ],
+      "passed": false,
+      "answer": "## Objective\n- Determine the specific Kobo account and server to which the agent is currently connected.\n\n## Important Details\n- (none)\n\n## Work State\n### Completed\n- (none)\n\n### Active\n- Investigating current connection status to Kobo account and server.\n\n### Blocked\n- (none)\n\n## Next Move\n1. Provide the specific Kobo account and server connection details.\n2. (none)\n\n## Relevant Files\n- (none)\nThe previous request exceeded the provider's size limit due to large media attachments. The conversation was compacted and media files were removed from context. If the user was asking about attached images or files, explain that the attachments were too large to process and suggest they try again with smaller or fewer files.\n\nContinue if you have next steps, or stop and ask for clarification if you are unsure how to proceed.\n## Objective\n- Determine the specific Kobo account and server to which the agent is currently connected.\n- Handle user requests regarding large media attachments by informing the user of size limits.\n\n## Important Details\n- If user inquires about attachments, explain they were too large to process.\n- Suggest users try again with smaller or fewer files.\n\n## Work State\n### Completed\n- (none)\n\n### Active\n- Investigating current connection status to Kobo account and server.\n\n### Blocked\n- (none)\n\n## Next Move\n1. Provide the specific Kobo account and server connection details.\n2. (none)\n\n## Relevant Files\n- (none)\nThe previous request exceeded the provider's size limit due to large media attachments. The conversation was compacted and media files were removed from context. If the user was asking about attached images or files, explain that the attachments were too large to process and suggest they try again with smaller or fewer files.\n\nContinue if you have next steps, or stop and ask for clarification if you are unsure how to proceed.\n## Objective\n- Determine the specific Kobo account and server to which the agent is currently connected.\n- Handle user requests regarding large media attachments by informing the user of size limits.\n\n## Important Details\n- If user inquires about attachments, explain they were too large to process and suggest trying again with smaller or fewer files.\n\n## Work State\n### Completed\n- (none)\n\n### Active\n- Investigating current connection status to Kobo account and server.\n\n### Blocked\n- (none)\n\n## Next Move\n1. Provide the specific Kobo account and server connection details.\n2. (none)\n\n## Relevant Files\n- (none)\nThe previous request exceeded the provider's size limit due to large media attachments. The conversation was compacted and media files were removed from context. If the user was asking about attached images or files, explain that the attachments were too large to process and suggest they try again with smaller or fewer files.\n\nContinue if you have next steps, or stop and ask for clarification if you are unsure how to proceed.\n## Objective\n- Determine the specific Kobo account and server to which the agent is currently connected.\n- Handle user requests regarding large media attachments by informing the user of size limits.\n\n## Important Details\n- If user inquires about attachments, explain they were too large to process and suggest trying again with smaller or fewer files.\n\n## Work State\n### Completed\n- (none)\n\n### Active\n- Investigating current connection status to Kobo account and server.\n\n### Blocked\n- (none)\n\n## Next Move\n1. Provide the specific Kobo account and server connection details.\n2. (none)\n\n## Relevant Files\n- (none)\nThe previous request exceeded the provider's size limit due to large media attachments. The conversation was compacted and media files were removed from context. If the user was asking about attached images or files, explain that the attachments were too large to process and suggest they try again with smaller or fewer files.\n\nContinue if you have next steps, or stop and ask for clarification if you are unsure how to proceed.\n## Objective\n- Determine the specific Kobo account and server connection status.\n- Handle user requests regarding large media attachments by informing the user of size limits.\n\n## Important Details\n- If user inquires about attachments, explain they were too large to process and suggest trying again with smaller or fewer files.\n\n## Work State\n### Completed\n- (none)\n\n### Active\n- Investigating current connection status to Kobo account and server.\n\n### Blocked\n- (none)\n\n## Next Move\n1. Provide the specific Kobo account and server connection details.\n2. (none)\n\n## Relevant Files\n- (none)\nThe previous request exceeded the provider's size limit due to large media attachments. The conversation was compacted and media files were removed from context. If the user was asking about attached images or files, explain that the attachments were too large to process and suggest they try again with smaller or fewer files.\n\nContinue if you have next steps, or stop and ask for clarification if you are unsure how to proceed.",
+      "tools": [],
+      "errors": [
+        "request (21184 tokens) exceeds the available context size (16384 tokens), try increasing it",
+        "request (21370 tokens) exceeds the available context size (16384 tokens), try increasing it",
+        "request (21411 tokens) exceeds the available context size (16384 tokens), try increasing it",
+        "request (21408 tokens) exceeds the available context size (16384 tokens), try increasing it",
+        "request (21403 tokens) exceeds the available context size (16384 tokens), try increasing it"
+      ],
+      "steps": 5,
+      "tokens": {
+        "total": 4533,
+        "input": 2658,
+        "output": 655,
+        "reasoning": 0,
+        "cache.write": 0,
+        "cache.read": 1220
+      },
+      "secs": 300.0,
+      "timed_out": true
+    }
+  ]
+}

@@ -116,7 +116,7 @@ All of these allow commercial use. **Avoid NLLB-200**: its licence is non-commer
 
 | Job | First choice | Alternatives / notes |
 |---|---|---|
-| Transcription | **Whisper large-v3-turbo** (MIT), via whisper.cpp. Measured: ~2% WER on FLEURS Spanish, ~2× real time on 8 vCPU | Gemma 4 E4B audio: measured 2.2% on the same clips, but **clips are capped at 30 s**, so you'd need your own chunking. Whisper medium was barely faster on CPU |
+| Transcription | **Whisper large-v3-turbo** (MIT), via whisper.cpp. Measured: ~2% WER on FLEURS Spanish, ~2× faster than real time on 8 vCPU for long recordings (about clip length for clips under 30 s) | Gemma 4 E4B audio: measured 2.2% on the same clips, but **clips are capped at 30 s**, so you'd need your own chunking. Whisper medium was barely faster on CPU |
 | Translation | **Gemma 4** (Apache 2.0): E4B on small boxes, 26B-A4B on larger ones. Measured: chrF ~59 on FLEURS Spanish→English for E4B, 26B and gpt-oss alike | Pre-trained on 140+ languages, about 35 supported out of the box. Minority languages need a LoRA fine-tune or community models (e.g. Padauk/AI4Burmese) |
 | Qual analysis | **gpt-oss-120b** on a 128 GB box: same model as KPI's cloud qual | Gemma 4 26B-A4B or E4B on smaller boxes. Measured: all three 3/3 with KPI's strict parser, **with Gemma's thinking off through the chat template** (`--reasoning-budget 0` leaks reasoning into the answer and fails every case) |
 | Inference server | llama.cpp `llama-server`: OpenAI-compatible, CUDA/Vulkan/CPU | Ollama. Google's LiteRT-LM suits running inside an app more than serving several users |

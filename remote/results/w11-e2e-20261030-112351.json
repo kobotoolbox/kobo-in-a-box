@@ -1,0 +1,144 @@
+{
+  "started": "2026-10-30T11:23:51.165787+00:00",
+  "kobo": "box",
+  "uid": "aTkVSVQpDry645UbFtMBju",
+  "passed": 27,
+  "total": 27,
+  "checks": [
+    {
+      "check": "form created",
+      "ok": true,
+      "detail": "aTkVSVQpDry645UbFtMBju"
+    },
+    {
+      "check": "form deployed",
+      "ok": true,
+      "detail": 200
+    },
+    {
+      "check": "12 visits submitted",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "9 cases from the first 12 visits",
+      "ok": true,
+      "detail": "9 after 6s"
+    },
+    {
+      "check": "V01 case",
+      "ok": true,
+      "detail": "CS 21 Urgent, Referral coordinators"
+    },
+    {
+      "check": "V02 case",
+      "ok": true,
+      "detail": "CS 22 High, Nutrition (OTP)"
+    },
+    {
+      "check": "V03 case",
+      "ok": true,
+      "detail": "CS 23 Normal, Nutrition (OTP)"
+    },
+    {
+      "check": "V04 no case",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "V05 case",
+      "ok": true,
+      "detail": "CS 24 Urgent, Surveillance"
+    },
+    {
+      "check": "V06 case",
+      "ok": true,
+      "detail": "CS 25 Urgent, Nutrition (OTP), Surveillance"
+    },
+    {
+      "check": "V07 case",
+      "ok": true,
+      "detail": "CS 26 Urgent, Referral coordinators"
+    },
+    {
+      "check": "V08 no case",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "V09 case",
+      "ok": true,
+      "detail": "CS 27 High, Referral coordinators"
+    },
+    {
+      "check": "V10 no case",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "V11 case",
+      "ok": true,
+      "detail": "CS 28 Urgent, Nutrition (OTP), Referral coordinators"
+    },
+    {
+      "check": "V12 case",
+      "ok": true,
+      "detail": "CS 29 Urgent, Referral coordinators"
+    },
+    {
+      "check": "later visit picked up",
+      "ok": true,
+      "detail": "after 27s"
+    },
+    {
+      "check": "V13 case",
+      "ok": true,
+      "detail": "CS 30 High, Nutrition (OTP), Referral coordinators"
+    },
+    {
+      "check": "no duplicates",
+      "ok": true,
+      "detail": 10
+    },
+    {
+      "check": "coordinator sees only their team's cases",
+      "ok": true,
+      "detail": "6 of 10"
+    },
+    {
+      "check": "coordinator records an outcome",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "coordinator can't edit another team's case",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "coordinator can't delete",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "bridge can't edit",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "bridge can't delete",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "supervisor sees all",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "no external assets (http://127.0.0.1)",
+      "ok": true,
+      "detail": ""
+    }
+  ]
+}

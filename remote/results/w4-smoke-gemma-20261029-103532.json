@@ -1,0 +1,90 @@
+{
+  "summary": {
+    "label": "smoke-gemma",
+    "started": "2026-10-29T10:35:32",
+    "passed": 2,
+    "tasks": 2,
+    "by_category": {
+      "counts": "1/1",
+      "discovery": "1/1"
+    },
+    "median_secs": 2.5,
+    "tool_errors": 0
+  },
+  "results": [
+    {
+      "id": "count",
+      "category": "counts",
+      "prompt": "How many submissions does the W4 household water survey have?",
+      "checks": [
+        {
+          "ok": true,
+          "detail": "tool ['kobo_get_submission_count', 'kobo_get_submission_stats', 'kobo_list_projects', 'kobo_get_project', 'kobo_summarize_submissions']"
+        },
+        {
+          "ok": true,
+          "detail": "number 63.0"
+        }
+      ],
+      "passed": true,
+      "answer": "The W4 household water survey has 63 submissions.",
+      "tools": [
+        {
+          "name": "kobo_list_projects",
+          "status": "completed"
+        }
+      ],
+      "steps": 2,
+      "tokens": {
+        "total": 42580,
+        "input": 189,
+        "output": 39,
+        "reasoning": 0,
+        "cache.write": 0,
+        "cache.read": 42352
+      },
+      "errors": [],
+      "session": "ses_e78c5678fffeKOx4KaWU7W1i0j",
+      "from": "session",
+      "secs": 2.5,
+      "timed_out": false
+    },
+    {
+      "id": "who-am-i",
+      "category": "discovery",
+      "prompt": "Which Kobo account and server are you connected to?",
+      "checks": [
+        {
+          "ok": true,
+          "detail": "tool ['kobo_whoami']"
+        },
+        {
+          "ok": true,
+          "detail": "says ['kf.kobo.local']"
+        }
+      ],
+      "passed": true,
+      "answer": "I am connected to the server `http://kf.kobo.local` with the account `e2e@kf.kobo.local`.",
+      "tools": [
+        {
+          "name": "kobo_whoami",
+          "status": "completed"
+        }
+      ],
+      "steps": 2,
+      "tokens": {
+        "total": 42529,
+        "input": 130,
+        "output": 47,
+        "reasoning": 0,
+        "cache.write": 0,
+        "cache.read": 42352
+      },
+      "errors": [],
+      "session": "ses_e78c5589dffexKbZBWkBM6nTT9",
+      "from": "session",
+      "secs": 2.3,
+      "timed_out": false
+    }
+  ]
+}

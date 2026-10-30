@@ -1,0 +1,86 @@
+{
+  "summary": {
+    "label": "smoke-gemma",
+    "started": "2026-10-29T10:33:26",
+    "passed": 0,
+    "tasks": 2,
+    "by_category": {
+      "counts": "0/1",
+      "discovery": "0/1"
+    },
+    "median_secs": 41.8,
+    "tool_errors": 0
+  },
+  "results": [
+    {
+      "id": "count",
+      "category": "counts",
+      "prompt": "How many submissions does the W4 household water survey have?",
+      "checks": [
+        {
+          "ok": true,
+          "detail": "tool ['kobo_get_submission_count', 'kobo_get_submission_stats', 'kobo_list_projects', 'kobo_get_project', 'kobo_summarize_submissions']"
+        },
+        {
+          "ok": false,
+          "detail": "number 63.0"
+        }
+      ],
+      "passed": false,
+      "answer": "",
+      "tools": [
+        {
+          "name": "kobo_list_projects",
+          "status": "completed"
+        }
+      ],
+      "errors": [],
+      "steps": 1,
+      "tokens": {
+        "total": 21211,
+        "input": 21189,
+        "output": 22,
+        "reasoning": 0,
+        "cache.write": 0,
+        "cache.read": 0
+      },
+      "secs": 41.8,
+      "timed_out": false
+    },
+    {
+      "id": "who-am-i",
+      "category": "discovery",
+      "prompt": "Which Kobo account and server are you connected to?",
+      "checks": [
+        {
+          "ok": true,
+          "detail": "tool ['kobo_whoami']"
+        },
+        {
+          "ok": false,
+          "detail": "says ['kf.kobo.local'] (missing ['kf.kobo.local'])"
+        }
+      ],
+      "passed": false,
+      "answer": "",
+      "tools": [
+        {
+          "name": "kobo_whoami",
+          "status": "completed"
+        }
+      ],
+      "errors": [],
+      "steps": 1,
+      "tokens": {
+        "total": 21199,
+        "input": 20,
+        "output": 11,
+        "reasoning": 0,
+        "cache.write": 0,
+        "cache.read": 21168
+      },
+      "secs": 9.8,
+      "timed_out": false
+    }
+  ]
+}

@@ -55,6 +55,7 @@
     <li><a href="#ai">AI in KoboToolbox</a></li>
     <li><a href="#assistant">The assistant</a></li>
     <li><a href="#library">Offline library</a></li>
+    <li><a href="#cases">Case management</a></li>
     <li><a href="#results">Results</a></li>
     <li><a href="#models">Models</a></li>
     <li><a href="#hardware">Hardware</a></li>
@@ -175,6 +176,30 @@
 </table></div>
 <figure><a href="static/home/standards.jpg"><img src="static/home/standards.jpg" width="1000" height="1146" alt="The Humanitarian standards section of the kit's home page: the Sphere Handbook in English, French, Spanish and Arabic, the child protection minimum standards in the same four languages, and the INEE Minimum Standards for Education, each with its edition, size and SHA-256."></a><figcaption>Humanitarian standards on the kit's home page, each with its edition, size and fingerprint.</figcaption></figure>
 <p>PDFs open in the browser; installers download. Each deployment can add what its teams need: sector guidance, national protocols, guides in other languages, as long as their licences allow it. The standards come from the open-access editions of their publisher; Sphere and the child protection standards allow copies for programme activities, crediting the copyright holder.</p>
+</section>
+
+<section id="cases">
+<h2>Case management (optional)</h2>
+<p>Some deployments need to follow up on what forms find: referrals, complaints, protection concerns. The kit can run <a href="https://www.espocrm.com">EspoCRM</a>, an open-source case management system, at <code>cases.kobo.local</code>, also with no internet. It's off unless a deployment needs it, and the home page links to it while it runs.</p>
+<p>A small bridge checks KoboToolbox every 30 seconds and opens a case for each submission that needs follow-up, routed to the right team with a priority and a follow-up time. Staff work the cases in EspoCRM: record the outcome, then close them. KoboToolbox's own settings are unchanged, and after either side has been down the bridge catches up without duplicating a case.</p>
+<h4>Tested with community health referrals</h4>
+<p>Made-up visits by community health workers in a camp: children screened for danger signs and malnutrition, diarrhoea and dehydration, pregnant women for danger signs. The form works out the referral; the bridge opens the case.</p>
+<div class="table-scroll"><table>
+  <thead><tr><th>Referral</th><th>Team</th><th>Priority</th><th>Follow up within</th></tr></thead>
+  <tbody>
+    <tr><td>Suspected cholera</td><td>Surveillance</td><td>Urgent</td><td>6 hours</td></tr>
+    <tr><td>Child or pregnancy danger signs</td><td>Referral coordinators</td><td>Urgent</td><td>24 hours</td></tr>
+    <tr><td>Bloody or persistent diarrhoea</td><td>Referral coordinators</td><td>High</td><td>48 hours</td></tr>
+    <tr><td>Severe acute malnutrition</td><td>Nutrition</td><td>High</td><td>48 hours</td></tr>
+    <tr><td>Moderate acute malnutrition</td><td>Nutrition</td><td>Normal</td><td>7 days</td></tr>
+  </tbody>
+</table></div>
+<ul>
+  <li><strong>27 of 27 checks passed, online and offline</strong>, including a cold start with the internet blocked. Every expected case opened within 16–32 seconds, with no duplicates. A packet capture saw no outgoing traffic.</li>
+  <li><strong>Roles:</strong> case workers see only their own team's cases and can't delete or export; supervisors see all cases; the bridge can only create cases. A caregiver's phone number reaches the case only if they agreed to be called back.</li>
+  <li><strong>Small:</strong> about 1.6 GB of software and 200 MB of memory when idle.</li>
+  <li><strong>Not yet:</strong> case status back to KoboToolbox, updates when a submission is edited, the assistant reading cases, and a Swahili interface (EspoCRM has Arabic, French, Portuguese, Spanish, Turkish and about 30 others).</li>
+</ul>
 </section>
 
 <section id="results">
@@ -397,6 +422,7 @@
     <tr><td>Offline library</td><td>Working in testing, with humanitarian standards added</td></tr>
     <tr><td>AI in KoboToolbox</td><td>Working end to end in testing; the changes pass KoboToolbox's own test suite and are meant for the main product</td></tr>
     <tr><td>The assistant</td><td>Working in testing on the 30 tasks; next, several users and shorter instructions for speed</td></tr>
+    <tr><td>Case management (optional)</td><td>Working in testing with a health referral scenario, online and offline</td></tr>
     <tr><td>Dashboards and knowledge base</td><td>Built for KoboToolbox online; being adapted to run on the kit</td></tr>
     <tr><td>Field hardware</td><td>One recommended unit to buy and test</td></tr>
     <tr><td>Installation from one USB stick</td><td>Planned, with each kit's own passwords and keys made on first start</td></tr>

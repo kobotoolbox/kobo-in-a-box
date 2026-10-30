@@ -1,0 +1,52 @@
+{
+  "summary": {
+    "label": "smoke-gptoss",
+    "started": "2026-10-29T10:49:41",
+    "passed": 1,
+    "tasks": 1,
+    "by_category": {
+      "discovery": "1/1"
+    },
+    "median_secs": 53.7,
+    "tool_errors": 0
+  },
+  "results": [
+    {
+      "id": "who-am-i",
+      "category": "discovery",
+      "prompt": "Which Kobo account and server are you connected to?",
+      "checks": [
+        {
+          "ok": true,
+          "detail": "tool ['kobo_whoami']"
+        },
+        {
+          "ok": true,
+          "detail": "says ['kf.kobo.local']"
+        }
+      ],
+      "passed": true,
+      "answer": "e2e@kf.kobo.local on http://kf.kobo.local",
+      "tools": [
+        {
+          "name": "kobo_whoami",
+          "status": "completed"
+        }
+      ],
+      "steps": 2,
+      "tokens": {
+        "total": 36496,
+        "input": 18256,
+        "output": 67,
+        "reasoning": 0,
+        "cache.write": 0,
+        "cache.read": 18173
+      },
+      "errors": [],
+      "session": "ses_e78b92d3effeDr5y8opIWdq6Ap",
+      "from": "session",
+      "secs": 53.7,
+      "timed_out": false
+    }
+  ]
+}
