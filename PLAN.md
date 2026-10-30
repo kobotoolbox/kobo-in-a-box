@@ -6,6 +6,7 @@ Goal: one field device that runs KoboToolbox fully offline, plus:
 2. **AI agents**: OpenCode and OpenWork on a local model, using the Kobo MCP and data analysis tools, for field staff with no internet.
 3. **Dashboards**: the agent builds live analysis dashboards (kobo-dash, through kobo-mcp's dashboard tools) that anyone on the box's Wi-Fi can open (3h).
 4. **Local knowledge base**: a RAG over Kobo, ODK and XLSForm docs plus whatever the deployment adds, exposed to the agent as MCP tools (3i).
+5. **Case management (optional)**: EspoCRM at `cases.kobo.local`, with a bridge that opens a case for each Kobo submission that needs follow-up (3j).
 
 Status (2026-10-22): scoping done. DigitalOcean test scripts are written (see `README.md`) but nothing has been run yet. No droplets or other cloud resources exist.
 
@@ -87,6 +88,7 @@ Prices are approximate and unverified for Oct 2026. Speeds are community-reporte
  │          └─ analysis sandbox (Python, DuckDB, pandas, LibreOffice…)     │
  │ box Postgres (kobo-dash, knowledge; separate from Kobo's own Postgres)  │
  │ edge: dash.kobo.local · mcp.kobo.local · tiles (/tiles) · /docs         │
+ │ optional: EspoCRM + MariaDB ── cases.kobo.local; bridge polls KPI API   │
  └─────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -382,6 +384,35 @@ Later: the support bot's chat widget on the `kobo.local` landing page and in KPI
 bot finishes the pgvector + OpenAI-compatible path (its `django-admin-logging.md` "Later"
 item), the online bot and the box can share one retrieval backend.
 
+### 3j. Case management on the box (EspoCRM, optional)
+
+Added 2026-10-30, for deployments that need follow-up on what forms find (referrals,
+complaints, protection) with no internet. Built and tested: `remote/espocrm/`
+([README](remote/espocrm/README.md)). Based on how Ponto tests EspoCRM
+(`~/code/ponto/infra/espocrm`, `scripts/espocrm_bootstrap.py`: a local Docker stack and an
+idempotent bootstrap over the REST API), with per-box passwords instead of fixed dev ones.
+
+- **Services** (`espocrm.sh up`, off unless started): EspoCRM 9.3.11, MariaDB 11.4,
+  EspoCRM's scheduler, and the bridge. EspoCRM is on `127.0.0.1:8084` (8080–8083 are
+  Kobo's nginx and the models), served by the edge as `cases.kobo.local`. The landing page
+  shows a "Case management" link while it runs.
+- **Templates as config** (`templates/*.toml`): which Kobo form, which submissions open a
+  case, field mapping, and routing rules (team, priority, follow-up time).
+  `espocrm-setup.py` creates the teams, Case fields and layouts from it. The bridge reads
+  the same file.
+- **Bridge:** polls KPI's data API with a view-only Kobo account (cursor on `_id`, dedupe
+  on the submission uuid), instead of KPI REST Services, so Kobo's config stays stock.
+- **Roles:** case workers see only their teams' cases and can't delete or export.
+  Supervisors see all. The bridge can only create.
+- **Offline:** EspoCRM's daily version checks (`s.espocrm.com`) turned off. No SMTP.
+  The UI bundles its assets. A packet capture saw no outbound traffic (W11).
+- **Test scenario:** community health referrals (CHW home visits: danger signs, MUAC,
+  suspected cholera, pregnancy danger signs → referral coordinators, nutrition,
+  surveillance). Made-up data.
+- **Footprint:** 1.6 GB of images, ~330 MB of data, ~200 MB of RAM idle.
+- **Phase 2:** status back to Kobo (validation status), edited submissions, an EspoCRM MCP
+  for the agents, UI languages (no Swahili in EspoCRM), local HTTPS.
+
 ## 4. Testing on DigitalOcean (extends README)
 
 The DigitalOcean rig covers **functional and offline** testing. Performance numbers only count from a real Strix Halo unit.
@@ -489,6 +520,14 @@ Done 2026-10-28 on kobo-mcp branch `w3-offline-box`; details in [STATUS.md](STAT
 - [ ] Ship the prebuilt index in the content pack
 - [ ] Phase 2: upload page, local FAQ, chat widget on the landing page
 
+### W11. Case management on the box (optional; see 3j)
+Built and tested 2026-10-30; details in [STATUS.md](STATUS.md).
+- [x] `remote/espocrm/`: compose (EspoCRM, MariaDB, scheduler, bridge), `espocrm.sh` (per-box secrets, pull, up, setup, backup/restore), edge route `cases.kobo.local`, landing page link
+- [x] `espocrm-setup.py`: teams, roles, Case fields and layouts from a template; bridge API user; version checks off
+- [x] `bridge.py`: Kobo → cases by polling, deduplicated, safe across restarts; 9 unit tests
+- [x] Health referral scenario (form with referral logic, 13 visits) and `e2e-espo.py`: 27/27 on the rig online and offline, no outbound packets
+- [ ] Phase 2: case status back to Kobo; edited submissions; EspoCRM MCP + agent tasks; UI languages for the pilot; per-box secrets from `firstboot.sh`; images in the content pack
+
 ## 6. Risks
 
 | Risk | Mitigation |
@@ -506,6 +545,7 @@ Done 2026-10-28 on kobo-mcp branch `w3-offline-box`; details in [STATUS.md](STAT
 | Power and heat in the field | Batch jobs on mains or solar; capped TDP on battery; measure in the pilot |
 | x86-only images lock out cheap ARM boards | Accept for now; revisit if Kobo publishes multi-arch images |
 | Dashboard specs and long workflows are too hard for smaller agent models | `generate_dashboard_layout` first, small edits after; tool profiles; shorter help text; measure in W4/W9 |
+| Case data (names, phones, health details) on a box that can be stolen or joined | Encrypted disk; roles by team, no delete or export for case workers; phone only with consent; owner-only backups; local HTTPS still open (section 7) |
 | Knowledge answers go stale, or cite a page the user can't open | Index the library's own copies; show the build date in answers' sources; refresh with the content pack |
 | Documents added to the knowledge base carry personal data or injected instructions | Box-wide by design, so a "no personal data" rule for collections; retrieved text marked as untrusted; deletes denied, writes ask |
 | Offline basemaps and boundaries only cover what was loaded | Choose regions with the partner before deployment; shapes and points still draw with no basemap |

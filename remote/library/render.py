@@ -141,6 +141,14 @@ def main():
         f'<p>KoboCollect server URL: <code>{kc}</code> '
         '(when adding the project, choose to enter the details manually).</p>',
     ]
+    # espocrm.sh up/down adds or removes this marker
+    if (LIBRARY_DIR / '.services' / 'cases').exists():
+        body += [
+            '<h2>Case management</h2>',
+            f'<p><a class="big" href="http://cases.{DOMAIN}/">Open case management</a></p>',
+            '<p class="hint">Follow-up of referrals and other cases from Kobo forms. '
+            'Staff accounts only.</p>',
+        ]
     guides = guide_items([r for r in rows if r['section'] == 'docs'], sums)
     if guides:
         body += ['<h2>Guides</h2>', '<ul>', *guides, '</ul>']

@@ -35,11 +35,14 @@ remote/
   results/              JSON per run, for comparing tiers; NOTES.md maps runs to settings
   agents/               W4: agent model, kobo-mcp and OpenCode; test data, 30 tasks, runner
                         (agents/README.md)
+  espocrm/              W11 (optional): EspoCRM case management at cases.kobo.local, and a
+                        bridge that opens cases from Kobo submissions (espocrm/README.md)
   library/
     manifest.tsv        installers and docs served at http://kobo.local (pinned versions, SHA-256)
     library.sh          build (fetch + docs + render) | check | up|down|logs (edge nginx on :80)
     render.py           landing page from the manifest and what's on disk
-    nginx/edge.conf     kf/kc/ee.* → Kobo on :8080; everything else → /srv/library
+    nginx/edge.conf     kf/kc/ee.* → Kobo on :8080; cases.* → EspoCRM on :8084;
+                        everything else → /srv/library
 ```
 
 ## Workflow
@@ -92,6 +95,10 @@ ssh root@<ip> 'bash /root/kobo-box-ai/kpi-test.sh'
 ssh root@<ip> 'python3 -I /root/kobo-box-ai/e2e-nlp.py e2e "$(cat /root/e2e-user.pw)"'
 
 # Agents (W4): see remote/agents/README.md for the two-droplet session
+
+# Case management (W11, optional): EspoCRM + the Kobo bridge, then the end-to-end check
+ssh root@<ip> '/root/kobo-box-ai/espocrm/espocrm.sh up --demo-users'
+ssh root@<ip> 'python3 -I /root/kobo-box-ai/espocrm/e2e-espo.py --edge'
 ```
 
 Add real test clips (any format ffmpeg reads) to `/opt/models/audio/` on the droplet.

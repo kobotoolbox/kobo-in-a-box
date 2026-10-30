@@ -94,3 +94,14 @@ Found while building it (fixed in agents/):
 - 1.19.5 bundles `@ai-sdk/openai-compatible`, so the box provider loads offline; OpenCode's
   `dev` branch has reorganised providers, so recheck offline when bumping the version.
 - New projects require auth for OpenRosa submissions: the seeder sends the token.
+
+## 2026-10-30: W11 case management, CPU rig (`s-8vcpu-32gb-amd`)
+
+`espocrm/e2e-espo.py --edge` (health referral scenario, real Kobo through the edge). The
+`w11-e2e-*.json` files are on the rig in `/root/kobo-box-ai/results/`.
+
+| Run | Egress | Result | Notes |
+|---|---|---|---|
+| 111817 | online | 27/27 | 9 cases after 16 s, the later visit after 27 s |
+| 112125 | offline | 27/27 | after `espocrm.sh down` + `up` with outbound blocked (cold start) |
+| 112351 | offline | 27/27 | with a packet capture on the stack's Docker network: 0 outbound packets over the run and ~2 min of EspoCRM's scheduler; a control connection to 1.1.1.1 was captured |

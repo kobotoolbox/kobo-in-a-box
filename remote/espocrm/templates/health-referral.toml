@@ -1,0 +1,202 @@
+# Community health referrals (test scenario, made-up data).
+#
+# Community health workers (CHWs) visit households in four zones of a displacement camp.
+# They screen children under five for the WHO/iCCM general danger signs and for acute
+# malnutrition (MUAC), ask about diarrhoea and dehydration, and check pregnant women for
+# danger signs. The Kobo form works out whether a referral is needed and why. Every visit
+# that needs one becomes a case in EspoCRM, sent to the team that follows it up:
+#
+#   Referral coordinators  danger signs (child or pregnancy), bloody or persistent diarrhoea: was the person
+#                          seen at the health post or hospital, and what happened?
+#   Nutrition (OTP)        severe/moderate acute malnutrition: enrolled in OTP or TSFP?
+#   Surveillance           suspected cholera: an alert the surveillance officer verifies
+#                          within hours, and a case to follow
+#
+# A visit can match several routes (suspected cholera in a child with SAM): the case goes
+# to every matching team, with the highest priority and the earliest follow-up.
+# The caregiver's phone is only collected when they agree to be called back.
+#
+# Used by espocrm-setup.py (teams, fields, layout) and bridge.py (Kobo → case).
+
+[form]
+# The Kobo project, matched by name (every deployed project with this name is polled)
+name = "Community health referral"
+# Only these submissions become cases
+when = { referral_needed = "yes" }
+
+[case]
+# {question} is the answer's label from [[field]] below; multiple answers are joined by ", "
+name = "{referral_reasons}: {patient_type}, {zone}"
+# Lines in the case description, skipped when the answer is empty
+details = [
+    ["Danger signs (child)", "danger_signs"],
+    ["Danger signs (pregnancy)", "pregnancy_danger_signs"],
+    ["MUAC (mm)", "muac_mm"],
+    ["Fever", "fever"],
+    ["Malaria RDT", "rdt"],
+    ["Diarrhoea", "diarrhoea"],
+    ["Severe dehydration", "severe_dehydration"],
+    ["CHW notes", "notes"],
+]
+
+# --- Routing: every matching route adds its team -------------------------------------
+# match: question = answer (for multiple-choice questions: the answer includes it)
+[[route]]
+match = { referral_reasons = "suspected_cholera" }
+team = "Surveillance"
+priority = "Urgent"
+follow_up_hours = 6
+
+[[route]]
+match = { referral_reasons = "child_danger_signs" }
+team = "Referral coordinators"
+priority = "Urgent"
+follow_up_hours = 24
+
+[[route]]
+match = { referral_reasons = "pregnancy_danger_signs" }
+team = "Referral coordinators"
+priority = "Urgent"
+follow_up_hours = 24
+
+[[route]]
+match = { referral_reasons = "dysentery" }
+team = "Referral coordinators"
+priority = "High"
+follow_up_hours = 48
+
+[[route]]
+match = { referral_reasons = "persistent_diarrhoea" }
+team = "Referral coordinators"
+priority = "High"
+follow_up_hours = 48
+
+[[route]]
+match = { referral_reasons = "sam" }
+team = "Nutrition (OTP)"
+priority = "High"
+follow_up_hours = 48
+
+[[route]]
+match = { referral_reasons = "mam" }
+team = "Nutrition (OTP)"
+priority = "Normal"
+follow_up_hours = 168
+
+# --- Fields: Kobo question → EspoCRM Case field ----------------------------------------
+# espo: the Case field (EspoCRM prefixes custom fields with "c"); none = description only
+# type: varchar | text | int | date | enum | multiEnum
+# options: Kobo choice name → label (the same names are stored in EspoCRM)
+
+[[field]]
+kobo = "referral_reasons"
+espo = "cReferralReasons"
+type = "multiEnum"
+label = "Referral reasons"
+options = { child_danger_signs = "Child danger signs", pregnancy_danger_signs = "Pregnancy danger signs", sam = "Severe acute malnutrition", mam = "Moderate acute malnutrition", suspected_cholera = "Suspected cholera", dysentery = "Bloody diarrhoea", persistent_diarrhoea = "Diarrhoea 14 days or more" }
+
+[[field]]
+kobo = "referred_to"
+espo = "cReferredTo"
+type = "enum"
+label = "Referred to"
+options = { health_post = "Zone health post", hospital = "District hospital", otp = "OTP site", tsfp = "TSFP site", ctu = "Cholera treatment unit" }
+
+[[field]]
+kobo = "visit_date"
+espo = "cVisitDate"
+type = "date"
+label = "Visit date"
+
+[[field]]
+kobo = "chw"
+espo = "cChw"
+type = "enum"
+label = "CHW"
+options = { chw_amani = "Amani Bizimana", chw_furaha = "Furaha Ndayishimiye", chw_imani = "Imani Kabura", chw_neema = "Neema Hakizimana" }
+
+[[field]]
+kobo = "zone"
+espo = "cZone"
+type = "enum"
+label = "Zone"
+options = { zone_1 = "Zone 1", zone_2 = "Zone 2", zone_3 = "Zone 3", zone_4 = "Zone 4" }
+
+[[field]]
+kobo = "household_id"
+espo = "cHouseholdId"
+type = "varchar"
+label = "Household ID"
+
+[[field]]
+kobo = "patient_type"
+espo = "cPatientType"
+type = "enum"
+label = "Patient"
+options = { child_u5 = "Child under 5", pregnant = "Pregnant woman", other = "Other household member" }
+
+[[field]]
+kobo = "age_months"
+espo = "cAgeMonths"
+type = "int"
+label = "Age (months)"
+
+[[field]]
+kobo = "sex"
+espo = "cSex"
+type = "enum"
+label = "Sex"
+options = { female = "Female", male = "Male" }
+
+[[field]]
+kobo = "caregiver_name"
+espo = "cCaregiverName"
+type = "varchar"
+label = "Caregiver or patient name"
+
+[[field]]
+kobo = "caregiver_phone"
+espo = "cCaregiverPhone"
+type = "varchar"
+label = "Phone (agreed to a call back)"
+
+[[field]]
+kobo = "muac_mm"
+espo = "cMuacMm"
+type = "int"
+label = "MUAC (mm)"
+
+# Filled in by staff, not from Kobo
+[[field]]
+espo = "cReferralOutcome"
+type = "enum"
+label = "Referral outcome"
+options = { arrived_treated = "Arrived, treated and sent home", admitted = "Arrived, admitted", enrolled = "Enrolled in programme", not_arrived = "Did not arrive", refused = "Refused referral", transferred = "Transferred", died = "Died" }
+
+# Description only (labels for the details lines)
+[[field]]
+kobo = "danger_signs"
+options = { unable_to_drink = "Unable to drink or breastfeed", vomits_everything = "Vomits everything", convulsions = "Convulsions", lethargic = "Lethargic or unconscious", chest_indrawing = "Chest indrawing", none = "None" }
+
+[[field]]
+kobo = "pregnancy_danger_signs"
+options = { bleeding = "Vaginal bleeding", severe_headache = "Severe headache or blurred vision", fever = "Fever", swelling = "Swelling of face or hands", reduced_movement = "Baby moving less", none = "None" }
+
+[[field]]
+kobo = "fever"
+options = { yes = "Yes", no = "No" }
+
+[[field]]
+kobo = "rdt"
+options = { positive = "Positive", negative = "Negative", not_done = "Not done" }
+
+[[field]]
+kobo = "diarrhoea"
+options = { none = "None", acute_watery = "Acute watery", bloody = "Bloody", persistent = "14 days or more" }
+
+[[field]]
+kobo = "severe_dehydration"
+options = { yes = "Yes", no = "No" }
+
+[[field]]
+kobo = "notes"

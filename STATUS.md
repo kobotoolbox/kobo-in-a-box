@@ -3,7 +3,7 @@
 Living reference for where the work stands. The overall plan and workstreams (W1–W7)
 are in [PLAN.md](PLAN.md); per-run results are in [remote/results/NOTES.md](remote/results/NOTES.md).
 
-## Where we are (2026-10-29)
+## Where we are (2026-10-30)
 
 - **Rigs:** the CPU rig (`s-8vcpu-32gb-amd`: Kobo, the KPI backport, kobo-mcp, OpenCode, test
   data) is parked as `kobo-box-ai-snapshot` in ams3. GPU work runs on a separate H100
@@ -14,6 +14,8 @@ are in [PLAN.md](PLAN.md); per-run results are in [remote/results/NOTES.md](remo
     `local-nlp-backend`; 425/414 tests pass);
   - kobo-mcp against the box's Kobo over plain http, with a tool profile (W3);
   - OpenCode agents doing field tasks through kobo-mcp (W4).
+  - Optional case management (W11): EspoCRM at `cases.kobo.local`, with Kobo submissions
+    opened as routed cases by a bridge (health referral scenario, 27/27 online and offline).
 - **Models:**
   - KPI batch work: Gemma 4 E4B with thinking off (qual 3/3, translation chrF ~59) and
     Whisper large-v3-turbo (~2% WER, Spanish). Together 6.3 GB: they fit an 8 GB GPU.
@@ -202,6 +204,29 @@ Details in [NOTES](remote/results/NOTES.md).
       (skill or instructions), and re-run the write tasks on Gemma with a skill
 - Session: CPU rig + H100 (`NAME=kobo-box-gpu SSH_PORT=443`), ~50 min of H100 (~$4); H100
   deleted, CPU rig parked (its snapshot now has the OpenCode image and the agent stack).
+
+### 3d. W11: case management on the box ✅ built and tested 2026-10-30
+`remote/espocrm/` ([README](remote/espocrm/README.md), PLAN 3j): EspoCRM 9.3.11 + MariaDB +
+scheduler + a Kobo → EspoCRM bridge, started with `espocrm.sh up` (optional). Modelled on
+Ponto's local EspoCRM testing (`~/code/ponto/infra/espocrm`), with per-box secrets.
+- [x] Template-driven setup (`templates/health-referral.toml`): teams, roles (case worker /
+      supervisor / bridge), Case fields, case page and list layouts; version checks off
+- [x] Bridge polls KPI's data API (cursor on `_id`, dedupe on uuid); 9 unit tests
+- [x] Scenario: CHW household visits (danger signs, MUAC, suspected cholera, pregnancy
+      danger signs) → referral coordinators, nutrition (OTP), surveillance; made-up data
+- [x] Rig (CPU, real Kobo through the edge): `e2e-espo.py --edge` **27/27 online, 27/27
+      offline** incl. an offline cold start; cases within 16–32 s; no duplicates; roles hold;
+      no external assets; packet capture on the stack's network: 0 outbound packets
+      (a control connection was captured). Laptop with a fake Kobo: 26/26
+- [x] Footprint: 1.6 GB images, ~330 MB data, ~200 MB RAM idle
+- [ ] Phase 2: status back to Kobo, edited submissions, an EspoCRM MCP for the agents, UI
+      languages (EspoCRM has no Swahili), images in the content pack, secrets via `firstboot.sh`
+- Found on the rig: `/root/kobo-install/.run.conf` still has a previous droplet's IP
+  (`local_interface_ip` 209.38.102.192), which `agents.sh` passes to kobo-mcp as `kf.kobo.local`.
+  The bridge uses `host-gateway` instead. Run `python3 run.py` in kobo-install after a restore,
+  as noted above. Port 8081 is the batch LLM's, so EspoCRM is on 8084.
+- The rig is still running with the stack up (`espocrm.sh down` to stop it). SSH from
+  92.184.112.0/24 was added to `kobo-box-ai-fw` for this session.
 
 ### 4. GPU tiers (W1) ✅ run on an H100, 2026-10-29
 RTX 4000/6000 Ada and L40S stayed out of stock, so `remote/gpu-tiers.sh` ran on

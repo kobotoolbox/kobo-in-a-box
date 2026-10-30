@@ -1,0 +1,83 @@
+# Case management on the box (W11): EspoCRM, its database and scheduler, and the bridge
+# that turns Kobo submissions into cases. Started by espocrm.sh, which sets the env.
+#
+#   db              MariaDB, only on this project's network
+#   espocrm         the web app, on 127.0.0.1:${ESPO_PORT} (edge: cases.kobo.local)
+#   espocrm-daemon  EspoCRM's scheduled jobs (notifications, cleanup)
+#   bridge          polls Kobo for new submissions of the template's form, creates cases
+
+services:
+  db:
+    image: ${ESPO_DB_IMAGE}
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD: ${ESPO_DB_ROOT_PASSWORD}
+      MARIADB_DATABASE: espocrm
+      MARIADB_USER: espocrm
+      MARIADB_PASSWORD: ${ESPO_DB_PASSWORD}
+    volumes:
+      - db:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+  espocrm:
+    image: ${ESPO_IMAGE}
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      ESPOCRM_DATABASE_PLATFORM: Mysql
+      ESPOCRM_DATABASE_HOST: db
+      ESPOCRM_DATABASE_USER: espocrm
+      ESPOCRM_DATABASE_PASSWORD: ${ESPO_DB_PASSWORD}
+      # Only read on the first start, when EspoCRM installs itself
+      ESPOCRM_ADMIN_USERNAME: admin
+      ESPOCRM_ADMIN_PASSWORD: ${ESPO_ADMIN_PASSWORD}
+      ESPOCRM_SITE_URL: ${ESPO_SITE_URL}
+    volumes:
+      - espocrm:/var/www/html
+    ports: ["127.0.0.1:${ESPO_PORT}:80"]
+
+  espocrm-daemon:
+    image: ${ESPO_IMAGE}
+    restart: unless-stopped
+    entrypoint: docker-daemon.sh
+    depends_on:
+      - espocrm
+    volumes:
+      - espocrm:/var/www/html
+
+  bridge:
+    profiles: [bridge]
+    image: ${BRIDGE_IMAGE}
+    restart: unless-stopped
+    depends_on:
+      - espocrm
+    # Kobo through the box's edge nginx (host network, port 80), like a phone on the
+    # Wi-Fi. host-gateway is the host itself, so a new box IP changes nothing here
+    extra_hosts:
+      - "kf.kobo.local:host-gateway"
+    environment:
+      ESPO_URL: http://espocrm
+      ESPO_API_KEY: ${ESPO_BRIDGE_API_KEY}
+      KOBO_URL: ${KOBO_URL}
+      KOBO_TOKEN_FILE: /run/kobo-token
+      BRIDGE_TEMPLATE: /app/templates/${BRIDGE_TEMPLATE}.toml
+      BRIDGE_STATE: /state/cursor.json
+      BRIDGE_POLL_SECONDS: ${BRIDGE_POLL_SECONDS}
+    # -u: -I ignores PYTHONUNBUFFERED, and logs would sit in the buffer
+    command: ["python3", "-I", "-u", "/app/bridge.py", "run"]
+    volumes:
+      - ./bridge.py:/app/bridge.py:ro
+      - ./templates:/app/templates:ro
+      - ${KOBO_TOKEN_FILE:-/dev/null}:/run/kobo-token:ro
+      - bridge-state:/state
+
+volumes:
+  db:
+  espocrm:
+  bridge-state:
