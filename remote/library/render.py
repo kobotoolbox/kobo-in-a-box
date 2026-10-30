@@ -18,6 +18,10 @@ DOMAIN = os.environ.get('KOBO_DOMAIN', 'kobo.local')
 HERE = Path(__file__).resolve().parent
 
 SECTIONS = {
+    'standards': (
+        'Humanitarian standards',
+        'Sphere and its companion standards. Tap to read in the browser.',
+    ),
     'android': (
         'Android phones and tablets',
         'Tap a file to download it, then open it to install. Android will ask you '
@@ -26,6 +30,7 @@ SECTIONS = {
     'windows': ('Windows laptops', ''),
     'macos': ('Mac laptops', ''),
 }
+INSTALLERS = ('android', 'windows', 'macos')  # downloaded; the rest open in the browser
 LANGUAGES = {'en': 'English', 'es': 'Español', 'fr': 'Français', 'ar': 'العربية'}
 
 CSS = """
@@ -83,7 +88,7 @@ def file_item(row, sums):
     notes = row.get('notes') or ''
     digest = sums.get(rel, '')
     return (
-        f'<li><a href="/{e(rel)}"{"" if row["section"] == "docs" else " download"}>{e(row["name"])}</a> '
+        f'<li dir="auto"><a href="/{e(rel)}"{" download" if row["section"] in INSTALLERS else ""}>{e(row["name"])}</a> '
         f'<span class="meta">{e(row["version"])} · {human_size(path.stat().st_size)}</span>'
         + (f'<br><span class="hint">{e(notes)}</span>' if notes not in ('', '-') else '')
         + (f'<br><span class="sha">SHA-256 {digest}</span>' if digest else '')

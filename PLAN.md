@@ -209,6 +209,15 @@ downloaded the KoboCollect APK from the laptop. This makes it part of the build.
   and Intel), for editing XLSForms and opening exports with no internet; Kobo user guide;
   QGIS documentation (HTML, en/es/fr), plus the training manual and the introduction to
   GIS as PDFs.
+- **Humanitarian standards (`standards`, 44 MB):** the Sphere Handbook 2018 (en/fr/es/ar),
+  CPMS 2019 (en/fr/es/ar) and the INEE Minimum Standards 2024 (en), the open-access PDFs
+  from Practical Action Publishing (spherestandards.org sits behind Cloudflare and refuses
+  scripted downloads). Sphere and CPMS allow reproduction for programme activities, crediting
+  the holder, but ask for permission before "posting online": confirm a kit counts as the
+  former. INEE is CC BY-NC-SA 4.0. LEGS 2023 is all rights reserved and stays out until
+  permission is given. Candidates: MERS, MISMA, Humanitarian Inclusion Standards, CHS 2024
+  (Wix site, no direct PDF link), the ICRC data protection handbook (Cambridge blocks
+  scripts), the IASC GBV guidelines and data responsibility guidance.
 - **Later candidates:** ODK Collect docs, Kiwix (`kiwix-serve` + ZIMs such as WikiMed and
   Wikipedia in the pilot languages), Organic Maps with regional map files, offline
   basemaps (MBTiles) for QGIS/QField, a read-only shared folder for the team.
@@ -346,6 +355,7 @@ Corpus (check each licence before shipping):
 | ODK | `getodk/docs` (Collect, form design, maps) | The bot takes 22 curated pages; take the repo |
 | ODK XForms spec | getodk.github.io/xforms-spec | Low boost: for edge cases |
 | QGIS / QField | Already in the library (3g) | |
+| Humanitarian standards | Already in the library (3g): Sphere, CPMS, INEE | PDFs: pdftotext, chunked by standard and key action; the licence allows the PDFs to be on the kit, but check that it also allows indexing them |
 | KoboToolbox Academy, kobotoolbox.org | `scraper.py` | Ask whether the Academy content may be redistributed |
 | Community forum | — | Not indexed by the bot (it searches Discourse live). An offline snapshot of solved threads needs permission; treat as later |
 | **Deployment knowledge** | Added per kit | See below |
@@ -448,6 +458,8 @@ Done 2026-10-28 on kobo-mcp branch `w3-offline-box`; details in [STATUS.md](STAT
 - [x] Tested locally (Docker): edge routing by Host, 60 MB upload through the proxy, range requests, APK MIME type, dotfiles blocked; Kobo guide + QGIS docs build, pass `check`, and crawl clean apart from upstream's own broken links
 - [x] On the droplet (2026-10-28): `library.sh build` (13 files, 5.3 GB with docs, all checksums pinned), `kobo-setup.py --reconfigure`, edge up
 - [x] Through the edge: form deploy, OpenRosa submission, qual 3/3 (`e2e-nlp.py`); 42 MB audio submission downloaded back byte-identical; KPI login and Enketo online/offline links 200; APK MIME type and resumable downloads from outside
+- [x] Humanitarian standards in the manifest (9 PDFs, hashes pinned from a local download 2026-10-30); `standards` section on the landing page
+- [ ] `library.sh fetch sphere-en …` on the droplet; ask Sphere/the Alliance about serving on kits
 - [ ] `offline.sh on`, then `library.sh check` and load every guide with outbound blocked
 - [ ] Wi-Fi hotspot + dnsmasq for `kobo.local`/`*.kobo.local` (physical box or a spare laptop with a USB Wi-Fi dongle); install the APKs on a real Android phone over HTTP
 - [ ] Landing page: KoboCollect configuration QR code and Wi-Fi QR code (per box, from firstboot)

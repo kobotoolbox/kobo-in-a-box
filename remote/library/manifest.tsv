@@ -1,8 +1,12 @@
 # Files served at http://kobo.local, fetched by `./library.sh fetch` while online.
 # Tab-separated. Columns must not be empty (use -); notes may be left off.
-#   section  android | windows | macos | docs
+#   section  android | windows | macos | docs | standards
 #   kind     file = offered as a download; site = zip, also unpacked into docs/<id>/
 #   sha256   - = not published upstream; fetch prints the hash to pin here
+# standards: open-access PDFs from Practical Action Publishing, the Humanitarian Standards
+# Partnership's publisher (spherestandards.org blocks scripted downloads). Sphere and CPMS
+# allow reproduction for programme activities, crediting the copyright holder; INEE is
+# CC BY-NC-SA 4.0. LEGS is all rights reserved, so it needs permission before it is added.
 id	section	kind	name	version	file	url	sha256	notes
 kobocollect	android	file	KoboCollect	v2025.2.3	KoboCollect-v2025.2.3.apk	https://github.com/kobotoolbox/collect/releases/download/v2025.2.3/KoboCollect-v2025.2.3.apk	81aaab0b473a0f7ecc7a5a5a16ccf54a1a1496910c0c91b32f4db38528b967da	Data collection app
 qfield-arm64	android	file	QField (most phones)	v4.3.7	qfield-v4.3.7-android-arm64.apk	https://github.com/opengisch/QField/releases/download/v4.3.7/qfield-v4.3.7-android-arm64.apk	5f577f576a199568eb0148c5ff07debf73fb4af8f7eb8f2a0ffa5096b5203d41	Maps and GIS data collection with QGIS projects
@@ -17,3 +21,12 @@ qgis-docs-es	docs	site	Documentación de QGIS (Español)	3.44	QGIS-3.44-Document
 qgis-docs-fr	docs	site	Documentation QGIS (Français)	3.44	QGIS-3.44-Documentation-fr.zip	https://docs.qgis.org/3.44/zip/QGIS-3.44-Documentation-fr.zip	87f2785b43a5fb7feb81b616a5d40550b3ce54539d8f2c55a2d3ac1caf23e5cf	Manuel utilisateur et de formation
 qgis-training-en	docs	file	QGIS training manual (PDF)	3.44	QGIS-3.44-TrainingManual-en.pdf	https://docs.qgis.org/3.44/pdf/en/QGIS-3.44-TrainingManual-en.pdf	9eea16ac8442bb6dd6ae35e3dc5f4505bc0ed563ef0032c122c33ee4f6586d67	For printing or reading on a laptop
 qgis-gis-intro-en	docs	file	A gentle introduction to GIS (PDF)	3.44	QGIS-3.44-GentleGISIntroduction-en.pdf	https://docs.qgis.org/3.44/pdf/en/QGIS-3.44-GentleGISIntroduction-en.pdf	2664458b990eb897e356e92716a38e91ddabe462371bbda4c736472a3339a0c7	Background for staff new to maps
+sphere-en	standards	file	The Sphere Handbook (English)	2018	Sphere-Handbook-2018-en.pdf	https://practicalactionpublishing.com/book/2048/download?type=download	844fa1b1b70d7c55e55a5e4bcca692a055f38ef749d2275f8bbc5f8b56cf41d8	Humanitarian Charter, Core Humanitarian Standard, minimum standards for water and sanitation, food and nutrition, shelter and health
+sphere-fr	standards	file	Le manuel Sphère (Français)	2018	Sphere-Handbook-2018-fr.pdf	https://practicalactionpublishing.com/book/1354/download?type=download	7961300d9d31cb2ab2e3662086520089096c9ddb1c22d613209fed9d5e2d9d93	Charte humanitaire et standards minimums de l’intervention humanitaire
+sphere-es	standards	file	El manual Esfera (Español)	2018	Sphere-Handbook-2018-es.pdf	https://practicalactionpublishing.com/book/602/download?type=download	dca209af5bf78cf72a802e5bf33953d2c034b0c96b6d6cf5884766899967a1c3	Carta Humanitaria y normas mínimas para la respuesta humanitaria
+sphere-ar	standards	file	دليل اسفير (العربية)	2018	Sphere-Handbook-2018-ar.pdf	https://practicalactionpublishing.com/book/2164/download?type=download	c85f8e35c0de19953563c44a385bb55eb8ce75258bf3a927dd0e461e529f4d42	الميثاق الإنساني والمعايير الدنيا في الاستجابة الإنسانية
+cpms-en	standards	file	Minimum Standards for Child Protection in Humanitarian Action (English)	2019	CPMS-2019-en.pdf	https://practicalactionpublishing.com/book/2497/download?type=download	58e36981526a7b99db6f0f2f1438d750f9035814942498007795e5d46515acac	Alliance for Child Protection in Humanitarian Action
+cpms-fr	standards	file	Standards minimums pour la protection de l’enfance dans l’action humanitaire (Français)	2019	CPMS-2019-fr.pdf	https://practicalactionpublishing.com/book/2519/download?type=download	6fac948a003563aa934f6d556d0517799986496431011daae3e26d1f4aac162b	Alliance pour la protection de l’enfance dans l’action humanitaire
+cpms-es	standards	file	Normas mínimas para la protección de la niñez y adolescencia en la acción humanitaria (Español)	2019	CPMS-2019-es.pdf	https://practicalactionpublishing.com/book/2516/download?type=download	baf301ae681cdd20c7224a7f6ec87510ffeb83f0b48eb94341932dd944bede74	Alianza para la Protección de la Niñez y Adolescencia en la Acción Humanitaria
+cpms-ar	standards	file	المعايير الدنيا لحماية الطفل في العمل الإنساني (العربية)	2019	CPMS-2019-ar.pdf	https://practicalactionpublishing.com/book/2500/download?type=download	40078796eb493ef40a5e01aa193210768fa0965256584e23bbeeb53543c1053e	التحالف من أجل حماية الطفل في العمل الإنساني
+inee-en	standards	file	INEE Minimum Standards for Education (English)	2024	INEE-Minimum-Standards-2024-en.pdf	https://practicalactionpublishing.com/book/3002/download?type=download	351b916ac12a3c764f39a54abddf453a3d4780c7ed2e1c3b6e4ecc21e65e36ef	Education in emergencies: preparedness, response and recovery

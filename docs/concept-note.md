@@ -39,13 +39,17 @@ The new generation of the kit adds four things:
    charts and short data stories that update as new submissions arrive, and that anyone
    on the box's Wi-Fi can open in a browser.
 3. **A local knowledge base.** The assistant draws on the KoboToolbox, KoboCollect,
-   XLSForm and ODK guides, and on whatever documents an organisation adds (procedures,
-   protocols, sector guidance, earlier assessments), so it can answer "how do I…?" and
-   "what does our protocol say…?" questions, pointing to the page it used.
+   XLSForm and ODK guides, the core humanitarian standards, and whatever documents an
+   organisation adds (procedures, protocols, sector guidance, earlier assessments), so it
+   can answer "how do I…?", "what does Sphere say…?" and "what does our protocol say…?"
+   questions, pointing to the page it used.
 4. **An offline library.** Any device on the box's Wi-Fi can open a local web page with
    the apps (KoboCollect, QGIS, QField, LibreOffice) and guides (the KoboToolbox user
    guide in English, Spanish and French; QGIS manuals) that teams need, so phones and
-   laptops can be set up from scratch in the field.
+   laptops can be set up from scratch in the field. It also holds the **core humanitarian
+   reference material**: the Sphere Handbook and the companion standards for child
+   protection and education, in English, French, Spanish and Arabic where available, so
+   assessments and programmes can be checked against the standards on site.
 
 The basic kit has already been used in the field, most recently in Kobo's response to
 Hurricane Melissa in Jamaica. The AI processing, the AI assistant and the library are
@@ -135,6 +139,24 @@ submissions, view maps and reports, and export to Excel, CSV or GIS formats.
 QGIS and QField for mapping, LibreOffice for editing forms and opening exports, and
 more as each deployment needs.
 
+**Programme and sector staff** have the humanitarian standards they design and assess
+against, readable on any phone or laptop on the Wi-Fi:
+
+| Standard | What it covers | Languages on the kit |
+|---|---|---|
+| **Sphere Handbook** (2018) | Humanitarian Charter, Protection Principles, Core Humanitarian Standard, and minimum standards for water, sanitation and hygiene; food security and nutrition; shelter and settlement; and health | English, French, Spanish, Arabic |
+| **Minimum Standards for Child Protection in Humanitarian Action** (CPMS, 2019) | Child protection risks, programme strategies, and child protection across other sectors | English, French, Spanish, Arabic |
+| **INEE Minimum Standards for Education** (2024) | Education in emergencies, from preparedness to recovery | English |
+
+These are a starting set. Other standards of the Humanitarian Standards Partnership
+(livestock, economic recovery, market analysis, inclusion of older people and people with
+disabilities), cluster and sector guidance (for example the IASC guidelines on
+gender-based violence, or WHO and UNICEF field guides), and national standards and
+protocols can be added for each deployment, as long as their licences allow it. A
+needs-assessment team can then check its questions and indicators against the relevant
+standard while designing the form, and compare results with it on site (litres of water
+per person per day, people per latrine, covered living space per person).
+
 **Anyone who is stuck** can ask the assistant. With no internet there is no help centre,
 forum or helpdesk to turn to, so the knowledge base stands in for them: "how do I make
 this question appear only for women over 18?", "why does KoboCollect say the form has an
@@ -152,9 +174,9 @@ assistant:
   administrative boundaries for the deployment's regions are loaded before the mission
   (maps still show points and shaded areas without a background). Desk research, which
   online uses the web, uses the documents in the knowledge base instead.
-- **The knowledge base** holds the official guides in English, Spanish and French and
-  works across languages: a question asked in another language still finds the right
-  page. Each kit's focal point can add documents before or during a deployment; they are
+- **The knowledge base** holds the official guides in English, Spanish and French, and
+  the humanitarian standards in the library, and works across languages: a question
+  asked in another language still finds the right page. Each kit's focal point can add documents before or during a deployment; they are
   indexed on the box. It is for reference material, not personal data: survey responses
   stay in KoboToolbox, where the assistant reaches them only with the user's own
   permissions.
@@ -255,7 +277,7 @@ a data-centre graphics card standing in for the recommended tier while it is out
 | AI assistant (agent) | Too slow without a graphics card. With one, on 30 realistic field requests about a test survey ("how many households per district?", "find the duplicates", "put the duplicates on hold"): the larger model (gpt-oss-120b) got **24 of 30** right, including every change to data; the smaller one (Gemma 4 26B) got **22 of 30**, reliable for questions but not for changes |
 | AI assistant safety | Both models refused every request to delete data (deleting is blocked) and never touched another server, also with internet blocked. Changes are set to need the user's confirmation; checking that this applies to every KoboToolbox action is part of the next round |
 | Memory needed per tier | Transcription plus translation and analysis fit a laptop graphics card with 8 GB. The larger assistant model needs about 63 GB, so it runs only on the recommended 128 GB tier |
-| Offline library | 13 installers and documents (about 5 GB), each checked against a published or recorded fingerprint; guides load with no internet; large uploads (a 40 MB audio interview) and downloads work through the box |
+| Offline library | 13 installers and documents (about 5 GB), each checked against a published or recorded fingerprint; guides load with no internet; large uploads (a 40 MB audio interview) and downloads work through the box. Nine humanitarian standards (Sphere, child protection, education; 44 MB) have since been added from their publisher's open-access editions, with their fingerprints recorded |
 
 Performance on the recommended field hardware still needs to be confirmed on a real
 device: this is the first purchase in the next phase. The assistant re-reads its
@@ -395,8 +417,9 @@ control, retention limits, and a data-sharing plan for when data moves to the cl
 - **One trained focal point per deployment** handles power, backups, user accounts and
   first-line troubleshooting. A short guide and checklist come with the kit.
 - **Local language interfaces.** KoboToolbox, KoboCollect and the user guides are
-  available in several languages; the library can include guides in the languages of
-  each deployment.
+  available in several languages, and Sphere has official translations in many more than
+  the four on the kit by default; the library can include guides and standards in the
+  languages of each deployment.
 - **Remote support is limited by design.** With no internet there is no remote
   helpdesk, so the kit must be robust and self-explanatory, and the focal point needs
   good preparation. The pilot will show what training is enough.
@@ -437,8 +460,9 @@ Being clear about limits is part of using the kit responsibly:
   once cleaning is finished.
 - **KoboCollect runs on Android.** Staff with iPhones or laptops can still collect data
   through web forms in the browser.
-- **The knowledge base and maps are only as complete and current as what was loaded**
-  before deployment. Desk research is limited to documents brought on the kit, and maps
+- **The knowledge base, standards and maps are only as complete and current as what
+  was loaded** before deployment. A kit carries the edition of each standard that was
+  current when it was prepared, and the landing page shows the edition. Desk research is limited to documents brought on the kit, and maps
   cover the regions prepared for the mission.
 - **AI quality in many languages is not yet proven**, and real field recordings (noise,
   overlapping speakers, dialects) will perform worse than benchmarks.
@@ -456,12 +480,14 @@ district. A response team arrives with two kits. Within hours, 30 enumerators ha
 KoboCollect installed from the kits and the assessment form loaded. Each evening, data
 from the day's villages is synced at the base, and the coordinator reviews a map of
 reported damage and needs to plan the next day's distributions, days before the
-network is back.
+network is back. The shelter and water teams compare what they find with the Sphere
+minimum standards, opened from the kit on their phones.
 
 **Protection monitoring in a displacement camp.** Monitors record interviews in the
 local language with consent. Overnight, the kit transcribes and translates them. In the
 morning, a protection officer reviews the translations alongside AI-suggested themes
-(safety concerns, access to services), corrects them, and flags urgent cases. No
+(safety concerns, access to services), corrects them, and flags urgent cases, using the
+child protection minimum standards on the kit for cases involving children. No
 recording leaves the camp, and nothing passes through a third-party service.
 
 **Multi-district assessment with a hub.** Four teams cover four districts, each with a
@@ -513,7 +539,7 @@ confirm speed, power draw and heat before buying pilot kits.
 | Phase | What | Status |
 |---|---|---|
 | **Foundations** | Offline KoboToolbox; cloud test environment with internet cut-off; AI models chosen and benchmarked | ✅ Done |
-| **Offline library** | Local landing page, app installers and guides; checked to work with no internet | ✅ Working in testing |
+| **Offline library** | Local landing page, app installers and guides; checked to work with no internet. Humanitarian standards added (Sphere, child protection, education). Next: confirm with the standards bodies that serving their publications on a kit is within their terms, and add sector standards for the pilot | ✅ Working in testing |
 | **AI processing in KoboToolbox** | Qualitative analysis, translation and transcription on local AI: working end to end and offline in testing. Next: languages for the pilot, and proposing the changes to the main KoboToolbox product | ✅ Working in testing |
 | **AI assistant** | Assistant connected to KoboToolbox data, with safety limits on what it can change: working offline in testing, with a 30-task test set comparing models. Next: sign-in for several users, guidance about each form, shorter instructions for speed | ✅ Working in testing; 1–2 weeks more |
 | **Dashboards** | Kobo's dashboard service running on the kit, built by the assistant; offline maps and boundaries for the deployment's regions | About 2 weeks, after the assistant connection |
@@ -550,7 +576,9 @@ confirm speed, power draw and heat before buying pilot kits.
   the AI assistant, dashboards and the knowledge base on the kit, and the one-USB
   installer.
 - **Share reference material:** procedures, protocols and sector guidance (in the
-  languages your teams use) that should travel with a kit's knowledge base.
+  languages your teams use) that should travel with a kit's library and knowledge base.
+- **Standards bodies:** permission to carry your publications, and their translations,
+  on kits for programme use, and early copies of new editions.
 - **Help with languages:** recordings and reference transcripts in the languages your
   operations use, so we can measure and improve AI quality for them.
 - **Host a pilot:** an operation where offline data collection, qualitative interviews or
@@ -631,8 +659,12 @@ those using a kit.
   submissions, attachments, validation statuses and analysis results between KoboToolbox
   servers, one project at a time, keeping each submission's unique ID so repeat runs
   don't create duplicates.
-- **Offline library:** a list of each app and guide, its exact version and its digital
-  fingerprint, used to download and check everything before deployment. Pages are
+- **Offline library:** a list of each app, guide and standard, its exact version and its
+  digital fingerprint, used to download and check everything before deployment. The
+  humanitarian standards are the open-access PDFs from Practical Action Publishing, the
+  publisher for the Humanitarian Standards Partnership; each one's licence is recorded
+  with it, and standards that don't allow redistribution are left out until their
+  publishers agree. Pages are
   checked automatically to make sure nothing tries to load from the internet.
 - **Security:** full-disk encryption unlocked by the computer's security chip (TPM);
   password-protected Wi-Fi and services; nothing reachable beyond the local network.
@@ -659,4 +691,6 @@ those using a kit.
 | **Knowledge base** | Documents the AI assistant searches to answer questions, citing the source (sometimes called RAG, retrieval-augmented generation) |
 | **Hub kit** | A kit at a base location that combines data from several field kits for analysis and reporting |
 | **Federated** | Several independent kits that each work on their own and share data with a hub when they can |
+| **Sphere Handbook** | The most widely used set of humanitarian standards: the Humanitarian Charter and minimum standards for water and sanitation, food and nutrition, shelter and health |
+| **Humanitarian Standards Partnership** | Sphere and the bodies behind its companion standards (child protection, education, livestock, economic recovery, market analysis, inclusion), which publish them together |
 | **kobo-transfer** | Kobo's open-source tool for copying projects and submissions between KoboToolbox servers |
