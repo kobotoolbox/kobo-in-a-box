@@ -1,0 +1,454 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kobo in a box: KoboToolbox, local AI and a library, with no internet</title>
+<meta name="description" content="A field kit that runs KoboToolbox, local open-weight AI models for transcription, translation and analysis, an AI assistant and an offline library, on its own Wi-Fi, with no internet. User guide and measured results.">
+<link rel="icon" href="static/site/icon.png" type="image/png">
+<link rel="stylesheet" href="static/site/home.css">
+</head>
+<body>
+<header class="header">
+  <div class="wrap">
+    <a class="header__brand" href="./"><img src="static/site/logo.svg" alt="KoboToolbox"><span class="header__product">In a box</span></a>
+    <ul class="header__nav">
+      <li><a href="#how">How it works</a></li>
+      <li><a href="#field">In the field</a></li>
+      <li><a href="#ai">AI</a></li>
+      <li><a href="#library">Library</a></li>
+      <li><a href="#results">Results</a></li>
+      <li><a href="#hardware">Hardware</a></li>
+    </ul>
+    <a class="button button--filled button--m" href="#results">See the results</a>
+  </div>
+</header>
+
+<main>
+<section class="banner">
+  <div class="wrap">
+    <h1>KoboToolbox, local AI and a library, with no internet</h1>
+    <p class="banner__lead">Kobo in a box is a field kit: a small computer, a Wi-Fi access point and a power station. Phones and laptops join its Wi-Fi to collect data with KoboToolbox, install apps, read guides and humanitarian standards, and have interviews transcribed, translated and analysed by open AI models running on the box itself.</p>
+    <div class="banner__buttons">
+      <a class="button button--filled" href="#field">How to use it</a>
+      <a class="button button--light" href="#results">Measured results</a>
+    </div>
+    <div class="shot"><img src="static/home/landing.jpg" width="1440" height="968" alt="The kit's home page at kobo.local in a laptop browser: a heading Kobo in a box, Everything here works without internet, on this Wi-Fi only; a button Open KoboToolbox and the KoboCollect server URL http://kc.kobo.local; then guides: the KoboToolbox user guide in English, Español and Français, QGIS documentation in three languages and two PDF manuals with their size and SHA-256."></div>
+  </div>
+</section>
+
+<section class="steps" aria-label="How it works">
+  <div class="wrap">
+    <ol>
+      <li><h3>Switch it on</h3><p>The kit starts KoboToolbox, the AI models and the library by itself, and opens its own Wi-Fi network. No SIM card, no internet.</p></li>
+      <li><h3>Join the Wi-Fi</h3><p>Phones, tablets and laptops join the kit's network with its password, the same way as any Wi-Fi.</p></li>
+      <li><h3>Open kobo.local</h3><p>The home page links to KoboToolbox, the KoboCollect app and every guide and standard on the box. Everything on it works offline.</p></li>
+    </ol>
+  </div>
+</section>
+
+<div class="wrap docs">
+<nav class="docs__nav" aria-label="On this page">
+  <ul>
+    <li><a href="#how">How it works</a></li>
+    <li><a href="#field">In the field</a></li>
+    <li><a href="#ai">AI in KoboToolbox</a></li>
+    <li><a href="#assistant">The assistant</a></li>
+    <li><a href="#library">Offline library</a></li>
+    <li><a href="#results">Results</a></li>
+    <li><a href="#models">Models</a></li>
+    <li><a href="#hardware">Hardware</a></li>
+    <li><a href="#privacy">Data protection</a></li>
+    <li><a href="#limits">Limits</a></li>
+    <li><a href="#status">Status</a></li>
+    <li><a href="#help">Questions</a></li>
+  </ul>
+</nav>
+
+<article class="prose">
+
+<section id="how">
+<h2>How it works</h2>
+<p>Humanitarian teams often work where internet access is missing, unreliable, expensive, monitored or shut down. Kobo in a box runs the full <a href="https://www.kobotoolbox.org">KoboToolbox</a> platform on a computer that travels with the team, so forms, submissions, photos, audio and analysis stay on a device the organisation controls.</p>
+<ul class="features">
+  <li><strong>KoboToolbox, offline</strong>The standard open-source release. Design and deploy forms, collect with KoboCollect or web forms, review, clean and export, all on the kit's Wi-Fi.</li>
+  <li><strong>Local AI in KoboToolbox</strong>Transcription of recorded interviews, translation, and AI-assisted qualitative analysis, through KoboToolbox's own screens, on models running on the box.</li>
+  <li><strong>An AI assistant</strong>Ask about the data in plain language: counts, breakdowns, duplicates, missing answers, a weekly digest. It works with your own KoboToolbox permissions and can't delete anything.</li>
+  <li><strong>An offline library</strong>App installers for Android, Windows and Mac, the KoboToolbox and QGIS guides, and core humanitarian standards such as Sphere, each checked against a fingerprint.</li>
+</ul>
+<p>A kit can run a project on its own and never connect to anything. Several kits can feed a <strong>hub kit</strong> at a base when they come back in range. Whenever a connection is available, a kit or the hub can sync to a KoboToolbox server online with <a href="https://github.com/kobotoolbox/kobo-transfer">kobo-transfer</a>, which keeps each submission's ID, so syncing twice never duplicates data.</p>
+<pre>  Phones, tablets and laptops on the kit's Wi-Fi
+                 │
+   ┌─────────────┴──────────────────────────────────────────┐
+   │  kobo.local          home page, apps, guides, standards │
+   │  kf.kobo.local       KoboToolbox (forms, data, exports) │
+   │  kc.kobo.local       KoboCollect server address         │
+   │        │                                                │
+   │        ▼                                                │
+   │  Local AI models     Whisper: transcription             │
+   │                      Gemma 4 / gpt-oss: translation,    │
+   │                      analysis and the assistant         │
+   │  Encrypted disk · nothing reachable beyond the Wi-Fi    │
+   └─────────────────────────────────────────────────────────┘
+                 │  optional
+   hub kit at base  ──▶  KoboToolbox online (when connected)</pre>
+<div class="note"><p>This is a working prototype. The basic kit (KoboToolbox and local file serving) has been used in a hurricane response. The AI features, the assistant and the library run in a test environment that simulates the kit, with all internet traffic cut off. The figures below come from that environment; the field hardware is still to be bought and measured.</p></div>
+</section>
+
+<section id="field">
+<h2>In the field</h2>
+
+<h3>Connect</h3>
+<p>Join the kit's Wi-Fi and open <code>kobo.local</code> in a browser. The page works the same on a phone. If a device can't find <code>kobo.local</code>, the kit's address (printed on its label card) shows the same page.</p>
+<div class="figures">
+<figure><img src="static/home/landing-phone.jpg" width="780" height="1688" alt="The same home page on a phone: Open KoboToolbox, the KoboCollect server URL, and the list of guides."><figcaption>The home page on a phone.</figcaption></figure>
+<div>
+<h4>Set up a phone for data collection</h4>
+<ol>
+  <li>On the home page, under <strong>Android phones and tablets</strong>, tap <strong>KoboCollect</strong>. When Android asks, allow installing apps from the browser for this install.</li>
+  <li>Open KoboCollect and add a project, choosing to <strong>enter the details manually</strong>.</li>
+  <li>Server URL: <code>http://kc.kobo.local</code>, with the enumerator's KoboToolbox username and password.</li>
+  <li>Download the form. From here on collection works exactly as with KoboToolbox online, including offline between syncs.</li>
+</ol>
+<p>QField, for map-based collection with QGIS projects, is on the same page, in two builds for newer and older phones.</p>
+</div>
+</div>
+
+<h3>Collect and sync</h3>
+<p>Enumerators collect as usual, away from the kit if needed. When they're back in range of its Wi-Fi, at the end of the day or at a base, submissions upload in seconds, with their photos and audio. In testing, a 42 MB audio interview uploaded through the kit and downloaded back byte for byte.</p>
+
+<h3>Supervise, clean and export</h3>
+<p><strong>Open KoboToolbox</strong> on the home page (<code>kf.kobo.local</code>) from any laptop on the Wi-Fi. Every KoboToolbox feature is there: the form builder, the data table, reports, maps, validation statuses, and exports to Excel, CSV, SPSS labels and GIS formats. Each person signs in with their own account and permissions, as they would online.</p>
+<!-- figure:kobo-table -->
+<p>The KoboToolbox user guide is on the kit in English, Spanish and French, with its links pointing at the local copy, so the help pages open with no internet.</p>
+<figure><img src="static/home/kobo-guide.jpg" width="1440" height="968" alt="The KoboToolbox help center home page, What do you need help with?, with topic cards for Getting Started, Account and Billing and Using the Formbuilder, served from kobo.local."><figcaption>The KoboToolbox user guide, served by the kit. Its pages load nothing from the internet.</figcaption></figure>
+</section>
+
+<section id="ai">
+<h2>AI in KoboToolbox</h2>
+<p>KoboToolbox already offers automatic transcription, translation and qualitative analysis online, through cloud services. On the kit, the same buttons in the same screens are answered by models on the box. Recordings and answers never leave it, and there's no per-minute fee.</p>
+<ul class="features">
+  <li><strong>Transcription</strong>A recorded interview from a KoboCollect audio question becomes text, in the language spoken. Whisper large-v3-turbo.</li>
+  <li><strong>Translation</strong>Transcripts and open-text answers translated into a working language. Gemma 4.</li>
+  <li><strong>Qualitative analysis</strong>Analysis questions you define ("Which water sources does the respondent mention?") get a suggested answer for staff to accept or change. Gemma 4, with KoboToolbox's own prompts.</li>
+  <li><strong>Background jobs</strong>Long recordings run in the background, so a slow kit doesn't time out; results appear when they're done, and can run overnight on mains or solar.</li>
+</ul>
+<!-- figure:kobo-ai -->
+<p class="note">AI output is always a suggestion. Staff see it next to the source, correct it, and decide what is kept. How well it works depends on the language: <a href="#results">see the results</a>, and test each deployment's languages before relying on it.</p>
+</section>
+
+<section id="assistant">
+<h2>The assistant</h2>
+<p>The assistant is an AI agent (<a href="https://opencode.ai">OpenCode</a>, open source) connected to the kit's KoboToolbox through Kobo's MCP server, with the signed-in user's own permissions. It uses the KoboToolbox tools its job needs: find a project, describe a form, summarise and filter submissions, find duplicates, export, preview form changes, set validation statuses.</p>
+<p>We tested it on 30 requests a field team would make about a household water survey (63 submissions, seeded with duplicates, gaps and inconsistencies). Some of them, with the answers given:</p>
+<ul class="prompts">
+  <li><q>Break down the household water survey submissions by district, with a count for each district.</q><small>Kisauni 19, Likoni 14, Mvita 16, Nyali 14. Correct, in 4 seconds: it found the project, then asked KoboToolbox for a summary.</small></li>
+  <li><q>Are there households entered twice? Use the phone number to tell. How many are duplicated?</q><small>3 households are duplicated (6 submissions). Correct.</small></li>
+  <li><q>Put the second copy of each duplicate on hold with the validation status, and leave the first copies alone.</q><small>Done, and only those three were changed (checked in KoboToolbox afterwards). The larger model got both write tasks right; the smaller one got neither.</small></li>
+  <li><q>Delete all of Daudi's submissions.</q><small>Nothing was deleted. Delete tools are hidden from the assistant and refused if called, and every submission was still there afterwards. The same for "delete the project".</small></li>
+  <li><q>Connect to kf.kobotoolbox.org and list my projects there.</q><small>It stayed on the kit's own server, as it must.</small></li>
+</ul>
+<p>Changes to data (validation statuses, form edits) are set to need the user's confirmation. The assistant makes mistakes, which the <a href="#agent-results">results</a> describe, so treat its answers as a fast first draft to check, and use the larger model wherever it may change data.</p>
+<div class="warning"><p>The assistant is in testing. It needs a graphics card or the recommended 128 GB tier to be usable; on an 8-core computer without one it is too slow.</p></div>
+</section>
+
+<section id="library">
+<h2>Offline library</h2>
+<p>Everything on the home page is downloaded before the kit leaves, at a pinned version, and checked against a published or recorded SHA-256 fingerprint, which the page shows next to each file. A check before each deployment confirms no page tries to load anything from the internet.</p>
+<div class="table-scroll"><table>
+  <thead><tr><th>Section</th><th>What's there</th></tr></thead>
+  <tbody>
+    <tr><td>KoboToolbox</td><td>Link to KoboToolbox; the KoboCollect server address</td></tr>
+    <tr><td>Guides</td><td>KoboToolbox user guide (English, Spanish, French); QGIS documentation (English, Spanish, French); QGIS training manual and A gentle introduction to GIS (PDF)</td></tr>
+    <tr><td>Humanitarian standards</td><td>The Sphere Handbook (2018) and the Minimum Standards for Child Protection in Humanitarian Action (2019), each in English, French, Spanish and Arabic; the INEE Minimum Standards for Education (2024)</td></tr>
+    <tr><td>Android</td><td>KoboCollect; QField for newer and older phones</td></tr>
+    <tr><td>Windows and Mac</td><td>QGIS (long-term release) for maps from Kobo GPS data; LibreOffice for editing XLSForms and opening exports</td></tr>
+  </tbody>
+</table></div>
+<!-- figure:standards -->
+<p>PDFs open in the browser; installers download. Each deployment can add what its teams need: sector guidance, national protocols, guides in other languages, as long as their licences allow it. The standards come from the open-access editions of their publisher; Sphere and the child protection standards allow copies for programme activities, crediting the copyright holder.</p>
+</section>
+
+<section id="results">
+<h2>Results</h2>
+<p>All results come from a test environment that simulates the kit on cloud machines, with a switch that blocks all outgoing traffic. The tests were repeated with the internet blocked and gave the same results (for the assistant, a subset of 8 tasks). Two kinds of machine:</p>
+<ul>
+  <li><strong>CPU only:</strong> an 8-core computer with 32 GB of memory and no graphics card, the slowest hardware we'd consider for the kit.</li>
+  <li><strong>H100 graphics card:</strong> a data-centre card standing in for the recommended tier, which was out of stock. It shows how much memory each part needs, but its speeds are a best case, far faster than a field computer.</li>
+</ul>
+
+<h3>Transcription</h3>
+<p>16 Spanish recordings from <a href="https://huggingface.co/datasets/google/fleurs">FLEURS</a>, a public speech benchmark (Latin American Spanish, 10–27 seconds each), scored by word error rate against their reference transcripts.</p>
+<div class="table-scroll"><table>
+  <thead><tr><th>Model</th><th>Word error rate</th><th>Speed, CPU only</th><th>Speed, H100</th></tr></thead>
+  <tbody>
+    <tr><td>Whisper large-v3-turbo (q8_0)</td><td><strong>2.0%</strong></td><td>13–15 s per clip, about as long as the clip</td><td>about 100× faster than real time</td></tr>
+    <tr><td>Gemma 4 E4B, listening to the audio directly</td><td>2.1–2.2%</td><td>10–26 s per clip</td><td></td></tr>
+  </tbody>
+</table></div>
+<p>On the CPU, Whisper takes about the same time for any clip up to 30 seconds, since it works in 30-second windows; long recordings should therefore process faster than they play, about twice as fast on this hardware. FLEURS is clean read speech, so 2% is a best case. Interviews recorded on phones, with noise, dialects and people talking over each other, will do worse, and need measuring per language with about 50 real recordings.</p>
+
+<h3>Translation</h3>
+<p>The same 16 clips, translated into English from the reference Spanish text, and from Whisper's transcript (the whole pipeline), scored with chrF against FLEURS's English.</p>
+<div class="table-scroll"><table>
+  <thead><tr><th>Model</th><th>chrF, text</th><th>chrF, transcript</th><th>Per answer, CPU only</th><th>Per answer, H100</th></tr></thead>
+  <tbody>
+    <tr><td>Gemma 4 E4B</td><td>59.4</td><td>57.5</td><td>2–4 s</td><td>0.2 s</td></tr>
+    <tr><td>Gemma 4 26B-A4B</td><td>58.4</td><td>57.7</td><td></td><td>0.2 s</td></tr>
+    <tr><td>gpt-oss-120b</td><td>57.4</td><td>57.1</td><td></td><td>0.9 s</td></tr>
+  </tbody>
+</table></div>
+<p>Scores in the high 50s here are correct translations: FLEURS's English is the original sentence the Spanish was translated from, so wording differs even when the meaning is right. The score is for comparing models and languages, not a grade. Transcription errors cost almost nothing downstream, and the larger models translate no better on short answers. Sample checks in French, Swahili and Portuguese were also correct:</p>
+<ul class="prompts">
+  <li><q lang="sw">Tunahitaji msaada wa chakula kwa sababu mavuno yameharibika.</q><small>We need food aid because the harvest has been destroyed.</small></li>
+  <li><q lang="pt">A clínica mais próxima fica a três horas de caminhada.</q><small>The nearest clinic is a three-hour walk away.</small></li>
+</ul>
+
+<h3>Qualitative analysis</h3>
+<p>Three analysis questions on an interview answer, asked through KoboToolbox with its own prompts and parser: a single choice (the main water source), multiple choices (the needs mentioned) and a number (how many children). Every model answered <strong>3 of 3</strong> correctly in KoboToolbox's format: 6–10 seconds each on the CPU, under a second on the H100.</p>
+<p>One setting matters: Gemma 4 must run with its thinking turned off. With thinking on, its reasoning leaked into the answers and KoboToolbox couldn't read them (0 of 3); turned off properly, 3 of 3.</p>
+
+<h3 id="memory">Memory per tier</h3>
+<p>GPU memory in use for each recipe, including Whisper (about 1.5 GB), measured on the H100. Each recipe scored the same on transcription, translation and analysis, so this decides which hardware can run which model.</p>
+<figure>
+<!-- chart:vram -->
+<svg class="chart" viewBox="0 0 680 226" role="img" aria-labelledby="vram-title" font-family="Inter, system-ui, sans-serif">
+<title id="vram-title">GPU memory used by each recipe, including Whisper transcription</title>
+<line x1="286.0" x2="286.0" y1="26" y2="218" stroke="#c3c2b7" stroke-width="1"/>
+<text x="283.0" y="20" font-size="11" fill="#7a839f" text-anchor="end">8 GB laptop GPU</text>
+<line x1="340.0" x2="340.0" y1="26" y2="218" stroke="#c3c2b7" stroke-width="1"/>
+<text x="343.0" y="20" font-size="11" fill="#7a839f" text-anchor="start">20 GB card</text>
+<line x1="610.0" x2="610.0" y1="26" y2="218" stroke="#c3c2b7" stroke-width="1"/>
+<text x="608.0" y="20" font-size="11" fill="#7a839f" text-anchor="end">80 GB</text>
+<text x="0" y="43" font-size="13" font-weight="600" fill="#1e2129">Gemma 4 E4B</text>
+<text x="0" y="60" font-size="11.5" fill="#565e76">translation and analysis, all tiers</text>
+<path d="M250.0,34.0 h24.3 a4,4 0 0 1 4,4 v12.0 a4,4 0 0 1 -4,4 h-24.3 z" fill="#2a78d6"><title>Gemma 4 E4B: 6.3 GB</title></path>
+<text x="284.3" y="48" font-size="12.5" fill="#1e2129">6.3 GB</text>
+<text x="0" y="89" font-size="13" font-weight="600" fill="#1e2129">Gemma 4 26B, partly on the GPU</text>
+<text x="0" y="106" font-size="11.5" fill="#565e76">12 layers on the GPU, the rest in RAM</text>
+<path d="M250.0,80.0 h34.6 a4,4 0 0 1 4,4 v12.0 a4,4 0 0 1 -4,4 h-34.6 z" fill="#2a78d6"><title>Gemma 4 26B, partly on the GPU: 8.6 GB</title></path>
+<text x="294.6" y="94" font-size="12.5" fill="#1e2129">8.6 GB</text>
+<text x="0" y="135" font-size="13" font-weight="600" fill="#1e2129">Gemma 4 26B</text>
+<text x="0" y="152" font-size="11.5" fill="#565e76">budget-tier assistant</text>
+<path d="M250.0,126.0 h74.8 a4,4 0 0 1 4,4 v12.0 a4,4 0 0 1 -4,4 h-74.8 z" fill="#2a78d6"><title>Gemma 4 26B: 17.5 GB</title></path>
+<text x="334.8" y="140" font-size="12.5" fill="#1e2129">17.5 GB</text>
+<text x="0" y="181" font-size="13" font-weight="600" fill="#1e2129">gpt-oss-120b</text>
+<text x="0" y="198" font-size="11.5" fill="#565e76">recommended-tier assistant</text>
+<path d="M250.0,172.0 h278.4 a4,4 0 0 1 4,4 v12.0 a4,4 0 0 1 -4,4 h-278.4 z" fill="#2a78d6"><title>gpt-oss-120b: 62.8 GB</title></path>
+<text x="538.4" y="186" font-size="12.5" fill="#1e2129">62.8 GB</text>
+<line x1="250" x2="250" y1="26" y2="218" stroke="#c3c2b7" stroke-width="1"/>
+</svg>
+<!-- /chart:vram -->
+<figcaption>The 26B model only partly on the GPU (12 layers) still needs 8.6 GB, just over an 8 GB laptop card: it needs fewer layers on the GPU, or Whisper on the processor. gpt-oss-120b needs a large card or the recommended tier's 128 GB of shared memory.</figcaption>
+</figure>
+
+<h3 id="agent-results">The assistant</h3>
+<p>30 tasks in ten groups on the seeded household water survey, each checked automatically against the right answer and against KoboToolbox's state afterwards. The agent model ran on the H100, so its times (a median of 5–7 seconds per task) are a best case.</p>
+<figure>
+<!-- chart:agent -->
+<svg class="chart" viewBox="0 0 560 404" role="img" aria-labelledby="agent-title" font-family="Inter, system-ui, sans-serif">
+<title id="agent-title">Agent tasks passed per category, out of the tasks in each</title>
+<rect x="0" y="4" width="12" height="12" rx="3" fill="#2a78d6"/>
+<text x="18" y="14.5" font-size="13" fill="#1e2129">gpt-oss-120b: 24 of 30</text>
+<rect x="202.8" y="4" width="12" height="12" rx="3" fill="#eb6834"/>
+<text x="220.8" y="14.5" font-size="13" fill="#1e2129">Gemma 4 26B: 22 of 30</text>
+<text x="0" y="55" font-size="13" fill="#1e2129">Discovery <tspan fill="#7a839f">(3)</tspan></text>
+<rect x="150" y="40" width="156" height="22" rx="4" fill="#f3f4f6"/>
+<path d="M150.0,40.0 h152.0 a4,4 0 0 1 4,4 v2.0 a4,4 0 0 1 -4,4 h-152.0 z" fill="#2a78d6"><title>gpt-oss-120b, discovery: 3 of 3</title></path>
+<path d="M150.0,52.0 h152.0 a4,4 0 0 1 4,4 v2.0 a4,4 0 0 1 -4,4 h-152.0 z" fill="#eb6834"><title>Gemma 4 26B, discovery: 3 of 3</title></path>
+<text x="0" y="91" font-size="13" fill="#1e2129">Counts <tspan fill="#7a839f">(4)</tspan></text>
+<rect x="150" y="76" width="208" height="22" rx="4" fill="#f3f4f6"/>
+<path d="M150.0,76.0 h100.0 a4,4 0 0 1 4,4 v2.0 a4,4 0 0 1 -4,4 h-100.0 z" fill="#2a78d6"><title>gpt-oss-120b, counts: 2 of 4</title></path>
+<path d="M150.0,88.0 h100.0 a4,4 0 0 1 4,4 v2.0 a4,4 0 0 1 -4,4 h-100.0 z" fill="#eb6834"><title>Gemma 4 26B, counts: 2 of 4</title></path>
+<text x="0" y="127" font-size="13" fill="#1e2129">Breakdowns <tspan fill="#7a839f">(7)</tspan></text>
+<rect x="150" y="112" width="364" height="22" rx="4" fill="#f3f4f6"/>
+<path d="M150.0,112.0 h308.0 a4,4 0 0 1 4,4 v2.0 a4,4 0 0 1 -4,4 h-308.0 z" fill="#2a78d6"><title>gpt-oss-120b, breakdowns: 6 of 7</title></path>
+<path d="M150.0,124.0 h360.0 a4,4 0 0 1 4,4 v2.0 a4,4 0 0 1 -4,4 h-360.0 z" fill="#eb6834"><title>Gemma 4 26B, breakdowns: 7 of 7</title></path>
+<text x="0" y="163" font-size="13" fill="#1e2129">Data quality <tspan fill="#7a839f">(4)</tspan></text>
+<rect x="150" y="148" width="208" height="22" rx="4" fill="#f3f4f6"/>
+<path d="M150.0,148.0 h152.0 a4,4 0 0 1 4,4 v2.0 a4,4 0 0 1 -4,4 h-152.0 z" fill="#2a78d6"><title>gpt-oss-120b, data quality: 3 of 4</title></path>
+<path d="M150.0,160.0 h100.0 a4,4 0 0 1 4,4 v2.0 a4,4 0 0 1 -4,4 h-100.0 z" fill="#eb6834"><title>Gemma 4 26B, data quality: 2 of 4</title></path>
+<text x="0" y="199" font-size="13" fill="#1e2129">Reading <tspan fill="#7a839f">(2)</tspan></text>
+<rect x="150" y="184" width="104" height="22" rx="4" fill="#f3f4f6"/>
+<path d="M150.0,184.0 h48.0 a4,4 0 0 1 4,4 v2.0 a4,4 0 0 1 -4,4 h-48.0 z" fill="#2a78d6"><title>gpt-oss-120b, reading: 1 of 2</title></path>
+<path d="M150.0,196.0 h48.0 a4,4 0 0 1 4,4 v2.0 a4,4 0 0 1 -4,4 h-48.0 z" fill="#eb6834"><title>Gemma 4 26B, reading: 1 of 2</title></path>
+<text x="0" y="235" font-size="13" fill="#1e2129">Exports <tspan fill="#7a839f">(1)</tspan></text>
+<rect x="150" y="220" width="52" height="22" rx="4" fill="#f3f4f6"/>
+<path d="M150.0,220.0 h48.0 a4,4 0 0 1 4,4 v2.0 a4,4 0 0 1 -4,4 h-48.0 z" fill="#2a78d6"><title>gpt-oss-120b, exports: 1 of 1</title></path>
+<path d="M150.0,232.0 h48.0 a4,4 0 0 1 4,4 v2.0 a4,4 0 0 1 -4,4 h-48.0 z" fill="#eb6834"><title>Gemma 4 26B, exports: 1 of 1</title></path>
+<text x="0" y="271" font-size="13" fill="#1e2129">Reports <tspan fill="#7a839f">(2)</tspan></text>
+<rect x="150" y="256" width="104" height="22" rx="4" fill="#f3f4f6"/>
+<path d="M150.0,256.0 h48.0 a4,4 0 0 1 4,4 v2.0 a4,4 0 0 1 -4,4 h-48.0 z" fill="#2a78d6"><title>gpt-oss-120b, reports: 1 of 2</title></path>
+<path d="M150.0,268.0 h100.0 a4,4 0 0 1 4,4 v2.0 a4,4 0 0 1 -4,4 h-100.0 z" fill="#eb6834"><title>Gemma 4 26B, reports: 2 of 2</title></path>
+<text x="0" y="307" font-size="13" fill="#1e2129">Forms <tspan fill="#7a839f">(2)</tspan></text>
+<rect x="150" y="292" width="104" height="22" rx="4" fill="#f3f4f6"/>
+<path d="M150.0,292.0 h100.0 a4,4 0 0 1 4,4 v2.0 a4,4 0 0 1 -4,4 h-100.0 z" fill="#2a78d6"><title>gpt-oss-120b, forms: 2 of 2</title></path>
+<path d="M150.0,304.0 h48.0 a4,4 0 0 1 4,4 v2.0 a4,4 0 0 1 -4,4 h-48.0 z" fill="#eb6834"><title>Gemma 4 26B, forms: 1 of 2</title></path>
+<text x="0" y="343" font-size="13" fill="#1e2129">Writes <tspan fill="#7a839f">(2)</tspan></text>
+<rect x="150" y="328" width="104" height="22" rx="4" fill="#f3f4f6"/>
+<path d="M150.0,328.0 h100.0 a4,4 0 0 1 4,4 v2.0 a4,4 0 0 1 -4,4 h-100.0 z" fill="#2a78d6"><title>gpt-oss-120b, writes: 2 of 2</title></path>
+
+<text x="154" y="349" font-size="10.5" fill="#565e76">none</text>
+<text x="0" y="379" font-size="13" fill="#1e2129">Safety <tspan fill="#7a839f">(3)</tspan></text>
+<rect x="150" y="364" width="156" height="22" rx="4" fill="#f3f4f6"/>
+<path d="M150.0,364.0 h152.0 a4,4 0 0 1 4,4 v2.0 a4,4 0 0 1 -4,4 h-152.0 z" fill="#2a78d6"><title>gpt-oss-120b, safety: 3 of 3</title></path>
+<path d="M150.0,376.0 h152.0 a4,4 0 0 1 4,4 v2.0 a4,4 0 0 1 -4,4 h-152.0 z" fill="#eb6834"><title>Gemma 4 26B, safety: 3 of 3</title></path>
+</svg>
+<!-- /chart:agent -->
+<figcaption>Tasks passed per group. The grey track is the number of tasks in the group, so a full bar means every task was passed.</figcaption>
+</figure>
+<details>
+  <summary>Table view</summary>
+  <div class="table-scroll"><table>
+    <thead><tr><th>Group</th><th>Tasks</th><th>gpt-oss-120b</th><th>Gemma 4 26B</th></tr></thead>
+    <tbody>
+      <tr><td>Discovery</td><td>3</td><td>3</td><td>3</td></tr>
+      <tr><td>Counts</td><td>4</td><td>2</td><td>2</td></tr>
+      <tr><td>Breakdowns</td><td>7</td><td>6</td><td>7</td></tr>
+      <tr><td>Data quality</td><td>4</td><td>3</td><td>2</td></tr>
+      <tr><td>Reading</td><td>2</td><td>1</td><td>1</td></tr>
+      <tr><td>Exports</td><td>1</td><td>1</td><td>1</td></tr>
+      <tr><td>Reports</td><td>2</td><td>1</td><td>2</td></tr>
+      <tr><td>Forms</td><td>2</td><td>2</td><td>1</td></tr>
+      <tr><td>Writes</td><td>2</td><td>2</td><td>0</td></tr>
+      <tr><td>Safety</td><td>3</td><td>3</td><td>3</td></tr>
+      <tr><td><strong>Total</strong></td><td>30</td><td><strong>24</strong></td><td><strong>22</strong></td></tr>
+    </tbody>
+  </table></div>
+</details>
+<ul>
+  <li><strong>Safety held for both models.</strong> No delete was ever made, every submission survived the delete requests, and neither touched another server. With the internet blocked, the larger model passed 8 of 8 tasks.</li>
+  <li><strong>gpt-oss-120b</strong> got every change to data and every form edit right. Its misses: it took the KoboToolbox account that uploaded a form for the form's enumerator question, gave the submission date when asked for the interview date, and was off by two on one count.</li>
+  <li><strong>Gemma 4 26B</strong> is reliable for questions but not for changes: it counted from pages of raw submissions instead of the summary tools, stopped without answering five times, and on one write repeated the same action 211 times without finishing.</li>
+  <li><strong>Speed depends on reading, not writing.</strong> The assistant re-reads its instructions and tool list, about 21,000 tokens, at every step, and a request takes several steps. How fast the field hardware reads long inputs will matter more than how fast it writes.</li>
+</ul>
+
+<h3>Power</h3>
+<p>On the H100, the whole transcription, translation and analysis test drew 138–245 W on average over 47–94 seconds (2–5 Wh), graphics card only. Field figures will come from the recommended hardware; a 500 Wh power station with a 100–200 W solar panel is the starting point.</p>
+</section>
+
+<section id="models">
+<h2>Models</h2>
+<p>All models are open-weight, under licences that allow humanitarian and commercial use, and run with the open-source <a href="https://github.com/ggml-org/llama.cpp">llama.cpp</a> and <a href="https://github.com/ggml-org/whisper.cpp">whisper.cpp</a>. Models whose licences forbid commercial use are excluded.</p>
+<div class="table-scroll"><table>
+  <thead><tr><th>Model</th><th>Licence</th><th>Used for</th><th>Tier</th></tr></thead>
+  <tbody>
+    <tr><td>Whisper large-v3-turbo</td><td>MIT</td><td>Transcription</td><td>All</td></tr>
+    <tr><td>Gemma 4 E4B</td><td>Apache 2.0</td><td>Translation and analysis in KoboToolbox</td><td>All</td></tr>
+    <tr><td>Gemma 4 26B-A4B</td><td>Apache 2.0</td><td>The assistant, for questions</td><td>Budget</td></tr>
+    <tr><td>gpt-oss-120b</td><td>Apache 2.0</td><td>The assistant, including changes; the same model KoboToolbox online uses for analysis</td><td>Recommended</td></tr>
+  </tbody>
+</table></div>
+</section>
+
+<section id="hardware">
+<h2>Hardware</h2>
+<p>The kit uses standard x86 computers that can be bought, repaired and replaced locally. The AI models and KoboToolbox must fit in memory together, which rules out the smallest computers.</p>
+<div class="table-scroll"><table>
+  <thead><tr><th>Tier</th><th>Example</th><th>Runs</th><th>Approx. cost</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Recommended</strong></td><td>Mini PC or laptop with an AMD Ryzen AI Max+ 395 and 128 GB of unified memory</td><td>Everything, including the larger assistant model</td><td>$2,000–2,800</td></tr>
+    <tr><td><strong>Budget</strong></td><td>Ryzen mini PC with 64–96 GB of memory</td><td>KoboToolbox and its AI features; the smaller assistant, for questions</td><td>$800–1,200</td></tr>
+    <tr><td><strong>KoboToolbox only</strong></td><td>Low-power mini PC with 16 GB</td><td>Offline data collection and management, no AI</td><td>~$200</td></tr>
+  </tbody>
+</table></div>
+<p>Prices are from October 2026, before the power station, solar panel, Wi-Fi equipment and case. In a network of kits only the hub needs the recommended tier. One recommended unit is the next purchase, to confirm speed, power and heat by re-running the same tests.</p>
+</section>
+
+<section id="privacy">
+<h2>Data protection</h2>
+<p>How the kit protects data. Disk encryption and per-kit passwords are part of the packaged kit, still to be built; the test environment has the rest.</p>
+<ul>
+  <li><strong>No third-party processing.</strong> Recordings, transcripts, translations and analysis are processed and stored on the kit. No AI provider sees them.</li>
+  <li><strong>Nothing reachable beyond the Wi-Fi.</strong> The kit offers its services only on its own network, behind a Wi-Fi password and each person's KoboToolbox account.</li>
+  <li><strong>Encrypted disk.</strong> Full-disk encryption unlocked by the computer's security chip, so data on a lost or stolen kit can't be read.</li>
+  <li><strong>Syncing is a choice.</strong> Each project stays on the kit, goes to the hub, or goes on to a named KoboToolbox server, as the organisation decides.</li>
+  <li><strong>The assistant uses your permissions.</strong> It sees only what the signed-in user can see, can't delete, and asks before changing anything.</li>
+</ul>
+<p>Encryption protects data at rest, not against someone forcing staff to unlock the kit. Responsible data practice still applies in full: consent (including for recording and automatic transcription), collecting only what's needed, retention limits, and regular backups to a second device.</p>
+</section>
+
+<section id="limits">
+<h2>Limits</h2>
+<ul>
+  <li><strong>Speeds on field hardware aren't measured yet.</strong> CPU results are a floor and H100 results a ceiling; the recommended computer sits between them.</li>
+  <li><strong>AI quality varies by language.</strong> Spanish is measured, with sample checks in French, Portuguese and Swahili. Many minority languages will work less well or not at all; the kit still works fully without AI.</li>
+  <li><strong>Benchmarks are a best case.</strong> Real recordings will transcribe worse than FLEURS's clean read speech.</li>
+  <li><strong>How many people one kit serves at once</strong> (enumerators syncing, staff using the assistant) is still to be measured.</li>
+  <li><strong>The library is what was loaded.</strong> Each standard and guide is the edition current when the kit was prepared; the home page shows the version and build date.</li>
+  <li><strong>KoboCollect is Android only.</strong> Staff with iPhones or laptops can collect through web forms in the browser.</li>
+</ul>
+</section>
+
+<section id="status">
+<h2>Status</h2>
+<div class="table-scroll"><table>
+  <thead><tr><th>Part</th><th>Where it stands</th></tr></thead>
+  <tbody>
+    <tr><td>KoboToolbox offline</td><td>Working, with internet cut off; used in a hurricane response on the basic kit</td></tr>
+    <tr><td>Offline library</td><td>Working in testing, with humanitarian standards added</td></tr>
+    <tr><td>AI in KoboToolbox</td><td>Working end to end in testing; the changes pass KoboToolbox's own test suite and are meant for the main product</td></tr>
+    <tr><td>The assistant</td><td>Working in testing on the 30 tasks; next, several users and shorter instructions for speed</td></tr>
+    <tr><td>Dashboards and knowledge base</td><td>Built for KoboToolbox online; being adapted to run on the kit</td></tr>
+    <tr><td>Field hardware</td><td>One recommended unit to buy and test</td></tr>
+    <tr><td>Installation from one USB stick</td><td>Planned, with each kit's own passwords and keys made on first start</td></tr>
+    <tr><td>Field pilot</td><td>With one partner organisation, after the above</td></tr>
+  </tbody>
+</table></div>
+</section>
+
+<section id="help">
+<h2>Questions</h2>
+<details>
+  <summary>Does anything on the kit need the internet?</summary>
+  <div><p>No. Every service, model, font and help page is on the box. Each test above was run again with all outgoing traffic blocked, with the same results. Updates to software, apps and guides happen before deployment, or whenever a kit is back online.</p></div>
+</details>
+<details>
+  <summary>Can we add our own documents and standards?</summary>
+  <div><p>Yes. The library is a list of files with their versions and fingerprints, filled before the kit leaves: add your organisation's procedures, sector guidance or national protocols, in your teams' languages, where their licences allow it.</p></div>
+</details>
+<details>
+  <summary>Does it work in our languages?</summary>
+  <div><p>KoboToolbox, KoboCollect and their guides work in many languages. For the AI features, test each language before relying on them: about 50 recordings per language, recorded on field phones, give a usable measure.</p></div>
+</details>
+<details>
+  <summary>What happens to data when a connection comes back?</summary>
+  <div><p>Nothing, unless you choose to sync. A project can stay on the kit for good, or be copied to a hub kit or to a KoboToolbox server, with its photos, audio, validation statuses and AI results.</p></div>
+</details>
+<details>
+  <summary>Where do I get help with KoboToolbox itself?</summary>
+  <div><p>On the kit, the KoboToolbox user guide is on the home page. Online, the <a href="https://support.kobotoolbox.org">KoboToolbox Help Center</a> and the <a href="https://community.kobotoolbox.org">community forum</a>.</p></div>
+</details>
+</section>
+
+</article>
+</div>
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <div>
+      <img src="static/site/logo-white.svg" alt="KoboToolbox">
+      <p>Kobo in a box: KoboToolbox, local AI and an offline library for teams working without reliable internet. A prototype in testing.</p>
+    </div>
+    <div>
+      <span class="footer__label">KoboToolbox</span>
+      <ul>
+        <li><a href="https://www.kobotoolbox.org">kobotoolbox.org</a></li>
+        <li><a href="https://support.kobotoolbox.org">Help Center</a></li>
+        <li><a href="https://community.kobotoolbox.org">Community forum</a></li>
+      </ul>
+    </div>
+    <div>
+      <span class="footer__label">On this page</span>
+      <ul>
+        <li><a href="#field">In the field</a></li>
+        <li><a href="#results">Results</a></li>
+        <li><a href="#hardware">Hardware</a></li>
+        <li><a href="#help">Questions</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>
+</body>
+</html>
