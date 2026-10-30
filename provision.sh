@@ -96,7 +96,8 @@ until ssh -p "$SSH_PORT" -o StrictHostKeyChecking=accept-new -o ConnectTimeout=5
 
 # Copy the contents of remote/ (scp -r would nest it as kobo-box-ai/remote when
 # restoring a snapshot). Results stay on the droplet; park.sh pulls them down.
-tar -C remote --exclude results --exclude __pycache__ -cf - . \
+# *.local.env files are this machine's overrides (e.g. a laptop test) and stay here.
+tar -C remote --exclude results --exclude __pycache__ --exclude "*.local.env" -cf - . \
     | ssh -p "$SSH_PORT" "root@$IP" 'mkdir -p /root/kobo-box-ai && tar -C /root/kobo-box-ai -xf -'
 echo
 echo "Droplet ready: $IP"

@@ -20,3 +20,6 @@ __pycache__/
 *.gguf
 *.bin
 models/
+
+# Per-machine AI tier (box/detect-tier.py)
+remote/ai.box.env

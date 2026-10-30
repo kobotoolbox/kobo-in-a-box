@@ -33,7 +33,7 @@ if $HAS_GPU && ! command -v nvidia-ctk >/dev/null; then
     systemctl restart docker
 fi
 apt update
-apt install -y git python3 jq ffmpeg
+apt install -y git python3 jq ffmpeg restic   # restic: box/backup.sh
 # The NVIDIA AI/ML image has Ubuntu's docker.io without Compose
 if ! docker compose version >/dev/null 2>&1; then
     apt install -y docker-compose-v2 || apt install -y docker-compose-plugin

@@ -60,8 +60,8 @@ Hurricane Melissa in Jamaica. The AI processing, the AI assistant, the library a
 management are working in a simulated offline test environment, as described below;
 dashboards and the knowledge base are built for KoboToolbox's online services and are
 being adapted to run on the box. The next step is a **field pilot with one partner
-organisation**, followed by a packaged kit that can be installed on new hardware from a
-single USB stick.
+organisation**, followed by kits that arrive ready to switch on: installed from a single
+USB stick before they ship, and set up by themselves the first time they start.
 
 ---
 
@@ -324,6 +324,7 @@ a data-centre graphics card standing in for the recommended tier while it is out
 | AI assistant safety | Both models refused every request to delete data (deleting is blocked) and never touched another server, also with internet blocked. Changes are set to need the user's confirmation; checking that this applies to every KoboToolbox action is part of the next round |
 | Memory needed per tier | Transcription plus translation and analysis fit a laptop graphics card with 8 GB. The larger assistant model needs about 63 GB, so it runs only on the recommended 128 GB tier |
 | Case management (optional) | All 27 checks of the health referral scenario passed online and offline, including a start with the internet already cut. Every expected case opened within 16–32 seconds, routed to the right team, with no duplicates; each role saw only what it should. A capture of the network traffic saw nothing leave the box. About 1.6 GB of software and 200 MB of memory |
+| Backups and recovery | Plugging in a backup drive backs up the data, recordings, settings and case records by itself, in seconds for the test data, also with internet blocked. Two deleted projects (63 submissions and an audio recording) were restored on the same kit in under a minute. A freshly installed replacement kit restored from the drive in under two minutes, with the original kit's passwords, all projects, the recording byte for byte, and new submissions from a phone working afterwards |
 | Offline library | 13 installers and documents (about 5 GB), each checked against a published or recorded fingerprint; guides load with no internet; large uploads (a 40 MB audio interview) and downloads work through the box. Nine humanitarian standards (Sphere, child protection, education; 44 MB) have since been added from their publisher's open-access editions, with their fingerprints recorded |
 
 Performance on the recommended field hardware still needs to be confirmed on a real
@@ -385,7 +386,7 @@ risk to a single physical device. Both sides need managing.
 
 | Risk | Mitigation |
 |---|---|
-| Theft or loss of the box | Full-disk encryption; strong Wi-Fi password; no services reachable beyond the local Wi-Fi; regular encrypted backups to a second device kept separately |
+| Theft or loss of the box | Full-disk encryption; strong Wi-Fi password; no services reachable beyond the local Wi-Fi; encrypted backups to a USB drive kept separately, made by plugging it in, and restorable onto a replacement kit |
 | Seizure, or staff forced to unlock it | Encryption protects data at rest, not against coercion. Collect only the data needed; delete or sync off-site on a regular schedule; agree in advance what staff should do if the box is demanded; where the risk is high, treat the kit as a staging point rather than long-term storage |
 | An untrusted device joins the Wi-Fi | Strong, regularly changed Wi-Fi password; every KoboToolbox user needs their own account and permissions; the AI assistant works with the logged-in user's own permissions only |
 | A single point of failure | Backups to a second device; sync to the cloud when possible; the hardware is standard and replaceable, and the software can be reinstalled from USB |
@@ -451,10 +452,21 @@ control, retention limits, and a data-sharing plan for when data moves to the cl
 - **Customs and import.** Kits contain encrypted computers and radio equipment (Wi-Fi).
   Some countries restrict importing encryption technology or require registering
   wireless equipment. Check this for each deployment country, and carry documentation.
-- **Installation from USB.** New kits are installed from a single USB stick holding the
-  operating system, KoboToolbox, the AI models and the library. Each kit gets its own
-  passwords and keys on first start-up, printed on a label card. Updating a fleet of kits
-  means copying a new version of the content to the USB stick, not re-engineering.
+- **Kits arrive ready to switch on.** Whoever prepares the kits (Kobo, a partner's IT
+  team or a supplier) installs each one from a single USB stick holding the operating
+  system, KoboToolbox, the AI models and the library. Nothing is downloaded. Field teams
+  never run an installer: they switch the kit on, and on its first start it makes its own
+  passwords and keys and prints them on a label card. It also chooses the AI settings
+  that suit its own hardware, and keeps working whichever network it is plugged into. The
+  same stick reinstalls a kit that breaks. Updating a fleet of kits means copying a new
+  version of the content to the stick, not re-engineering.
+- **Backups by plugging in a stick.** Plugging a USB drive labelled `KOBOBACKUP` into the
+  kit backs everything up by itself: the data, recordings, settings and case records,
+  encrypted, with only what changed since the last time copied. When it's done the drive
+  can be pulled out and kept somewhere other than the kit. A replacement kit, installed
+  from the USB stick, can be restored from that drive with the passphrase on the original
+  kit's label card. The kit also keeps a nightly copy of its databases on its own disk,
+  to undo mistakes.
 - **Updates.** Kits can't update themselves in the field. Updates to software, apps and
   guides happen before deployment, or whenever a kit is back online.
 
@@ -462,8 +474,11 @@ control, retention limits, and a data-sharing plan for when data moves to the cl
 
 - **Designed for non-technical field staff.** Day-to-day use needs a browser and the
   Wi-Fi password. The landing page at `kobo.local` explains each step.
-- **One trained focal point per deployment** handles power, backups, user accounts and
-  first-line troubleshooting. A short guide and checklist come with the kit.
+- **One trained focal point per deployment** handles power, backups (plugging in the
+  backup drive, weekly or after a big collection day), user accounts and first-line
+  troubleshooting. A short guide and checklist come with the kit, and a status page on
+  the kit shows in plain words whether everything is running and when the last backup
+  was made.
 - **Local language interfaces.** KoboToolbox, KoboCollect and the user guides are
   available in several languages, and Sphere has official translations in many more than
   the four on the kit by default; the library can include guides and standards in the
@@ -610,7 +625,7 @@ confirm speed, power draw and heat before buying pilot kits.
 | **Case management (optional)** | EspoCRM on the kit with a bridge that opens cases from KoboToolbox submissions, routed by rules per form: working online and offline in testing, with a health referral scenario. Next: open cases as a choice list in follow-up forms, with the outcome written back to the case; case outcomes back to KoboToolbox, the assistant reading cases, interface languages for the pilot, encrypted logins | ✅ Working in testing |
 | **Hardware** | Buy and test one recommended unit; measure speed, power and heat, re-running the same AI and assistant tests | Next |
 | **Multi-site sync** | Kit-to-hub and hub-to-cloud syncing with kobo-transfer, automated and shown on the kit's status page; identical forms on every kit | Sync to a cloud server tested on the prototype; hub workflow to build and test |
-| **Packaging** | One-USB installation; per-kit passwords and keys; health check page; quick-start guide | 2–4 weeks |
+| **Packaging** | Kits that arrive ready to switch on: one-USB installation before shipping; per-kit passwords and keys made on first start; AI settings chosen from the hardware; backups by plugging in a drive; status page; quick-start guide. Backups, restore onto a replacement kit, and the self-adjusting AI and network settings are working in testing. Next: the status page, the installer and first-start setup | Started; 3–5 weeks, partly on the recommended hardware |
 | **Field pilot** | One partner organisation, 3–6 languages, real conditions | After the above |
 | **Scale-up** | Kits available to partners; changes merged into the main KoboToolbox product | After the pilot |
 
@@ -742,8 +757,15 @@ those using a kit.
 - **Security:** full-disk encryption unlocked by the computer's security chip (TPM);
   password-protected Wi-Fi and services; nothing reachable beyond the local network.
 - **Installation:** a standard Ubuntu Linux installer with an automatic configuration,
-  plus a content package (software, AI models, library), on one USB stick. Each kit
-  generates its own passwords and keys on first start-up.
+  plus a content package (software, AI models, library), on one USB stick, used to prepare
+  kits before they ship. Each kit generates its own passwords and keys on first start-up.
+  KoboToolbox uses a fixed internal address on the kit, so it keeps working whichever
+  network the kit joins, and the AI settings are picked from the kit's memory and
+  graphics hardware.
+- **Backups:** restic (open source), which encrypts and only copies what changed. The
+  databases are copied while KoboToolbox keeps running, so collection never stops for a
+  backup. Plugging in a drive labelled `KOBOBACKUP` starts a full backup, and the result
+  shows on the status page. A restore first saves the current state, so it can be undone.
 
 ## Annex B. Glossary
 

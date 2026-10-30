@@ -7,6 +7,7 @@ Goal: one field device that runs KoboToolbox fully offline, plus:
 3. **Dashboards**: the agent builds live analysis dashboards (kobo-dash, through kobo-mcp's dashboard tools) that anyone on the box's Wi-Fi can open (3h).
 4. **Local knowledge base**: a RAG over Kobo, ODK and XLSForm docs plus whatever the deployment adds, exposed to the agent as MCP tools (3i).
 5. **Case management (optional)**: EspoCRM at `cases.kobo.local`, with a bridge that opens a case for each Kobo submission that needs follow-up (3j).
+6. **A box non-technical teams can run**: shipped preinstalled, set up by itself on first power-on, backed up by plugging in a stick (3k).
 
 Status (2026-10-22): scoping done. DigitalOcean test scripts are written (see `README.md`) but nothing has been run yet. No droplets or other cloud resources exist.
 
@@ -231,6 +232,8 @@ downloaded the KoboCollect APK from the laptop. This makes it part of the build.
 
 #### Provisioning new boxes
 
+How this becomes a kit nobody has to configure is in 3k.
+
 Content is downloaded **once on an online build machine** into a *content pack* (library,
 model weights, `docker save` image tarballs, `.deb`s) and copied to each box. Nothing is
 fetched in the field.
@@ -448,6 +451,38 @@ happened, and the bridge writes that back onto the case. Checked in KPI's code
   after the next sync; the follow-up outcome lands on the right case; the CSV holds only
   the allowed columns.
 
+### 3k. A box non-technical teams can run (W12)
+
+Sections 3a–3j are features. This one is about whether a team with no technical staff can
+receive a kit, run it for months and survive losing it. Design and scripts in
+[`remote/box/`](remote/box/README.md).
+
+- **Ship boxes preinstalled; the USB stick is the factory tool.** Whoever prepares kits
+  boots each new machine once from the factory USB (autoinstall + content pack, 3g's
+  provisioning). The team receives a box that only needs switching on. Running live from
+  a USB stick is out: 5–65 GB of models and the databases would sit on slow, wearing flash.
+  The same stick reinstalls a broken box in the field.
+- **First power-on makes the box its own** (`firstboot.sh`): every secret, the Wi-Fi name
+  and passphrase, the backup passphrase, and a label card to print. Nothing per-box is
+  decided at the factory, so the factory step is identical for every box.
+- **The box adapts instead of being configured:**
+  - `detect-tier.py` picks the AI settings from RAM, cores and GPU (`./ai.sh up auto`);
+  - Kobo is bound to a **fixed internal address** (`10.254.254.254` on a dummy interface,
+    `box.sh`), not the network's. kobo-install otherwise pins whatever IP the box had at
+    install time, which is why every restored snapshot needed `run.py` again; a box that
+    moves from its own hotspot to a cable to an office network would break the same way.
+- **Backups a focal point can do:** plug in a USB drive labelled `KOBOBACKUP`; the box backs
+  up everything that can't be rebuilt from the content pack (Kobo's databases, media and
+  settings, EspoCRM), encrypted and incremental (restic), checks it, unmounts the drive and
+  records the result for the status page. A nightly backup of the databases to the box's
+  own disk covers mistakes. `backup.sh restore` works on the same box or a freshly
+  installed one, given the old box's passphrase (on the label card, kept apart from the box).
+- **One status page** (`kobo.local/status`, next): services, disk, last backup, AI tier,
+  battery, in plain words. The only page the focal point needs to check.
+- **Later:** sync to a cloud Kobo with kobo-transfer whenever there's a connection (the
+  concept note's "Connected" mode), a clean shutdown on low battery, updating a kit in place
+  from a newer content pack.
+
 ## 4. Testing on DigitalOcean (extends README)
 
 The DigitalOcean rig covers **functional and offline** testing. Performance numbers only count from a real Strix Halo unit.
@@ -513,7 +548,7 @@ Done 2026-10-28 on kobo-mcp branch `w3-offline-box`; details in [STATUS.md](STAT
 - [ ] Ask the OpenWork maintainers about a supported browser/server mode (today it's only a dev launcher)
 
 ### W7. Package and pilot
-- [ ] One install from USB; weights preloaded; services start on boot; health page (built in W8)
+- [ ] One install from USB; weights preloaded; services start on boot; health page (W12)
 - [ ] Skills pack (weekly digest, data quality review, donor one-pager, cleaning log)
 - [ ] Staff quick-start guide (connect to the Wi-Fi, open Kobo and OpenCode in the browser)
 - [ ] Pilot with one partner (FAO Tanzania or SGDD Turkey), with power and heat logging
@@ -564,6 +599,22 @@ Built and tested 2026-10-30; details in [STATUS.md](STATUS.md).
 - [ ] Open cases as a choice list in Kobo forms, and follow-up visits written back to the case (3j; planned)
 - [ ] Phase 2: case status back to Kobo; edited submissions; EspoCRM MCP + agent tasks; UI languages for the pilot; per-box secrets from `firstboot.sh`; images in the content pack
 
+### W12. A box non-technical teams can run (see 3k)
+Started 2026-10-30; scripts in `remote/box/`, details in [STATUS.md](STATUS.md).
+- [x] Fixed internal address (`box.sh ip`, systemd at boot) and `BOX_IP` in `kobo-setup.py`; Kobo survives a reboot and network changes with no `run.py`
+- [x] `detect-tier.py` → `ai.box.env`, `./ai.sh up auto`
+- [x] `backup.sh`: encrypted, incremental backups (restic) of Kobo + EspoCRM; `drive` on plugging in a `KOBOBACKUP` drive; nightly databases-only backup; status JSON
+- [x] Restore on the same box (deleted projects and media back, e2e suites pass)
+- [x] Restore on a freshly installed box with the old box's passphrase (keeps the new box's settings, takes accounts and secrets from the backup); backups offline
+- [ ] EspoCRM restore on a replacement box without the manual step
+- [ ] Status page at `kobo.local/status`
+- [ ] Content pack + `install.sh --pack`, tested on a clean droplet offline from the start
+- [ ] `firstboot.sh`: per-box secrets, Wi-Fi, backup passphrase, printable label card
+- [ ] Hotspot + dnsmasq, KoboCollect QR code (needs the W5 box; check its Wi-Fi chip does AP mode)
+- [ ] Autoinstall USB with LUKS + TPM (W5 box)
+- [ ] Clean shutdown on low battery; OpenCode session history in backups (once W4 settles where it lives)
+- [ ] Later: kobo-transfer sync when online; in-place update from a newer content pack
+
 ## 6. Risks
 
 | Risk | Mitigation |
@@ -576,6 +627,9 @@ Built and tested 2026-10-30; details in [STATUS.md](STATUS.md).
 | Hidden internet dependencies (update checks, model catalogues, fonts, cloud calls) | Offline mode on the droplet (W1, W4) |
 | Maintaining a fork of KPI and kobo-mcp | Aim to merge the provider-neutral NLP backend and the kobo-mcp offline profile upstream |
 | Weights are 5–65 GB | Preload on the image or USB stick; never download in the field |
+| The box is lost, stolen or broken, and the data with it | `KOBOBACKUP` drive backups (encrypted, kept apart from the box); restore onto a reinstalled box; sync to the cloud when possible (later) |
+| The backup passphrase is lost, or kept with the box | Printed on the label card at first boot; the quick-start guide says to keep the card apart from the box and the backup drive |
+| The box's built-in Wi-Fi can't act as an access point | Check in W5; otherwise ship a known-good USB Wi-Fi adapter in the kit rather than a router to configure |
 | Phones can't resolve `*.kobo.local` (mDNS) | The box runs DNS (dnsmasq) when it is the access point; the bare IP still serves the library |
 | Installers and docs go stale on boxes in the field | Versions pinned in `manifest.tsv`; the landing page shows the build date; refresh the content pack before each deployment |
 | Power and heat in the field | Batch jobs on mains or solar; capped TDP on battery; measure in the pilot |

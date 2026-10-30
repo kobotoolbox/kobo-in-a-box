@@ -6,7 +6,10 @@ are in [PLAN.md](PLAN.md); per-run results are in [remote/results/NOTES.md](remo
 ## Where we are (2026-10-30)
 
 - **Rigs:** the CPU rig (`s-8vcpu-32gb-amd`: Kobo, the KPI backport, kobo-mcp, OpenCode, test
-  data) is parked as `kobo-box-ai-snapshot` in ams3. GPU work runs on a separate H100
+  data) is parked as `kobo-box-ai-snapshot` in ams3. Since 2026-10-30 its Kobo is on the fixed
+  address (`BOX_IP=10.254.254.254`) with W12's units installed, so a restore no longer needs
+  `run.py`; `/root/fake-usb.img` is an exFAT `KOBOBACKUP` drive for tests
+  (`losetup -fP /root/fake-usb.img` plugs it in). GPU work runs on a separate H100
   (`NAME=kobo-box-gpu`), deleted after each session: the 20–48 GB GPU sizes stay out of stock.
 - **Proven offline, end to end:**
   - KoboToolbox, the offline library and the edge proxy (W8);
@@ -16,6 +19,9 @@ are in [PLAN.md](PLAN.md); per-run results are in [remote/results/NOTES.md](remo
   - OpenCode agents doing field tasks through kobo-mcp (W4).
   - Optional case management (W11): EspoCRM at `cases.kobo.local`, with Kobo submissions
     opened as routed cases by a bridge (health referral scenario, 27/27 online and offline).
+  - A box that runs itself (W12, started): Kobo on a fixed internal address (survives
+    reboots and network changes with no `run.py`), AI settings from the hardware, and
+    encrypted backups by plugging in a `KOBOBACKUP` drive, restored on the same box.
 - **Models:**
   - KPI batch work: Gemma 4 E4B with thinking off (qual 3/3, translation chrF ~59) and
     Whisper large-v3-turbo (~2% WER, Spanish). Together 6.3 GB: they fit an 8 GB GPU.
@@ -26,6 +32,9 @@ are in [PLAN.md](PLAN.md); per-run results are in [remote/results/NOTES.md](remo
   at ~31 tokens/s means minutes per step.
 
 **Next, in order:**
+0. **W12, what can be done before the hardware:** the status page, then the content pack
+   and `install.sh --pack` on a clean droplet offline from the start, then `firstboot.sh`
+   (`remote/box/README.md` has the order and the design).
 1. **W5 hardware:** buy the Strix Halo 128 GB dev unit and re-run the same tests on it
    (`gpu-tiers.sh` equivalents, `w4-run.py`), at full power and capped. This decides the
    kit; everything else so far is a cloud stand-in.
@@ -39,7 +48,8 @@ are in [PLAN.md](PLAN.md); per-run results are in [remote/results/NOTES.md](remo
    the W4 set.
 4. **W2 to finish:** a KPI image from the branch, the pilot languages' tables, and
    proposing the change upstream (talk to the KPI team).
-5. **W10 knowledge base**, and **W7 packaging** (one USB install, first boot keys).
+5. **W10 knowledge base**, and the W12 steps that need the box: hotspot + local DNS,
+   autoinstall USB with LUKS + TPM.
 6. **Decisions needed:** the pilot languages and partner, mock interviews recorded on field
    phones (FLEURS is a best case), and when to involve the KPI and kobo-mcp maintainers.
 
@@ -50,8 +60,8 @@ Whisper and Gemma audio ~2% WER on FLEURS Spanish; translation correct (chrF ~59
 [NOTES](remote/results/NOTES.md) for why that's not low); whisper ~13–15 s per 30 s window
 with `language` set. All passes offline.
 
-After restoring a snapshot the droplet has a new IP: run
-`cd /root/kobo-install && python3 run.py` once so Kobo's hostnames follow it.
+After restoring a snapshot the droplet has a new IP. Snapshots from 2026-10-30 on don't care
+(Kobo is on the fixed address, W12); older ones need `cd /root/kobo-install && python3 run.py`.
 
 ### 2. W2: KPI local NLP backend (2–4 weeks)
 - [x] Clone `kobotoolbox/kpi` (`main`) to `~/code/kpi`; branch `local-nlp-backend`
@@ -223,12 +233,52 @@ Ponto's local EspoCRM testing (`~/code/ponto/infra/espocrm`), with per-box secre
 - [x] Footprint: 1.6 GB images, ~330 MB data, ~200 MB RAM idle
 - [ ] Phase 2: status back to Kobo, edited submissions, an EspoCRM MCP for the agents, UI
       languages (EspoCRM has no Swahili), images in the content pack, secrets via `firstboot.sh`
-- Found on the rig: `/root/kobo-install/.run.conf` still has a previous droplet's IP
+- Found on the rig: `/root/kobo-install/.run.conf` still had a previous droplet's IP
   (`local_interface_ip` 209.38.102.192), which `agents.sh` passes to kobo-mcp as `kf.kobo.local`.
-  The bridge uses `host-gateway` instead. Run `python3 run.py` in kobo-install after a restore,
-  as noted above. Port 8081 is the batch LLM's, so EspoCRM is on 8084.
+  The bridge uses `host-gateway` instead. Fixed for good by W12's fixed address (3e below). Port 8081 is the batch LLM's, so EspoCRM is on 8084.
 - The rig is still running with the stack up (`espocrm.sh down` to stop it). SSH from
   92.184.112.0/24 was added to `kobo-box-ai-fw` for this session.
+
+### 3e. W12: a box non-technical teams can run (started 2026-10-30)
+`remote/box/` ([README](remote/box/README.md), PLAN 3k). Tested on the CPU rig.
+- [x] **Fixed internal address:** `box.sh ip up` puts `10.254.254.254` on a dummy interface
+      (`kobobox0`, a systemd unit before Docker); `BOX_IP=10.254.254.254 kobo-setup.py
+      --reconfigure` binds Kobo to it. Before: the restored rig's Kobo still mapped
+      `kf.kobo.local` to an old droplet's IP inside its containers (KPI → kf: connection
+      refused). After: 200, and after a reboot all 21 containers came back with no `run.py`;
+      `e2e-nlp.py` PASS and `e2e-espo.py --edge` 27/27 on the new address.
+- [x] **`detect-tier.py`:** 8 cores, 31 GB, no GPU → CPU tier with Whisper turbo and a 23 GB
+      cap, as measured in README; `./ai.sh up auto` uses it. NVIDIA/AMD branches not run yet
+      (AMD falls back to the CPU until there's a Vulkan/ROCm profile, W5).
+- [x] **`backup.sh`** (restic 0.16): a loop device formatted exFAT with the label
+      `KOBOBACKUP` triggers the udev rule → mount, dumps (pg_dump of `kobocat`/`koboform`,
+      mongodump, EspoCRM's dump and files), media, `.run.conf` + `kobo-env`, check of 5% of
+      the data, unmount, status JSON. 7 s for the rig's data; the repository is 40 MB.
+      A drive it can't mount is recorded as a failure too.
+- [x] **Same-box restore:** deleted two projects through the API (the 63-submission W4
+      survey, and the media project), then `backup.sh restore /media/kobobackup`: safety
+      backup first, Kobo's front end stopped, databases and media restored, 47 s. Both
+      projects back with their counts, the audio attachment byte-identical (sha256), EspoCRM
+      cases back, `e2e-nlp.py` PASS, `e2e-espo.py --edge` 27/27.
+- [x] **Replacement-box restore:** a fresh CPU droplet with stock Kobo 2.026.37c (same
+      kobo-install commit), installed with `BOX_IP` from the start; the rig's repository
+      copied over as if on the stick; `backup.sh restore`, typing the old passphrase at the
+      prompt. 109 s. With the old box's superuser password (merged in), all three projects
+      with their counts (63, 13, 1), the audio byte-identical, a validation-status write 200,
+      KoboCAT's Digest auth 200, Enketo 200, and a new user's form deployed and a KoboCollect-
+      style OpenRosa submission stored (201). Droplet deleted afterwards.
+      Fixed on the way: the restored `.run.conf` carried the rig's
+      `use_frontend_custom_yml` (KPI backport), which a fresh box doesn't have, so restore now
+      merges only accounts and secrets into the new box's own settings; and mongorestore of
+      `admin.system.users` dropped its own login mid-restore, so users are skipped and the
+      restored passwords set with `changeUserPassword`.
+- [x] **Offline:** with `offline.sh on`, a drive backup and the nightly unit both succeed.
+- Not covered yet: EspoCRM on a replacement box (prints the commands), OpenCode sessions,
+  NVIDIA/AMD tier detection on real hardware, the passphrase prompt from a real console.
+- Found: DigitalOcean's kernel has no exFAT module (`linux-modules-extra` adds it; Ubuntu's
+  generic kernel on a real box has it). `provision.sh` copied `*.local.env` (laptop-only
+  overrides) to the droplet: excluded now. The first backup passphrase on the rig was logged
+  to the journal before that was fixed: test data only, but make a new one before real use.
 
 ### 4. GPU tiers (W1) ✅ run on an H100, 2026-10-29
 RTX 4000/6000 Ada and L40S stayed out of stock, so `remote/gpu-tiers.sh` ran on

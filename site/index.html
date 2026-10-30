@@ -123,6 +123,10 @@
 <figure><a href="static/home/kobo-table.jpg"><img src="static/home/kobo-table.jpg" width="1440" height="900" alt="KoboToolbox's data table for the household water survey, 63 results: columns for validation, enumerator, interview date, district, household head's name and phone number. The first three rows are marked On hold."></a><figcaption>KoboToolbox on the kit: the test survey's data table. The three rows on hold are duplicates the assistant was asked to hold (<a href="#assistant">see below</a>).</figcaption></figure>
 <p>The KoboToolbox user guide is on the kit in English, Spanish and French, with its links pointing at the local copy, so the help pages open with no internet.</p>
 <figure><a href="static/home/kobo-guide.jpg"><img src="static/home/kobo-guide.jpg" width="1440" height="968" alt="The KoboToolbox help center home page, What do you need help with?, with topic cards for Getting Started, Account and Billing and Using the Formbuilder, served from kobo.local."></a><figcaption>The KoboToolbox user guide, served by the kit. Its pages load nothing from the internet.</figcaption></figure>
+
+<h3>Back up</h3>
+<p>Plug a USB drive labelled <code>KOBOBACKUP</code> into the kit. It backs up the data, recordings, settings and case records by itself, encrypted, copying only what changed since the last time, then releases the drive. Keep the drive somewhere other than the kit. Do it weekly, or after a big collection day. The kit also keeps a nightly copy of its databases on its own disk, to undo mistakes.</p>
+<p>If a kit is lost or breaks, a replacement installed from the kit's USB stick can be restored from the drive with the backup passphrase on the original kit's label card. Keep the card apart from both the kit and the drive. In testing, two deleted projects (63 submissions, and an audio recording that came back byte for byte) were restored in under a minute, and a freshly installed replacement kit took the whole backup in under two, with phones able to submit to it straight after.</p>
 </section>
 
 <section id="ai">
@@ -402,10 +406,11 @@
   <li><strong>No third-party processing.</strong> Recordings, transcripts, translations and analysis are processed and stored on the kit. No AI provider sees them.</li>
   <li><strong>Nothing reachable beyond the Wi-Fi.</strong> The kit offers its services only on its own network, behind a Wi-Fi password and each person's KoboToolbox account.</li>
   <li><strong>Encrypted disk.</strong> Full-disk encryption unlocked by the computer's security chip, so data on a lost or stolen kit can't be read.</li>
+  <li><strong>Backups leave with you.</strong> Backups are encrypted with the kit's own passphrase, so a lost backup drive can't be read; a lost kit can be replaced and restored from the drive.</li>
   <li><strong>Syncing is a choice.</strong> Each project stays on the kit, goes to the hub, or goes on to a named KoboToolbox server, as the organisation decides.</li>
   <li><strong>The assistant uses your permissions.</strong> It sees only what the signed-in user can see, can't delete, and asks before changing anything.</li>
 </ul>
-<p>Encryption protects data at rest, not against someone forcing staff to unlock the kit. Responsible data practice still applies in full: consent (including for recording and automatic transcription), collecting only what's needed, retention limits, and regular backups to a second device.</p>
+<p>Encryption protects data at rest, not against someone forcing staff to unlock the kit. Responsible data practice still applies in full: consent (including for recording and automatic transcription), collecting only what's needed, retention limits, and regular backups to a drive kept away from the kit.</p>
 </section>
 
 <section id="limits">
@@ -432,7 +437,8 @@
     <tr><td>Case management (optional)</td><td>Working in testing with a health referral scenario, online and offline</td></tr>
     <tr><td>Dashboards and knowledge base</td><td>Built for KoboToolbox online; being adapted to run on the kit</td></tr>
     <tr><td>Field hardware</td><td>One recommended unit to buy and test</td></tr>
-    <tr><td>Installation from one USB stick</td><td>Planned, with each kit's own passwords and keys made on first start</td></tr>
+    <tr><td>Backups and restore</td><td>Working in testing: plug in a drive to back up; restore on the same kit or a freshly installed replacement</td></tr>
+    <tr><td>Kits ready to switch on</td><td>Started: AI settings chosen from the hardware, and a fixed internal address so the kit works on any network. Next, the status page, installation from one USB stick before shipping, and each kit's own passwords and keys made on first start</td></tr>
     <tr><td>Field pilot</td><td>With one partner organisation, after the above</td></tr>
   </tbody>
 </table></div>

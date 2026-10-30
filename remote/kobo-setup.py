@@ -4,6 +4,7 @@ Non-interactive kobo-install for the test rig. Run ON THE DROPLET as root, onlin
 
     python3 -I /root/kobo-box-ai/kobo-setup.py
     python3 -I /root/kobo-box-ai/kobo-setup.py --reconfigure   # existing install
+    BOX_IP=10.254.254.254 python3 -I ...   # the box's fixed address (box/box.sh), not the network's
 
 Equivalent to `python3 run.py` in /root/kobo-install, answered the way a field
 laptop is set up: production mode (no DEBUG, no KPI dev checkout), plain HTTP,
@@ -46,7 +47,11 @@ config = Config()
 if not config.first_time and not reconfigure:
     sys.exit('kobo-install is already configured; use --reconfigure or `python3 run.py --setup`.')
 
-ip = Network.get_primary_ip()
+# BOX_IP: the box's fixed internal address (box/box.sh ip up), so Kobo keeps working
+# when the network changes. Without it, the current primary IP, as kobo-install does.
+ip = os.environ.get('BOX_IP') or Network.get_primary_ip()
+if ip not in Network.get_local_interfaces(all_=True).values():
+    sys.exit(f'BOX_IP {ip} is not on any interface: run `box/box.sh ip up` first.')
 dict_ = config.get_upgraded_dict()
 dict_.update({
     'install_mode': 'production',

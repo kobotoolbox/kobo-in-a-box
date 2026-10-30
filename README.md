@@ -37,6 +37,8 @@ remote/
                         (agents/README.md)
   espocrm/              W11 (optional): EspoCRM case management at cases.kobo.local, and a
                         bridge that opens cases from Kobo submissions (espocrm/README.md)
+  box/                  W12: what makes it a kit that runs itself (box/README.md): fixed
+                        internal address, AI tier from the hardware, KOBOBACKUP drive backups
   library/
     manifest.tsv        installers and docs served at http://kobo.local (pinned versions, SHA-256)
     library.sh          build (fetch + docs + render) | check | up|down|logs (edge nginx on :80)
@@ -86,7 +88,8 @@ ssh root@<ip> 'cd /root/kobo-box-ai && python3 -I smoke-test.py'
 ./park.sh
 # later: set REGION in config.env to the snapshot's region, then
 ./provision.sh --from-snapshot
-ssh root@<new-ip> 'cd /root/kobo-install && python3 run.py'   # Kobo follows the new IP
+# Only for snapshots before W12's fixed address (BOX_IP): make Kobo follow the new IP
+ssh root@<new-ip> 'cd /root/kobo-install && python3 run.py'
 ssh root@<new-ip> '/root/kobo-box-ai/library/library.sh up'
 
 # KPI with local AI (W2): run the KPI branch's tests, and the end-to-end check through
@@ -95,6 +98,13 @@ ssh root@<ip> 'bash /root/kobo-box-ai/kpi-test.sh'
 ssh root@<ip> 'python3 -I /root/kobo-box-ai/e2e-nlp.py e2e "$(cat /root/e2e-user.pw)"'
 
 # Agents (W4): see remote/agents/README.md for the two-droplet session
+
+# The box (W12): fixed internal address + backup units, AI tier from the hardware,
+# and Kobo bound to the fixed address (see remote/box/README.md)
+ssh root@<ip> '/root/kobo-box-ai/box/box.sh install && apt-get install -y restic'
+ssh root@<ip> 'cd /root/kobo-box-ai && BOX_IP=10.254.254.254 python3 -I kobo-setup.py --reconfigure'
+ssh root@<ip> 'cd /root/kobo-box-ai && python3 -I box/detect-tier.py && ./ai.sh up auto'
+ssh root@<ip> '/root/kobo-box-ai/box/backup.sh run /var/backups/kobo-box'   # or plug in KOBOBACKUP
 
 # Case management (W11, optional): EspoCRM + the Kobo bridge, then the end-to-end check
 ssh root@<ip> '/root/kobo-box-ai/espocrm/espocrm.sh up --demo-users'
