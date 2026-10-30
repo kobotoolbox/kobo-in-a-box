@@ -213,6 +213,13 @@ deployments that need it:
 - **Limited by design.** Case workers can't delete or export cases; the bridge can only
   create them; a caregiver's phone number reaches the case only if they agreed to be
   called back.
+- **Planned: follow-up from the field.** The list of open cases would be sent to the
+  phones as a choice list in a follow-up form, so a health worker picks the case they are
+  following up (for example "CS-12 · household Z2-0147 · child danger signs · due 31 Oct")
+  and records what happened. The outcome then goes back onto the case, without anyone
+  re-typing it. The list carries only a case number, household code, area and reason,
+  never names, phone numbers or health details, because it is stored on every phone that
+  has the form.
 
 It was tested with a community health referral scenario: made-up home visits in a camp,
 where children are screened for danger signs and malnutrition, pregnant women for danger
@@ -493,8 +500,9 @@ Being clear about limits is part of using the kit responsibly:
 - It does **not replace connectivity for coordination**: emails, cluster reporting and
   calls with headquarters still need a connection, even an occasional one.
 - **Case management works in one direction for now.** Cases are opened from KoboToolbox,
-  but a case's outcome doesn't flow back to the submission yet, and editing a submission
-  doesn't update its case. Its screens exist in Arabic, French, Portuguese, Spanish,
+  but a case's outcome doesn't flow back to the submission yet, editing a submission
+  doesn't update its case, and follow-up visits can't yet be recorded against a case from
+  the phone (planned). Its screens exist in Arabic, French, Portuguese, Spanish,
   Turkish and about 30 other languages, but not Swahili.
 - Each kit serves **one site at a time**, over its own Wi-Fi. Combining sites needs a
   kit to come back to base or a physical link (cable, local radio link) to the hub;
@@ -539,7 +547,9 @@ recording leaves the camp, and nothing passes through a third-party service.
 **Health referrals in a camp.** Community health workers visit households with a
 screening form. A child with severe malnutrition is found in the morning; by the time the
 worker syncs at the health post, a case is waiting for the nutrition team, due within 48
-hours. A suspected cholera case goes straight to surveillance, marked urgent. At the end
+hours. A suspected cholera case goes straight to surveillance, marked urgent. Once
+follow-up from the field is added, the worker who visits the household again picks the
+case from a list on their phone and records whether the child reached the clinic. At the end
 of the week the supervisor sees which referrals arrived, which didn't, and which teams are
 behind, without the data leaving the camp.
 
@@ -597,7 +607,7 @@ confirm speed, power draw and heat before buying pilot kits.
 | **AI assistant** | Assistant connected to KoboToolbox data, with safety limits on what it can change: working offline in testing, with a 30-task test set comparing models. Next: sign-in for several users, guidance about each form, shorter instructions for speed | ✅ Working in testing; 1–2 weeks more |
 | **Dashboards** | Kobo's dashboard service running on the kit, built by the assistant; offline maps and boundaries for the deployment's regions | About 2 weeks, after the assistant connection |
 | **Knowledge base** | Guides indexed on the box and searchable by the assistant, across languages; the deployment's own documents added before or during a mission; tested with the support chatbot's question set | 2–3 weeks; can start now |
-| **Case management (optional)** | EspoCRM on the kit with a bridge that opens cases from KoboToolbox submissions, routed by rules per form: working online and offline in testing, with a health referral scenario. Next: case outcomes back to KoboToolbox, the assistant reading cases, interface languages for the pilot, encrypted logins | ✅ Working in testing |
+| **Case management (optional)** | EspoCRM on the kit with a bridge that opens cases from KoboToolbox submissions, routed by rules per form: working online and offline in testing, with a health referral scenario. Next: open cases as a choice list in follow-up forms, with the outcome written back to the case; case outcomes back to KoboToolbox, the assistant reading cases, interface languages for the pilot, encrypted logins | ✅ Working in testing |
 | **Hardware** | Buy and test one recommended unit; measure speed, power and heat, re-running the same AI and assistant tests | Next |
 | **Multi-site sync** | Kit-to-hub and hub-to-cloud syncing with kobo-transfer, automated and shown on the kit's status page; identical forms on every kit | Sync to a cloud server tested on the prototype; hub workflow to build and test |
 | **Packaging** | One-USB installation; per-kit passwords and keys; health check page; quick-start guide | 2–4 weeks |

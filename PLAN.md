@@ -413,6 +413,41 @@ idempotent bootstrap over the REST API), with per-box passwords instead of fixed
 - **Phase 2:** status back to Kobo (validation status), edited submissions, an EspoCRM MCP
   for the agents, UI languages (no Swahili in EspoCRM), local HTTPS.
 
+#### Open cases as a choice list in Kobo forms (planned, not built)
+
+Closes the referral loop on the box: a follow-up form lets a CHW pick an open case
+(`select_one_from_file open_cases.csv`, `choice_filter` on zone or team) and record what
+happened, and the bridge writes that back onto the case. Checked in KPI's code
+(`~/code/kpi`, 2026-10-30):
+
+- **Not a plain URL.** KPI's "media from URL" (`AssetFile.metadata.redirect_url`) hashes
+  the URL's ETag, Last-Modified or Content-Length once, when the file is added
+  (`AssetFile.set_md5_hash`). Collect only re-downloads media whose hash changed, so phones
+  would keep the first list. The media endpoint answers with a redirect
+  (`get_media_file_response`), so Collect would fetch the CSV from the box without signing
+  in: case data open to anyone on the Wi-Fi. Adding a `kobo.local` URL also fails KPI's SSRF
+  check on a private LAN unless `SSRF_ALLOWED_IP_ADDRESS` allows it.
+- **Upload instead.** The bridge builds `open_cases.csv` from EspoCRM's open cases and,
+  when it changed, replaces the form's media file through KPI's API. Then the file reaches
+  phones behind Kobo's sign-in, and its content hash changes with each update.
+- **Syncing to phones.** Media only reaches the OpenRosa side on deploy or redeploy
+  (`DeployableMixin.deploy` → `sync_media_files_async`). Options: redeploy through the API
+  when the list changed (adds a form version each time), or KPI's
+  `manage.py sync_kobocat_form_media --asset-uid <uid>` from a host timer (no new versions,
+  but outside the bridge container). Start with redeploy-on-change, rate-limited (e.g. at
+  most every 15 min).
+- **Minimal columns.** The whole file goes to every phone with the form; `choice_filter`
+  only hides rows. So: `name` (e.g. `cs_12`), `label` (`CS-12 · Z2-0147 · Child danger
+  signs · due 31 Oct`), `zone`, `team`. No names, phones or health details.
+- **Read-back.** A second template section maps the follow-up form to updates of the
+  selected case (outcome, status, a note), so the bridge also updates cases, not only
+  creates them. The bridge's role then needs edit on Case, for those fields only.
+- **On the phone:** Collect picks up a new list when it updates forms (Get Blank Form, or
+  the project's form update mode "match exactly"); Enketo when the form reloads.
+- **Tests:** a follow-up visit form in the health scenario; a closed case leaves the list
+  after the next sync; the follow-up outcome lands on the right case; the CSV holds only
+  the allowed columns.
+
 ## 4. Testing on DigitalOcean (extends README)
 
 The DigitalOcean rig covers **functional and offline** testing. Performance numbers only count from a real Strix Halo unit.
@@ -526,6 +561,7 @@ Built and tested 2026-10-30; details in [STATUS.md](STATUS.md).
 - [x] `espocrm-setup.py`: teams, roles, Case fields and layouts from a template; bridge API user; version checks off
 - [x] `bridge.py`: Kobo → cases by polling, deduplicated, safe across restarts; 9 unit tests
 - [x] Health referral scenario (form with referral logic, 13 visits) and `e2e-espo.py`: 27/27 on the rig online and offline, no outbound packets
+- [ ] Open cases as a choice list in Kobo forms, and follow-up visits written back to the case (3j; planned)
 - [ ] Phase 2: case status back to Kobo; edited submissions; EspoCRM MCP + agent tasks; UI languages for the pilot; per-box secrets from `firstboot.sh`; images in the content pack
 
 ## 6. Risks
