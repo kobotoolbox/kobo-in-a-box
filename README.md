@@ -38,13 +38,15 @@ remote/
   espocrm/              W11 (optional): EspoCRM case management at cases.kobo.local, and a
                         bridge that opens cases from Kobo submissions (espocrm/README.md)
   box/                  W12: what makes it a kit that runs itself (box/README.md): fixed
-                        internal address, AI tier from the hardware, KOBOBACKUP drive backups
+                        internal address, AI tier from the hardware, KOBOBACKUP drive backups,
+                        the status page at kobo.local/status (status.py)
   library/
     manifest.tsv        installers and docs served at http://kobo.local (pinned versions, SHA-256)
     library.sh          build (fetch + docs + render) | check | up|down|logs (edge nginx on :80)
     render.py           landing page from the manifest and what's on disk
     nginx/edge.conf     kf/kc/ee.* → Kobo on :8080; cases.* → EspoCRM on :8084;
-                        everything else → /srv/library
+                        everything else → /srv/library (the folder is mounted, so an
+                        updated edge.conf takes effect on `library.sh up`)
 ```
 
 ## Workflow
@@ -105,6 +107,9 @@ ssh root@<ip> '/root/kobo-box-ai/box/box.sh install && apt-get install -y restic
 ssh root@<ip> 'cd /root/kobo-box-ai && BOX_IP=10.254.254.254 python3 -I kobo-setup.py --reconfigure'
 ssh root@<ip> 'cd /root/kobo-box-ai && python3 -I box/detect-tier.py && ./ai.sh up auto'
 ssh root@<ip> '/root/kobo-box-ai/box/backup.sh run /var/backups/kobo-box'   # or plug in KOBOBACKUP
+ssh root@<ip> 'python3 -I /root/kobo-box-ai/box/status.py --print'   # what kobo.local/status/ shows
+# e2e-nlp.py posts to kc.kobo.local directly; DigitalOcean rewrites /etc/hosts on boot, so after
+# a restore: echo "127.0.0.1 kobo.local kf.kobo.local kc.kobo.local ee.kobo.local" >> /etc/hosts
 
 # Case management (W11, optional): EspoCRM + the Kobo bridge, then the end-to-end check
 ssh root@<ip> '/root/kobo-box-ai/espocrm/espocrm.sh up --demo-users'

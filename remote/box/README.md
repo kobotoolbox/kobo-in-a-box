@@ -39,7 +39,7 @@ are built.
 | `detect-tier.py` | RAM, cores and GPU → `ai.box.env`; `./ai.sh up auto` | Built; tested on the rig (CPU) |
 | `install.sh --pack <dir>` | Offline install from the content pack | Next |
 | `firstboot.sh` | Per-box secrets, hotspot, label card | Next |
-| Status page | `kobo.local/status`: services, disk, last backup, models | Next |
+| `status.py` | Status page at `kobo.local/status`: Kobo, AI, disk, backups, battery in plain words; every minute | Built |
 | Autoinstall USB | Ubuntu 26.04 ISO + `CIDATA` + `KOBOPACK` partitions, LUKS + TPM | Needs the W5 box |
 
 ## Backups
@@ -81,11 +81,37 @@ box/backup.sh status                    # last result, as JSON (for the status p
   109 s on a fresh droplet. EspoCRM on a replacement box is still by hand: the restore
   prints the two commands.
 
+## Status page
+
+`http://kobo.local/status/`, linked from the landing page: one coloured line saying whether
+everything works, then one row per part in plain words, with what to do when it's not green.
+
+```bash
+python3 -I box/status.py           # write status/index.html and status.json into the library
+python3 -I box/status.py --print   # the same checks in the terminal (support over SSH)
+```
+
+- **What it checks:** KoboToolbox (KPI's `/service_health/` and Enketo through Kobo's nginx,
+  and every Kobo container running); the AI models (llama-server's `/health`: loading or
+  ready; whisper-server); the assistant and case management if they're installed; the edge;
+  free disk space; backups; the battery where there is one.
+- **Backups, as the focal point sees them:** "Backing up to the drive now. Don't unplug it"
+  while the drive unit runs; "finished at 14:02, you can unplug the drive" for an hour after;
+  a warning after 7 days with no drive backup, or 36 hours with no nightly copy; red with the
+  reason when the last backup failed.
+- **Starting up isn't an error:** for 15 minutes after boot, a part that isn't up yet shows as
+  "starting" (blue), not red.
+- **Static, and refreshed every minute** by `kobo-box-status.timer` (`box.sh install`), and by
+  `backup.sh` when a backup starts and ends. The edge serves it like the rest of the library,
+  so nothing reachable from the Wi-Fi can talk to Docker. It refreshes itself in the browser
+  every 30 s, and says so if it's more than 5 minutes off the phone's clock: either the checks
+  stopped, or the box's clock is wrong (which would also put wrong times on submissions).
+- **Not yet:** temperature (needs the W5 box's sensors), translations of the page, and the
+  health checks that restart a hung model server (PLAN W12).
+
 ## Next steps (in order)
 
-1. **Status page** at `kobo.local/status`: services up, disk free, last backup and its
-   result (from `backup.sh status`), the AI tier and whether the models are loaded,
-   battery where there is one. Plain words and red/green; the one page a focal point checks.
+1. ~~Status page~~: built (above).
 2. **Content pack + `install.sh --pack`:** the layout below, built on the rig with
    `pack.sh build`, then installed on a clean CPU droplet with outbound traffic blocked
    from the start. The proof that nothing is fetched at install time.

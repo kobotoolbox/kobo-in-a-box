@@ -135,7 +135,8 @@ def main():
 
     body = [
         '<h1>Kobo in a box</h1>',
-        '<p class="lead">Everything here works without internet, on this Wi-Fi only.</p>',
+        '<p class="lead">Everything here works without internet, on this Wi-Fi only. '
+        '<a href="/status/">Box status</a></p>',
         '<h2>KoboToolbox</h2>',
         f'<p><a class="big" href="{kf}/">Open KoboToolbox</a></p>',
         f'<p>KoboCollect server URL: <code>{kc}</code> '

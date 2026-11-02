@@ -124,7 +124,10 @@ Effort is for one developer and is rough.
   licence before shipping.
 - **Spike: orthomosaic processing on the box.** The "Orto workflow various provider" note lists
   PixPro, DroneDeploy, Site Scan, QGIS flight planning and an on-site route. The open-source
-  option, OpenDroneMap (WebODM), could run on a Strix Halo unit. Measure time for a typical
+  option, WebODM with its ODX engine (AGPL-3.0, like Kobo; its own GitHub organisation since
+  April 2026; ODM's own desktop app is now paid), could run on a Strix Halo unit. It competes
+  with the AI models for the 128 GB, so run it with the agent model stopped, or overnight. Follow
+  WebODM's trademark guidelines if the kit ships it under that name. Measure time for a typical
   site (say 500-1,500 photos) on the dev unit and compare with the Windows laptop already in the
   ADAK. Keep the vendor tools if they win; the box then only stores and serves their output.
   Proprietary-tool licences and cloud dependence (Site Scan) need checking for offline use.

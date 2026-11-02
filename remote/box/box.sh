@@ -3,7 +3,8 @@
 #
 #   ./box.sh ip up|down|status   the fixed internal address (below)
 #   ./box.sh install             systemd units: the address at boot, nightly backup,
-#                                and a backup whenever the KOBOBACKUP drive is plugged in
+#                                a backup whenever the KOBOBACKUP drive is plugged in,
+#                                and the status page (kobo.local/status) every minute
 #   ./box.sh uninstall
 #
 # Fixed internal address: kobo-install maps kf/kc/ee.kobo.local to the IP the box had
@@ -55,6 +56,8 @@ After=docker.service
 [Service]
 Type=oneshot
 ExecStart=$HERE/backup.sh drive
+# If the unit is stopped mid-backup, backup.sh never gets to unmount the drive
+ExecStopPost=-/usr/bin/umount /media/kobobackup
 EOF
     cat > /etc/udev/rules.d/99-kobo-box-backup.rules <<EOF
 # Plugging in a drive labelled KOBOBACKUP starts a full backup to it ("change": card readers
@@ -85,10 +88,31 @@ Persistent=true
 [Install]
 WantedBy=timers.target
 EOF
+    # The status page: rewritten every minute, and by backup.sh when a backup starts or ends
+    cat > "$UNIT_DIR/kobo-box-status.service" <<EOF
+[Unit]
+Description=Kobo in a box: write the status page
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 -I $HERE/status.py
+EOF
+    cat > "$UNIT_DIR/kobo-box-status.timer" <<EOF
+[Unit]
+Description=Kobo in a box: status page every minute
+
+[Timer]
+OnBootSec=30s
+OnUnitActiveSec=60s
+AccuracySec=5s
+
+[Install]
+WantedBy=timers.target
+EOF
     systemctl daemon-reload
     udevadm control --reload
-    systemctl enable --now kobo-box-ip.service kobo-box-backup.timer
-    echo "Installed: kobo-box-ip ($BOX_IP), nightly backup timer, KOBOBACKUP drive rule"
+    systemctl enable --now kobo-box-ip.service kobo-box-backup.timer kobo-box-status.timer
+    echo "Installed: kobo-box-ip ($BOX_IP), nightly backup timer, KOBOBACKUP drive rule, status page timer"
 }
 
 case "${1:-}" in
@@ -102,8 +126,8 @@ case "${1:-}" in
         ;;
     install) install_units ;;
     uninstall)
-        systemctl disable --now kobo-box-ip.service kobo-box-backup.timer 2>/dev/null || true
-        rm -f "$UNIT_DIR"/kobo-box-{ip,backup,backup-drive}.service "$UNIT_DIR/kobo-box-backup.timer" \
+        systemctl disable --now kobo-box-ip.service kobo-box-backup.timer kobo-box-status.timer 2>/dev/null || true
+        rm -f "$UNIT_DIR"/kobo-box-{ip,backup,backup-drive,status}.service "$UNIT_DIR"/kobo-box-{backup,status}.timer \
             "$UNIT_DIR/media-kobobackup.mount" /etc/udev/rules.d/99-kobo-box-backup.rules
         systemctl daemon-reload
         udevadm control --reload

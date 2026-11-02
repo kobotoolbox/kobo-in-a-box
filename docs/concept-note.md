@@ -387,12 +387,13 @@ risk to a single physical device. Both sides need managing.
 | Risk | Mitigation |
 |---|---|
 | Theft or loss of the box | Full-disk encryption; strong Wi-Fi password; no services reachable beyond the local Wi-Fi; encrypted backups to a USB drive kept separately, made by plugging it in, and restorable onto a replacement kit |
-| Seizure, or staff forced to unlock it | Encryption protects data at rest, not against coercion. Collect only the data needed; delete or sync off-site on a regular schedule; agree in advance what staff should do if the box is demanded; where the risk is high, treat the kit as a staging point rather than long-term storage |
+| Seizure, or staff forced to unlock it | Encryption protects data at rest, not against coercion. Collect only the data needed; delete or sync off-site on a regular schedule; agree in advance what staff should do if the box is demanded; where the risk is high, treat the kit as a staging point rather than long-term storage, and optionally set up an emergency wipe that makes the disk unreadable in seconds |
 | An untrusted device joins the Wi-Fi | Strong, regularly changed Wi-Fi password; every KoboToolbox user needs their own account and permissions; the AI assistant works with the logged-in user's own permissions only |
 | A single point of failure | Backups to a second device; sync to the cloud when possible; the hardware is standard and replaceable, and the software can be reinstalled from USB |
 | AI assistants keep conversation histories containing personal data | Stored only on the encrypted device; a retention and deletion policy for each deployment |
 | A dashboard shows more than intended to people on the Wi-Fi | New dashboards start unpublished; sensitive ones use a password; dashboards show summaries, and the owner chooses what goes on them |
 | Case records hold names, phone numbers and health or protection details | Encrypted disk; case workers see only their team's cases and can't delete or export; phone numbers only with consent; backups readable only by the kit's administrator; a retention policy per deployment. Case logins still go over the Wi-Fi without encryption, which is to be fixed before field use |
+| Someone writes instructions to the assistant into a form answer | Answers are treated as data, never as instructions; the assistant can't delete data or make changes without confirmation; this case is part of the assistant's test set |
 | Documents added to the knowledge base contain personal data, or text written to mislead the assistant | The knowledge base is for reference material only; the assistant treats document text as information, not instructions, and still can't delete data or make changes without confirmation |
 
 **Responsible data practice still applies in full.** The kit makes it easier, not
@@ -417,7 +418,15 @@ control, retention limits, and a data-sharing plan for when data moves to the cl
   or not at all, in many minority languages. **Each deployment's languages must be
   tested before relying on AI output,** using about 50 real recordings per language.
   Where quality is not good enough, the kit still works fully without AI, and models
-  for specific languages can be added or adapted.
+  for specific languages can be added or adapted. Candidates for languages the main models
+  handle badly include Meta's Omnilingual speech recognition (1,600+ languages) and the
+  MADLAD-400 translation models, both under open licences; we will test them against real
+  field recordings, not just the developers' own benchmarks.
+- **Transcription can invent text.** Speech recognition models sometimes write whole
+  phrases that nobody said, mostly over silence, background noise or poor recordings. The
+  kit skips stretches with no speech before transcribing, flags doubtful passages for
+  review, and tests each language with noisy and silent clips as well as clear speech. In
+  protection work, a transcript is checked by a person before anything is done with it.
 - **Errors are expected and measured.** We publish measured error rates per language
   and per hardware tier, so teams know how much checking is needed.
 - **Answers show their sources.** The assistant cites the guide or document behind each
@@ -452,6 +461,12 @@ control, retention limits, and a data-sharing plan for when data moves to the cl
 - **Customs and import.** Kits contain encrypted computers and radio equipment (Wi-Fi).
   Some countries restrict importing encryption technology or require registering
   wireless equipment. Check this for each deployment country, and carry documentation.
+- **Export controls and sanctions.** US export rules on advanced AI chips restrict
+  shipping some AI computers to a number of countries where humanitarian need is high
+  (for example Sudan, Syria, Afghanistan, Myanmar and Haiti), and sanctions apply
+  separately. The recommended tier uses consumer AMD hardware, which is expected to be the
+  easier case, but each hardware model gets a written classification, and each shipment
+  an export and sanctions check, before kits are sent.
 - **Kits arrive ready to switch on.** Whoever prepares the kits (Kobo, a partner's IT
   team or a supplier) installs each one from a single USB stick holding the operating
   system, KoboToolbox, the AI models and the library. Nothing is downloaded. Field teams
@@ -468,7 +483,9 @@ control, retention limits, and a data-sharing plan for when data moves to the cl
   kit's label card. The kit also keeps a nightly copy of its databases on its own disk,
   to undo mistakes.
 - **Updates.** Kits can't update themselves in the field. Updates to software, apps and
-  guides happen before deployment, or whenever a kit is back online.
+  guides happen before deployment, or whenever a kit is back online. Later, a kit will be
+  able to update from a USB stick, checking a digital signature first so that only
+  genuine updates are installed.
 
 ### 4.6 People and skills
 
@@ -623,9 +640,9 @@ confirm speed, power draw and heat before buying pilot kits.
 | **Dashboards** | Kobo's dashboard service running on the kit, built by the assistant; offline maps and boundaries for the deployment's regions | About 2 weeks, after the assistant connection |
 | **Knowledge base** | Guides indexed on the box and searchable by the assistant, across languages; the deployment's own documents added before or during a mission; tested with the support chatbot's question set | 2–3 weeks; can start now |
 | **Case management (optional)** | EspoCRM on the kit with a bridge that opens cases from KoboToolbox submissions, routed by rules per form: working online and offline in testing, with a health referral scenario. Next: open cases as a choice list in follow-up forms, with the outcome written back to the case; case outcomes back to KoboToolbox, the assistant reading cases, interface languages for the pilot, encrypted logins | ✅ Working in testing |
-| **Hardware** | Buy and test one recommended unit; measure speed, power and heat, re-running the same AI and assistant tests | Next |
+| **Hardware** | Buy and test one recommended unit; measure speed, power and heat, re-running the same AI and assistant tests; test how many phones and users one kit supports at once; time a full restore from a backup drive | Next |
 | **Multi-site sync** | Kit-to-hub and hub-to-cloud syncing with kobo-transfer, automated and shown on the kit's status page; identical forms on every kit | Sync to a cloud server tested on the prototype; hub workflow to build and test |
-| **Packaging** | Kits that arrive ready to switch on: one-USB installation before shipping; per-kit passwords and keys made on first start; AI settings chosen from the hardware; backups by plugging in a drive; status page; quick-start guide. Backups, restore onto a replacement kit, and the self-adjusting AI and network settings are working in testing. Next: the status page, the installer and first-start setup | Started; 3–5 weeks, partly on the recommended hardware |
+| **Packaging** | Kits that arrive ready to switch on: one-USB installation before shipping; per-kit passwords and keys made on first start; AI settings chosen from the hardware; backups by plugging in a drive; status page; quick-start guide. Backups, restore onto a replacement kit, the self-adjusting AI and network settings, and the status page are working in testing. Next: the installer and first-start setup | Started; 3–5 weeks, partly on the recommended hardware |
 | **Field pilot** | One partner organisation, 3–6 languages, real conditions | After the above |
 | **Scale-up** | Kits available to partners; changes merged into the main KoboToolbox product | After the pilot |
 
@@ -636,14 +653,22 @@ confirm speed, power draw and heat before buying pilot kits.
   Turkey.
 - **Languages:** 3–6 languages chosen with the partner. For each, 5–10 practice
   interviews recorded on field phones through KoboCollect let us measure transcription
-  and translation quality before the pilot starts.
+  and translation quality before the pilot starts, comparing several open models per
+  language and including noisy recordings. We would like to do this with a language
+  partner such as CLEAR Global, whose open voice data covers languages like Hausa and
+  Kanuri, and publish the results: there is little public evidence on how these models
+  do with real humanitarian field audio.
 - **What we will measure:** setup time; uptime; how long syncing takes (kit to hub, and
   over the available connection to the cloud); power use and battery life; temperatures;
   how many enumerators and staff one box supports; transcription and translation
   accuracy per language; time saved compared with manual transcription and translation;
   field staff experience; and any data protection incidents.
 - **Outputs:** a pilot report, a tested deployment guide, a costed kit specification,
-  and the software changes contributed to KoboToolbox.
+  the software changes contributed to KoboToolbox, and the measured numbers (error rates
+  per language, users per kit, power use per day, time to restore), published openly.
+  Also a short data responsibility annex that maps the kit's controls to the IASC
+  Operational Guidance on Data Responsibility: existing guidance covers AI policy but not
+  how to run AI offline on a field device.
 
 ---
 
@@ -663,7 +688,10 @@ confirm speed, power draw and heat before buying pilot kits.
 - **Host a pilot:** an operation where offline data collection, qualitative interviews or
   sensitive data make this approach worth testing.
 - **Share expertise:** data protection, field logistics, power systems, and
-  localisation.
+  localisation. Groups already working on parts of this are natural partners: IRC's
+  Signpost AI on safety checks and testing for AI assistants, CLEAR Global on languages,
+  Get ODK on running data collection servers offline, and Kiwix and Internet-in-a-Box on
+  offline content.
 
 ---
 
@@ -676,6 +704,17 @@ local AI to a tool they already use, rather than introducing a new system. Build
 these capabilities into KoboToolbox itself, and contributing them to the main product,
 means they reach every organisation that runs its own KoboToolbox server, not only
 those using a kit.
+
+**How it compares.** Each part exists somewhere, but we found nothing that combines them
+for humanitarian data. Offline libraries such as Internet-in-a-Box serve content with no
+internet, and some now add a chatbot, but collect no data. ODK Central has been run
+offline on laptops by individual teams, without AI or case management, and not as a
+maintained product. Humanitarian AI assistants such as IRC's Signpost AI, and KoboToolbox's
+own cloud AI features, need a connection. Generic local AI setups (an AI chat tool on a
+small PC) know nothing about the data or who may see it. What the kit adds is AI inside
+the KoboToolbox review screens people already use, with a person checking each result; an
+assistant limited to each user's permissions on live data; and the whole system tested
+with the internet cut off.
 
 ---
 

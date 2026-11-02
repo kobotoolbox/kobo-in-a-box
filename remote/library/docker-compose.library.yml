@@ -7,5 +7,7 @@ services:
     network_mode: host
     restart: unless-stopped
     volumes:
-      - ./nginx/edge.conf:/etc/nginx/conf.d/default.conf:ro
+      # The folder, not the file: a file bind mount keeps the old copy when edge.conf is
+      # replaced (an update), so nginx would go on serving the old config
+      - ./nginx:/etc/nginx/conf.d:ro
       - ${LIBRARY_DIR}:/srv/library:ro

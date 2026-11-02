@@ -47,7 +47,7 @@ Prices are approximate and unverified for Oct 2026. Speeds are community-reporte
 | **Ryzen AI Max+ 395 ("Strix Halo"), 128 GB** e.g. Framework Desktop, GMKtec EVO-X2, HP Z2 Mini G1a; laptops: HP ZBook Ultra G1a, ASUS ROG Flow Z13 | x86 | 128 GB unified, ~96 GB usable by the GPU | 50–120 W (configurable TDP) | $2,000–2,800 (mini PC), more for laptops | Native | Yes | **Yes, even gpt-oss-120b** | **Recommended** |
 | RTX laptop (8 GB VRAM, 64 GB RAM) | x86 | 8 GB VRAM + RAM | 100–180 W | $1,500–2,200 | Native | Yes, fast | Small agent models only (VRAM-bound) | Good for KPI AI. Battery and screen built in |
 | Mac mini M4 Pro 64 GB | ARM | 64 GB unified | 40–70 W | $2,000 | Containers via Rosetta; models run natively on macOS | Yes | Yes | Workable, but less like an appliance, harder to repair or replace in the field, Docker runs inside a VM |
-| DGX Spark / ASUS GX10 (GB10) | ARM + CUDA | 128 GB | up to ~170 W | $3,000–4,000 | Custom ARM builds | Yes | Yes | Overkill and ARM |
+| DGX Spark / ASUS GX10 (GB10) | ARM + CUDA | 128 GB | up to ~170 W | $3,000–4,000 (GX10); DGX Spark reportedly $6,950 after an Oct 2026 price rise | Custom ARM builds | Yes | Yes | Overkill and ARM. Its one real edge is ~5× faster prompt processing (3e) |
 
 ### Recommendation
 
@@ -56,9 +56,21 @@ Prices are approximate and unverified for Oct 2026. Speeds are community-reporte
   - Unified memory holds gpt-oss-120b (~63 GB). That's the model KPI's cloud qual analysis already uses as its primary, so one model and one set of prompts work both online and offline. There's still room for Gemma 4 and Whisper.
   - It has a TPM, so the encrypted disk can unlock at boot without a passphrase.
   - Set the TDP to 45–65 W when running on battery.
+  - Consumer AMD hardware is also the easier export case (see export controls below).
 - **Form factor:** a mini PC is cheaper and swappable. A Strix Halo laptop has its own battery (a built-in UPS), screen and keyboard. Decide after a pilot.
 - **Raspberry Pi: no.** It fails both the x86 constraint and the agent-speed constraint. Revisit only if Kobo starts publishing multi-arch images, and then only for a no-AI kit.
 - **Buy one Strix Halo unit early as the development box.** DigitalOcean can't reproduce unified-memory performance, so the cloud rig (README) covers functional and offline testing, and the unit covers real performance and power.
+
+### Export controls and sanctions
+
+US export controls on advanced AI chips (ECCN 3A090, and 4A090 for computers containing them)
+put a "presumption of denial" on several likely deployment contexts: Afghanistan, Myanmar,
+CAR, DRC, Haiti, Iraq, Lebanon, Libya, Somalia, South Sudan, Sudan, Syria, Venezuela. The
+January 2025 AI Diffusion Rule isn't enforced but is still in the regulations. Consumer Strix
+Halo mini PCs are probably below the 3A090 thresholds and DGX Spark-class devices may not be,
+but that is an inference, not legal advice. Before shipping any kit:
+- a short classification note per hardware model (ECCN, with the vendor's own statement where one exists);
+- end-user and sanctions (OFAC) screening of the receiving organisation, whatever the chip class.
 
 ### Field kit additions
 
@@ -113,14 +125,23 @@ Approach:
 
 ### 3a-bis. Models for KPI AI
 
-All of these allow commercial use. **Avoid NLLB-200**: its licence is non-commercial (CC-BY-NC).
+All of these allow commercial use. **Avoid NLLB-200 and SeamlessM4T v2**: their weights are non-commercial (CC-BY-NC-4.0). If a deployment needs them, offer them only as an opt-in research pack, never in the default image.
 
 | Job | First choice | Alternatives / notes |
 |---|---|---|
-| Transcription | **Whisper large-v3-turbo** (MIT), via whisper.cpp. Measured: ~2% WER on FLEURS Spanish, ~2× faster than real time on 8 vCPU for long recordings (about clip length for clips under 30 s) | Gemma 4 E4B audio: measured 2.2% on the same clips, but **clips are capped at 30 s**, so you'd need your own chunking. Whisper medium was barely faster on CPU |
-| Translation | **Gemma 4** (Apache 2.0): E4B on small boxes, 26B-A4B on larger ones. Measured: chrF ~59 on FLEURS Spanish→English for E4B, 26B and gpt-oss alike | Pre-trained on 140+ languages, about 35 supported out of the box. Minority languages need a LoRA fine-tune or community models (e.g. Padauk/AI4Burmese) |
+| Transcription | **Whisper large-v3-turbo** (MIT), via whisper.cpp. Measured: ~2% WER on FLEURS Spanish, ~2× faster than real time on 8 vCPU for long recordings (about clip length for clips under 30 s) | Gemma 4 E4B audio: measured 2.2% on the same clips, but **clips are capped at 30 s**, so you'd need your own chunking. Whisper medium was barely faster on CPU. **Meta Omnilingual ASR** (Apache-2.0, 300M–7B, 1,600+ languages) for languages Whisper handles badly: PyTorch, not GGUF, so it needs its own small server; Meta's accuracy figures are self-reported, so evaluate it before building it in (W1) |
+| Translation | **Gemma 4** (Apache 2.0): E4B on small boxes, 26B-A4B on larger ones. Measured: chrF ~59 on FLEURS Spanish→English for E4B, 26B and gpt-oss alike | Pre-trained on 140+ languages, about 35 supported out of the box. Minority languages need a LoRA fine-tune or community models (e.g. Padauk/AI4Burmese). **MADLAD-400** (Apache-2.0, 3B ≈ 12 GB) as a dedicated fallback for languages Gemma doesn't cover. LLMs prompted for a low-resource language can answer in a neighbouring one (Kanuri → Hausa, per CLEAR Global), so check the output language |
 | Qual analysis | **gpt-oss-120b** on a 128 GB box: same model as KPI's cloud qual | Gemma 4 26B-A4B or E4B on smaller boxes. Measured: all three 3/3 with KPI's strict parser, **with Gemma's thinking off through the chat template** (`--reasoning-budget 0` leaks reasoning into the answer and fails every case) |
 | Inference server | llama.cpp `llama-server`: OpenAI-compatible, CUDA/Vulkan/CPU | Ollama. Google's LiteRT-LM suits running inside an app more than serving several users |
+
+**Whisper makes up text from silence and noise.** About 1% of real-world transcriptions
+contain whole invented phrases (Koenecke et al., FAccT 2024), more at low signal-to-noise,
+and large-v3 writes text for a large share of speech-free clips ("thank you", "thanks for
+watching"). Field interviews have long pauses, crowds and generators, and FLEURS (clean read
+speech) doesn't show this. So:
+- run voice activity detection before Whisper (whisper.cpp ships Silero VAD: `--vad`);
+- drop or flag known filler phrases and low-confidence segments for review;
+- agents never act on a transcript that nobody has checked, in protection cases especially.
 
 All GGUF files are on Hugging Face without login (`ggml-org/gemma-4-*-GGUF`, `ggerganov/whisper.cpp`). Sizes: E4B Q4_0 4.6 GB, 26B-A4B Q4_0 14.6 GB, whisper turbo q8 0.9 GB.
 
@@ -177,6 +198,9 @@ The agent's shell tool runs in a container with everything pre-installed. Nothin
   2. **Gemma 4 26B-A4B**: native function calling, ~15 GB. **22/30**: good at questions, but 0/2 on writes (one 211-call loop), 5 empty answers, and it needs thinking off or it ends turns with no answer. Read-only agents on smaller boxes.
   3. Qwen3-Coder-30B-A3B or gpt-oss-20b as fallbacks (not yet tested).
 - **Context:** OpenCode's first request is ~21k tokens (its prompt and tools + 32 kobo-mcp tools with `TOOL_PROFILES=analysis,forms,data`), resent each step, so 64k per slot; a task used ~80k prompt tokens in total. Prompt processing speed and caching decide how responsive agents are.
+  Strix Halo decodes gpt-oss-120b about as fast as a DGX Spark (~35–55 tok/s) but processes prompts ~5× slower
+  (~340–460 tok/s): a 20k-token prompt is over 40 s uncached. Keep prompt caching on, keep tool profiles short,
+  and make tool outputs compact (summaries first, rows on request). Measure prompt processing on the W5 unit, not just decode.
 - **Priority:** interactive agents first. Batch transcription runs overnight or when on mains or solar power.
 
 ### 3f. Security
@@ -185,6 +209,10 @@ The agent's shell tool runs in a container with everything pre-installed. Nothin
 - Agents act with the logged-in user's Kobo token. Use read-only Kobo accounts by default for analysis.
 - Passwords on OpenCode web and every service. Wi-Fi with WPA3 or a strong WPA2 passphrase. No services exposed beyond the LAN.
 - The box has no internet, so nothing leaks out. The risk is on-device access: a stolen box, or an untrusted device joining the Wi-Fi.
+- **Submission text is untrusted.** Anyone who fills in a form can write instructions into a free-text answer, and the agent reads it through kobo-mcp while holding write tools. Same rules as for knowledge documents (3i): mark submission values as data in tool output, writes ask first, and add an injection submission to the W4 task set.
+- **Traces beyond the databases.** llama-server, whisper-server and agent logs can hold prompts with personal data. Keep logging at a level that doesn't record prompts, keep logs on the encrypted disk, and include them in the retention policy.
+- **If seizure is likely:** an optional, documented emergency wipe (erase the LUKS key slots/header, which makes the disk unreadable) for deployments that choose it, agreed with the partner in advance.
+- **Never expose llama-server or whisper-server beyond the box.** Scans in 2026 found 175,000 Ollama servers open to the internet, nearly half with tools enabled.
 
 ### 3g. Offline library and edge proxy
 
@@ -222,7 +250,7 @@ downloaded the KoboCollect APK from the laptop. This makes it part of the build.
   (Wix site, no direct PDF link), the ICRC data protection handbook (Cambridge blocks
   scripts), the IASC GBV guidelines and data responsibility guidance.
 - **Later candidates:** ODK Collect docs, Kiwix (`kiwix-serve` + ZIMs such as WikiMed and
-  Wikipedia in the pilot languages), Organic Maps with regional map files, offline
+  Wikipedia in the pilot languages; GPL-3.0, so a separate service, as Internet-in-a-Box does), Organic Maps with regional map files, offline
   basemaps (MBTiles) for QGIS/QField, a read-only shared folder for the team.
 - **Local DNS for phones.** Android browsers don't reliably resolve multi-label mDNS names
   like `kf.kobo.local`, so avahi (v0.1) isn't enough. When the box is the access point
@@ -477,11 +505,12 @@ receive a kit, run it for months and survive losing it. Design and scripts in
   records the result for the status page. A nightly backup of the databases to the box's
   own disk covers mistakes. `backup.sh restore` works on the same box or a freshly
   installed one, given the old box's passphrase (on the label card, kept apart from the box).
-- **One status page** (`kobo.local/status`, next): services, disk, last backup, AI tier,
-  battery, in plain words. The only page the focal point needs to check.
+- **One status page** (`kobo.local/status`, `box/status.py`): services, disk, last backup, AI
+  models, battery, in plain words. The only page the focal point needs to check.
 - **Later:** sync to a cloud Kobo with kobo-transfer whenever there's a connection (the
   concept note's "Connected" mode), a clean shutdown on low battery, updating a kit in place
-  from a newer content pack.
+  from a newer content pack. That update must be **signed** (e.g. minisign), not just
+  checksummed, so a box can verify offline that a pack came from Kobo.
 
 ## 4. Testing on DigitalOcean (extends README)
 
@@ -508,7 +537,8 @@ Current status and next steps: [STATUS.md](STATUS.md).
 - [x] `./provision.sh`, then `bootstrap.sh` on the droplet (`README.md`). CPU droplet only so far: no GPU stock
 - [x] Install a current Kobo release with kobo-install (`kobo-setup.py`)
 - [ ] `./ai.sh up gpu` and `smoke-test.py` online, then again after `./offline.sh on` (done on CPU)
-- [ ] Add real test clips for the pilot languages to `/opt/models/audio/` (FLEURS Spanish added)
+- [ ] Add real test clips for the pilot languages to `/opt/models/audio/` (FLEURS Spanish added): noisy field-style interviews, not just read speech, plus silent and noise-only clips that should come back empty
+- [ ] Per pilot language, compare Whisper large-v3-turbo, Omnilingual ASR and Gemma 4 E4B audio, and Gemma vs MADLAD-400 for translation, with human scoring (a partner such as CLEAR Global for Hausa/Kanuri-class languages)
 - [ ] Run the tier recipes in the README (CPU-only, 8 GB GPU, 20 GB GPU) and keep the `results/*.json`
 - [ ] Record whether Gemma audio input works in llama.cpp, and the qual `PARSE FAIL` rate per model
 - [ ] `./park.sh` after every session
@@ -518,6 +548,7 @@ Current status and next steps: [STATUS.md](STATUS.md).
 - [ ] `NLP_BACKEND` setting; qual analysis → OpenAI-compatible client (first, smallest change)
 - [ ] Local translation service → llama-server
 - [ ] Local transcription service → whisper-server, as Celery tasks; bulk actions work
+- [ ] Voice activity detection on (`--vad`), filler-phrase filter, low-confidence segments marked for review
 - [ ] Seed the language tables for the pilot languages; check usage limits on self-hosted
 - [ ] Tests, then deploy to the droplet and run through the UI while offline
 - [ ] Talk to the KPI team about merging a provider-neutral backend upstream
@@ -536,10 +567,15 @@ Done 2026-10-28 on kobo-mcp branch `w3-offline-box`; details in [STATUS.md](STAT
 - [x] gpt-oss-120b run (on an H100 80 GB instead)
 - [ ] Offline hardening: no outbound attempts from OpenCode, OpenWork or kobo-mcp; cold boot works (OpenCode + kobo-mcp: 8/8 offline incl. a cold OpenCode start, no failed attempts logged; per-process DNS capture and OpenWork still to do)
 - [ ] Decide multi-user model: one OpenCode per user vs shared server
+- [ ] Injection tasks: a submission whose free-text answer tells the agent to edit or delete data; the agent must not act on it
 
 ### W5. Hardware (~$2,000–2,800 + power kit)
 - [ ] Buy one Strix Halo 128 GB dev unit (mini PC vs laptop; check for USB-C/DC power input)
 - [ ] Re-run W1/W4 benchmarks on it at full power and at the 45–65 W cap; log power draw from the wall
+- [ ] Measure prompt processing (tok/s, and time for a cold ~20k-token OpenCode turn), not just decode
+- [ ] Load test: ~30 phones submitting with audio attachments while bulk transcription and an agent session run
+- [ ] Time a full restore from a `KOBOBACKUP` drive onto a reinstalled box
+- [ ] Export classification note for the chosen model (see section 2)
 - [ ] Size the power station and solar panel from the measured watt-hours
 - [ ] Update the Notion shopping list
 
@@ -552,6 +588,8 @@ Done 2026-10-28 on kobo-mcp branch `w3-offline-box`; details in [STATUS.md](STAT
 - [ ] Skills pack (weekly digest, data quality review, donor one-pager, cleaning log)
 - [ ] Staff quick-start guide (connect to the Wi-Fi, open Kobo and OpenCode in the browser)
 - [ ] Pilot with one partner (FAO Tanzania or SGDD Turkey), with power and heat logging
+- [ ] Export and sanctions check for the pilot country and partner before shipping
+- [ ] Publish the measured numbers (error rates per language, users per box, Wh per day, restore time)
 
 ### W8. Offline library and edge proxy (~1–2 weeks; see 3g)
 - [x] `remote/library/`: manifest (Collect, QField, QGIS LTR, LibreOffice, QGIS docs), `library.sh` fetch/docs/render/check, edge nginx compose
@@ -607,7 +645,8 @@ Started 2026-10-30; scripts in `remote/box/`, details in [STATUS.md](STATUS.md).
 - [x] Restore on the same box (deleted projects and media back, e2e suites pass)
 - [x] Restore on a freshly installed box with the old box's passphrase (keeps the new box's settings, takes accounts and secrets from the backup); backups offline
 - [ ] EspoCRM restore on a replacement box without the manual step
-- [ ] Status page at `kobo.local/status`
+- [x] Status page at `kobo.local/status` (`status.py`, every minute; tested on the rig 2026-11-02)
+- [ ] Health checks on llama-server and whisper-server so a hung server restarts (`restart: unless-stopped` only covers crashes)
 - [ ] Content pack + `install.sh --pack`, tested on a clean droplet offline from the start
 - [ ] `firstboot.sh`: per-box secrets, Wi-Fi, backup passphrase, printable label card
 - [ ] Hotspot + dnsmasq, KoboCollect QR code (needs the W5 box; check its Wi-Fi chip does AP mode)
@@ -620,8 +659,11 @@ Started 2026-10-30; scripts in `remote/box/`, details in [STATUS.md](STATUS.md).
 | Risk | Mitigation |
 |---|---|
 | Transcription and translation quality in pilot languages | Evaluate before buying: about 50 clips per language scored against human transcripts; fine-tune or pick a community model where needed |
+| Whisper invents text from silence or noise, which looks like a real transcript | VAD before Whisper, filler-phrase filter, low-confidence segments flagged; silent and noisy clips in the eval set; transcripts are checked before agents act on them |
 | Smaller models break qual analysis's strict answer format | Measured: Gemma 4 E4B and 26B pass 3/3 with thinking off (chat template), fail every case with `--reasoning-budget 0`. The smoke test checks each model |
 | Agents make mistakes with write tools | Delete tools hidden and denied (both models refused every delete in W4), write tools ask first, read-only Kobo accounts by default. Gemma 26B looped on a write (211 calls, nothing done): use gpt-oss-120b where agents may change data |
+| A free-text answer in a submission carries instructions to the agent | Submission values marked as data in tool output; deletes denied, writes ask; injection submissions in the W4 set |
+| Agents feel slow on Strix Halo with long prompts (prompt processing ~5× slower than a DGX Spark) | Prompt caching; short tool profiles; compact tool outputs; measure in W5 |
 | Agents misread a form (e.g. `_submitted_by` for the enumerator question, submission vs interview date) | Guidance about the form (a skill or instructions built from `describe_form`); re-run the W4 set per deployment |
 | OpenCode changes under us (it moved provider bundling on `dev`; 1.19.5's `run --format json` can drop the last step) | Pin the version; recheck offline and re-run the W4 set before each bump; the runner reads stored sessions |
 | Hidden internet dependencies (update checks, model catalogues, fonts, cloud calls) | Offline mode on the droplet (W1, W4) |
@@ -633,6 +675,7 @@ Started 2026-10-30; scripts in `remote/box/`, details in [STATUS.md](STATUS.md).
 | Phones can't resolve `*.kobo.local` (mDNS) | The box runs DNS (dnsmasq) when it is the access point; the bare IP still serves the library |
 | Installers and docs go stale on boxes in the field | Versions pinned in `manifest.tsv`; the landing page shows the build date; refresh the content pack before each deployment |
 | Power and heat in the field | Batch jobs on mains or solar; capped TDP on battery; measure in the pilot |
+| Export controls or sanctions block shipping to a deployment country | Consumer AMD hardware; a classification note per hardware model; end-user and sanctions screening before shipping |
 | x86-only images lock out cheap ARM boards | Accept for now; revisit if Kobo publishes multi-arch images |
 | Dashboard specs and long workflows are too hard for smaller agent models | `generate_dashboard_layout` first, small edits after; tool profiles; shorter help text; measure in W4/W9 |
 | Case data (names, phones, health details) on a box that can be stolen or joined | Encrypted disk; roles by team, no delete or export for case workers; phone only with consent; owner-only backups; local HTTPS still open (section 7) |
@@ -645,6 +688,6 @@ Started 2026-10-30; scripts in `remote/box/`, details in [STATUS.md](STATUS.md).
 - Multi-user OpenCode: one instance per user, or a shared server with workspaces? How is a user's Kobo token passed into their MCP session?
 - Which 3–6 languages for the pilot? This drives the transcription and translation evaluation and any fine-tuning (e.g. Padauk for Burmese).
 - Does Kobo want to publish multi-arch (ARM) images upstream? That would reopen Raspberry Pi, Jetson and Mac for no-AI kits.
-- HTTP vs local HTTPS on the box. Affects Enketo offline mode, kobo-mcp, and secure cookies, and now kobo-dash too (Kobo URL, tile origin, evidence URLs). Three apps that insist on https tilts this toward a box CA.
+- HTTP vs local HTTPS on the box. Affects Enketo offline mode, kobo-mcp, and secure cookies, and now kobo-dash too (Kobo URL, tile origin, evidence URLs). Three apps that insist on https tilts this toward a box CA. A third option (the Carter Center's, on the ODK forum): a bought wildcard certificate for a real domain, answered locally by the box's dnsmasq. No CA to install, but public certificates now last 200 days at most, so it only suits short deployments. Worth comparing notes with Get ODK, who face the same problem for offline Central.
 - Licences for redistributing the knowledge corpus on kits: Kobo Academy, the ODK docs, a forum snapshot.
 - One MCP server for the agent or two (kobo-mcp plus kobo-knowledge)? Two is planned; merge only if OpenCode's per-server overhead matters.

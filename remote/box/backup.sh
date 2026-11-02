@@ -31,7 +31,7 @@ LOCK=/run/kobo-box-backup.lock
 BOX_ID=${BOX_ID:-$(hostname -s)}
 
 log() { echo "[$(date +%H:%M:%S)] $*"; }
-die() { echo "backup: $*" >&2; exit 1; }
+die() { FAIL_MSG=$*; echo "backup: $*" >&2; exit 1; }  # FAIL_MSG: for the status page
 
 kobo_conf() {  # value of a key in kobo-install's .run.conf
     python3 -I -c 'import json,sys; print(json.load(open(sys.argv[1])).get(sys.argv[2], ""))' \
@@ -102,6 +102,11 @@ if ok == 'true':
 with open(path, 'w') as f:
     json.dump(status, f, indent=2)
 EOF
+    refresh_status_page
+}
+
+refresh_status_page() {  # so "backing up" / "you can unplug" shows without waiting a minute
+    systemctl start --no-block kobo-box-status.service 2>/dev/null || true
 }
 
 dump_databases() {  # dump_databases <dir>
@@ -133,7 +138,9 @@ run() {
     # Any failure from here on is recorded for the status page, and the unencrypted dumps
     # don't stay behind
     trap 'rc=$?; rm -rf "$STATE_DIR/backup-stage"
-          [[ $rc == 0 ]] || write_status false "failed (exit $rc; journalctl -u kobo-box-backup*)"' EXIT
+          [[ $rc == 0 ]] || write_status false "${FAIL_MSG:-failed (exit $rc; journalctl -u kobo-box-backup*)}"' EXIT
+    # Stopped (the unit stopped, Ctrl-C): bash skips the EXIT trap on a signal unless told
+    trap 'FAIL_MSG="stopped before it finished"; exit 143' TERM INT
     ensure_passphrase
     PASS=$PASS_FILE
     mkdir -p "$REPO"
@@ -151,9 +158,11 @@ run() {
     [[ -d /etc/kobo-box ]] && paths+=(/etc/kobo-box)
     [[ $MEDIA_FLAG == full ]] && paths+=("${MEDIA[@]}")
 
+    local args=(--host "$BOX_ID" --tag kobo-box --tag "$MEDIA_FLAG" --exclude "$PASS_FILE" --json "${paths[@]}")
+    check_space "${args[@]}"
+
     log "restic backup ($MEDIA_FLAG) to $REPO"
-    SNAPSHOT=$(restic_ backup --host "$BOX_ID" --tag kobo-box --tag "$MEDIA_FLAG" \
-        --exclude "$PASS_FILE" --json "${paths[@]}" | python3 -I -c '
+    SNAPSHOT=$(restic_ backup "${args[@]}" | python3 -I -c '
 import json, sys
 for line in sys.stdin:
     msg = json.loads(line)
@@ -169,7 +178,27 @@ for line in sys.stdin:
     log "done: snapshot $SNAPSHOT in $REPO"
 }
 
+check_space() {  # check_space <restic backup args>: fail now if the new data won't fit
+    # On a full disk restic retries its writes for a long time instead of failing, and the
+    # status page would say "backing up" all along. A dry run reports what this backup
+    # adds (only changed files are read again), so a drive that's too small fails at once.
+    local need free
+    need=$(restic_ backup --dry-run "$@" | python3 -I -c '
+import json, sys
+for line in sys.stdin:
+    msg = json.loads(line)
+    if msg.get("message_type") == "summary":
+        print(msg.get("data_added", 0))')
+    free=$(df -B1 --output=avail "$REPO" | tail -1)
+    # Room for restic's indexes, and for pruning old snapshots afterwards
+    if (( ${need:-0} + ${need:-0} / 10 + 64000000 > free )); then
+        die "the drive is too full: this backup adds about $(( need / 1000000 + 1 )) MB and $(( free / 1000000 )) MB is free. Use a bigger drive, or a new one for this box"
+    fi
+    log "space: about $(( need / 1000000 )) MB to add, $(( free / 1000000 )) MB free"
+}
+
 drive() {
+    refresh_status_page
     mkdir -p "$DRIVE_MNT"
     if ! mountpoint -q "$DRIVE_MNT" && ! mount -o nosuid,noexec,nodev "$DRIVE" "$DRIVE_MNT"; then
         REPO=$DRIVE MEDIA_FLAG=full

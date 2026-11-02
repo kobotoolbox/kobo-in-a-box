@@ -124,8 +124,12 @@
 <p>The KoboToolbox user guide is on the kit in English, Spanish and French, with its links pointing at the local copy, so the help pages open with no internet.</p>
 <figure><a href="static/home/kobo-guide.jpg"><img src="static/home/kobo-guide.jpg" width="1440" height="968" alt="The KoboToolbox help center home page, What do you need help with?, with topic cards for Getting Started, Account and Billing and Using the Formbuilder, served from kobo.local."></a><figcaption>The KoboToolbox user guide, served by the kit. Its pages load nothing from the internet.</figcaption></figure>
 
+<h3>Check the kit</h3>
+<p>One page, <code>kobo.local/status</code>, linked from the home page, says whether everything is working, in plain words: KoboToolbox, the AI models, the assistant, case management, disk space, backups and the battery. When something isn't green it says what to do, usually "restart the kit" and when to call support. Parts still loading after the kit is switched on show as starting, not as errors. The page updates itself every minute, and warns if it falls behind the phone's clock, which also catches a kit whose clock is wrong.</p>
+<p>In testing, stopping parts of the kit on purpose showed on the page within a minute: web forms alone as a warning, the database as an error, the AI models as an error that doesn't affect data collection.</p>
+
 <h3>Back up</h3>
-<p>Plug a USB drive labelled <code>KOBOBACKUP</code> into the kit. It backs up the data, recordings, settings and case records by itself, encrypted, copying only what changed since the last time, then releases the drive. Keep the drive somewhere other than the kit. Do it weekly, or after a big collection day. The kit also keeps a nightly copy of its databases on its own disk, to undo mistakes.</p>
+<p>Plug a USB drive labelled <code>KOBOBACKUP</code> into the kit. It backs up the data, recordings, settings and case records by itself, encrypted, copying only what changed since the last time, then releases the drive. The status page says "don't unplug it" while it works and "you can unplug the drive" when it's done; a drive that's too small fails at once and says so. Keep the drive somewhere other than the kit. Do it weekly, or after a big collection day. The kit also keeps a nightly copy of its databases on its own disk, to undo mistakes.</p>
 <p>If a kit is lost or breaks, a replacement installed from the kit's USB stick can be restored from the drive with the backup passphrase on the original kit's label card. Keep the card apart from both the kit and the drive. In testing, two deleted projects (63 submissions, and an audio recording that came back byte for byte) were restored in under a minute, and a freshly installed replacement kit took the whole backup in under two, with phones able to submit to it straight after.</p>
 </section>
 
@@ -373,7 +377,7 @@
 
 <section id="models">
 <h2>Models</h2>
-<p>All models are open-weight, under licences that allow humanitarian and commercial use, and run with the open-source <a href="https://github.com/ggml-org/llama.cpp">llama.cpp</a> and <a href="https://github.com/ggml-org/whisper.cpp">whisper.cpp</a>. Models whose licences forbid commercial use are excluded.</p>
+<p>All models are open-weight, under licences that allow humanitarian and commercial use, and run with the open-source <a href="https://github.com/ggml-org/llama.cpp">llama.cpp</a> and <a href="https://github.com/ggml-org/whisper.cpp">whisper.cpp</a>. Models whose licences forbid commercial use, such as NLLB-200 and SeamlessM4T, are excluded.</p>
 <div class="table-scroll"><table>
   <thead><tr><th>Model</th><th>Licence</th><th>Used for</th><th>Tier</th></tr></thead>
   <tbody>
@@ -383,6 +387,7 @@
     <tr><td>gpt-oss-120b</td><td>Apache 2.0</td><td>The assistant, including changes; the same model KoboToolbox online uses for analysis</td><td>Recommended</td></tr>
   </tbody>
 </table></div>
+<p>For languages these handle badly, two openly licensed candidates will be tested on real field recordings: Meta's Omnilingual speech recognition (1,600+ languages) and the MADLAD-400 translation models.</p>
 </section>
 
 <section id="hardware">
@@ -396,7 +401,8 @@
     <tr><td><strong>KoboToolbox only</strong></td><td>Low-power mini PC with 16 GB</td><td>Offline data collection and management, no AI</td><td>~$200</td></tr>
   </tbody>
 </table></div>
-<p>Prices are from October 2026, before the power station, solar panel, Wi-Fi equipment and case. In a network of kits only the hub needs the recommended tier. One recommended unit is the next purchase, to confirm speed, power and heat by re-running the same tests.</p>
+<p>Prices are from October 2026, before the power station, solar panel, Wi-Fi equipment and case. In a network of kits only the hub needs the recommended tier. One recommended unit is the next purchase, to confirm speed, power and heat by re-running the same tests, and to measure how many phones and users one kit serves at once.</p>
+<p>US export rules on advanced AI chips restrict shipping some AI computers to several countries where humanitarian need is high. The recommended tier uses consumer AMD hardware, expected to be the easier case; each hardware model gets a written classification, and each shipment an export and sanctions check, before kits are sent.</p>
 </section>
 
 <section id="privacy">
@@ -419,6 +425,7 @@
   <li><strong>Speeds on field hardware aren't measured yet.</strong> CPU results are a floor and H100 results a ceiling; the recommended computer sits between them.</li>
   <li><strong>AI quality varies by language.</strong> Spanish is measured, with sample checks in French, Portuguese and Swahili. Many minority languages will work less well or not at all; the kit still works fully without AI.</li>
   <li><strong>Benchmarks are a best case.</strong> Real recordings will transcribe worse than FLEURS's clean read speech.</li>
+  <li><strong>Transcription can invent text.</strong> Speech recognition sometimes writes phrases nobody said, mostly over silence or noise. The kit will skip stretches with no speech and flag doubtful passages, and each language is tested with noisy and silent clips; a person checks a transcript before anything is done with it.</li>
   <li><strong>How many people one kit serves at once</strong> (enumerators syncing, staff using the assistant) is still to be measured.</li>
   <li><strong>The library is what was loaded.</strong> Each standard and guide is the edition current when the kit was prepared; the home page shows the version and build date.</li>
   <li><strong>KoboCollect is Android only.</strong> Staff with iPhones or laptops can collect through web forms in the browser.</li>
@@ -438,7 +445,7 @@
     <tr><td>Dashboards and knowledge base</td><td>Built for KoboToolbox online; being adapted to run on the kit</td></tr>
     <tr><td>Field hardware</td><td>One recommended unit to buy and test</td></tr>
     <tr><td>Backups and restore</td><td>Working in testing: plug in a drive to back up; restore on the same kit or a freshly installed replacement</td></tr>
-    <tr><td>Kits ready to switch on</td><td>Started: AI settings chosen from the hardware, and a fixed internal address so the kit works on any network. Next, the status page, installation from one USB stick before shipping, and each kit's own passwords and keys made on first start</td></tr>
+    <tr><td>Kits ready to switch on</td><td>Started: AI settings chosen from the hardware, a fixed internal address so the kit works on any network, and the status page. Next, installation from one USB stick before shipping, and each kit's own passwords and keys made on first start</td></tr>
     <tr><td>Field pilot</td><td>With one partner organisation, after the above</td></tr>
   </tbody>
 </table></div>

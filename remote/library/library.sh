@@ -157,6 +157,7 @@ case "${1:-}" in
         fi
         [[ -f "$LIBRARY_DIR/index.html" ]] || python3 -I render.py
         compose up -d
+        compose exec edge nginx -s reload 2>/dev/null || true  # pick up a changed edge.conf
         echo "Library on http://kobo.local, Kobo via http://kf.kobo.local"
         ;;
     down) compose down ;;

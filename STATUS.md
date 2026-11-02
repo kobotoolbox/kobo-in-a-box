@@ -32,8 +32,8 @@ are in [PLAN.md](PLAN.md); per-run results are in [remote/results/NOTES.md](remo
   at ~31 tokens/s means minutes per step.
 
 **Next, in order:**
-0. **W12, what can be done before the hardware:** the status page, then the content pack
-   and `install.sh --pack` on a clean droplet offline from the start, then `firstboot.sh`
+0. **W12, what can be done before the hardware:** the status page is done (2026-11-02); next
+   the content pack and `install.sh --pack` on a clean droplet offline from the start, then `firstboot.sh`
    (`remote/box/README.md` has the order and the design).
 1. **W5 hardware:** buy the Strix Halo 128 GB dev unit and re-run the same tests on it
    (`gpu-tiers.sh` equivalents, `w4-run.py`), at full power and capped. This decides the
@@ -273,6 +273,26 @@ Ponto's local EspoCRM testing (`~/code/ponto/infra/espocrm`), with per-box secre
       `admin.system.users` dropped its own login mid-restore, so users are skipped and the
       restored passwords set with `changeUserPassword`.
 - [x] **Offline:** with `offline.sh on`, a drive backup and the nightly unit both succeed.
+- [x] **Status page** (2026-11-02): `box/status.py` writes `kobo.local/status/` (and
+      `status.json`) every minute from `kobo-box-status.timer`, and when a backup starts or
+      ends. On the rig: blue "starting" for the first 15 min after boot, then all green; a
+      drive backup showed "don't unplug" within ~2 s and "you can unplug" when done. Stopping
+      Enketo → amber (web forms only); Postgres → red; the language model → red, "data
+      collection is not affected"; the assistant red on the CPU rig (no `agent-llm` there,
+      which is true). `e2e-nlp.py` PASS and `e2e-espo.py --edge` 27/27 afterwards.
+- Found while testing the status page, all fixed:
+  - **A drive that's too small hung the backup**: restic retries writes on a full disk, so
+    the page said "backing up" for minutes. `backup.sh` now does a `--dry-run` first and fails
+    at once if the new data won't fit ("this backup adds about 45 MB and 4 MB is free. Use
+    a bigger drive"). Failures now record their reason, not "failed (exit 1)".
+  - **A stopped backup left no record** and kept the unencrypted dumps until the next run
+    (bash skips the EXIT trap on a signal): TERM/INT are trapped now, and the drive unit
+    unmounts the drive on stop (`ExecStopPost`).
+  - **The edge never saw a new `edge.conf`**: a single-file bind mount keeps the old inode
+    when the file is replaced. The compose file mounts `nginx/` now, and `library.sh up`
+    reloads nginx.
+  - KPI's `/service_health/` returns 500 when only Enketo is down; the page reads its lines
+    and judges KPI on the rest.
 - Not covered yet: EspoCRM on a replacement box (prints the commands), OpenCode sessions,
   NVIDIA/AMD tier detection on real hardware, the passphrase prompt from a real console.
 - Found: DigitalOcean's kernel has no exFAT module (`linux-modules-extra` adds it; Ubuntu's
