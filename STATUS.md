@@ -325,12 +325,24 @@ Ponto's local EspoCRM testing (`~/code/ponto/infra/espocrm`), with per-box secre
       first boot 16.7 min, all green; the rig's backup (60 cases) restored in 139 s with
       nothing typed; `e2e-espo.py --edge --share-with cases-bridge` 28/28 (10 new cases
       through the bridge's own account, numbered on from 61). The `install.sh` SSH session
-      that never closed (seen twice before) didn't happen this time; not explained.
+      that never closed (seen twice before) didn't happen this time (explained below).
 - [x] **Hung model servers restart** (2026-11-02): Docker healthchecks on llama-server and
       whisper-server (and the agent model), and `box/watchdog.sh`, run before the status page
       every minute, restarts a labelled container Docker marks unhealthy (at most 3 times an
       hour). On the rig: whisper-server frozen with `kill -STOP`, marked unhealthy, restarted
       on the next run, green, and the page said when.
+- [x] **Updates from a newer content pack** (2026-11-02, `box/update.sh`, `box.sh update-drive`):
+      packs are signed (ed25519, `pack.sh keygen`), boxes keep the key from their factory
+      install, and plugging a `KOBOPACK` stick into a box in use updates it if the signature
+      checks out. A 37c box (form, 13 submissions, 10 cases) took a 37d pack by itself,
+      offline: 4 min, Kobo down ~80 s, data there, all green, `e2e-nlp.py` PASS. Three
+      tampered sticks refused. Found: a git tag clash between packs (fixed); the backport
+      mounts KPI's whole `base.py`, so a 37c copy on 37d would have undone 37d's SVG-upload
+      security fix: the backport now records its KPI image (`KPI_IMAGE`), `pack.sh`,
+      `update.sh` and `kobo-setup.py` refuse a mismatch, and `kpi-backport-rebase.sh` moves it
+      to a new release by three-way merge. The rig is on 2.026.37d now. And the SSH session
+      that never closed after `install.sh`: DigitalOcean's firewall dropping a quiet
+      connection on an offline droplet, not the script (README: `ServerAliveInterval`).
 - Not covered yet: OpenCode sessions,
   NVIDIA/AMD tier detection on real hardware, the passphrase prompt from a real console.
 - Found: DigitalOcean's kernel has no exFAT module (`linux-modules-extra` adds it; Ubuntu's

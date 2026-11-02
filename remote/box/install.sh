@@ -45,6 +45,7 @@ die() { echo "install: $*" >&2; exit 1; }
 STEP=start
 step() { STEP=$*; echo; log "== $*"; }
 trap 'echo "install: FAILED during: $STEP (log: $LOG)" >&2' ERR
+. "$HERE/pack-lib.sh"
 
 [[ $EUID == 0 ]] || die "run as root"
 [[ -f "$PACK/pack.json" ]] || die "$PACK is not a content pack (no pack.json)"
@@ -56,41 +57,15 @@ log "content pack $(python3 -I -c 'import json,sys; d=json.load(open(sys.argv[1]
 
 step "checking the pack"
 "$PACK/kobo-box-ai/box/pack.sh" verify "$PACK"
-. /etc/os-release
-pack_os=$(cat "$PACK/debs/OS")
-# The debs are for one Ubuntu release (24.04.x matches 24.04)
-[[ "$pack_os" == *"Ubuntu $VERSION_ID"* ]] || die "the pack's packages are for $pack_os; this is $PRETTY_NAME"
+pack_os_check
 
 step "packages (local apt repository, $(ls "$PACK"/debs/*.deb | wc -l) debs)"
-# Updates come from content packs, not the internet: Ubuntu's daily apt runs only hang
-# offline, holding apt's locks (a fresh install's first-boot `apt-get update` did, here)
-systemctl disable --now apt-daily.timer apt-daily-upgrade.timer >/dev/null 2>&1 || true
-apt_dir=$(mktemp -d)
-mkdir -p "$apt_dir/lists/partial"
-echo "deb [trusted=yes] file:$PACK/debs ./" > "$apt_dir/sources.list"
-# Only the pack's repository, with its own lists, so a stuck `apt-get update` elsewhere
-# (it holds /var/lib/apt/lists/lock) doesn't block this one
-apt_() {
-    DEBIAN_FRONTEND=noninteractive apt-get -q -o DPkg::Lock::Timeout=600 \
-        -o Dir::Etc::SourceList="$apt_dir/sources.list" -o Dir::Etc::SourceParts=/nonexistent \
-        -o Dir::State::Lists="$apt_dir/lists" "$@"
-}
-apt_ update >/dev/null
-# shellcheck disable=SC2046
-apt_ install -y --no-install-recommends $(cat "$PACK/debs/WANT") >/dev/null
-rm -rf "$apt_dir"
+pack_debs
 systemctl enable --now docker >/dev/null 2>&1
 docker version --format 'docker {{.Server.Version}}'
 
 step "images"
-while IFS=$'\t' read -r img file; do
-    id=$(cat "$PACK/images/.$file.id" 2>/dev/null || true)
-    if [[ -n "$id" && "$(docker image inspect -f '{{.Id}}' "$img" 2>/dev/null)" == "$id" ]]; then
-        log "have $img"; continue
-    fi
-    log "loading $img"
-    zstd -dc "$PACK/images/$file" | docker load -q >/dev/null
-done < "$PACK/images/IMAGES"
+pack_images
 
 step "files"
 cp -a "$PACK/kobo-box-ai" "$BOX_DIR"
@@ -103,6 +78,14 @@ cp -a "$PACK/models/." "$MODELS_DIR/"
 log "library ($(du -sh "$PACK/library" | cut -f1))"
 cp -a "$PACK/library/." "$LIBRARY_DIR/"
 cp "$PACK/pack.json" "$BOX_DIR/pack.json"   # which pack this box came from
+if [[ -s "$PACK/signing.pub" ]]; then
+    # Update sticks must be signed with the same key (box.sh update-drive)
+    install -d -m 700 /etc/kobo-box
+    install -m 644 "$PACK/signing.pub" /etc/kobo-box/pack-signing.pub
+    log "update sticks: signed with $(openssl pkey -pubin -in /etc/kobo-box/pack-signing.pub -outform DER | sha256sum | cut -c1-16)"
+else
+    log "the pack isn't signed: this box will only update over SSH (update.sh)"
+fi
 
 step "the box: fixed address $BOX_IP, backup and status units"
 BOX_IP=$BOX_IP "$BOX_DIR/box/box.sh" ip up

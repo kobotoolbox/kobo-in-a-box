@@ -41,6 +41,7 @@ are built.
 | `install.sh --pack <dir>` | Offline install from the content pack | Built; tested on a fresh droplet offline from the start |
 | `firstboot.sh`, `card.py` | First power-on: name, Kobo and its passwords, backup passphrase, Wi-Fi details, case management, AI, label card | Built; tested on a factory-installed droplet |
 | `kobo-account.py` | A Kobo account for one of the box's services (the case bridge's `cases-bridge`) and its token | Built; tested |
+| `update.sh --pack <dir>`, `box.sh update-drive` | Update a box in use from a newer pack, keeping its data and passwords; by itself when a signed `KOBOPACK` stick is plugged in | Built; tested 37c → 37d offline |
 | `watchdog.sh` | Restarts a model server that stops answering its healthcheck (every minute, before the status page) | Built; tested on the rig |
 | `status.py` | Status page at `kobo.local/status`: Kobo, AI, disk, backups, battery in plain words; every minute | Built |
 | Autoinstall USB | Ubuntu 26.04 ISO + `CIDATA` + `KOBOPACK` partitions, LUKS + TPM | Needs the W5 box |
@@ -135,8 +136,9 @@ python3 -I box/status.py --print   # the same checks in the terminal (support ov
 5. **Autoinstall USB with LUKS + TPM** on the W5 box.
 6. **Power:** shut down cleanly when the battery is low (laptop form factor), so the
    databases are never cut off mid-write.
-7. **Later:** sync to a cloud Kobo with kobo-transfer whenever the box is online (concept
-   note, "Connected"), updating a kit from a newer content pack without losing data.
+7. ~~Updating a kit from a newer content pack without losing data~~: built (below).
+   **Later:** sync to a cloud Kobo with kobo-transfer whenever the box is online (concept
+   note, "Connected").
 
 ## Content pack
 
@@ -144,8 +146,9 @@ The factory USB's content: everything a box needs, so a box is set up with no in
 Built from a working box or rig, so it holds what was tested there, not a fresh download.
 
 ```bash
-box/pack.sh build /media/kobopack     # online, as root; incremental (unchanged images kept)
-box/pack.sh verify /media/kobopack
+box/pack.sh keygen                    # once: the signing key, /root/kobo-pack-signing.key
+box/pack.sh build /media/kobopack     # online, as root; incremental (unchanged images kept); signed
+box/pack.sh verify /media/kobopack [--key signing.pub]
 /media/kobopack/kobo-box-ai/box/install.sh --pack /media/kobopack   # on the new box, offline
 ```
 
@@ -153,15 +156,17 @@ box/pack.sh verify /media/kobopack
 KOBOPACK/
   pack.json        version, build date and host, OS, kobo-install version, images, models, sizes
   SHA256SUMS       every file; install.sh checks them all before touching the box
+  SIGNATURE        ed25519 signature of SHA256SUMS + pack.json (pack.sh keygen); signing.pub
   debs/            212 packages (Docker, restic, git, jq, zstd, exfatprogs, rsync…) and every
                    dependency, as a local apt repository, for one Ubuntu release (24.04 now)
   images/          docker save of every image the box's containers run (14, 4.9 GB with zstd)
   models/          /opt/models: Gemma 4 E4B and 26B-A4B, Whisper turbo and medium, test audio
   library/         /srv/library
   kobo-box-ai/     this repo's remote/ (no results, no per-box files)
-  kobo-install/    git checkouts at the running commits (2.026.37c)
+  kobo-install/    git checkouts at the running commits (2.026.37d)
   kobo-docker/
-  kpi-e2e/         the KPI local-AI backport (STATUS W2), mounted by kobo-setup.py
+  kpi-e2e/         the KPI local-AI backport (STATUS W2), mounted by kobo-setup.py; KPI_IMAGE
+                   names the KPI release its files are from, and pack.sh refuses any other
 ```
 
 - **Never in the pack:** kobo-install's `.run.conf` and `kobo-env` (passwords), Kobo's data,
@@ -175,6 +180,59 @@ KOBOPACK/
   units), the library and the status page, and enables `kobo-box-firstboot.service`. Then it
   stops: no passwords exist yet, so every box from one pack is identical (11 min).
   `--first-boot-now` runs first boot straight away (rigs). A failure names the step.
+- **Signed.** With `/root/kobo-pack-signing.key` (`pack.sh keygen`) the pack is signed, and
+  `install.sh` keeps its public key in `/etc/kobo-box/pack-signing.pub`: the key update
+  sticks must be signed with. Keep the private key off packs and boxes (and a copy safe:
+  without it, boxes in the field can only be updated over SSH). `verify` also fails on
+  any file in the pack's folders that `SHA256SUMS` doesn't list, since `sha256sum -c` only
+  checks what's listed (it found the library's own `SHA256SUMS` missing from the list).
+
+## Updating a box
+
+A box in use takes a newer pack without losing anything: plug the stick in (or run
+`update.sh` over SSH). Whoever makes packs updates the rig first, tests it, then builds:
+
+```bash
+# On the rig, online: e.g. a new Kobo release
+./kpi-backport-rebase.sh kobotoolbox/kpi:2.026.37d      # the backport's files, 3-way merged
+for r in kobo-install kobo-docker; do git -C /root/$r fetch --tags && git -C /root/$r checkout 2.026.37d; done
+BOX_IP=10.254.254.254 python3 -I kobo-setup.py --reconfigure
+python3 -I e2e-nlp.py e2e <password>; python3 -I espocrm/e2e-espo.py --edge
+box/pack.sh build /media/kobopack                       # signed
+
+# On the box: plug the stick in (box.sh update-drive), or
+/media/kobopack/kobo-box-ai/box/update.sh --pack /media/kobopack
+```
+
+- **Plugging in a `KOBOPACK` stick** on a box that is set up runs `box.sh update-drive`: the
+  box's own `pack.sh` checks the signature against `/etc/kobo-box/pack-signing.pub` and that
+  nothing on the stick is unlisted, before anything from the stick runs; then the stick's
+  `update.sh` (newer than the box's). A stick that fails is unmounted, nothing changes, and
+  the status page says "The update stick was not used". At the factory the same rule does
+  nothing (`ConditionPathExists=/etc/kobo-box/firstboot-done`). An unsigned pack only
+  updates over SSH. Not covered: a stick whose firmware changes its contents after the check.
+- **`update.sh`, in order:** checks (the pack; newer than the box's `pack.json` unless
+  `--force`; no local changes in kobo-install/kobo-docker; the backport matches the pack's
+  KPI), a databases-and-settings backup to `/var/backups/kobo-box`, the debs, new images,
+  the files (keeping `ai.box.env`, `*.local.env`, `results/`, the library's status page,
+  card and service links), kobo-install and kobo-docker at the pack's commits and, if they
+  or the backport changed, `kobo-setup.py --reconfigure` (passwords kept; KPI migrates its
+  databases on start), `box.sh install`, then the edge, the AI and case management started
+  again on the new files. The assistant isn't updated yet.
+- **Status page:** "Updating this kit. Leave it switched on" with the step, then "Updated at
+  19:28… You can remove the update stick" for a day, or what failed with "plug the update
+  stick in again: the update carries on". The box's `pack.json` only changes at the end,
+  so a re-run (or a power cut) carries on; each step is safe to repeat.
+- **Tested** (2026-11-02, offline throughout): a box installed from a 37c pack, with a form,
+  13 submissions and 10 cases; the rig moved to 37d (backport rebased cleanly, `e2e-nlp.py`
+  PASS, `e2e-espo.py` 27/27) and a 37d pack built. Attaching it to the box started the
+  update by itself. The first try stopped at the Kobo step (a tag from the 37c pack clashed
+  with the 37d pack's: fetches now take the pack's tags) and the page said so in red; the
+  fixed stick, plugged in again, carried on and finished in 4 min (Kobo down ~80 s): KPI
+  2.026.37d with 37d's SVG-upload fix in the mounted settings, the form, 13 submissions and
+  10 cases there, all green, `e2e-nlp.py` PASS through the rebased backport. Three tampered
+  sticks (an added script, a changed `pack.json`, a changed listed file) were each refused
+  before anything ran.
 
 ## First power-on
 

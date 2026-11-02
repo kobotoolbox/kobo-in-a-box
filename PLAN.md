@@ -806,7 +806,8 @@ Started 2026-10-30; scripts in `remote/box/`, details in [STATUS.md](STATUS.md).
 - [ ] Hotspot + dnsmasq, KoboCollect QR code (needs the W5 box; check its Wi-Fi chip does AP mode)
 - [ ] Autoinstall USB with LUKS + TPM (W5 box)
 - [ ] Clean shutdown on low battery; OpenCode session history in backups (once W4 settles where it lives)
-- [ ] Later: kobo-transfer sync when online; in-place update from a newer content pack
+- [x] In-place update from a newer content pack: signed packs, `update.sh`, by itself from a plugged-in stick (tested 37c → 37d)
+- [ ] Later: kobo-transfer sync when online
 
 ## 6. Risks
 

@@ -31,7 +31,8 @@ extra compose settings) and turns it on:
   the image's own requirements.txt is mounted as the marker. Without it a box installed
   offline never starts KPI.
 - With `/root/kpi-e2e` present, the KPI local-AI backport (STATUS W2) is mounted in, until a
-  KPI image built from the branch replaces it.
+  KPI image built from the branch replaces it. Its `KPI_IMAGE` file names the KPI image its
+  files were taken from; any other image is refused (its files would replace newer ones).
 
 `--reconfigure` re-applies these answers to an existing install (keeping its
 passwords) and restarts Kobo. Otherwise use run.py as normal
@@ -154,6 +155,14 @@ def custom_yml():
     ]
     backport = os.path.isdir(KPI_E2E)
     if backport:
+        # Its files replace KPI's own (base.py included), so they must be for this release
+        try:
+            made_for = open(os.path.join(KPI_E2E, 'KPI_IMAGE')).read().strip()
+        except OSError:
+            made_for = 'an unknown KPI release (no KPI_IMAGE file)'
+        if made_for != image:
+            sys.exit(f'{KPI_E2E} is for {made_for}, but kobo-docker runs {image}: rebuild the '
+                     'backport for it, or remove the folder to run stock KPI')
         lines += [
             '# Local qual, translation and transcription backported onto this KPI release',
             '# (kobo-in-a-box STATUS.md, W2). Remove /root/kpi-e2e and re-run to go back to stock KPI.',

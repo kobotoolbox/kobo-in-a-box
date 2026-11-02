@@ -135,8 +135,15 @@ pack's layout and what each step found: [remote/box/README.md](remote/box/README
    label card (`kobo.local/card/`, on the box itself only). ~6 min; progress on
    `kobo.local/status/`.
 
+4. **Updates** (`update.sh`, or by itself when a signed `KOBOPACK` stick is plugged into a
+   box in use): a backup first, then the pack's debs, images and files, Kobo at the pack's
+   version, every part restarted; data and passwords kept. Tested 37c → 37d in 4 min.
+
 On DigitalOcean a volume stands in for the USB stick: build onto it on the rig, then move
-it to a fresh droplet that is offline before the pack arrives.
+it to a fresh droplet that is offline before the pack arrives. Use `ssh -o
+ServerAliveInterval=30` for long commands on an offline droplet: with no outbound rules,
+DigitalOcean's firewall forgets a connection that stays quiet for a while, and the client
+then waits for ever after the command has finished (what looked like `install.sh` hanging).
 
 ```bash
 # The stick: a 60 GB volume, built on the rig (online)
@@ -158,6 +165,9 @@ ssh root@<clean-ip> 'rm -rf /root/kobo-box-ai; mkdir -p /media/kobopack &&
 # First power-on: unplug the stick and restart, then watch kobo.local/status/
 ssh root@<clean-ip> 'umount /media/kobopack; systemctl reboot'
 ssh root@<clean-ip> 'python3 -I /root/kobo-box-ai/box/status.py --print; /root/kobo-box-ai/box/firstboot.sh status'
+
+# An update: build a newer pack on the rig, then attach the volume to the box (no mount
+# needed: the udev rule finds the KOBOPACK label) and watch kobo.local/status/
 
 # Clean up: the volume costs ~$6/month, and rebuilds in minutes
 doctl compute droplet delete -f kobo-box-clean && doctl compute volume delete -f $VOL

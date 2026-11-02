@@ -35,6 +35,7 @@ BACKUP_STATUS = Path('/var/lib/kobo-box/backup-status.json')
 FIRSTBOOT_STATE = Path('/var/lib/kobo-box/firstboot.json')
 FIRSTBOOT_DONE = Path('/etc/kobo-box/firstboot-done')
 FIRSTBOOT_UNIT = 'kobo-box-firstboot.service'
+UPDATE_STATE = Path('/var/lib/kobo-box/update.json')  # update.sh, box.sh update-drive
 DRIVE_UNIT = 'kobo-box-backup-drive.service'
 
 BOOT_GRACE_MIN = 15       # Kobo and the models take minutes to come up after a power-on
@@ -400,6 +401,60 @@ def battery():
     return check('Battery', 'ok', f'{pct}%, {words}.')
 
 
+UPDATE_STEPS = {  # update.sh's steps
+    'checking': 'checking the update stick',
+    'backup': 'backing up the data first',
+    'packages': 'installing system packages',
+    'images': 'loading the new software',
+    'files': 'copying the new files',
+    'kobo': 'updating KoboToolbox (the longest step)',
+    'units': 'updating its settings',
+    'services': 'restarting each part',
+}
+
+
+def pack_date(version):
+    try:
+        return time.strftime('%d %B %Y', time.strptime(version[:8], '%Y%m%d')).lstrip('0')
+    except (TypeError, ValueError):
+        return version or '?'
+
+
+def update():
+    """(check, updating): the update row, if there's anything to say, and whether one runs."""
+    try:
+        state = json.loads(UPDATE_STATE.read_text())
+    except (OSError, ValueError):
+        return None, False
+    name = 'Update'
+    doing = UPDATE_STEPS.get(state.get('step', ''), 'starting')
+    if state.get('running') == 'true':
+        to = f' to the version of {pack_date(state["to"])}' if state.get('to') else ''
+        return check(name, 'busy', f'Updating this kit{to}. Now: {doing}. '
+                     'Leave it switched on and the update stick plugged in.'), True
+    if state.get('error') and state.get('step') == 'checking':
+        # Refused before anything changed: plugging the same stick in again won't help
+        return check(name, 'warn', f'The update stick was not used: {state["error"]}. '
+                     'Nothing on this kit was changed.',
+                     'Use an update stick from whoever prepared this kit. ' + CALL_SUPPORT), False
+    if state.get('error'):
+        return check(name, 'bad', f'The update stopped while {doing}: {state["error"]}. '
+                     'Nothing is lost, and the kit works as before or with what was updated.',
+                     'Plug the update stick in again: the update carries on. ' + CALL_SUPPORT), False
+    try:
+        age = time.time() - time.mktime(time.strptime(state.get('updated', '')[:19], '%Y-%m-%dT%H:%M:%S'))
+    except ValueError:
+        age = 1e9
+    if state.get('step') == 'done' and age < 86400:
+        when = time.strftime('%H:%M', time.localtime(time.time() - age))
+        return check(name, 'ok', f'Updated at {when} to the version of {pack_date(state.get("to"))}. '
+                     'You can remove the update stick.'), False
+    if state.get('step') == 'current' and age < 3600:
+        return check(name, 'ok', 'This kit already has the version on the update stick. '
+                     'You can remove it.'), False
+    return None, False
+
+
 CHECKS = (kobo, ai, assistant, cases, library, disk, backups, battery)
 
 
@@ -409,10 +464,18 @@ def run_checks():
         first = setup()
     except Exception as e:
         first = check('Setting up', 'bad', f"Couldn't check: {e}", CALL_SUPPORT)
+    updating = False
+    if not first:
+        try:
+            first, updating = update()
+        except Exception as e:
+            first = check('Update', 'bad', f"Couldn't check: {e}", CALL_SUPPORT)
     if first:
-        # Kobo and the AI don't exist yet: only what's true before setup
         results.append(first)
-    for fn in (library, disk) if first else CHECKS:
+    # Before setup Kobo and the AI don't exist yet, and during an update they restart:
+    # only what's true then
+    only_basics = updating or (first and first['name'] == 'Setting up')
+    for fn in (library, disk) if only_basics else CHECKS:
         try:
             r = fn()
         except Exception as e:  # the page must still be written
@@ -428,6 +491,7 @@ SUMMARY = {
     'ok': ('ok', 'Everything is working.'),
     'busy': ('busy', 'Working. Some parts are still starting or busy.'),
     'setup': ('busy', 'Setting up this kit for the first time.'),
+    'update': ('busy', 'Updating this kit. Leave it switched on.'),
     'warn': ('warn', 'Working, but something needs attention.'),
     'bad': ('bad', 'Something is not working.'),
 }
@@ -465,6 +529,8 @@ def overall(results):
     worst = max((r['level'] for r in results if r['level'] != 'off'), key=LEVELS.index, default='ok')
     if worst == 'busy' and results[0]['name'] == 'Setting up':
         return 'setup'
+    if worst == 'busy' and results[0]['name'] == 'Update' and results[0]['level'] == 'busy':
+        return 'update'
     return worst
 
 

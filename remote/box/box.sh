@@ -6,6 +6,8 @@
 #                                a backup whenever the KOBOBACKUP drive is plugged in,
 #                                and the status page (kobo.local/status) every minute,
 #                                after watchdog.sh has restarted any hung model server
+#   ./box.sh update-drive        update from the KOBOPACK stick just plugged in, if its
+#                                signature checks out (the udev rule runs this)
 #   ./box.sh uninstall
 #
 # Fixed internal address: kobo-install maps kf/kc/ee.kobo.local to the IP the box had
@@ -22,6 +24,8 @@ HERE=$(pwd)
 BOX_IF=kobobox0
 BOX_IP=${BOX_IP:-10.254.254.254}
 UNIT_DIR=/etc/systemd/system
+PACK_MNT=/media/kobopack
+PACK_KEY=/etc/kobo-box/pack-signing.pub
 
 ip_up() {
     ip link show "$BOX_IF" >/dev/null 2>&1 || ip link add "$BOX_IF" type dummy
@@ -64,6 +68,25 @@ EOF
 # Plugging in a drive labelled KOBOBACKUP starts a full backup to it ("change": card readers
 # and loop devices announce new media that way)
 ACTION=="add|change", SUBSYSTEM=="block", ENV{ID_FS_LABEL}=="KOBOBACKUP", TAG+="systemd", ENV{SYSTEMD_WANTS}+="kobo-box-backup-drive.service"
+EOF
+
+    # The update stick: a newer content pack labelled KOBOPACK, plugged into a box in use.
+    # Only on a box that is set up: at the factory the same stick is for install.sh
+    cat > "$UNIT_DIR/kobo-box-update-drive.service" <<EOF
+[Unit]
+Description=Kobo in a box: update from the KOBOPACK stick (if signed), then unmount it
+After=docker.service
+ConditionPathExists=/etc/kobo-box/firstboot-done
+
+[Service]
+Type=oneshot
+ExecStart=$HERE/box.sh update-drive
+TimeoutStartSec=0
+ExecStopPost=-/usr/bin/umount $PACK_MNT
+EOF
+    cat > /etc/udev/rules.d/99-kobo-box-update.rules <<EOF
+# Plugging in a stick labelled KOBOPACK updates the box from it (box.sh update-drive)
+ACTION=="add|change", SUBSYSTEM=="block", ENV{ID_FS_LABEL}=="KOBOPACK", TAG+="systemd", ENV{SYSTEMD_WANTS}+="kobo-box-update-drive.service"
 EOF
 
     # Nightly, to the box's own disk: databases and settings only (media would double the
@@ -114,10 +137,41 @@ EOF
     systemctl daemon-reload
     udevadm control --reload
     systemctl enable --now kobo-box-ip.service kobo-box-backup.timer kobo-box-status.timer
-    echo "Installed: kobo-box-ip ($BOX_IP), nightly backup timer, KOBOBACKUP drive rule, status page timer"
+    echo "Installed: kobo-box-ip ($BOX_IP), nightly backup timer, KOBOBACKUP drive rule, KOBOPACK update rule, status page timer"
+}
+
+update_drive() {
+    # Runs code from the stick as root, so only a pack signed with the key this box was
+    # installed with, checked by the box's own copy of pack.sh before anything on the
+    # stick runs (and nothing on it the signed SHA256SUMS doesn't list)
+    fail() {
+        python3 -I -c 'import json,sys,time; json.dump({"running": "false", "step": "checking", "error": sys.argv[2],
+            "updated": time.strftime("%Y-%m-%dT%H:%M:%S%z")}, open(sys.argv[1], "w"), indent=2)' \
+            /var/lib/kobo-box/update.json "$1"
+        systemctl start --no-block kobo-box-status.service 2>/dev/null || true
+        echo "update-drive: $1" >&2
+        mountpoint -q "$PACK_MNT" && umount "$PACK_MNT"
+        exit 1
+    }
+    mkdir -p /var/lib/kobo-box
+    python3 -I -c 'import json,sys,time; json.dump({"running": "true", "step": "checking",
+        "updated": time.strftime("%Y-%m-%dT%H:%M:%S%z")}, open(sys.argv[1], "w"), indent=2)' /var/lib/kobo-box/update.json
+    systemctl start --no-block kobo-box-status.service 2>/dev/null || true
+    [[ -s $PACK_KEY ]] || fail "this box has no key to check update sticks with: update it over SSH"
+    mkdir -p "$PACK_MNT"
+    mountpoint -q "$PACK_MNT" || mount -o ro,nosuid,nodev /dev/disk/by-label/KOBOPACK "$PACK_MNT" \
+        || fail "the update stick couldn't be opened"
+    "$HERE/pack.sh" verify "$PACK_MNT" --key "$PACK_KEY" \
+        || fail "it isn't a complete pack signed for this box"
+    local rc=0
+    bash "$PACK_MNT/kobo-box-ai/box/update.sh" --pack "$PACK_MNT" --verified || rc=$?
+    sync
+    umount "$PACK_MNT" && echo "update stick unmounted: safe to remove"
+    return $rc
 }
 
 case "${1:-}" in
+    update-drive) update_drive ;;
     ip)
         case "${2:-status}" in
             up) ip_up; echo "$BOX_IF: $BOX_IP" ;;
@@ -129,10 +183,10 @@ case "${1:-}" in
     install) install_units ;;
     uninstall)
         systemctl disable --now kobo-box-ip.service kobo-box-backup.timer kobo-box-status.timer 2>/dev/null || true
-        rm -f "$UNIT_DIR"/kobo-box-{ip,backup,backup-drive,status}.service "$UNIT_DIR"/kobo-box-{backup,status}.timer \
-            "$UNIT_DIR/media-kobobackup.mount" /etc/udev/rules.d/99-kobo-box-backup.rules
+        rm -f "$UNIT_DIR"/kobo-box-{ip,backup,backup-drive,update-drive,status}.service "$UNIT_DIR"/kobo-box-{backup,status}.timer \
+            "$UNIT_DIR/media-kobobackup.mount" /etc/udev/rules.d/99-kobo-box-{backup,update}.rules
         systemctl daemon-reload
         udevadm control --reload
         ;;
-    *) sed -n '2,16p' "$0" | sed 's/^# \{0,1\}//' >&2; exit 1 ;;
+    *) sed -n '2,19p' "$0" | sed 's/^# \{0,1\}//' >&2; exit 1 ;;
 esac
