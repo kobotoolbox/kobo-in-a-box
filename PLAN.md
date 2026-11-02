@@ -479,6 +479,152 @@ happened, and the bridge writes that back onto the case. Checked in KPI's code
   after the next sync; the follow-up outcome lands on the right case; the CSV holds only
   the allowed columns.
 
+#### Lessons from 510's Kobo + EspoCRM setup (planned)
+
+Reviewed 2026-11-02: `rodekruis/kobo-connect` (successor of the archived `kobo2espo`:
+Kobo REST Service → FastAPI on Azure → EspoCRM, mapping in the hook's HTTP headers),
+510's EspoCRM templates (feedback, shelter, PAM), `espo-kobo`, and 121's offline
+verification (`kobo-connect` `update-kobo-csv`, 121 manual). We don't run their system;
+these are the parts done better than ours so far.
+
+- **A failed submission doesn't block the rest.** kobo-connect records each submission as
+  pending/success/failed with the error, and moves on. Our bridge keeps the cursor before a
+  failed submission. A permanent error (e.g. EspoCRM rejecting a choice that was added to
+  the Kobo form but not to the template) stops every later submission on that form, and
+  only the container log says so. Fix: a small ledger (SQLite in the bridge's volume:
+  submission uuid, status, error, attempts). Advance the cursor past failures, retry them
+  with backoff, and show the failed count on the landing page or status JSON. Keep the
+  cursor-before-failure only for "EspoCRM unreachable".
+- **Updating a record by an explicit key, and failing on 0 or several matches**
+  (`updaterecordby`). Use this rule for the follow-up read-back above: the follow-up form
+  carries the case number, the bridge updates exactly one case, or records a failure.
+  121's manual adds the matching policy: field collection overwrites, so only the
+  follow-up fields named in the template may be written.
+- **Prefill by ID** (121's verification form: `pulldata()` from the uploaded CSV, keyed on
+  the person's ID). For the follow-up form, the CHW picks the case, and the zone and
+  reason fill in from `open_cases.csv`, so they don't retype them. Same minimal columns.
+  121 ships the whole registration export, which we won't.
+- **Choices come from the form, not a second copy.** Our TOML repeats every Kobo option
+  label, so the two drift (and cause the failure above). `espo-kobo` builds the EspoCRM
+  fields from the XLSForm. `espocrm-setup.py` should read choice names and labels from
+  the deployed form (`/api/v2/assets/<uid>/`, `content.choices`). The template then only
+  says which questions to map and how to route.
+- **Attachments and repeat groups.** kobo-connect copies photos into EspoCRM `Attachment`s
+  and maps repeat items by index. Ours drops both. Add them when a scenario needs them
+  (referral slips, shelter photos). They aren't needed for the health scenario.
+- **Locations as linked records** (their admin levels and coding frameworks are entities
+  with cascading selects, looked up by code). Better than our `cZone` enum once a
+  deployment has more than a handful of places. Add it with the first real pilot's
+  location list.
+
+Already better here, keep: polling catches up after any outage (KPI's REST Services retry
+only `HOOK_MAX_RETRIES` = 3 times); no keys in hook headers (theirs are plain text to
+anyone who can edit the form, and the endpoint is `no_auth`); routing to teams with
+priority and follow-up time (kobo-connect has none; their templates use the paid Advanced
+Pack for automation); dedupe without an external database; choice-list redeploys
+rate-limited, not one per submission (`kobo-to-linked-kobo`).
+
+#### Plan for taking these over (2026-11-02, not built)
+
+In order. Each step ships with its unit tests (`test_bridge.py`, Kobo and EspoCRM faked)
+and an e2e check on the rig.
+
+**0. Confirm the failure first.** On the laptop stack: POST a Case with an enum or
+multiEnum value missing from the field's options. Expect a 400 (EspoCRM's
+`validationFailure`). If EspoCRM stores the value instead, step 1 is still needed for
+other 4xx errors (field removed, team renamed, permissions), but it's less urgent.
+
+**1. Ledger: one failed submission never blocks the form** (`bridge.py`).
+- `/state/bridge.sqlite` (stdlib `sqlite3`) replaces `cursor.json`, with two tables:
+  `cursor(asset, last_id)` and `failed(asset, sub_id, uuid, error, attempts, next_try,
+  first_seen)`. Cursor and failures share one file so they are lost together. A missing
+  file means a full rescan, and the uuid lookup in EspoCRM already prevents duplicates.
+  On first start, the old `cursor.json` is ignored (a rescan is safe).
+- Two kinds of error. **Unreachable** (connection errors, timeouts, 5xx) ends the pass
+  and keeps the cursor, as now. **Rejected** (4xx on the POST, or a template error such as
+  an unknown team) is recorded in `failed`, and the cursor moves on. `BridgeError` gets a
+  `status` attribute to tell the two apart.
+- Retries: each pass first re-fetches due failures (`/data/<id>/`), with backoff of
+  1 min, 10 min, 1 h, then every 6 h. All failures for an asset retry at once when the
+  template file or the form's `deployed_version_id` changes, since that's usually the
+  fix. A submission that succeeds or no longer needs a case leaves the table. Nothing is
+  ever dropped.
+- Errors stored are status plus `X-Status-Reason`, as now, never answers.
+- **Status:** the bridge writes `status.json` after each pass: last pass and last success
+  time, counts, number failed, the oldest failure's age and short error. Answers are never
+  written. The state moves from the named volume to a host bind mount
+  (`/var/lib/kobo-box/bridge/`), so `box/status.py` can read it like `backup-status.json`.
+- **Status page** (`cases()` in `box/status.py`): `warn` "N Kobo submissions couldn't
+  become cases" with the action "Call support", and `warn` when the last successful pass
+  is over 10 minutes old while the bridge is running. `espocrm.sh failed` lists them for
+  support: project, submission id, error, attempts.
+- **Backups:** `espocrm.sh backup` and `backup.sh` include the bridge's state directory.
+- Tests:
+  - a rejected submission between two good ones: both good ones become cases and the bad
+    one is in `failed`;
+  - fixed after a template change: retried and created once;
+  - EspoCRM down: the cursor stays (the existing test);
+  - ledger deleted: rescan, no duplicates;
+  - `status.json` contains no answers.
+- e2e: deploy a form version with a zone that's not in the template. That visit fails,
+  later visits still open cases, and the status page warns. After `espocrm.sh setup`,
+  the failed visit becomes a case without anyone touching it.
+
+**2. Choices from the deployed form** (`espocrm-setup.py`, `load_template`).
+- Setup reads the form (`/api/v2/assets/<uid>/`: `content.survey`
+  `select_from_list_name`, `content.choices`, the first label in `content.translations`)
+  for every `[[field]]` with `kobo` and no `options`. EspoCRM option names are the Kobo
+  choice names. Options written in the template still override (to relabel, or to limit
+  what a case shows).
+- The bridge builds its label table from the same source at start and when
+  `deployed_version_id` changes. It holds no hand-copied copy.
+- `type` can be left out for select questions: select_one → enum, select_multiple →
+  multiEnum.
+- Setup needs the Kobo token: `espocrm.sh setup` passes `KOBO_TOKEN_FILE`, as it does
+  for the bridge.
+- **Form changes:** a host timer (`box.sh install`) runs `espocrm.sh setup --if-form-changed`
+  every 10 min. It compares `deployed_version_id` with the last one it set up for and is a
+  no-op otherwise. Together with step 1, adding a choice in Kobo then needs no one on the
+  box: within minutes the field gets the option and the failed submissions retry. Setup
+  never deletes options, so old cases keep their values.
+- The health template loses its `options` tables (~40 lines). Tests: options from a
+  fixture asset; a choice added to the form lands in EspoCRM; a template override wins.
+
+**3. Follow-up visits update the case** (the open-cases plan above, with 510's rules).
+- A new `[update]` section in the template: `form` (the follow-up form's name),
+  `key = "case"` (a `select_one_from_file open_cases.csv` question whose value is the
+  case number), `fields` (follow-up question → Case field), `status` (answer → Case
+  status).
+- **Exactly one match** on `number`, otherwise a recorded failure (step 1's ledger),
+  never a guess. 0 matches means the case was deleted or the number is wrong; more than 1
+  can't happen with `number`, but is checked anyway.
+- **Only the listed fields are written**, and every follow-up is also posted as a note on
+  the case's stream, so staff see what was recorded even if they changed the field since.
+  The bridge's role gets edit on Case, with field-level security limiting edits to those
+  fields.
+- **Closed cases:** don't reopen, add the note and count it (recommended; see the
+  question below).
+- **Prefill:** the follow-up form uses `pulldata('open_cases', 'zone', 'name', ${case})`
+  and the same for the reason and due date, from the same minimal CSV. CHWs see what the
+  case is about without retyping. Check Enketo's `pulldata()` along with Collect.
+- **List sync:** CSV upload plus rate-limited redeploy, as planned above. 121's
+  `update-kobo-csv` follows the same steps (delete old file, upload, redeploy).
+- Tests: as listed in the open-cases plan, plus 0 matches → failed, a closed case → note
+  only, unlisted fields untouched.
+
+**Later, when a scenario needs them** (not in the health pilot):
+- **Photos:** a `file`/`image` field type in the template. The bridge downloads
+  `_attachments[].download_url` through the edge and uploads to EspoCRM's `Attachment`,
+  with a size cap. Large phone photos on a slow box: measure first.
+- **Repeat groups:** one line per item in the description, or child records. Not
+  kobo-connect's one field per index.
+- **Locations as linked records,** loaded from the pilot's location list, looked up by
+  code.
+
+**Questions for you:**
+- Follow-ups on closed cases: note only (recommended), or reopen?
+- Should setup run itself on form changes (step 2's timer, recommended), or only by hand?
+
 ### 3k. A box non-technical teams can run (W12)
 
 Sections 3a–3j are features. This one is about whether a team with no technical staff can
@@ -635,6 +781,10 @@ Built and tested 2026-10-30; details in [STATUS.md](STATUS.md).
 - [x] `bridge.py`: Kobo → cases by polling, deduplicated, safe across restarts; 9 unit tests
 - [x] Health referral scenario (form with referral logic, 13 visits) and `e2e-espo.py`: 27/27 on the rig online and offline, no outbound packets
 - [ ] Open cases as a choice list in Kobo forms, and follow-up visits written back to the case (3j; planned)
+- [ ] Confirm EspoCRM rejects an enum value outside its options (3j plan, step 0)
+- [ ] Bridge ledger (3j step 1, from 510's kobo-connect): rejected submissions recorded and retried, not blocking the form; `status.json`, status page warning, `espocrm.sh failed`; state in backups
+- [ ] Choices from the deployed Kobo form (3j step 2); setup re-runs when the form's version changes
+- [ ] Follow-up visits update exactly one case, listed fields only, plus a stream note; prefill from `open_cases.csv` (3j step 3; with the open-cases item above)
 - [ ] Phase 2: case status back to Kobo; edited submissions; EspoCRM MCP + agent tasks; UI languages for the pilot; per-box secrets from `firstboot.sh`; images in the content pack
 
 ### W12. A box non-technical teams can run (see 3k)
