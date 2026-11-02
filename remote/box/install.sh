@@ -11,11 +11,13 @@
 # installed from one pack is identical. Power it off and ship it.
 #
 # At the first power-on firstboot.sh makes the box its own (name, Kobo and its passwords,
-# backup passphrase, Wi-Fi, AI for this hardware, label card) while the status page shows
-# progress. --first-boot-now runs that straight away instead (test rigs).
+# backup passphrase, Wi-Fi, case management when the pack has it, AI for this hardware,
+# label card) while the status page shows progress. --first-boot-now runs that straight
+# away instead (test rigs).
 #
-# Nothing is downloaded: a step that would need the internet fails instead. Case
-# management and the assistant are not set up here yet.
+# Nothing is downloaded: a step that would need the internet fails instead. The assistant
+# is not set up here yet (its model server has no AMD build, and W4 hasn't settled how
+# each user signs in to it).
 set -Eeuo pipefail
 HERE=$(cd "$(dirname "$0")" && pwd)
 
@@ -25,7 +27,7 @@ while [[ $# -gt 0 ]]; do
     case $1 in
         --pack) PACK=${2:?--pack <dir>}; shift 2 ;;
         --first-boot-now) FIRST_BOOT_NOW=true; shift ;;
-        *) sed -n '2,17p' "$0" | sed 's/^# \{0,1\}//' >&2; exit 1 ;;
+        *) sed -n '2,20p' "$0" | sed 's/^# \{0,1\}//' >&2; exit 1 ;;
     esac
 done
 PACK=${PACK:-$(dirname "$(dirname "$HERE")")}

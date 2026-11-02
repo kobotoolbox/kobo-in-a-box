@@ -14,6 +14,31 @@ x-limits: &limits
   networks:
     - kobo
 
+# A server that stops answering is restarted by box/watchdog.sh (run with the status page
+# every minute): Docker's own restart policy only covers a process that exits. /health is
+# answered outside the inference loop, so a long transcription or a queue of translations
+# doesn't count as hung; a deadlocked or wedged server does. start_period: loading a big
+# model takes minutes, and failures until the first success don't count
+x-llm-health: &llm-health
+  healthcheck:
+    test: ["CMD", "curl", "-fsS", "-m", "10", "-o", "/dev/null", "http://localhost:8080/health"]
+    interval: 30s
+    timeout: 15s
+    retries: 4
+    start_period: 20m
+  labels:
+    kobo-box.watchdog: restart
+
+x-whisper-health: &whisper-health
+  healthcheck:
+    test: ["CMD", "curl", "-fsS", "-m", "10", "-o", "/dev/null", "http://localhost:8080/"]
+    interval: 30s
+    timeout: 15s
+    retries: 4
+    start_period: 5m
+  labels:
+    kobo-box.watchdog: restart
+
 x-gpu: &gpu
   deploy:
     resources:
@@ -25,7 +50,7 @@ x-gpu: &gpu
 
 services:
   llm-gpu:
-    <<: [*limits, *gpu]
+    <<: [*limits, *gpu, *llm-health]
     profiles: [gpu]
     image: ghcr.io/ggml-org/llama.cpp:server-cuda
     networks:
@@ -38,7 +63,7 @@ services:
       --chat-template-kwargs '{"enable_thinking":${LLM_THINKING:-true}}' --metrics
 
   whisper-gpu:
-    <<: [*limits, *gpu]
+    <<: [*limits, *gpu, *whisper-health]
     profiles: [gpu]
     image: ghcr.io/ggml-org/whisper.cpp:main-cuda
     networks:
@@ -52,7 +77,7 @@ services:
         --inference-path /v1/audio/transcriptions
 
   llm-cpu:
-    <<: *limits
+    <<: [*limits, *llm-health]
     profiles: [cpu]
     image: ghcr.io/ggml-org/llama.cpp:server
     networks:
@@ -65,7 +90,7 @@ services:
       --chat-template-kwargs '{"enable_thinking":${LLM_THINKING:-true}}' --metrics
 
   whisper-cpu:
-    <<: *limits
+    <<: [*limits, *whisper-health]
     profiles: [cpu]
     image: ghcr.io/ggml-org/whisper.cpp:main
     networks:

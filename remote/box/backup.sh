@@ -308,15 +308,28 @@ PY
         [[ -z "$fe" ]] || docker start $fe >/dev/null
     fi
 
+    # The case bridge's Kobo account is now the restored database's: its token file follows
+    local bridge_user bridge_token
+    bridge_user=$(sed -n 's/^BRIDGE_KOBO_USER=//p' /etc/kobo-box/espocrm.env 2>/dev/null || true)
+    bridge_token=$(sed -n 's/^KOBO_TOKEN_FILE=//p' /etc/kobo-box/espocrm.env 2>/dev/null || true)
+    if [[ -n "$bridge_user" && -n "$bridge_token" ]]; then
+        log "case bridge's Kobo account"
+        python3 -I "$HERE/kobo-account.py" "$bridge_user" "$bridge_token" >/dev/null
+    fi
     if [[ -d "$stage/espocrm" ]]; then
-        if [[ -n "$(container kobo-cases db)" ]] && cmp -s "$stage/espocrm/secrets" "$ESPO_SECRETS"; then
+        if [[ -n "$(container kobo-cases db)" ]]; then
+            # From another box too: espocrm.sh takes over the backup's passwords
             log "espocrm"
             "$ESPOCRM_SH" restore "$stage/espocrm" >/dev/null
         else
-            log "EspoCRM's backup is in $stage/espocrm. To put it back on this box: copy its" \
-                "secrets to $ESPO_SECRETS before 'espocrm.sh up', then 'espocrm.sh restore $stage/espocrm'"
+            log "EspoCRM's backup is in $stage/espocrm, but case management isn't running on this" \
+                "box. To put it back: 'espocrm.sh up', then 'espocrm.sh restore $stage/espocrm'"
         fi
+    elif [[ -n "$bridge_user" && -n "$(container kobo-cases bridge)" ]]; then
+        docker restart "$(container kobo-cases bridge)" >/dev/null   # it reads its token at start
     fi
+    # The label card: a backup from another box brings its Kobo and EspoCRM passwords
+    [[ ! -f /etc/kobo-box/firstboot-done ]] || python3 -I "$HERE/card.py" >/dev/null || true
     log "restored snapshot $snap. The files restored are in $r (delete it when all is well);" \
         "the state before the restore is in /var/lib/kobo-box/before-restore"
 }

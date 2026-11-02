@@ -315,7 +315,23 @@ Ponto's local EspoCRM testing (`~/code/ponto/infra/espocrm`), with per-box secre
       (403 from outside); a second reboot kept the name and didn't re-run setup. Found: a
       `tr | head` random-string helper failing under `pipefail` (the page showed the failed step;
       a restart resumed after the fix).
-- Not covered yet: EspoCRM on a replacement box (prints the commands), OpenCode sessions,
+- [x] **Case management on a new box, and on a replacement box** (2026-11-02):
+      `firstboot.sh`'s `cases` step makes the Kobo account `cases-bridge` (not a superuser,
+      sees only forms shared with it; `box/kobo-account.py`) and starts EspoCRM with its own
+      passwords; the label card has EspoCRM's admin password and "share the form with
+      `cases-bridge`". `espocrm.sh restore` from another box now gives MariaDB the backup's
+      passwords and takes its secrets; `backup.sh restore` rewrites the bridge's token from the
+      restored Kobo and the card. On a fresh droplet offline throughout: factory install and
+      first boot 16.7 min, all green; the rig's backup (60 cases) restored in 139 s with
+      nothing typed; `e2e-espo.py --edge --share-with cases-bridge` 28/28 (10 new cases
+      through the bridge's own account, numbered on from 61). The `install.sh` SSH session
+      that never closed (seen twice before) didn't happen this time; not explained.
+- [x] **Hung model servers restart** (2026-11-02): Docker healthchecks on llama-server and
+      whisper-server (and the agent model), and `box/watchdog.sh`, run before the status page
+      every minute, restarts a labelled container Docker marks unhealthy (at most 3 times an
+      hour). On the rig: whisper-server frozen with `kill -STOP`, marked unhealthy, restarted
+      on the next run, green, and the page said when.
+- Not covered yet: OpenCode sessions,
   NVIDIA/AMD tier detection on real hardware, the passphrase prompt from a real console.
 - Found: DigitalOcean's kernel has no exFAT module (`linux-modules-extra` adds it; Ubuntu's
   generic kernel on a real box has it). `provision.sh` copied `*.local.env` (laptop-only

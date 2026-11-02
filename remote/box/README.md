@@ -39,7 +39,9 @@ are built.
 | `detect-tier.py` | RAM, cores and GPU → `ai.box.env`; `./ai.sh up auto` | Built; tested on the rig (CPU) |
 | `pack.sh build <dir>` | The content pack: debs, images, models, library, pinned kobo-install/kobo-docker, all checksummed | Built; 30 GB from the rig |
 | `install.sh --pack <dir>` | Offline install from the content pack | Built; tested on a fresh droplet offline from the start |
-| `firstboot.sh`, `card.py` | First power-on: name, Kobo and its passwords, backup passphrase, Wi-Fi details, AI, label card | Built; tested on a factory-installed droplet |
+| `firstboot.sh`, `card.py` | First power-on: name, Kobo and its passwords, backup passphrase, Wi-Fi details, case management, AI, label card | Built; tested on a factory-installed droplet |
+| `kobo-account.py` | A Kobo account for one of the box's services (the case bridge's `cases-bridge`) and its token | Built; tested |
+| `watchdog.sh` | Restarts a model server that stops answering its healthcheck (every minute, before the status page) | Built; tested on the rig |
 | `status.py` | Status page at `kobo.local/status`: Kobo, AI, disk, backups, battery in plain words; every minute | Built |
 | Autoinstall USB | Ubuntu 26.04 ISO + `CIDATA` + `KOBOPACK` partitions, LUKS + TPM | Needs the W5 box |
 
@@ -79,8 +81,11 @@ box/backup.sh status                    # last result, as JSON (for the status p
   Postgres's and Mongo's passwords are set to the restored ones (dumps don't carry them;
   Mongo's user collections are skipped, because replacing them mid-restore drops the
   restore's own login), then `kobo-setup.py --reconfigure` re-renders Kobo's settings.
-  109 s on a fresh droplet. EspoCRM on a replacement box is still by hand: the restore
-  prints the two commands.
+  109 s on a fresh droplet. EspoCRM comes back too: when the backup is another box's,
+  `espocrm.sh restore` gives this box's MariaDB users the backup's passwords and takes its
+  secrets file (EspoCRM's config and database expect them), and recreates the containers.
+  The case bridge's token file is rewritten from the restored Kobo database
+  (`kobo-account.py`), and the label card from the restored passwords.
 
 ## Status page
 
@@ -107,15 +112,23 @@ python3 -I box/status.py --print   # the same checks in the terminal (support ov
   so nothing reachable from the Wi-Fi can talk to Docker. It refreshes itself in the browser
   every 30 s, and says so if it's more than 5 minutes off the phone's clock: either the checks
   stopped, or the box's clock is wrong (which would also put wrong times on submissions).
-- **Not yet:** temperature (needs the W5 box's sensors), translations of the page, and the
-  health checks that restart a hung model server (PLAN W12).
+- **A hung model server restarts by itself.** llama-server and whisper-server have Docker
+  healthchecks (`/health`, `/`; 4 misses 30 s apart, after a start period for loading), and
+  `watchdog.sh` restarts a container labelled `kobo-box.watchdog=restart` once Docker marks
+  it unhealthy, at most 3 times an hour; Docker alone only restarts a process that exits.
+  `/health` is answered outside the inference loop, so a long transcription isn't a hang.
+  The page then says "It stopped answering and was restarted automatically at 16:53" for a
+  day. Tested on the rig by freezing whisper-server (`kill -STOP`): restarted on the first
+  status run after Docker marked it unhealthy, then green.
+- **Not yet:** temperature (needs the W5 box's sensors), translations of the page.
 
 ## Next steps (in order)
 
 1. ~~Status page~~: built (above).
 2. ~~Content pack + `install.sh --pack`~~: built (below).
-3. ~~`firstboot.sh`~~: built (below). Still to add: EspoCRM's and the dashboards' keys when
-   those are part of the default kit, OpenCode's password, the LUKS key (with the autoinstall).
+3. ~~`firstboot.sh`~~: built (below), with case management. Still to add: the dashboards'
+   keys when they're part of the kit, the assistant (below), the LUKS key (with the
+   autoinstall).
 4. **Hotspot + local DNS** (NetworkManager shared mode + dnsmasq for `*.kobo.local`) and
    the KoboCollect QR code on the landing page. Needs the physical box; check its Wi-Fi
    chip supports access-point mode, or ship a known-good USB Wi-Fi adapter.
@@ -174,6 +187,7 @@ from the next step at the next boot; `/etc/kobo-box/firstboot-done` ends it.
 | name | hostname `kobo-<4 letters>` (the backup repository and the card use it); cloud images told to keep it |
 | kobo | `kobo-setup.py --pinned`: Kobo from the pack's kobo-install, which makes every Kobo password and the Django secret (`--reconfigure` if a power cut came after it started) |
 | secrets | backup passphrase; Wi-Fi name `Kobo-<4 letters>` and a passphrase in four groups of four, for the hotspot |
+| cases | when the pack has EspoCRM's images: the Kobo account `cases-bridge` (not a superuser, no password, sees only forms shared with it) and its token (`kobo-account.py`), `/etc/kobo-box/espocrm.env` pointing the bridge at it, then `espocrm.sh up` (EspoCRM's own passwords) |
 | ai | `detect-tier.py`, `./ai.sh up auto` |
 | card | `card.py`: the label card |
 
@@ -181,7 +195,8 @@ from the next step at the next boot; `/etc/kobo-box/firstboot-done` ends it.
   Now: setting up KoboToolbox", and only the library and disk rows, since nothing else exists
   yet. A failed step turns red with "restart the kit: setup carries on where it stopped".
 - **The label card** (`kobo.local/card/`): the Wi-Fi name and passphrase with a QR code that
-  phones join from, the Kobo admin account, the backup passphrase, the disk's recovery key
+  phones join from, the Kobo admin account, EspoCRM's admin account and "share the form
+  *Community health referral* with the user `cases-bridge`", the backup passphrase, the disk's recovery key
   when there is one, and "keep this apart from the kit and the backup drive". It holds the
   secrets, so the edge serves it **only to a browser on the box itself** (403 from anywhere
   else), and `pack.sh` never packs it. That suits a laptop box. How a screenless mini PC
@@ -193,8 +208,15 @@ from the next step at the next boot; `/etc/kobo-box/firstboot-done` ends it.
   the name was kept, setup didn't run again and everything came back by itself. The first
   attempt failed at "name" (`tr < /dev/urandom | head` under `pipefail`): the page showed
   it in red, and a restart carried on after the fix.
-- **Not in it yet:** case management and the assistant (their images are in the pack; set
-  them up by hand), CUDA images (`EXTRA_IMAGES=...` when building for NVIDIA boxes), a
+- **Case management, tested** (2026-11-02, a fresh droplet offline throughout): factory
+  install and first boot 16.7 min in all, all green with case management; then the rig's
+  backup (60 cases) restored onto it in 139 s with nothing typed: 60 cases back under the
+  old box's EspoCRM password, the bridge's token valid, the card rewritten; then
+  `e2e-espo.py --edge --share-with cases-bridge` 28/28: the form shared as staff would,
+  10 new cases (numbered on from 61) through the bridge's own account.
+- **Not in it yet:** the assistant. Its images are in the pack, but its model server only
+  has a CUDA build (the recommended box is AMD, W5), and W4 hasn't decided how each user's
+  Kobo token reaches their session. Also: CUDA images (`EXTRA_IMAGES=...` when building for NVIDIA boxes), a
   signature (only checksums: PLAN 3k).
 
 Found by the offline install, all fixed:

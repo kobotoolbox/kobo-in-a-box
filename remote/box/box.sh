@@ -4,7 +4,8 @@
 #   ./box.sh ip up|down|status   the fixed internal address (below)
 #   ./box.sh install             systemd units: the address at boot, nightly backup,
 #                                a backup whenever the KOBOBACKUP drive is plugged in,
-#                                and the status page (kobo.local/status) every minute
+#                                and the status page (kobo.local/status) every minute,
+#                                after watchdog.sh has restarted any hung model server
 #   ./box.sh uninstall
 #
 # Fixed internal address: kobo-install maps kf/kc/ee.kobo.local to the IP the box had
@@ -95,6 +96,7 @@ Description=Kobo in a box: write the status page
 
 [Service]
 Type=oneshot
+ExecStartPre=-$HERE/watchdog.sh
 ExecStart=/usr/bin/python3 -I $HERE/status.py
 EOF
     cat > "$UNIT_DIR/kobo-box-status.timer" <<EOF
@@ -132,5 +134,5 @@ case "${1:-}" in
         systemctl daemon-reload
         udevadm control --reload
         ;;
-    *) sed -n '2,15p' "$0" | sed 's/^# \{0,1\}//' >&2; exit 1 ;;
+    *) sed -n '2,16p' "$0" | sed 's/^# \{0,1\}//' >&2; exit 1 ;;
 esac

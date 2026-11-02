@@ -6,7 +6,9 @@ Run ON THE DROPLET with Kobo, the edge and `espocrm.sh up --demo-users`:
 
     python3 -I e2e-espo.py [--token-file /root/e2e-token] [--edge]
 
---edge also loads EspoCRM through the edge as http://cases.kobo.local. --fake-kobo PORT
+--edge also loads EspoCRM through the edge as http://cases.kobo.local. --share-with USER
+shares the form with the bridge's own Kobo account, as on a box set up by firstboot.sh
+(`--share-with cases-bridge`); without it the bridge must use the e2e user's token (rig). --fake-kobo PORT
 serves the visits from a fake Kobo on this machine instead (to try the EspoCRM side on a
 laptop; point the bridge's KOBO_URL at it).
 
@@ -60,8 +62,9 @@ def read_secrets(path):
 class RealKobo:
     """The box's Kobo, through the edge on port 80, as the e2e user."""
 
-    def __init__(self, token):
+    def __init__(self, token, share_with=''):
         self.auth = f'Token {token}'
+        self.share_with = share_with
 
     def call(self, method, path, body=None):
         req = urllib.request.Request(
@@ -91,6 +94,14 @@ class RealKobo:
         if not check('form deployed', s in (200, 201), s):
             raise SystemExit(dep)
         self.version = self.call('GET', f'/api/v2/assets/{self.uid}/')[1]['deployed_version_id']
+        if self.share_with:
+            # As staff do on a box: the bridge signs in as its own account (firstboot.sh)
+            s, out = self.call('POST', f'/api/v2/assets/{self.uid}/permission-assignments/bulk/', [
+                {'user': f'http://{KF}/api/v2/users/{self.share_with}/',
+                 'permission': f'http://{KF}/api/v2/permissions/{p}/'}
+                for p in ('view_asset', 'view_submissions')])
+            if not check(f'form shared with {self.share_with}', s in (200, 201), s):
+                raise SystemExit(out)
         return self.uid
 
     def submit(self, answers, sub_uuid):
@@ -208,6 +219,8 @@ def main():
     ap.add_argument('--secrets', default='/root/espocrm.secrets')
     ap.add_argument('--espo-url', default='http://127.0.0.1:8084')
     ap.add_argument('--edge', action='store_true')
+    ap.add_argument('--share-with', default='', metavar='USER',
+                    help="share the form with the bridge's Kobo account (a box: cases-bridge)")
     ap.add_argument('--fake-kobo', type=int, metavar='PORT')
     ap.add_argument('--timeout', type=int, default=180, help='seconds to wait for the bridge')
     ap.add_argument('--out', default=str(HERE.parent / 'results'))
@@ -215,7 +228,7 @@ def main():
     sec = read_secrets(args.secrets)
     admin = Espo(args.espo_url, basic=f'admin:{sec["ESPO_ADMIN_PASSWORD"]}')
     kobo = (FakeKobo(args.fake_kobo) if args.fake_kobo else
-            RealKobo(Path(args.token_file).read_text().strip()))
+            RealKobo(Path(args.token_file).read_text().strip(), args.share_with))
     started = datetime.now(timezone.utc)
 
     # 1–2. First batch, then the bridge's cases

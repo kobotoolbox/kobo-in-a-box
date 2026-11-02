@@ -68,8 +68,11 @@ in git), e.g. `ESPO_SITE_URL=http://localhost:8084`, `ESPO_SECRETS=/tmp/espo/sec
 /tmp/espo/secrets --espo-url http://127.0.0.1:8084`.
 
 **The bridge's Kobo account.** On the rig it uses the e2e user's token (`KOBO_TOKEN_FILE`).
-On a real box, give it its own Kobo account with only *view submissions* on the form, as
-for kobo-dash's `_dash` accounts.
+A box set up by `firstboot.sh` gives it its own: `cases-bridge`, not a superuser and with no
+password, which sees only the forms shared with it (*View submissions*). Its token is in
+`/etc/kobo-box/cases-bridge.token`, set by `/etc/kobo-box/espocrm.env`, which `espocrm.sh`
+reads after `espocrm.env`. The label card tells staff to share the form with it. Test that
+path with `e2e-espo.py --edge --share-with cases-bridge`.
 
 **Another form.** Copy the template, set `BRIDGE_TEMPLATE` in `espocrm.env`, and run
 `./espocrm.sh setup`: it adds the new teams and fields and updates changed options. It
@@ -77,8 +80,11 @@ doesn't delete fields a template no longer uses.
 
 **Backups.** `./espocrm.sh backup` writes a database dump, EspoCRM's files and the secrets
 to `/root/backups/espocrm-<time>/` (owner-only: the cases hold personal data).
-`restore <dir>` puts one back on the same box. To restore onto another box, copy the backup's
-`secrets` to `$ESPO_SECRETS` first, because the database password inside the backup is the old box's.
+`restore <dir>` puts one back, on the same box or another one. From another box (a
+replacement), its passwords replace this box's: the MariaDB users get the backup's
+passwords, the backup's `secrets` becomes `$ESPO_SECRETS` (the old one is kept as
+`.before-restore-<time>`), and the containers are recreated with them. `box/backup.sh
+restore` does this as part of a whole-box restore.
 
 ## How it works, and why
 

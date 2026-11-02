@@ -8,13 +8,16 @@
 #   ./espocrm.sh pull                fetch the images (online; the box then starts offline)
 #   ./espocrm.sh down | logs | status
 #   ./espocrm.sh backup [dir]        database dump + EspoCRM's files (default /root/backups)
-#   ./espocrm.sh restore <dir>       put a backup back (stops EspoCRM while it does)
+#   ./espocrm.sh restore <dir>       put a backup back (stops EspoCRM while it does); from
+#                                    another box too: its passwords then replace this box's
 #
-# Settings are in espocrm.env; per-box passwords and the bridge's key in $ESPO_SECRETS.
+# Settings are in espocrm.env, and this box's in /etc/kobo-box/espocrm.env (firstboot.sh:
+# the bridge's Kobo token); per-box passwords and the bridge's key in $ESPO_SECRETS.
 set -euo pipefail
 cd "$(dirname "$0")"
 # espocrm.local.env (not in git) overrides settings, e.g. to try the stack on a laptop
-set -a; source espocrm.env; [[ -f espocrm.local.env ]] && source espocrm.local.env; set +a
+set -a; source espocrm.env; [[ -f espocrm.local.env ]] && source espocrm.local.env
+[[ -f /etc/kobo-box/espocrm.env ]] && source /etc/kobo-box/espocrm.env; set +a
 LIBRARY_DIR=${LIBRARY_DIR:-/srv/library}
 
 compose() { docker compose -p kobo-cases -f docker-compose.espocrm.yml "$@"; }
@@ -93,10 +96,37 @@ case "${1:-}" in
         load_secrets
         dir=${2:?usage: $0 restore <backup dir>}
         compose --profile bridge stop bridge espocrm espocrm-daemon
+        other_box=false
+        if ! cmp -s "$dir/secrets" "$ESPO_SECRETS"; then
+            # From another box (a replacement): its database and files expect its passwords
+            # (EspoCRM's config holds the database password; the database, the bridge's key).
+            # Give this box's MariaDB users the backup's, then use its secrets file
+            other_box=true
+            old_db=$(sed -n 's/^ESPO_DB_PASSWORD=//p' "$dir/secrets")
+            old_root=$(sed -n 's/^ESPO_DB_ROOT_PASSWORD=//p' "$dir/secrets")
+            for v in "$old_db" "$old_root"; do
+                [[ $v =~ ^[A-Za-z0-9._~-]+$ ]] || { echo "unexpected password in $dir/secrets" >&2; exit 1; }
+            done
+            echo "the backup comes from another box: its EspoCRM passwords replace this box's"
+            compose exec -T db mariadb -uroot -p"$ESPO_DB_ROOT_PASSWORD" -e "
+                ALTER USER IF EXISTS 'espocrm'@'%' IDENTIFIED BY '$old_db';
+                ALTER USER IF EXISTS 'root'@'%' IDENTIFIED BY '$old_root';
+                ALTER USER IF EXISTS 'root'@'localhost' IDENTIFIED BY '$old_root';"
+            cp -a "$ESPO_SECRETS" "$ESPO_SECRETS.before-restore-$(date +%Y%m%d-%H%M%S)"
+            install -m 600 "$dir/secrets" "$ESPO_SECRETS"
+            load_secrets
+        fi
         gunzip -c "$dir/espocrm.sql.gz" | compose exec -T db mariadb -uroot -p"$ESPO_DB_ROOT_PASSWORD" espocrm
         compose run --rm --no-deps -T --entrypoint tar espocrm -C /var/www/html -xzf - < "$dir/files.tar.gz"
-        compose --profile bridge start espocrm espocrm-daemon bridge
+        if $other_box; then
+            # Recreated, so the containers get the restored passwords and the bridge its key
+            compose up -d db espocrm espocrm-daemon
+            wait_ready
+            compose --profile bridge up -d --force-recreate bridge
+        else
+            compose --profile bridge start espocrm espocrm-daemon bridge
+        fi
         echo "restored $dir"
         ;;
-    *) sed -n '2,14p' "$0" | sed 's/^# \{0,1\}//' >&2; exit 1 ;;
+    *) sed -n '2,15p' "$0" | sed 's/^# \{0,1\}//' >&2; exit 1 ;;
 esac

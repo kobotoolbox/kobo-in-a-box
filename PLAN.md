@@ -787,7 +787,7 @@ Built and tested 2026-10-30; details in [STATUS.md](STATUS.md).
 - [ ] Bridge ledger (3j step 1, from 510's kobo-connect): rejected submissions recorded and retried, not blocking the form; `status.json`, status page warning, `espocrm.sh failed`; state in backups
 - [ ] Choices from the deployed Kobo form (3j step 2); setup re-runs when the form's version changes
 - [ ] Follow-up visits update exactly one case, listed fields only, plus a stream note; prefill from `open_cases.csv` (3j step 3; with the open-cases item above)
-- [ ] Phase 2: case status back to Kobo; edited submissions; EspoCRM MCP + agent tasks; UI languages for the pilot; per-box secrets from `firstboot.sh`; images in the content pack
+- [ ] Phase 2: case status back to Kobo; edited submissions; EspoCRM MCP + agent tasks; UI languages for the pilot (per-box secrets from `firstboot.sh` and images in the content pack: done 2026-11-02)
 
 ### W12. A box non-technical teams can run (see 3k)
 Started 2026-10-30; scripts in `remote/box/`, details in [STATUS.md](STATUS.md).
@@ -796,9 +796,10 @@ Started 2026-10-30; scripts in `remote/box/`, details in [STATUS.md](STATUS.md).
 - [x] `backup.sh`: encrypted, incremental backups (restic) of Kobo + EspoCRM; `drive` on plugging in a `KOBOBACKUP` drive; nightly databases-only backup; status JSON
 - [x] Restore on the same box (deleted projects and media back, e2e suites pass)
 - [x] Restore on a freshly installed box with the old box's passphrase (keeps the new box's settings, takes accounts and secrets from the backup); backups offline
-- [ ] EspoCRM restore on a replacement box without the manual step
+- [x] EspoCRM restore on a replacement box without the manual step (its passwords and the bridge's token follow the backup)
+- [x] Case management set up at first power-on: the bridge's own Kobo account `cases-bridge`, EspoCRM's passwords, on the label card
 - [x] Status page at `kobo.local/status` (`status.py`, every minute; tested on the rig 2026-11-02)
-- [ ] Health checks on llama-server and whisper-server so a hung server restarts (`restart: unless-stopped` only covers crashes)
+- [x] Health checks on llama-server and whisper-server so a hung server restarts (`restart: unless-stopped` only covers crashes): `box/watchdog.sh`
 - [x] Content pack + `install.sh --pack`, tested on a clean droplet offline from the start (`pack.sh`, 2026-11-02)
 - [x] `firstboot.sh`: per-box secrets, Wi-Fi, backup passphrase, printable label card (2026-11-02; install.sh is now the factory step)
 - [ ] Label card on a box with no screen: how it gets printed (with the hotspot step)

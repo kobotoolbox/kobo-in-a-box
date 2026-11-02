@@ -130,8 +130,10 @@ pack's layout and what each step found: [remote/box/README.md](remote/box/README
 2. **Factory install** (`install.sh --pack <dir>`, offline, on a fresh Ubuntu 24.04): checks
    every file, installs, and stops before anything per-box exists. ~11 min.
 3. **First power-on** (`firstboot.sh`, run once by `kobo-box-firstboot.service`): name,
-   Kobo and its passwords, backup passphrase, Wi-Fi details, AI for the hardware, label card
-   (`kobo.local/card/`, on the box itself only). ~6 min; progress on `kobo.local/status/`.
+   Kobo and its passwords, backup passphrase, Wi-Fi details, case management (EspoCRM and
+   the bridge's own Kobo account, `cases-bridge`) when the pack has it, AI for the hardware,
+   label card (`kobo.local/card/`, on the box itself only). ~6 min; progress on
+   `kobo.local/status/`.
 
 On DigitalOcean a volume stands in for the USB stick: build onto it on the rig, then move
 it to a fresh droplet that is offline before the pack arrives.

@@ -150,6 +150,7 @@ SETUP_STEPS = {  # firstboot.sh's steps, as the focal point sees them
     'name': 'naming the kit',
     'kobo': 'setting up KoboToolbox (the longest step)',
     'secrets': 'making its passwords',
+    'cases': 'setting up case management',
     'ai': 'starting the AI models',
     'card': 'writing the label card',
 }
@@ -212,6 +213,21 @@ def kobo():
                  'Restart the box. ' + CALL_SUPPORT)
 
 
+def watchdog_note(cs):
+    """' Restarted …' when watchdog.sh restarted one of these containers today."""
+    try:
+        state = json.loads(Path('/var/lib/kobo-box/watchdog.json').read_text())
+    except (OSError, ValueError):
+        return ''
+    day = time.time() - 86400
+    hit = [(n, max(v['times'])) for n, v in state.items()
+           if any(n.endswith(f'-{c}-1') or n == c for c in cs) and max(v.get('times') or [0]) > day]
+    if not hit:
+        return ''
+    when = time.strftime('%H:%M', time.localtime(max(t for _, t in hit)))
+    return f' It stopped answering and was restarted automatically at {when}.'
+
+
 def ai():
     name = 'AI: transcription, translation, analysis'
     env = {**env_file(REMOTE / 'ai.env'), **env_file(REMOTE / 'ai.box.env')}
@@ -225,7 +241,7 @@ def ai():
     whisper = http('http://127.0.0.1:8082/')
     models = f"{model_name(env.get('LLM_MODEL', '?'))}, {model_name(env.get('WHISPER_MODEL', '?'))}"
     if llm == 200 and whisper == 200:
-        return check(name, 'ok', f'Ready ({models}).')
+        return check(name, 'ok', f'Ready ({models}).' + watchdog_note(cs))
     if llm == 503 or (llm is None and starting()):
         return check(name, 'busy', 'Loading the AI models. This takes a few minutes after a restart.')
     missing = [what for what, code in (('analysis and translation', llm), ('transcription', whisper))

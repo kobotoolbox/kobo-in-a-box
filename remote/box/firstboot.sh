@@ -12,6 +12,9 @@
 #   kobo      KoboToolbox from the pinned kobo-install (kobo-setup.py --pinned), which makes
 #             all of Kobo's passwords and its Django secret
 #   secrets   backup passphrase; Wi-Fi name and passphrase (for the hotspot, PLAN W12)
+#   cases     case management, when the pack has EspoCRM's images: a Kobo account for the
+#             bridge (cases-bridge, sees only the forms shared with it), EspoCRM with its
+#             own passwords (espocrm.sh up)
 #   ai        detect-tier.py and ./ai.sh up auto, for this machine
 #   card      the label card (card.py): Wi-Fi with a QR code, the admin password, the backup
 #             passphrase, the disk's recovery key when there is one
@@ -26,7 +29,7 @@ ETC=/etc/kobo-box
 STATE=/var/lib/kobo-box/firstboot.json
 DONE=$ETC/firstboot-done
 LIBRARY_DIR=${LIBRARY_DIR:-/srv/library}
-STEPS=(name kobo secrets ai card)
+STEPS=(name kobo secrets cases ai card)
 
 log() { echo "[$(date +%H:%M:%S)] $*"; }
 
@@ -87,6 +90,19 @@ step_secrets() {
     log "backup passphrase and Wi-Fi details in $ETC"
 }
 
+step_cases() {
+    local espo_image
+    espo_image=$(sed -n 's/^ESPO_IMAGE=//p' "$REMOTE/espocrm/espocrm.env")
+    if ! docker image inspect "$espo_image" >/dev/null 2>&1; then
+        log "no case management in this pack ($espo_image)"; return
+    fi
+    ( umask 077
+      printf '%s\n' '# This box (firstboot.sh): the case bridge signs in to Kobo as its own account' \
+          'BRIDGE_KOBO_USER=cases-bridge' "KOBO_TOKEN_FILE=$ETC/cases-bridge.token" > "$ETC/espocrm.env" )
+    python3 -I "$HERE/kobo-account.py" cases-bridge "$ETC/cases-bridge.token"
+    "$REMOTE/espocrm/espocrm.sh" up
+}
+
 step_ai() {
     python3 -I "$HERE/detect-tier.py"
     "$REMOTE/ai.sh" up auto
@@ -122,5 +138,5 @@ run() {
 case "${1:-run}" in
     run) run ;;
     status) cat "$STATE" 2>/dev/null || echo '{}' ;;
-    *) sed -n '2,19p' "$0" | sed 's/^# \{0,1\}//' >&2; exit 1 ;;
+    *) sed -n '2,21p' "$0" | sed 's/^# \{0,1\}//' >&2; exit 1 ;;
 esac
