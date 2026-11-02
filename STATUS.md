@@ -32,8 +32,9 @@ are in [PLAN.md](PLAN.md); per-run results are in [remote/results/NOTES.md](remo
   at ~31 tokens/s means minutes per step.
 
 **Next, in order:**
-0. **W12, what can be done before the hardware:** the status page is done (2026-11-02); next
-   the content pack and `install.sh --pack` on a clean droplet offline from the start, then `firstboot.sh`
+0. **W12, what can be done before the hardware:** the status page and the content pack with
+   `install.sh --pack` are done (2026-11-02, a fresh droplet installed with no internet); next
+   `firstboot.sh`
    (`remote/box/README.md` has the order and the design).
 1. **W5 hardware:** buy the Strix Halo 128 GB dev unit and re-run the same tests on it
    (`gpu-tiers.sh` equivalents, `w4-run.py`), at full power and capped. This decides the
@@ -293,6 +294,19 @@ Ponto's local EspoCRM testing (`~/code/ponto/infra/espocrm`), with per-box secre
     reloads nginx.
   - KPI's `/service_health/` returns 500 when only Enketo is down; the page reads its lines
     and judges KPI on the rest.
+- [x] **Content pack + offline install** (2026-11-02, `box/pack.sh`, `box/install.sh`; layout
+      and details in `remote/box/README.md`). Built on the rig onto a DigitalOcean volume
+      standing in for the USB stick: 30 GB (212 debs, 14 images at 4.9 GB, 21 GB of models,
+      5.7 GB of library), 8 min, 3.5 min to rebuild. The volume then moved to a fresh Ubuntu
+      24.04 droplet with outbound traffic blocked before anything was copied:
+      `install.sh --pack` in 14 min (checking 14,383 files 2.5, debs 1, images 4, files 2,
+      Kobo's first start 4.5) → status all green, `e2e-nlp.py` PASS (qual, translation,
+      transcription at WER 0%), a `KOBOBACKUP` drive backup with the pack's restic.
+      Found, and fixed: **KPI never starts on a box installed offline** (its entrypoint's
+      `uv pip sync` against PyPI on every new container; `kobo-setup.py` now mounts the image's
+      own requirements.txt as the "already synced" marker, and writes the backport's compose
+      file instead of it being hand-placed), and a fresh Ubuntu's first-boot `apt-get update`
+      hanging offline with apt's lock (the pack's apt has its own lists; daily apt timers off).
 - Not covered yet: EspoCRM on a replacement box (prints the commands), OpenCode sessions,
   NVIDIA/AMD tier detection on real hardware, the passphrase prompt from a real console.
 - Found: DigitalOcean's kernel has no exFAT module (`linux-modules-extra` adds it; Ubuntu's

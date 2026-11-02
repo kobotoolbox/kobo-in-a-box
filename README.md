@@ -39,7 +39,8 @@ remote/
                         bridge that opens cases from Kobo submissions (espocrm/README.md)
   box/                  W12: what makes it a kit that runs itself (box/README.md): fixed
                         internal address, AI tier from the hardware, KOBOBACKUP drive backups,
-                        the status page at kobo.local/status (status.py)
+                        the status page at kobo.local/status (status.py), the content
+                        pack (pack.sh build) and offline install from it (install.sh --pack)
   library/
     manifest.tsv        installers and docs served at http://kobo.local (pinned versions, SHA-256)
     library.sh          build (fetch + docs + render) | check | up|down|logs (edge nginx on :80)

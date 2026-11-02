@@ -37,7 +37,8 @@ are built.
 | `backup.sh` | Encrypted, deduplicated backups (restic) of Kobo's databases, media and settings, and EspoCRM's; `restore` onto the same or a new box | Built; tested on the rig, offline too, and restored onto a fresh box |
 | `box.sh install` | systemd: the address at boot; a nightly backup to the box's disk; **a full backup whenever a drive labelled `KOBOBACKUP` is plugged in**, then it unmounts itself | Built; tested on the rig |
 | `detect-tier.py` | RAM, cores and GPU → `ai.box.env`; `./ai.sh up auto` | Built; tested on the rig (CPU) |
-| `install.sh --pack <dir>` | Offline install from the content pack | Next |
+| `pack.sh build <dir>` | The content pack: debs, images, models, library, pinned kobo-install/kobo-docker, all checksummed | Built; 30 GB from the rig |
+| `install.sh --pack <dir>` | Offline install from the content pack | Built; tested on a fresh droplet offline from the start |
 | `firstboot.sh` | Per-box secrets, hotspot, label card | Next |
 | `status.py` | Status page at `kobo.local/status`: Kobo, AI, disk, backups, battery in plain words; every minute | Built |
 | Autoinstall USB | Ubuntu 26.04 ISO + `CIDATA` + `KOBOPACK` partitions, LUKS + TPM | Needs the W5 box |
@@ -112,9 +113,7 @@ python3 -I box/status.py --print   # the same checks in the terminal (support ov
 ## Next steps (in order)
 
 1. ~~Status page~~: built (above).
-2. **Content pack + `install.sh --pack`:** the layout below, built on the rig with
-   `pack.sh build`, then installed on a clean CPU droplet with outbound traffic blocked
-   from the start. The proof that nothing is fetched at install time.
+2. ~~Content pack + `install.sh --pack`~~: built (below).
 3. **`firstboot.sh`:** Kobo superuser and Django secrets, EspoCRM and dashboard keys, the
    backup passphrase, Wi-Fi SSID and passphrase, hostname; then a printable label card
    (HTML, Wi-Fi QR code, admin password, backup passphrase, LUKS recovery key) on the
@@ -128,15 +127,57 @@ python3 -I box/status.py --print   # the same checks in the terminal (support ov
 7. **Later:** sync to a cloud Kobo with kobo-transfer whenever the box is online (concept
    note, "Connected"), updating a kit from a newer content pack without losing data.
 
-### Content pack layout (planned)
+## Content pack
+
+The factory USB's content: everything a box needs, so a box is set up with no internet.
+Built from a working box or rig, so it holds what was tested there, not a fresh download.
+
+```bash
+box/pack.sh build /media/kobopack     # online, as root; incremental (unchanged images kept)
+box/pack.sh verify /media/kobopack
+/media/kobopack/kobo-box-ai/box/install.sh --pack /media/kobopack   # on the new box, offline
+```
 
 ```
 KOBOPACK/
-  pack.json             version, build date, sha256 of every file below
-  debs/                 docker, restic, dnsmasq, qrencode, … for Ubuntu 26.04
-  images/*.tar.zst      docker save: kobo-docker, llama.cpp/whisper.cpp (cpu, cuda, vulkan),
-                        nginx, EspoCRM, kobo-mcp, kobo-dash, OpenCode
-  models/               GGUF weights for every tier (detect-tier picks at first boot)
-  library/              /srv/library as built by library.sh build
-  kobo-box-ai/          this repo's remote/ folder, kobo-install, kobo-docker at pinned commits
+  pack.json        version, build date and host, OS, kobo-install version, images, models, sizes
+  SHA256SUMS       every file; install.sh checks them all before touching the box
+  debs/            212 packages (Docker, restic, git, jq, zstd, exfatprogs, rsync…) and every
+                   dependency, as a local apt repository, for one Ubuntu release (24.04 now)
+  images/          docker save of every image the box's containers run (14, 4.9 GB with zstd)
+  models/          /opt/models: Gemma 4 E4B and 26B-A4B, Whisper turbo and medium, test audio
+  library/         /srv/library
+  kobo-box-ai/     this repo's remote/ (no results, no per-box files)
+  kobo-install/    git checkouts at the running commits (2.026.37c)
+  kobo-docker/
+  kpi-e2e/         the KPI local-AI backport (STATUS W2), mounted by kobo-setup.py
 ```
+
+- **Never in the pack:** kobo-install's `.run.conf` and `kobo-env` (passwords), Kobo's data,
+  backups, the backup passphrase, EspoCRM's secrets, OpenCode's generated config.
+- **14 minutes** on an 8-vCPU droplet: checking the pack 2.5, debs 1, loading images 4,
+  copying files 2, Kobo's first start 4.5; then all green on the status page and
+  `e2e-nlp.py` PASS, with outbound traffic blocked from before the pack was attached.
+- **`install.sh`**: checks the pack, installs the debs from the pack only (its own apt lists,
+  so a stuck system `apt-get update` can't block it) and turns off Ubuntu's daily apt runs,
+  loads the images, copies the files, then `box.sh` (address, units), `kobo-setup.py --pinned`
+  (the pack's kobo-docker as it is, no `git fetch`), the library, `detect-tier.py` +
+  `ai.sh up auto`, and the status page. A failure names the step.
+- **Passwords are still made at install** (kobo-install's first run). `firstboot.sh` will move
+  that to the first power-on, so the factory step is identical for every box.
+- **Not in it yet:** case management and the assistant (their images are in the pack; set
+  them up by hand), CUDA images (`EXTRA_IMAGES=...` when building for NVIDIA boxes), a
+  signature (only checksums: PLAN 3k).
+
+Found by the offline install, all fixed:
+- **KPI never starts on a box installed offline.** Its entrypoint runs `uv pip sync` against
+  PyPI and GitHub whenever its container is new, unless a marker inside the container says
+  it already did; offline it retries for ever. Rigs never showed it because their first
+  start was online. `uv --offline` doesn't help (it wants to re-fetch the git-pinned
+  packages). The image's virtualenv already matches (`uv pip freeze` identical before and
+  after a sync), so `kobo-setup.py` mounts the image's own requirements.txt as the marker,
+  in the `docker-compose.frontend.custom.yml` it now writes (with the backport mounts, which
+  until now were a hand-placed file on the rig).
+- **A fresh Ubuntu's first-boot `apt-get update` hangs offline** and holds apt's lists lock;
+  so did DigitalOcean's agent installer, holding dpkg's. The pack's apt uses its own lists
+  and waits up to 10 min for dpkg's lock.

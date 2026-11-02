@@ -602,7 +602,7 @@ Done 2026-10-28 on kobo-mcp branch `w3-offline-box`; details in [STATUS.md](STAT
 - [ ] `offline.sh on`, then `library.sh check` and load every guide with outbound blocked
 - [ ] Wi-Fi hotspot + dnsmasq for `kobo.local`/`*.kobo.local` (physical box or a spare laptop with a USB Wi-Fi dongle); install the APKs on a real Android phone over HTTP
 - [ ] Landing page: KoboCollect configuration QR code and Wi-Fi QR code (per box, from firstboot)
-- [ ] Content pack layout + `install.sh --pack` (debs, `docker save` images, models, library)
+- [x] Content pack layout + `install.sh --pack` (debs, `docker save` images, models, library; W12, 2026-11-02)
 - [ ] Ubuntu 26.04 autoinstall USB (`CIDATA` + `KOBOPACK` partitions), LUKS + TPM
 - [ ] `firstboot.sh`: per-box secrets and label card
 - [ ] Second content batch: pick from the 3g candidates once pilot languages are known
@@ -647,7 +647,7 @@ Started 2026-10-30; scripts in `remote/box/`, details in [STATUS.md](STATUS.md).
 - [ ] EspoCRM restore on a replacement box without the manual step
 - [x] Status page at `kobo.local/status` (`status.py`, every minute; tested on the rig 2026-11-02)
 - [ ] Health checks on llama-server and whisper-server so a hung server restarts (`restart: unless-stopped` only covers crashes)
-- [ ] Content pack + `install.sh --pack`, tested on a clean droplet offline from the start
+- [x] Content pack + `install.sh --pack`, tested on a clean droplet offline from the start (`pack.sh`, 2026-11-02)
 - [ ] `firstboot.sh`: per-box secrets, Wi-Fi, backup passphrase, printable label card
 - [ ] Hotspot + dnsmasq, KoboCollect QR code (needs the W5 box; check its Wi-Fi chip does AP mode)
 - [ ] Autoinstall USB with LUKS + TPM (W5 box)
