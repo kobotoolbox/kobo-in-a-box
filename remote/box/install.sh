@@ -2,26 +2,30 @@
 # Set up a box from the content pack (pack.sh build), with no internet. Run as root on a
 # freshly installed Ubuntu, from the pack itself:
 #
-#   /media/kobopack/kobo-box-ai/box/install.sh --pack /media/kobopack
+#   /media/kobopack/kobo-box-ai/box/install.sh --pack /media/kobopack [--first-boot-now]
 #
-# Verifies the pack, installs its debs from a local apt repository, loads its Docker
-# images, puts the files in place, then sets the box up as box/README.md describes: the
-# fixed internal address and units (box.sh), Kobo from the pinned kobo-install and
-# kobo-docker (kobo-setup.py --pinned), the library and edge, the AI tier for this
-# hardware (detect-tier.py, ai.sh up auto) and the status page. Nothing is downloaded:
-# a step that would need the internet fails instead.
+# The factory step. Verifies the pack, installs its debs from a local apt repository,
+# loads its Docker images, puts the files in place, sets up the fixed internal address
+# and the box's units (box.sh), starts the library and the status page, and installs
+# kobo-box-firstboot.service. Then it stops: nothing per-box exists yet, so every box
+# installed from one pack is identical. Power it off and ship it.
 #
-# Passwords are made here for now (kobo-install's, on its first run); firstboot.sh will
-# make them on the box's first power-on instead, so the factory step is the same for
-# every box. Case management and the assistant are not set up here yet.
+# At the first power-on firstboot.sh makes the box its own (name, Kobo and its passwords,
+# backup passphrase, Wi-Fi, AI for this hardware, label card) while the status page shows
+# progress. --first-boot-now runs that straight away instead (test rigs).
+#
+# Nothing is downloaded: a step that would need the internet fails instead. Case
+# management and the assistant are not set up here yet.
 set -Eeuo pipefail
 HERE=$(cd "$(dirname "$0")" && pwd)
 
 PACK=
+FIRST_BOOT_NOW=false
 while [[ $# -gt 0 ]]; do
     case $1 in
         --pack) PACK=${2:?--pack <dir>}; shift 2 ;;
-        *) sed -n '2,16p' "$0" | sed 's/^# \{0,1\}//' >&2; exit 1 ;;
+        --first-boot-now) FIRST_BOOT_NOW=true; shift ;;
+        *) sed -n '2,17p' "$0" | sed 's/^# \{0,1\}//' >&2; exit 1 ;;
     esac
 done
 PACK=${PACK:-$(dirname "$(dirname "$HERE")")}
@@ -102,16 +106,33 @@ step "the box: fixed address $BOX_IP, backup and status units"
 BOX_IP=$BOX_IP "$BOX_DIR/box/box.sh" ip up
 BOX_IP=$BOX_IP "$BOX_DIR/box/box.sh" install
 
-step "KoboToolbox (pinned kobo-install and kobo-docker, edge nginx)"
-BOX_IP=$BOX_IP python3 -I "$BOX_DIR/kobo-setup.py" --pinned
-LIBRARY_DIR=$LIBRARY_DIR python3 -I "$BOX_DIR/library/render.py" >/dev/null   # this box's name and date
-
-step "AI for this hardware"
-python3 -I "$BOX_DIR/box/detect-tier.py"
-"$BOX_DIR/ai.sh" up auto
-
-step "status"
+step "library and status page"
+LIBRARY_DIR=$LIBRARY_DIR "$BOX_DIR/library/library.sh" up
 systemctl start kobo-box-status.service
-python3 -I "$BOX_DIR/box/status.py" --print
-echo
-log "Installed from the content pack. Log: $LOG"
+
+step "first-boot setup"
+cat > /etc/systemd/system/kobo-box-firstboot.service <<EOF
+[Unit]
+Description=Kobo in a box: first power-on setup (firstboot.sh)
+After=docker.service kobo-box-ip.service
+Wants=docker.service
+ConditionPathExists=!/etc/kobo-box/firstboot-done
+
+[Service]
+Type=oneshot
+Environment=BOX_IP=$BOX_IP
+ExecStart=$BOX_DIR/box/firstboot.sh
+TimeoutStartSec=0
+
+[Install]
+WantedBy=multi-user.target
+EOF
+systemctl daemon-reload
+systemctl enable kobo-box-firstboot.service >/dev/null 2>&1
+if $FIRST_BOOT_NOW; then
+    systemctl start kobo-box-firstboot.service
+    python3 -I "$BOX_DIR/box/status.py" --print
+    log "Installed and set up. Log: $LOG; first boot: journalctl -u kobo-box-firstboot"
+else
+    log "Factory install done. Power the box off; its first power-on sets it up (about 10 min). Log: $LOG"
+fi

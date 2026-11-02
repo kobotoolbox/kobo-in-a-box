@@ -39,7 +39,7 @@ are built.
 | `detect-tier.py` | RAM, cores and GPU → `ai.box.env`; `./ai.sh up auto` | Built; tested on the rig (CPU) |
 | `pack.sh build <dir>` | The content pack: debs, images, models, library, pinned kobo-install/kobo-docker, all checksummed | Built; 30 GB from the rig |
 | `install.sh --pack <dir>` | Offline install from the content pack | Built; tested on a fresh droplet offline from the start |
-| `firstboot.sh` | Per-box secrets, hotspot, label card | Next |
+| `firstboot.sh`, `card.py` | First power-on: name, Kobo and its passwords, backup passphrase, Wi-Fi details, AI, label card | Built; tested on a factory-installed droplet |
 | `status.py` | Status page at `kobo.local/status`: Kobo, AI, disk, backups, battery in plain words; every minute | Built |
 | Autoinstall USB | Ubuntu 26.04 ISO + `CIDATA` + `KOBOPACK` partitions, LUKS + TPM | Needs the W5 box |
 
@@ -56,8 +56,8 @@ box/backup.sh status                    # last result, as JSON (for the status p
 - **For the focal point:** plug in the backup stick (any USB drive formatted with the label
   `KOBOBACKUP`), wait for the status page to say it's done, unplug it, keep it somewhere
   else than the box. Weekly, or after each big collection day.
-- **Encrypted** with the box's backup passphrase (`/etc/kobo-box/backup.pass`, made on first
-  use; `firstboot.sh` will make it and print it on the label card). Keep the card away from
+- **Encrypted** with the box's backup passphrase (`/etc/kobo-box/backup.pass`, made by
+  `firstboot.sh` and printed on the label card; on rigs without it, made on first use). Keep the card away from
   the box: without the passphrase a backup can't be restored, and with it anyone holding
   the stick can read it.
 - **Incremental:** restic only stores what changed, so weekly backups of a large project
@@ -114,10 +114,8 @@ python3 -I box/status.py --print   # the same checks in the terminal (support ov
 
 1. ~~Status page~~: built (above).
 2. ~~Content pack + `install.sh --pack`~~: built (below).
-3. **`firstboot.sh`:** Kobo superuser and Django secrets, EspoCRM and dashboard keys, the
-   backup passphrase, Wi-Fi SSID and passphrase, hostname; then a printable label card
-   (HTML, Wi-Fi QR code, admin password, backup passphrase, LUKS recovery key) on the
-   landing page until the admin marks it printed.
+3. ~~`firstboot.sh`~~: built (below). Still to add: EspoCRM's and the dashboards' keys when
+   those are part of the default kit, OpenCode's password, the LUKS key (with the autoinstall).
 4. **Hotspot + local DNS** (NetworkManager shared mode + dnsmasq for `*.kobo.local`) and
    the KoboCollect QR code on the landing page. Needs the physical box; check its Wi-Fi
    chip supports access-point mode, or ship a known-good USB Wi-Fi adapter.
@@ -158,13 +156,43 @@ KOBOPACK/
 - **14 minutes** on an 8-vCPU droplet: checking the pack 2.5, debs 1, loading images 4,
   copying files 2, Kobo's first start 4.5; then all green on the status page and
   `e2e-nlp.py` PASS, with outbound traffic blocked from before the pack was attached.
-- **`install.sh`**: checks the pack, installs the debs from the pack only (its own apt lists,
-  so a stuck system `apt-get update` can't block it) and turns off Ubuntu's daily apt runs,
-  loads the images, copies the files, then `box.sh` (address, units), `kobo-setup.py --pinned`
-  (the pack's kobo-docker as it is, no `git fetch`), the library, `detect-tier.py` +
-  `ai.sh up auto`, and the status page. A failure names the step.
-- **Passwords are still made at install** (kobo-install's first run). `firstboot.sh` will move
-  that to the first power-on, so the factory step is identical for every box.
+- **`install.sh` is the factory step**: checks the pack, installs the debs from the pack only
+  (its own apt lists, so a stuck system `apt-get update` can't block it) and turns off
+  Ubuntu's daily apt runs, loads the images, copies the files, sets up `box.sh` (address,
+  units), the library and the status page, and enables `kobo-box-firstboot.service`. Then it
+  stops: no passwords exist yet, so every box from one pack is identical (11 min).
+  `--first-boot-now` runs first boot straight away (rigs). A failure names the step.
+
+## First power-on
+
+`firstboot.sh`, run once by `kobo-box-firstboot.service`, makes the box its own. Each step is
+recorded when it finishes (`/var/lib/kobo-box/firstboot.json`), so a power cut carries on
+from the next step at the next boot; `/etc/kobo-box/firstboot-done` ends it.
+
+| Step | What |
+|---|---|
+| name | hostname `kobo-<4 letters>` (the backup repository and the card use it); cloud images told to keep it |
+| kobo | `kobo-setup.py --pinned`: Kobo from the pack's kobo-install, which makes every Kobo password and the Django secret (`--reconfigure` if a power cut came after it started) |
+| secrets | backup passphrase; Wi-Fi name `Kobo-<4 letters>` and a passphrase in four groups of four, for the hotspot |
+| ai | `detect-tier.py`, `./ai.sh up auto` |
+| card | `card.py`: the label card |
+
+- **The status page shows it:** "Setting up this kit for the first time, about 10 minutes.
+  Now: setting up KoboToolbox", and only the library and disk rows, since nothing else exists
+  yet. A failed step turns red with "restart the kit: setup carries on where it stopped".
+- **The label card** (`kobo.local/card/`): the Wi-Fi name and passphrase with a QR code that
+  phones join from, the Kobo admin account, the backup passphrase, the disk's recovery key
+  when there is one, and "keep this apart from the kit and the backup drive". It holds the
+  secrets, so the edge serves it **only to a browser on the box itself** (403 from anywhere
+  else), and `pack.sh` never packs it. That suits a laptop box. How a screenless mini PC
+  gets its card printed (a one-time code on the status page, a USB printer, the factory
+  printing it at first power-on before shipping) is open, and goes with the hotspot step.
+- **Tested** (2026-11-02, fresh droplet, offline throughout): factory install, power off, on:
+  setup in 6 min, all green, `e2e-nlp.py` PASS; a drive backup with the new passphrase into
+  `kobo-box-kobo-bkqf`; the card 200 on the box and 403 from outside; after another reboot
+  the name was kept, setup didn't run again and everything came back by itself. The first
+  attempt failed at "name" (`tr < /dev/urandom | head` under `pipefail`): the page showed
+  it in red, and a restart carried on after the fix.
 - **Not in it yet:** case management and the assistant (their images are in the pack; set
   them up by hand), CUDA images (`EXTRA_IMAGES=...` when building for NVIDIA boxes), a
   signature (only checksums: PLAN 3k).

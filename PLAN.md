@@ -604,7 +604,7 @@ Done 2026-10-28 on kobo-mcp branch `w3-offline-box`; details in [STATUS.md](STAT
 - [ ] Landing page: KoboCollect configuration QR code and Wi-Fi QR code (per box, from firstboot)
 - [x] Content pack layout + `install.sh --pack` (debs, `docker save` images, models, library; W12, 2026-11-02)
 - [ ] Ubuntu 26.04 autoinstall USB (`CIDATA` + `KOBOPACK` partitions), LUKS + TPM
-- [ ] `firstboot.sh`: per-box secrets and label card
+- [x] `firstboot.sh`: per-box secrets and label card (W12, 2026-11-02)
 - [ ] Second content batch: pick from the 3g candidates once pilot languages are known
 
 ### W9. Dashboards on the box (~2 weeks, after W3; see 3h)
@@ -648,7 +648,8 @@ Started 2026-10-30; scripts in `remote/box/`, details in [STATUS.md](STATUS.md).
 - [x] Status page at `kobo.local/status` (`status.py`, every minute; tested on the rig 2026-11-02)
 - [ ] Health checks on llama-server and whisper-server so a hung server restarts (`restart: unless-stopped` only covers crashes)
 - [x] Content pack + `install.sh --pack`, tested on a clean droplet offline from the start (`pack.sh`, 2026-11-02)
-- [ ] `firstboot.sh`: per-box secrets, Wi-Fi, backup passphrase, printable label card
+- [x] `firstboot.sh`: per-box secrets, Wi-Fi, backup passphrase, printable label card (2026-11-02; install.sh is now the factory step)
+- [ ] Label card on a box with no screen: how it gets printed (with the hotspot step)
 - [ ] Hotspot + dnsmasq, KoboCollect QR code (needs the W5 box; check its Wi-Fi chip does AP mode)
 - [ ] Autoinstall USB with LUKS + TPM (W5 box)
 - [ ] Clean shutdown on low battery; OpenCode session history in backups (once W4 settles where it lives)

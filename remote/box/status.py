@@ -32,6 +32,9 @@ OUT_DIR = LIBRARY_DIR / 'status'
 DOMAIN = os.environ.get('KOBO_DOMAIN', 'kobo.local')
 KOBO_INSTALL = Path(os.environ.get('KOBO_INSTALL', '/root/kobo-install'))
 BACKUP_STATUS = Path('/var/lib/kobo-box/backup-status.json')
+FIRSTBOOT_STATE = Path('/var/lib/kobo-box/firstboot.json')
+FIRSTBOOT_DONE = Path('/etc/kobo-box/firstboot-done')
+FIRSTBOOT_UNIT = 'kobo-box-firstboot.service'
 DRIVE_UNIT = 'kobo-box-backup-drive.service'
 
 BOOT_GRACE_MIN = 15       # Kobo and the models take minutes to come up after a power-on
@@ -142,6 +145,40 @@ def model_name(filename):
 
 
 # --- checks ---------------------------------------------------------------------------
+
+SETUP_STEPS = {  # firstboot.sh's steps, as the focal point sees them
+    'name': 'naming the kit',
+    'kobo': 'setting up KoboToolbox (the longest step)',
+    'secrets': 'making its passwords',
+    'ai': 'starting the AI models',
+    'card': 'writing the label card',
+}
+
+
+def setup():
+    """None once firstboot.sh has finished; otherwise the one check that matters."""
+    if FIRSTBOOT_DONE.exists() or not Path('/etc/systemd/system', FIRSTBOOT_UNIT).exists():
+        return None  # set up, or a rig installed without the factory step
+    name = 'Setting up'
+    try:
+        state = json.loads(FIRSTBOOT_STATE.read_text())
+    except (OSError, ValueError):
+        state = {}
+    try:
+        active = subprocess.run(['systemctl', 'is-active', FIRSTBOOT_UNIT], capture_output=True,
+                                text=True, timeout=10).stdout.strip()
+    except (OSError, subprocess.SubprocessError):
+        active = ''
+    doing = SETUP_STEPS.get(state.get('step', ''), 'starting')
+    if active in ('activating', 'active'):
+        return check(name, 'busy', f'This kit is setting itself up for the first time, about 10 minutes '
+                     f'in all. Now: {doing}. Leave it switched on.')
+    if state.get('error'):
+        return check(name, 'bad', f"Setting up the kit stopped while {doing}.",
+                     'Restart the kit: setup carries on where it stopped. ' + CALL_SUPPORT)
+    return check(name, 'busy', 'This kit sets itself up when it is switched on. '
+                 'If this stays for more than a few minutes, restart it.')
+
 
 def kobo():
     name = 'KoboToolbox'
@@ -352,7 +389,14 @@ CHECKS = (kobo, ai, assistant, cases, library, disk, backups, battery)
 
 def run_checks():
     results = []
-    for fn in CHECKS:
+    try:
+        first = setup()
+    except Exception as e:
+        first = check('Setting up', 'bad', f"Couldn't check: {e}", CALL_SUPPORT)
+    if first:
+        # Kobo and the AI don't exist yet: only what's true before setup
+        results.append(first)
+    for fn in (library, disk) if first else CHECKS:
         try:
             r = fn()
         except Exception as e:  # the page must still be written
@@ -367,6 +411,7 @@ def run_checks():
 SUMMARY = {
     'ok': ('ok', 'Everything is working.'),
     'busy': ('busy', 'Working. Some parts are still starting or busy.'),
+    'setup': ('busy', 'Setting up this kit for the first time.'),
     'warn': ('warn', 'Working, but something needs attention.'),
     'bad': ('bad', 'Something is not working.'),
 }
@@ -401,7 +446,10 @@ if (Math.abs(Date.now() - t) > 5 * 60 * 1000) document.getElementById('stale').h
 
 
 def overall(results):
-    return max((r['level'] for r in results if r['level'] != 'off'), key=LEVELS.index, default='ok')
+    worst = max((r['level'] for r in results if r['level'] != 'off'), key=LEVELS.index, default='ok')
+    if worst == 'busy' and results[0]['name'] == 'Setting up':
+        return 'setup'
+    return worst
 
 
 def render(results, checked):

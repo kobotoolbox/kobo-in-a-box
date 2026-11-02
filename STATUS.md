@@ -32,9 +32,9 @@ are in [PLAN.md](PLAN.md); per-run results are in [remote/results/NOTES.md](remo
   at ~31 tokens/s means minutes per step.
 
 **Next, in order:**
-0. **W12, what can be done before the hardware:** the status page and the content pack with
-   `install.sh --pack` are done (2026-11-02, a fresh droplet installed with no internet); next
-   `firstboot.sh`
+0. **W12, what can be done before the hardware:** done (2026-11-02): the status page, the
+   content pack with `install.sh --pack` (now the factory step), and `firstboot.sh` with the
+   label card. What's left needs the box: hotspot + local DNS, the autoinstall USB with LUKS + TPM
    (`remote/box/README.md` has the order and the design).
 1. **W5 hardware:** buy the Strix Halo 128 GB dev unit and re-run the same tests on it
    (`gpu-tiers.sh` equivalents, `w4-run.py`), at full power and capped. This decides the
@@ -307,6 +307,14 @@ Ponto's local EspoCRM testing (`~/code/ponto/infra/espocrm`), with per-box secre
       own requirements.txt as the "already synced" marker, and writes the backport's compose
       file instead of it being hand-placed), and a fresh Ubuntu's first-boot `apt-get update`
       hanging offline with apt's lock (the pack's apt has its own lists; daily apt timers off).
+- [x] **First power-on** (2026-11-02, `box/firstboot.sh`, `box/card.py`): `install.sh` stops at
+      the factory step; the first boot names the box, sets up Kobo (its passwords), the backup
+      passphrase and Wi-Fi details, the AI and the label card, step by step on the status
+      page. On a fresh offline droplet: factory install 11 min, first boot 6 min, all green,
+      `e2e-nlp.py` PASS, a backup with the new passphrase; the card served on the box only
+      (403 from outside); a second reboot kept the name and didn't re-run setup. Found: a
+      `tr | head` random-string helper failing under `pipefail` (the page showed the failed step;
+      a restart resumed after the fix).
 - Not covered yet: EspoCRM on a replacement box (prints the commands), OpenCode sessions,
   NVIDIA/AMD tier detection on real hardware, the passphrase prompt from a real console.
 - Found: DigitalOcean's kernel has no exFAT module (`linux-modules-extra` adds it; Ubuntu's

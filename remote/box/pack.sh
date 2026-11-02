@@ -20,8 +20,8 @@
 #   kpi-e2e/           the KPI local-AI backport (STATUS W2), mounted by kobo-setup.py
 #
 # Never in the pack: kobo-install's .run.conf and kobo-env (passwords), backups, Kobo's
-# data, the backup passphrase, EspoCRM's secrets, OpenCode's generated config. install.sh
-# makes the box's own.
+# data, the backup passphrase, the label card, EspoCRM's secrets, OpenCode's generated
+# config. firstboot.sh makes the box's own.
 set -Eeuo pipefail
 cd "$(dirname "$0")"
 HERE=$(pwd)
@@ -35,7 +35,7 @@ LIBRARY_DIR=${LIBRARY_DIR:-/srv/library}
 PACK_OS=${PACK_OS:-ubuntu:24.04}   # the box's Ubuntu; debs are resolved in this image
 # Installed on the box from debs/. Docker's own packages come from Docker's apt repository.
 DEBS="docker-ce docker-ce-cli containerd.io docker-compose-plugin docker-buildx-plugin
-      git jq restic zstd exfatprogs rsync curl ca-certificates openssl python3"
+      git jq restic zstd exfatprogs rsync qrencode curl ca-certificates openssl python3"
 # Images the box's containers don't run on the build machine but a box may need, e.g.
 # ghcr.io/ggml-org/llama.cpp:server-cuda ghcr.io/ggml-org/whisper.cpp:main-cuda for GPU boxes
 EXTRA_IMAGES=${EXTRA_IMAGES:-}
@@ -114,7 +114,8 @@ build_files() {
     rsync -a --delete --exclude '*.part' "$MODELS_DIR/" "$pack/models/"
     log "library from $LIBRARY_DIR"
     [[ -f "$LIBRARY_DIR/index.html" ]] || die "no library in $LIBRARY_DIR (library.sh build first)"
-    rsync -a --delete --exclude 'status/' "$LIBRARY_DIR/" "$pack/library/"
+    # Never a box's status page or label card (its passwords)
+    rsync -a --delete --exclude 'status/' --exclude 'card/' "$LIBRARY_DIR/" "$pack/library/"
     log "kobo-box-ai from $REMOTE"
     # Per-box and generated files stay behind; install.sh and the box make their own
     rsync -a --delete --exclude results --exclude __pycache__ --exclude '*.local.env' \
