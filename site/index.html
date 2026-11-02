@@ -41,7 +41,7 @@
   <div class="wrap">
     <ol>
       <li><h3>Switch it on</h3><p>The kit starts KoboToolbox, the AI models and the library by itself, and opens its own Wi-Fi network. No SIM card, no internet.</p></li>
-      <li><h3>Join the Wi-Fi</h3><p>Phones, tablets and laptops join the kit's network with its password, the same way as any Wi-Fi.</p></li>
+      <li><h3>Join the Wi-Fi</h3><p>Phones, tablets and laptops join the kit's network with the password on its label card, or by scanning the card's QR code.</p></li>
       <li><h3>Open kobo.local</h3><p>The home page links to KoboToolbox, the KoboCollect app and every guide and standard on the box. Everything on it works offline.</p></li>
     </ol>
   </div>
@@ -51,6 +51,7 @@
 <nav class="docs__nav" aria-label="On this page">
   <ul>
     <li><a href="#how">How it works</a></li>
+    <li><a href="#prepare">Preparing kits</a></li>
     <li><a href="#field">In the field</a></li>
     <li><a href="#ai">AI in KoboToolbox</a></li>
     <li><a href="#assistant">The assistant</a></li>
@@ -96,6 +97,18 @@
 <div class="note"><p>This is a working prototype. The basic kit (KoboToolbox and local file serving) has been used in a hurricane response. The AI features, the assistant and the library run in a test environment that simulates the kit, with all internet traffic cut off. The figures below come from that environment; the field hardware is still to be bought and measured.</p></div>
 </section>
 
+<section id="prepare">
+<h2>Preparing kits</h2>
+<p>Field teams never install anything. Kits arrive ready to switch on, and whoever prepares them (Kobo, a partner's IT team or a supplier) follows the same three steps for every kit.</p>
+<ol>
+  <li><strong>One bundle of everything a kit needs.</strong> The software, the AI models, the app installers and the library are gathered once, from a kit that has passed the tests, with a fingerprint for every file: about 30 GB, on one USB stick. Nothing is downloaded after this.</li>
+  <li><strong>Install each kit from the stick.</strong> The stick checks every file, then installs. No internet connection is needed, and none is used. If a step fails, the install says which one. At this point every kit from the same stick is identical, and holds no passwords yet.</li>
+  <li><strong>The first start makes the kit its own.</strong> The first time the kit is switched on, it gives itself a name, sets up KoboToolbox with passwords nobody else has, makes its backup passphrase and its Wi-Fi name and password, chooses the AI settings for its own hardware, and writes its label card. The status page shows each step. If the power is cut halfway, it carries on at the next start.</li>
+</ol>
+<p><strong>The label card</strong> holds what a team needs to use the kit and to recover from losing it: the Wi-Fi name and password with a QR code that phones join from, the administrator account, and the backup passphrase. It opens only in a browser on the kit itself, never for devices on its Wi-Fi. Print it, then keep it somewhere other than the kit and its backup drive.</p>
+<p>In testing, a freshly installed computer with all internet traffic blocked took 11 minutes to install from the bundle and 6 more to set itself up on its first start, with nothing typed by hand. It then passed the same AI tests as the test environment, backed up to a drive, and came back by itself after a restart. The same stick reinstalls a kit that breaks.</p>
+</section>
+
 <section id="field">
 <h2>In the field</h2>
 
@@ -130,7 +143,6 @@
 
 <h3>Back up</h3>
 <p>Plug a USB drive labelled <code>KOBOBACKUP</code> into the kit. It backs up the data, recordings, settings and case records by itself, encrypted, copying only what changed since the last time, then releases the drive. The status page says "don't unplug it" while it works and "you can unplug the drive" when it's done; a drive that's too small fails at once and says so. Keep the drive somewhere other than the kit. Do it weekly, or after a big collection day. The kit also keeps a nightly copy of its databases on its own disk, to undo mistakes.</p>
-<p>Kits are set up from one bundle of everything they need, checked file by file: the software, the AI models and the library. In testing, a freshly installed computer with no internet connection took 11 minutes to install from it, then on its first start set itself up in 6 more, with the progress on the status page and nothing typed by hand. That first start makes the kit's own passwords and its label card, so no two kits share them.</p>
 <p>If a kit is lost or breaks, a replacement installed from the kit's USB stick can be restored from the drive with the backup passphrase on the original kit's label card. Keep the card apart from both the kit and the drive. In testing, two deleted projects (63 submissions, and an audio recording that came back byte for byte) were restored in under a minute, and a freshly installed replacement kit took the whole backup in under two, with phones able to submit to it straight after.</p>
 </section>
 

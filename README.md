@@ -118,6 +118,51 @@ ssh root@<ip> '/root/kobo-box-ai/espocrm/espocrm.sh up --demo-users'
 ssh root@<ip> 'python3 -I /root/kobo-box-ai/espocrm/e2e-espo.py --edge'
 ```
 
+## Making a box: content pack, factory install, first power-on (W12)
+
+How a kit is made without internet, and how to test that on DigitalOcean. Details, the
+pack's layout and what each step found: [remote/box/README.md](remote/box/README.md).
+
+1. **Content pack** (`box/pack.sh build <dir>`, online, on a working box or rig): debs as a
+   local apt repository, every running Docker image, the models, the library, kobo-install
+   and kobo-docker at the running commits, the KPI backport, and `SHA256SUMS`. ~30 GB; never
+   any passwords, data or label card.
+2. **Factory install** (`install.sh --pack <dir>`, offline, on a fresh Ubuntu 24.04): checks
+   every file, installs, and stops before anything per-box exists. ~11 min.
+3. **First power-on** (`firstboot.sh`, run once by `kobo-box-firstboot.service`): name,
+   Kobo and its passwords, backup passphrase, Wi-Fi details, AI for the hardware, label card
+   (`kobo.local/card/`, on the box itself only). ~6 min; progress on `kobo.local/status/`.
+
+On DigitalOcean a volume stands in for the USB stick: build onto it on the rig, then move
+it to a fresh droplet that is offline before the pack arrives.
+
+```bash
+# The stick: a 60 GB volume, built on the rig (online)
+VOL=$(doctl compute volume create kobopack --region ams3 --size 60GiB --fs-type ext4 \
+      --fs-label KOBOPACK --format ID --no-header)
+doctl compute volume-action attach $VOL $(doctl compute droplet get kobo-box-ai --format ID --no-header) --wait
+ssh root@<rig-ip> 'mkdir -p /media/kobopack && mount /dev/disk/by-label/KOBOPACK /media/kobopack &&
+    /root/kobo-box-ai/box/pack.sh build /media/kobopack && umount /media/kobopack'   # 8 min; 3.5 to rebuild
+doctl compute volume-action detach $VOL $(doctl compute droplet get kobo-box-ai --format ID --no-header) --wait
+
+# A fresh box, offline before the pack is attached (provision.sh copies remote/: remove it)
+NAME=kobo-box-clean SIZE=s-8vcpu-32gb-amd REGION=ams3 ./provision.sh
+NAME=kobo-box-clean ./offline.sh on
+doctl compute volume-action attach $VOL $(doctl compute droplet get kobo-box-clean --format ID --no-header) --wait
+ssh root@<clean-ip> 'rm -rf /root/kobo-box-ai; mkdir -p /media/kobopack &&
+    mount -o ro /dev/disk/by-label/KOBOPACK /media/kobopack &&
+    /media/kobopack/kobo-box-ai/box/install.sh --pack /media/kobopack'   # add --first-boot-now to skip the reboot
+
+# First power-on: unplug the stick and restart, then watch kobo.local/status/
+ssh root@<clean-ip> 'umount /media/kobopack; systemctl reboot'
+ssh root@<clean-ip> 'python3 -I /root/kobo-box-ai/box/status.py --print; /root/kobo-box-ai/box/firstboot.sh status'
+
+# Clean up: the volume costs ~$6/month, and rebuilds in minutes
+doctl compute droplet delete -f kobo-box-clean && doctl compute volume delete -f $VOL
+```
+
+To run the AI suite on a box made this way, create its `e2e` user first (STATUS.md, W12).
+
 Add real test clips (any format ffmpeg reads) to `/opt/models/audio/` on the droplet.
 Ideally use 1–5 minute interviews in each target language. The bundled `jfk.wav`
 is only an 11-second sanity check.
