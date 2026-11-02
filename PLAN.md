@@ -13,6 +13,8 @@ Status (2026-10-22): scoping done. DigitalOcean test scripts are written (see `R
 
 Background: [Kobo-in-a-box prototype (Notion)](https://app.notion.com/p/590d02036dd542019116f3661cd1d62c). v0.1 ran Kobo offline on a ThinkPad X1 Carbon (8 GB RAM) with no AI. That laptop is too small for this plan.
 
+Competitive landscape and components worth absorbing (Nov 2026): [docs/competitive-landscape-2026-11.md](docs/competitive-landscape-2026-11.md). Its findings are folded into sections 2, 3 and 6 below; several of its sources are secondary, so check a figure before quoting it.
+
 ### Pick up here
 
 1. Read sections 1–3 below (about 10 minutes).
