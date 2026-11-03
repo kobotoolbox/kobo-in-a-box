@@ -23,6 +23,20 @@ echo "Results pulled to remote/results/"
 doctl compute droplet-action power-off "$DROPLET_ID" --wait
 doctl compute droplet-action snapshot "$DROPLET_ID" --snapshot-name "$SNAPSHOT_NAME" --wait
 
+# `--wait` exits 0 even when the action errored (seen 2026-11-03: a second snapshot started
+# while one was still running), so check for a new, available snapshot before deleting
+# anything: otherwise keep the droplet and the old snapshots
+NEW_SNAPSHOTS=$(doctl compute image list-user -o json | python3 -c '
+import json, sys
+name, old = sys.argv[1], set(sys.argv[2].split())
+print(" ".join(str(i["id"]) for i in json.load(sys.stdin)
+               if i["name"] == name and i.get("status") == "available" and str(i["id"]) not in old))
+' "$SNAPSHOT_NAME" "$OLD_SNAPSHOTS")
+if [[ -z "$NEW_SNAPSHOTS" ]]; then
+    echo "No new available snapshot of $NAME: kept the droplet (powered off) and the old snapshot(s)" >&2
+    exit 1
+fi
+
 for id in $OLD_SNAPSHOTS; do doctl compute snapshot delete "$id" --force; done
 doctl compute droplet delete "$DROPLET_ID" --force
 echo "Parked. Snapshot: $SNAPSHOT_NAME"
