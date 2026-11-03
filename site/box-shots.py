@@ -55,13 +55,14 @@ def status_pages(tmp):
            'Ready (gemma-4-E4B-it-Q4_0, large-v3-turbo-q8_0).')
     kobo = c('KoboToolbox', 'ok', 'Working: forms, KoboCollect submissions and web forms.')
     cases = c('Case management', 'ok', 'Working.')
+    paper = c('Paper forms', 'ok', 'Working.')
     library = c('Library and this page', 'ok', 'Working at http://kobo.local.')
     disk = c('Disk space', 'ok', '361 GB free of 415 GB (87%).')
     states = {
         'status-ok': [
             c('Update', 'ok', 'Updated at 19:28 to the version of 2 November 2026. '
               'You can remove the update stick.'),
-            kobo, ai, cases, library, disk,
+            kobo, ai, cases, paper, library, disk,
             c('Backups', 'ok', 'Last backup to a drive: 2 hours ago (today 17:24). '
               'Nightly copy on the box: 7 minutes ago.')],
         'status-update': [
@@ -86,7 +87,7 @@ def status_pages(tmp):
     for name, results in states.items():
         page = tmp / f'{name.replace("/", "_")}.html'
         page.write_text(st.render(results, checked))
-        shoot(page, OUT / f'{name}.jpg', 640, {'status-ok': 1010, 'status-update': 510, 'status-backup': 710,
+        shoot(page, OUT / f'{name}.jpg', 640, {'status-ok': 950, 'status-update': 510, 'status-backup': 710,
                                                 '../cases/status-cases': 640}[name])
 
 
@@ -98,13 +99,15 @@ def card_page(tmp):
     (etc / 'backup.pass').write_text('m4rk7wq2hvbn9tes3fz8cjdx\n')
     (etc / 'espocrm.env').write_text(f'BRIDGE_KOBO_USER=cases-bridge\nESPO_SECRETS={etc}/espocrm.secrets\n')
     (etc / 'espocrm.secrets').write_text('ESPO_ADMIN_PASSWORD=t6wn-r3qe-8hkz-j5mv\n')
+    (etc / 'paper.env').write_text(f'PAPER_KOBO_USER=paper-forms\nPAPER_SECRETS={etc}/paper.secrets\n')
+    (etc / 'paper.secrets').write_text('PAPER_PASSWORD=w8cf-n2ph-k6ty-r3bd\n')
     kobo = tmp / 'kobo-install'
     kobo.mkdir()
     (kobo / '.run.conf').write_text(json.dumps(
         {'super_user_username': 'super_admin', 'super_user_password': 'Hb3nWq8rTz5kPe2m'}))
     card.ETC, card.KOBO_INSTALL, card.LIBRARY_DIR = etc, kobo, tmp / 'library'
     card.main()
-    shoot(tmp / 'library' / 'card' / 'index.html', OUT / 'card.jpg', 760, 1100)
+    shoot(tmp / 'library' / 'card' / 'index.html', OUT / 'card.jpg', 760, 1260)
 
 
 def main():

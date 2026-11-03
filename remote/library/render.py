@@ -158,6 +158,14 @@ def main():
             '<p class="hint">Live dashboards of Kobo data, made by the assistant. '
             'Owners sign in with their Kobo account; shared ones open for anyone on this Wi-Fi.</p>',
         ]
+    # paper.sh up/down adds or removes this marker
+    if (LIBRARY_DIR / '.services' / 'paper').exists():
+        body += [
+            '<h2>Paper forms</h2>',
+            f'<p><a class="big" href="http://paper.{DOMAIN}/">Open paper forms</a></p>',
+            '<p class="hint">Print sheets from a Kobo form, then scan or photograph the '
+            'filled-in sheets and send their answers to Kobo. Password on the label card.</p>',
+        ]
     guides = guide_items([r for r in rows if r['section'] == 'docs'], sums)
     if guides:
         body += ['<h2>Guides</h2>', '<ul>', *guides, '</ul>']

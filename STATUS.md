@@ -56,6 +56,8 @@ are in [PLAN.md](PLAN.md); per-run results are in [remote/results/NOTES.md](remo
 3. **W9:** done on the rig (2026-11-03, `remote/dash/`); left: a real basemap once the
    pilot countries are chosen, scoring the 11 dashboard tasks on the GPU rig, offline
    `desk_review` (W10), proposing kobo-mcp's `w9-box` settings upstream.
+3b. **W13 paper forms:** running on the rig and its e2e passing offline (2026-11-03); left:
+   firstboot, backup/restore and the pack on a fresh box, then real paper on the W5 unit.
 4. **W2 to finish:** a KPI image from the branch, the pilot languages' tables, and
    proposing the change upstream (talk to the KPI team).
 5. **W10 knowledge base**, and the W12 steps that need the box: hotspot + local DNS,
@@ -422,6 +424,28 @@ Ponto's local EspoCRM testing (`~/code/ponto/infra/espocrm`), with per-box secre
   generic kernel on a real box has it). `provision.sh` copied `*.local.env` (laptop-only
   overrides) to the droplet: excluded now. The first backup passphrase on the rig was logged
   to the journal before that was fixed: test data only, but make a new one before real use.
+
+### 3f. W13: paper forms on the box (PLAN 3l) ✅ built and tested 2026-11-03
+`remote/paper/` ([README](remote/paper/README.md)); kobo-field-forms branch `milestone-10`
+(`66d4c97`: `KFF_WEB_PASSWORD`, `KFF_ALLOWED_HOSTS`, `KFF_HELP_URL`, `KOBO_TOKEN_FILE`; 219
+unit tests). Tested on a second CPU rig, `kobo-box-paper`, restored from
+`kobo-box-ai-snapshot` (`NAME=kobo-box-paper RESTORE_FROM=kobo-box-ai-snapshot ./provision.sh
+--from-snapshot`; deleted afterwards, not parked).
+- [x] `paper.sh build` (the pinned kff commit, 37 s), `paper.sh up`: through the edge 401
+      without the password, 200 with it; "Open paper forms" on kobo.local
+- [x] `paper.sh e2e` with `offline.sh on`, the box's Kobo and Gemma 4 E4B: 4 profiles × 3
+      sheets, read 93.7–95.2% of fields, wrong and unflagged 0.0% in all four, text 73–87%,
+      stored values equal what was sent, resubmission 202 duplicate, 389 s
+      (`remote/results/w13-paper-e2e-offline-2026-11-03.log`)
+- [x] Screenshots for the homepage (`site/paper-stage.py`, `site/paper-shots.py`). The demo
+      sheet shows a confident misread (ODHIAMBO → ODHLAMBO at 90%, unflagged): the e2e's
+      0.0% is on its own synthetic names, not a guarantee
+- Found: the e2e first ran as a one-off of the web service, inheriting its healthcheck and
+  watchdog label; the watchdog restarted it 3 times mid-test (4 `kff-e2e-*` projects left
+  behind, deleted). It's its own compose service now, without either
+- Not run yet: `firstboot.sh`'s `paper` step and the card on a fresh box, a drive backup and
+  restore with the kff store, the image through `pack.sh`/`install.sh`, real paper and phone
+  photos (W5 unit, kff milestone 9)
 
 ### 4. GPU tiers (W1) ✅ run on an H100, 2026-10-29
 RTX 4000/6000 Ada and L40S stayed out of stock, so `remote/gpu-tiers.sh` ran on

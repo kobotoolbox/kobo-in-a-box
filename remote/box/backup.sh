@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Encrypted backups of everything on the box that can't be rebuilt from the content pack:
-# Kobo's databases, media and settings, and EspoCRM's and the dashboards' if they're installed.
+# Kobo's databases, media and settings, and EspoCRM's, the dashboards' and paper forms' if they're
+# installed.
 # Run as root.
 #
 #   ./backup.sh run <dest> [--no-media]   back up to <dest>/kobo-box-<box> (a restic repository)
@@ -24,6 +25,7 @@ KOBO_INSTALL=${KOBO_INSTALL:-/root/kobo-install}
 ESPOCRM_SH=$HERE/../espocrm/espocrm.sh
 ESPO_SECRETS=$(sed -n 's/^ESPO_SECRETS=//p' "$HERE/../espocrm/espocrm.env")
 DASH_SH=$HERE/../dash/dash.sh
+PAPER_SH=$HERE/../paper/paper.sh
 DRIVE=/dev/disk/by-label/KOBOBACKUP
 DRIVE_MNT=/media/kobobackup
 STATE_DIR=/var/lib/kobo-box
@@ -130,6 +132,12 @@ dump_databases() {  # dump_databases <dir>
         log "dashboards"
         "$DASH_SH" backup "$out" >/dev/null
         mv "$out"/dash-* "$out/dash"
+    fi
+    if [[ -n "$(container kobo-paper kff)" ]]; then
+        # Scans are like Kobo's media: the nightly --no-media backup keeps only the store
+        log "paper forms"
+        "$PAPER_SH" backup "$out" $([[ ${MEDIA_FLAG:-full} == full ]] || echo --db-only) >/dev/null
+        mv "$out"/paper-* "$out/paper"
     fi
 }
 
@@ -344,6 +352,26 @@ PY
             log "The dashboards' backup is in $stage/dash, but dashboards aren't running on this" \
                 "box. To put them back: 'dash.sh up', then 'dash.sh restore $stage/dash'"
         fi
+    fi
+    # Paper forms: their Kobo account's token follows the restored database, then their
+    # store and scans
+    local paper_user paper_token
+    paper_user=$(sed -n 's/^PAPER_KOBO_USER=//p' /etc/kobo-box/paper.env 2>/dev/null || true)
+    paper_token=$(sed -n 's/^KOBO_TOKEN_FILE=//p' /etc/kobo-box/paper.env 2>/dev/null || true)
+    if [[ -n "$paper_user" && -n "$paper_token" ]]; then
+        log "paper forms' Kobo account"
+        python3 -I "$HERE/kobo-account.py" "$paper_user" "$paper_token" >/dev/null
+    fi
+    if [[ -d "$stage/paper" ]]; then
+        if [[ -n "$(container kobo-paper kff)" ]]; then
+            log "paper forms"
+            "$PAPER_SH" restore "$stage/paper" >/dev/null
+        else
+            log "Paper forms' backup is in $stage/paper, but paper forms aren't running on this" \
+                "box. To put it back: 'paper.sh up', then 'paper.sh restore $stage/paper'"
+        fi
+    elif [[ -n "$paper_user" && -n "$(container kobo-paper kff)" ]]; then
+        "$PAPER_SH" up >/dev/null   # it reads its token at start
     fi
     # The label card: a backup from another box brings its Kobo and EspoCRM passwords
     [[ ! -f /etc/kobo-box/firstboot-done ]] || python3 -I "$HERE/card.py" >/dev/null || true

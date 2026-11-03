@@ -19,9 +19,12 @@ fi
 
 if [[ "$SIZE" == gpu-* ]]; then IMAGE=$GPU_IMAGE; else IMAGE=$CPU_IMAGE; fi
 if $FROM_SNAPSHOT; then
+    # RESTORE_FROM: a second rig from another's snapshot (NAME=kobo-box-paper
+    # RESTORE_FROM=kobo-box-ai-snapshot); park.sh still only touches $SNAPSHOT_NAME
+    FROM=${RESTORE_FROM:-$SNAPSHOT_NAME}
     IMAGE=$(doctl compute snapshot list --format ID,Name --no-header \
-        | awk -v n="$SNAPSHOT_NAME" '$2 == n {print $1; exit}')
-    [[ -n "$IMAGE" ]] || { echo "No snapshot named $SNAPSHOT_NAME" >&2; exit 1; }
+        | awk -v n="$FROM" '$2 == n {print $1; exit}')
+    [[ -n "$IMAGE" ]] || { echo "No snapshot named $FROM" >&2; exit 1; }
 fi
 
 # The size list doesn't report regions for GPU sizes, so try candidates in order

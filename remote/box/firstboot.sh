@@ -17,6 +17,9 @@
 #             own passwords (espocrm.sh up)
 #   dash      dashboards, when the pack has kobo-dash's images: kobo-dash and the box's
 #             kobo-mcp with their own keys (dash.sh up)
+#   paper     paper forms, when the pack has kobo-field-forms' image: a Kobo account
+#             (paper-forms, sees only the forms shared with it) and the app's own
+#             password (paper.sh up)
 #   ai        detect-tier.py and ./ai.sh up auto, for this machine
 #   card      the label card (card.py): Wi-Fi with a QR code, the admin password, the backup
 #             passphrase, the disk's recovery key when there is one
@@ -31,7 +34,7 @@ ETC=/etc/kobo-box
 STATE=/var/lib/kobo-box/firstboot.json
 DONE=$ETC/firstboot-done
 LIBRARY_DIR=${LIBRARY_DIR:-/srv/library}
-STEPS=(name kobo secrets cases dash ai card)
+STEPS=(name kobo secrets cases dash paper ai card)
 
 log() { echo "[$(date +%H:%M:%S)] $*"; }
 
@@ -112,6 +115,19 @@ step_dash() {
         log "no dashboards in this pack ($image)"; return
     fi
     "$REMOTE/dash/dash.sh" up
+}
+
+step_paper() {
+    local kff_image
+    kff_image=$(sed -n 's/^KFF_IMAGE=//p' "$REMOTE/paper/paper.env")
+    if ! docker image inspect "$kff_image" >/dev/null 2>&1; then
+        log "no paper forms in this pack ($kff_image)"; return
+    fi
+    ( umask 077
+      printf '%s\n' '# This box (firstboot.sh): paper forms sign in to Kobo as their own account' \
+          'PAPER_KOBO_USER=paper-forms' "KOBO_TOKEN_FILE=$ETC/paper-forms.token" > "$ETC/paper.env" )
+    python3 -I "$HERE/kobo-account.py" paper-forms "$ETC/paper-forms.token"
+    "$REMOTE/paper/paper.sh" up
 }
 
 step_ai() {
