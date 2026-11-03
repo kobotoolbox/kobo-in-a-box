@@ -8,6 +8,7 @@ Goal: one field device that runs KoboToolbox fully offline, plus:
 4. **Local knowledge base**: a RAG over Kobo, ODK and XLSForm docs plus whatever the deployment adds, exposed to the agent as MCP tools (3i).
 5. **Case management (optional)**: EspoCRM at `cases.kobo.local`, with a bridge that opens a case for each Kobo submission that needs follow-up (3j).
 6. **A box non-technical teams can run**: shipped preinstalled, set up by itself on first power-on, backed up by plugging in a stick (3k).
+7. **Paper forms**: kobo-field-forms at `paper.kobo.local` prints sheets from a deployed form, reads scanned or photographed sheets with the box's models, and submits them to the box's Kobo (3l).
 
 Status (2026-10-22): scoping done. DigitalOcean test scripts are written (see `README.md`) but nothing has been run yet. No droplets or other cloud resources exist.
 
@@ -104,6 +105,7 @@ but that is an inference, not legal advice. Before shipping any kit:
  │ box Postgres (kobo-dash, knowledge; separate from Kobo's own Postgres)  │
  │ edge: dash.kobo.local · mcp.kobo.local · tiles (/tiles) · /docs         │
  │ optional: EspoCRM + MariaDB ── cases.kobo.local; bridge polls KPI API   │
+ │ paper forms: kobo-field-forms ── paper.kobo.local; text via llama-server │
  └─────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -663,6 +665,42 @@ receive a kit, run it for months and survive losing it. Design and scripts in
   from a newer content pack. That update must be **signed** (e.g. minisign), not just
   checksummed, so a box can verify offline that a pack came from Kobo.
 
+### 3l. Paper forms on the box (kobo-field-forms, W13)
+
+[kobo-field-forms](https://github.com/joshuaberetta/kobo-field-forms) (`kff`, checked out
+next to this repo) turns a deployed form into printable sheets with a QR code per page,
+then reads filled-in sheets (scans or phone photos): bubbles by fill, digits by a bundled
+model, written text by a vision model, with anything unsure flagged for a person. It submits over OpenRosa with the sheet id as `instanceID`,
+so a resubmitted sheet is a duplicate, not a second record. For teams where phones are
+short, broken or unsafe to carry, paper is the fallback that still ends up in Kobo.
+
+Reviewed 2026-11-03 (kff `54749de`): it was written for this box. Fonts, the Typst
+renderer and the digit model are in its image; after `fetch` nothing needs the network
+except submit and the vision endpoint; `KOBO_ALLOW_HTTP=true` allows the box's
+`http://kf.kobo.local`; and its plan's milestone 10 is this workstream. Its droplet e2e
+passes with Gemma 4 E4B + mmproj on llama.cpp (the box's batch model, which already loads
+the mmproj): 0 values differ in Kobo, wrong-and-unflagged text 0.0%, text correct 73–87%.
+
+| Gap | Where | Change |
+|---|---|---|
+| One Kobo token from the web app's environment, no sign-in; port bound to loopback | kff `web/app.py`, `compose.yaml` | On a shared box anyone on the Wi-Fi would submit as that account. Phase 1: a box account `paper-forms` (like `cases-bridge`: not a superuser, sees only forms shared with it, "add submissions"), made by `firstboot.sh`, and the web app behind a password on the label card. Phase 2: sign in with the user's own Kobo account (or kobo-mcp's OAuth, 3h), so submissions carry who scanned them |
+| Not a box service | — | A compose file in `remote/paper/` like `espocrm/`: the kff image, the `kff-data` volume, `extra_hosts` for `kf.kobo.local`, `KFF_VLM_URL=http://llm:8080/v1` on the AI network (no second model), edge route `paper.kobo.local`, landing page link |
+| Its data isn't backed up | `backup.sh` | Add the kff store (SQLite + scans + rendered batches) to drive and nightly backups and to restore, as for EspoCRM |
+| Not in the kit | `pack.sh`, `update.sh` | The kff image `docker save`d into the content pack; updates like the other images |
+| The status page doesn't know it | `box/status.py` | A line for kff; amber, not red, when the vision model is down (bubbles and digits still read; text is flagged for typing) |
+| Its guide links to kobotoolbox.org, support and the forum | kff `home.html` | Point them at the library's copies (`kobo.local/docs`) when running on the box |
+
+Running it:
+- **Printing:** sheets are PDFs downloaded in the browser and printed from a staff laptop
+  or a printer on the box's network; the box doesn't need a print server.
+- **Scanning:** upload scanned PDFs or phone photos in the browser. A sheet-feeder scanner
+  that saves to a folder is a later convenience, not needed for the pilot.
+- **Model contention:** text reading shares the batch llama-server with KPI's translation
+  and qual (3e). It's batch work (~6 min for 48 sheets on the 8 vCPU droplet), so run it
+  as such; measure on the W5 unit.
+- **Scripts:** Latin and Arabic today. Each pilot language in another script needs a
+  registry entry, fonts and test data in kff before its sheets can be printed.
+
 ## 4. Testing on DigitalOcean (extends README)
 
 The DigitalOcean rig covers **functional and offline** testing. Performance numbers only count from a real Strix Halo unit.
@@ -812,6 +850,17 @@ Started 2026-10-30; scripts in `remote/box/`, details in [STATUS.md](STATUS.md).
 - [x] In-place update from a newer content pack: signed packs, `update.sh`, by itself from a plugged-in stick (tested 37c → 37d)
 - [ ] Later: kobo-transfer sync when online
 
+### W13. Paper forms on the box (~1–2 weeks; see 3l)
+Scheduled 2026-11-03; kff's own milestone 10. Can start now on the CPU rig.
+- [ ] `remote/paper/`: compose for the kff image (`kff-data` volume, `extra_hosts`, `KOBO_ALLOW_HTTP=true`, `KFF_VLM_URL` → the batch llama-server), `paper.sh up|down`; edge route `paper.kobo.local`, landing page link
+- [ ] Access: `paper-forms` Kobo account made by `firstboot.sh` (shared forms only, can add submissions) and a password for the web app, both on the label card
+- [ ] `kff e2e` on the rig against the box's Kobo with `offline.sh on`: every stored value equals what was sent, resubmission a duplicate, wrong-and-unflagged text 0%; no outbound packets
+- [ ] The kff store in `backup.sh` (drive, nightly, restore on a replacement box); kff on the status page
+- [ ] The kff image in the content pack; `install.sh --pack` and `update.sh` bring it along
+- [ ] kff guide links to the library's copies when on the box
+- [ ] On the W5 unit: real paper (kff milestone 9) printed, filled in by hand, scanned and photographed on a field phone over the hotspot; time per sheet while KPI's batch jobs run
+- [ ] Phase 2: sign in with the user's own Kobo account; scripts for the pilot languages
+
 ## 6. Risks
 
 | Risk | Mitigation |
@@ -839,6 +888,8 @@ Started 2026-10-30; scripts in `remote/box/`, details in [STATUS.md](STATUS.md).
 | Case data (names, phones, health details) on a box that can be stolen or joined | Encrypted disk; roles by team, no delete or export for case workers; phone only with consent; owner-only backups; local HTTPS still open (section 7) |
 | Knowledge answers go stale, or cite a page the user can't open | Index the library's own copies; show the build date in answers' sources; refresh with the content pack |
 | Documents added to the knowledge base carry personal data or injected instructions | Box-wide by design, so a "no personal data" rule for collections; retrieved text marked as untrusted; deletes denied, writes ask |
+| A handwritten answer is read wrongly and submitted as if right | kff flags anything unsure and refuses to submit unresolved flags; text on lines is always reviewed; its e2e fails on any wrong-and-unflagged reading; measure on real paper (W13) |
+| Everyone using the paper-forms app on the Wi-Fi submits as one Kobo account | A box account that only sees forms shared with it, the app behind a password; per-user sign-in in phase 2 (3l) |
 | Offline basemaps and boundaries only cover what was loaded | Choose regions with the partner before deployment; shapes and points still draw with no basemap |
 
 ## 7. Open questions

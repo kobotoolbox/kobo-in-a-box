@@ -56,6 +56,9 @@ are in [PLAN.md](PLAN.md); per-run results are in [remote/results/NOTES.md](remo
 3. **W9 deployment on the box:** kobo-dash and kobo-mcp as compose services behind the
    edge (`dash.`/`mcp.kobo.local`), the maps/boundaries content pack, dashboard tasks in
    the W4 set.
+3b. **W13 paper forms (no hardware needed):** kobo-field-forms as a box service at
+   `paper.kobo.local` on the CPU rig, its `kff e2e` against the box's Kobo with
+   `offline.sh on`, then its store in backups, its image in the content pack (PLAN 3l).
 4. **W2 to finish:** a KPI image from the branch, the pilot languages' tables, and
    proposing the change upstream (talk to the KPI team).
 5. **W10 knowledge base**, and the W12 steps that need the box: hotspot + local DNS,
@@ -397,6 +400,17 @@ Ponto's local EspoCRM testing (`~/code/ponto/infra/espocrm`), with per-box secre
   generic kernel on a real box has it). `provision.sh` copied `*.local.env` (laptop-only
   overrides) to the droplet: excluded now. The first backup passphrase on the rig was logged
   to the journal before that was fixed: test data only, but make a new one before real use.
+
+### 3f. W13: paper forms on the box (PLAN 3l), scheduled 2026-11-03
+kobo-field-forms (`~/code/kobo-field-forms`, `kff`) at `54749de`: print, scan, read and
+submit all work, and its droplet e2e passes against kf with Gemma 4 E4B + mmproj (the
+box's batch model). Nothing run on the box yet. Its own plan calls this milestone 10.
+- [ ] `remote/paper/` compose + `paper.sh`, edge route `paper.kobo.local`, landing page link
+- [ ] `paper-forms` Kobo account and a web app password from `firstboot.sh`, on the label card
+      (kff has no sign-in: one token from its environment)
+- [ ] `kff e2e` on the rig against `http://kf.kobo.local` with `offline.sh on`
+- [ ] kff store in `backup.sh`; kff on the status page; kff image in the content pack
+- [ ] Real paper and phone photos on the W5 unit (kff milestone 9)
 
 ### 4. GPU tiers (W1) ✅ run on an H100, 2026-10-29
 RTX 4000/6000 Ada and L40S stayed out of stock, so `remote/gpu-tiers.sh` ran on
