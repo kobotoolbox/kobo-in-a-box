@@ -107,6 +107,47 @@ FORM = {
 }
 
 
+FOLLOWUP_NAME_SUFFIX = ' follow-up'
+OUTCOMES = {'arrived_treated': 'Arrived, treated and sent home', 'admitted': 'Arrived, admitted',
+            'enrolled': 'Enrolled in programme', 'not_arrived': 'Did not arrive',
+            'refused': 'Refused referral', 'transferred': 'Transferred', 'died': 'Died'}
+
+# The follow-up form: pick the case (choice_filter on the CHW's zone), see what it's about
+# (pulldata from the same list), record what happened
+FOLLOWUP_FORM = {
+    'survey': [
+        _row('select_one chw', 'chw', 'Community health worker', required=True),
+        _row('date', 'followup_date', 'Follow-up date', required=True),
+        _row('select_one zone', 'my_zone', 'Your zone', required=True),
+        _row('select_one_from_file open_cases.csv', 'case', 'Which case?', required=True,
+             choice_filter='zone = ${my_zone}'),
+        _row('calculate', 'case_reason', calculation="pulldata('open_cases', 'reason', 'name', ${case})"),
+        _row('calculate', 'case_due', calculation="pulldata('open_cases', 'due', 'name', ${case})"),
+        _row('note', 'case_note', 'Referred for: ${case_reason}. Follow up by ${case_due}.'),
+        _row('select_one yes_no', 'reached', 'Did they reach care?', required=True),
+        _row('select_one outcome', 'outcome', 'Outcome'),
+        _row('select_one yes_no', 'close_case', 'Close the case?', required=True),
+        _row('text', 'followup_notes', 'Notes'),
+        # A question with a case field's name that the template doesn't list: never written
+        _row('text', 'zone', 'Zone seen at (not written to the case)'),
+    ],
+    'choices': (
+        _choices('chw', {'chw_amani': 'Amani Bizimana', 'chw_furaha': 'Furaha Ndayishimiye',
+                         'chw_imani': 'Imani Kabura', 'chw_neema': 'Neema Hakizimana'})
+        + _choices('zone', ZONES) + _choices('yes_no', {'yes': 'Yes', 'no': 'No'})
+        + _choices('outcome', OUTCOMES)
+    ),
+    'settings': {'default_language': 'English (en)'},
+}
+
+
+def followup(case_number, close, outcome='admitted', zone='zone_2'):
+    return {'chw': 'chw_amani', 'followup_date': '2026-10-29', 'my_zone': zone,
+            'case': f'cs_{case_number}', 'reached': 'yes', 'outcome': outcome,
+            'close_case': 'yes' if close else 'no', 'followup_notes': 'Seen at the hospital.',
+            'zone': 'zone_4'}
+
+
 def with_reasons(v):
     """The form's calculate rows, for a visit posted as XML."""
     child = v.get('patient_type') == 'child_u5'

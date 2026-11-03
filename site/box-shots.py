@@ -95,7 +95,7 @@ def card_page(tmp):
         {'super_user_username': 'super_admin', 'super_user_password': 'Hb3nWq8rTz5kPe2m'}))
     card.ETC, card.KOBO_INSTALL, card.LIBRARY_DIR = etc, kobo, tmp / 'library'
     card.main()
-    shoot(tmp / 'library' / 'card' / 'index.html', OUT / 'card.jpg', 760, 1060)
+    shoot(tmp / 'library' / 'card' / 'index.html', OUT / 'card.jpg', 760, 1100)
 
 
 def main():

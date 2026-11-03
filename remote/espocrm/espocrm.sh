@@ -40,7 +40,7 @@ print("-".join("".join(secrets.choice(a) for _ in range(4)) for _ in range(4)))'
         echo "generated passwords in $ESPO_SECRETS"
     fi
     set -a; source "$ESPO_SECRETS"; set +a
-    export ESPO_BRIDGE_API_KEY=${ESPO_BRIDGE_API_KEY:-}
+    export ESPO_BRIDGE_API_KEY=${ESPO_BRIDGE_API_KEY:-} ESPO_FOLLOWUP_API_KEY=${ESPO_FOLLOWUP_API_KEY:-}
 }
 
 wait_ready() {  # EspoCRM installs itself on the first start (~1 min)

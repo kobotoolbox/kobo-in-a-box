@@ -39,6 +39,31 @@ details = [
     ["CHW notes", "notes"],
 ]
 
+# --- Follow-up visits: what happened, written back to the case --------------------------
+# A CHW goes back (or calls), opens the follow-up form, picks the case from the list the
+# bridge keeps on that form, and records the outcome. The bridge updates that case only.
+[followup]
+# The Kobo project, matched by name; shared with the bridge's account with "Edit form" too,
+# so it can keep the list of open cases on it
+form = "Community health referral follow-up"
+# The question that picks the case: select_one_from_file open_cases.csv (values cs_<number>)
+key = "case"
+# The list the bridge uploads to the form: open cases only, columns name, label, zone,
+# team, reason, due (no names, phones or answers beyond those)
+list = "open_cases.csv"
+# Follow-up question → Case field. Only these, and the status, are ever written
+fields = { outcome = "cReferralOutcome" }
+# The answer that sets the case's status
+status = { question = "close_case", map = { yes = "Closed", no = "Pending" } }
+# The note posted on the case's stream for every follow-up (closed cases get only this)
+note = [
+    ["By", "chw"],
+    ["Date", "followup_date"],
+    ["Reached care", "reached"],
+    ["Outcome", "outcome"],
+    ["Notes", "followup_notes"],
+]
+
 # --- Routing: every matching route adds its team -------------------------------------
 # match: question = answer (for multiple-choice questions: the answer includes it)
 [[route]]

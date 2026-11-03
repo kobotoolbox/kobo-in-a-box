@@ -60,7 +60,16 @@ ROLES = {
         'assignmentPermission': 'all', 'userPermission': 'no', 'exportPermission': 'no',
         'massUpdatePermission': 'no',
     },
+    # Follow-up visits: edit existing cases, only the template's [followup] fields and the
+    # status (fieldData, set in main), and post notes; never create or delete
+    'Kobo follow-up': {
+        'data': {'Case': {'create': 'no', 'read': 'all', 'edit': 'all', 'delete': 'no', 'stream': 'all'}},
+        'assignmentPermission': 'no', 'userPermission': 'no', 'exportPermission': 'no',
+        'massUpdatePermission': 'no',
+    },
 }
+API_USERS = {'kobo-bridge': ('Kobo bridge', 'ESPO_BRIDGE_API_KEY'),
+             'kobo-followup': ('Kobo follow-up', 'ESPO_FOLLOWUP_API_KEY')}
 DETAIL_PANEL, KOBO_PANEL = 'Referral details', 'Kobo'
 LIST = ['name', 'number', 'status', 'priority', 'cFollowUpDue', 'teams', 'assignedUser']
 
@@ -216,24 +225,32 @@ def main():
         teams[name] = team['id']
         print(f'team {"created" if new else "exists"}: {name}')
 
+    # The follow-up user may edit the listed fields and the status, nothing else
+    fu = t.get('followup') or {}
+    writable = set(fu.get('fields', {}).values()) | ({'status'} if fu.get('status') else set())
+    case_fields = espo.call('GET', '/Metadata', {'key': 'entityDefs.Case.fields'}) or {}
+    roles_spec = {**ROLES, 'Kobo follow-up': {**ROLES['Kobo follow-up'], 'fieldData': {'Case': {
+        f: {'read': 'yes', 'edit': 'yes' if f in writable else 'no'} for f in case_fields}}}}
     roles = {}
-    for name, spec in ROLES.items():
+    for name, spec in roles_spec.items():
         role, new = ensure(espo, 'Role', 'name', name, {'name': name, 'fieldData': {}, **spec})
         if not new:  # keep the permissions as defined here
             espo.call('PUT', f'/Role/{role["id"]}', body=spec)
         roles[name] = role['id']
         print(f'role {"created" if new else "updated"}: {name}')
 
-    user = espo.find('User', 'userName', 'kobo-bridge')
-    if user is None:
-        user = espo.call('POST', '/User', body={
-            'userName': 'kobo-bridge', 'type': 'api', 'authMethod': 'ApiKey', 'isActive': True,
-            'rolesIds': [roles['Kobo bridge']]})
-        print('api user created: kobo-bridge')
-    user = espo.call('GET', f'/User/{user["id"]}')
-    if not user.get('apiKey'):
-        raise SystemExit('kobo-bridge has no API key in the response; open it in the UI to generate one')
-    found = {'ESPO_BRIDGE_API_KEY': user['apiKey']}
+    found = {}
+    for username, (role, key) in API_USERS.items():
+        user = espo.find('User', 'userName', username)
+        if user is None:
+            user = espo.call('POST', '/User', body={
+                'userName': username, 'type': 'api', 'authMethod': 'ApiKey', 'isActive': True,
+                'rolesIds': [roles[role]]})
+            print(f'api user created: {username}')
+        user = espo.call('GET', f'/User/{user["id"]}')
+        if not user.get('apiKey'):
+            raise SystemExit(f'{username} has no API key in the response; open it in the UI to generate one')
+        found[key] = user['apiKey']
 
     if args.demo_users:
         have = read_secrets(secrets_path)

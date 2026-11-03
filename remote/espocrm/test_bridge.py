@@ -351,5 +351,150 @@ def case_for_sub(sub):
     return bridge.to_case(TEMPLATE, sub, 'http://kf', 'aHealth', TEAMS)
 
 
+FU_NAME = TEMPLATE['followup']['form']
+
+
+class FollowupKobo(FakeKobo):
+    """The referral form and its follow-up form, as two projects."""
+
+    def __init__(self, subs, fu_subs):
+        super().__init__(subs)
+        self.fu_subs, self.media, self.deploys = fu_subs, {}, 0
+
+    def projects(self, name):
+        return {'aHealth': 'v1'} if name == TEMPLATE['form']['name'] else (
+            {'aFollow': 'f1'} if name == FU_NAME else {})
+
+    def submissions_after(self, uid, last_id):
+        subs = self.fu_subs if uid == 'aFollow' else self.subs
+        return [x for x in subs if x['_id'] > last_id][:bridge.PAGE]
+
+    def submission(self, uid, sub_id):
+        return next((x for x in (self.fu_subs if uid == 'aFollow' else self.subs) if x['_id'] == sub_id), None)
+
+    def form(self, uid, version):
+        return kpi_stored(fx.FOLLOWUP_FORM if uid == 'aFollow' else fx.FORM)
+
+    def replace_media(self, uid, filename, data):
+        self.media[(uid, filename)] = data
+        self.deploys += 1
+
+
+class CaseEspo(FakeEspo):
+    """Cases with numbers and a stream, for follow-ups (as the bridge or the follow-up user)."""
+
+    def __init__(self, **kw):
+        super().__init__(**kw)
+        self.notes, self.puts = [], []
+
+    def call(self, method, path, params=None, body=None):
+        if method == 'POST' and path == '/Case':
+            case = super().call(method, path, params, body)
+            case.update(number=len(self.cases), status='New')
+            return case
+        if method == 'GET' and path == '/Case':
+            where = (params['where[0][attribute]'], params['where[0][type]'])
+            if where == ('number', 'equals'):
+                return {'list': [c for c in self.cases if c['number'] == params['where[0][value]']]}
+            closed = [v for k, v in params.items() if k.startswith('where[0][value]')]
+            rows = [c for c in self.cases if c['status'] not in closed]
+            return {'list': rows[params['offset']:params['offset'] + params['maxSize']], 'total': len(rows)}
+        if method == 'GET' and path.endswith('/stream'):
+            return {'list': [n for n in self.notes if n['parentId'] == path.split('/')[2]]}
+        if method == 'PUT' and path.startswith('/Case/'):
+            self.puts.append(body)
+            next(c for c in self.cases if c['id'] == path.split('/')[2]).update(body)
+            return {}
+        if method == 'POST' and path == '/Note':
+            self.notes.append(body)
+            return {}
+        return super().call(method, path, params, body)
+
+
+def fu_sub(n, answers):
+    return {'_id': n, '_uuid': str(uuid.uuid4()), '_submission_time': SUBMITTED, **answers}
+
+
+class Followups(unittest.TestCase):
+    def setUp(self):
+        self.dir = tempfile.TemporaryDirectory()
+        self.ledger = bridge.Ledger(Path(self.dir.name) / 'bridge.sqlite')
+        self.espo = CaseEspo()
+        self.kobo = FollowupKobo([submission(i + 1, v) for i, v in enumerate(fx.VISITS)], [])
+        self.sync(now=1000)  # the referral cases, CS-1 to CS-9; and the first list
+        self.case1 = self.espo.cases[0]
+
+    def tearDown(self):
+        self.dir.cleanup()
+
+    def sync(self, now, ledger=None):
+        return bridge.sync_once(BASE, self.kobo, self.espo, 'http://kf', ledger or self.ledger, now,
+                                espo_fu=self.espo, list_min_seconds=900)
+
+    def test_updates_exactly_that_case_listed_fields_only_and_notes_it(self):
+        before = dict(self.case1)
+        self.kobo.fu_subs.append(fu_sub(1, fx.followup(1, close=True)))
+        self.assertEqual(self.sync(now=2000)['updated'], 1)
+        self.assertEqual(self.espo.puts, [{'cReferralOutcome': 'admitted', 'status': 'Closed'}])
+        self.assertEqual(self.case1['cZone'], before['cZone'])  # the follow-up's own "zone" isn't listed
+        self.assertEqual(self.case1['priority'], before['priority'])
+        note = self.espo.notes[-1]
+        self.assertEqual(note['parentId'], self.case1['id'])
+        self.assertIn('Outcome: Arrived, admitted', note['post'])
+        self.assertIn('Reached care: Yes', note['post'])
+        self.assertIn(self.kobo.fu_subs[0]['_uuid'], note['post'])
+        self.assertTrue(all(c['status'] == 'New' for c in self.espo.cases[1:]))
+
+    def test_never_applied_twice(self):
+        self.kobo.fu_subs.append(fu_sub(1, fx.followup(2, close=False)))
+        self.sync(now=2000)
+        fresh = bridge.Ledger(Path(self.dir.name) / 'lost.sqlite')
+        counts = self.sync(now=3000, ledger=fresh)
+        self.assertEqual((counts['updated'], len(self.espo.notes)), (0, 1))
+
+    def test_a_closed_case_gets_a_note_only(self):
+        self.kobo.fu_subs.append(fu_sub(1, fx.followup(1, close=True)))
+        self.sync(now=2000)
+        self.kobo.fu_subs.append(fu_sub(2, fx.followup(1, close=False, outcome='died')))
+        counts = self.sync(now=3000)
+        self.assertEqual(counts['closed_note'], 1)
+        self.assertEqual(self.case1['status'], 'Closed')
+        self.assertEqual(self.case1['cReferralOutcome'], 'admitted')
+        self.assertIn('already closed', self.espo.notes[-1]['post'])
+
+    def test_no_match_is_recorded_and_the_rest_go_on(self):
+        self.kobo.fu_subs += [fu_sub(1, fx.followup(99, close=True)), fu_sub(2, {**fx.followup(3, close=True), 'case': ''}),
+                              fu_sub(3, fx.followup(2, close=True))]
+        counts = self.sync(now=2000)
+        self.assertEqual((counts['updated'], counts['failed']), (1, 2))
+        errors = [f['error'] for f in self.ledger.failures()]
+        self.assertEqual(errors, ['0 cases numbered CS-99', 'case: no case chosen'])
+
+    def test_open_cases_list_minimal_and_only_open_rate_limited(self):
+        data = self.kobo.media[('aFollow', 'open_cases.csv')].decode()
+        lines = data.splitlines()
+        self.assertEqual(lines[0], 'name,label,zone,team,reason,due')
+        self.assertEqual(len(lines), 1 + len(self.espo.cases))
+        self.assertTrue(lines[1].startswith('cs_1,CS-1 · Z2-0147 · Child danger signs · due 28 Oct,zone_2,'))
+        for visit in fx.VISITS:
+            for private in ('caregiver_name', 'caregiver_phone', 'notes'):
+                if visit['answers'].get(private):
+                    self.assertNotIn(visit['answers'][private], data)
+        # Closing CS-1 changes the list, but not before 15 minutes since the last upload
+        self.kobo.fu_subs.append(fu_sub(1, fx.followup(1, close=True)))
+        self.assertEqual(self.sync(now=1500)['lists'], 0)
+        self.assertEqual(self.sync(now=1901)['lists'], 1)
+        self.assertNotIn('cs_1,', self.kobo.media[('aFollow', 'open_cases.csv')].decode())
+        # Unchanged: no upload, no redeploy
+        deploys = self.kobo.deploys
+        self.sync(now=9000)
+        self.assertEqual(self.kobo.deploys, deploys)
+
+    def test_without_the_followup_user_followups_wait(self):
+        self.kobo.fu_subs.append(fu_sub(1, fx.followup(1, close=True)))
+        counts = bridge.sync_once(BASE, self.kobo, self.espo, 'http://kf', self.ledger, 2000)
+        self.assertEqual((counts['updated'], self.ledger.cursor('aFollow')), (0, 0))
+
+
 if __name__ == '__main__':
     unittest.main()

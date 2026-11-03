@@ -13,7 +13,12 @@ shares the form with the bridge's own Kobo account, as on a box set up by firstb
 the next visit still becomes a case; then the zone is added to the Kobo form (redeployed),
 `espocrm.sh setup --if-form-changed` gives EspoCRM the option from the form, and the
 refused visit becomes a case by itself. --bridge-state is where the bridge
-writes status.json (default /var/lib/kobo-box/bridge). --fake-kobo PORT
+writes status.json (default /var/lib/kobo-box/bridge).
+--followup (real Kobo only) adds the follow-up form: the bridge puts open_cases.csv on it
+(minimal columns, served to phones in the OpenRosa manifest), a follow-up closes its case
+with the listed fields only and a note, a second one on the closed case is a note only, an
+unknown case number is recorded, and the closed case leaves the list. Run the bridge with
+a short BRIDGE_LIST_MIN_SECONDS for it (e.g. 20, in /etc/kobo-box/espocrm.env). --fake-kobo PORT
 serves the visits from a fake Kobo on this machine instead (to try the EspoCRM side on a
 laptop; point the bridge's KOBO_URL at it).
 
@@ -35,6 +40,7 @@ import sys
 import threading
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
 import uuid
 from datetime import datetime, timezone
@@ -85,14 +91,14 @@ class RealKobo:
         except urllib.error.HTTPError as e:
             return e.code, e.read().decode()[:300]
 
-    def deploy(self):
+    def deploy(self, name=NAME, form=fx.FORM):
         s, listing = self.call('GET', '/api/v2/assets/?asset_type=survey&limit=200')
         assert s == 200, (s, listing)
-        for old in (a for a in listing['results'] if a['name'] == NAME):
+        for old in (a for a in listing['results'] if a['name'] == name):
             self.call('DELETE', f"/api/v2/assets/{old['uid']}/")
             print('deleted the previous copy', old['uid'])
         s, asset = self.call('POST', '/api/v2/assets/',
-                             {'name': NAME, 'asset_type': 'survey', 'content': fx.FORM})
+                             {'name': name, 'asset_type': 'survey', 'content': form})
         if not check('form created', s == 201, s if s != 201 else asset['uid']):
             raise SystemExit(asset)
         self.uid = asset['uid']
@@ -247,15 +253,129 @@ def external_assets(base):
     return sorted(set(hits))
 
 
+def media_csv(kobo, uid, filename):
+    """The form's media file as Kobo serves it, or None."""
+    s, files = kobo.call('GET', f'/api/v2/assets/{uid}/files/?file_type=form_media')
+    f = next((f for f in files.get('results', []) if (f.get('metadata') or {}).get('filename') == filename), None)
+    if f is None:
+        return None
+    req = urllib.request.Request(f'http://127.0.0.1/api/v2/assets/{uid}/files/{f["uid"]}/content/',
+                                 headers={'Host': KF, 'Authorization': kobo.auth})
+    with urllib.request.urlopen(req, timeout=60) as r:
+        return r.read().decode()
+
+
+def followup_check(admin, kobo, uid, token, timeout):
+    """Follow-up visits update their case; the open-cases list on the follow-up form."""
+    print('\n-- follow-ups')
+    fu_name = TEMPLATE['followup']['form']
+    fu = RealKobo(token, kobo.share_with)
+    fu.deploy(fu_name, fx.FOLLOWUP_FORM)
+    if kobo.share_with:  # the bridge keeps the list on it: edit too
+        s, _ = fu.call('POST', f'/api/v2/assets/{fu.uid}/permission-assignments/bulk/', [
+            {'user': f'http://{KF}/api/v2/users/{kobo.share_with}/',
+             'permission': f'http://{KF}/api/v2/permissions/change_asset/'}])
+        check('follow-up form editable by the bridge', s in (200, 201), s)
+    by_uuid = {c['cKoboSubmissionUuid']: c for c in cases(admin, uid)}
+    # A case of this run nobody has touched (the permission checks above close V01's)
+    v01 = admin.call('GET', '/Case', params={
+        'where[0][type]': 'equals', 'where[0][attribute]': 'cKoboAsset', 'where[0][value]': uid,
+        'where[1][type]': 'equals', 'where[1][attribute]': 'status', 'where[1][value]': 'New',
+        'select': 'id,number,cZone,priority,status,cHouseholdId', 'orderBy': 'number', 'order': 'asc', 'maxSize': 1})['list'][0]
+    csv_text = None
+    for _ in range(int(timeout / 5)):
+        csv_text = media_csv(fu, fu.uid, 'open_cases.csv')
+        if csv_text and f'cs_{v01["number"]},' in csv_text:
+            break
+        time.sleep(5)
+    check('open_cases.csv on the follow-up form', bool(csv_text) and f'cs_{v01["number"]},' in csv_text)
+    if csv_text:
+        check('only the minimal columns', csv_text.splitlines()[0] == 'name,label,zone,team,reason,due')
+        private = [v['answers'][k] for v in fx.VISITS for k in ('caregiver_name', 'caregiver_phone')
+                   if v['answers'].get(k)]
+        check('no names or phones in it', not any(p in csv_text for p in private))
+    # What phones get: the form's OpenRosa manifest lists the file
+    req = urllib.request.Request('http://127.0.0.1/formList', headers={
+        'Host': KC, 'Authorization': kobo.auth, 'X-OpenRosa-Version': '1.0'})
+    with urllib.request.urlopen(req, timeout=60) as r:
+        form_list = r.read().decode()
+    m = re.search(rf'<formID>{fu.uid}</formID>.*?<manifestUrl>([^<]+)</manifestUrl>', form_list, re.S)
+    manifest = ''
+    # KPI copies media to the OpenRosa side in a background task after the redeploy
+    for _ in range(int(timeout / 5) if m else 0):
+        req = urllib.request.Request(f'http://127.0.0.1{urllib.parse.urlsplit(m.group(1)).path}', headers={
+            'Host': KC, 'Authorization': kobo.auth, 'X-OpenRosa-Version': '1.0'})
+        with urllib.request.urlopen(req, timeout=60) as r:
+            manifest = r.read().decode()
+        if 'open_cases.csv' in manifest:
+            break
+        time.sleep(5)
+    check("in the form's manifest for KoboCollect", 'open_cases.csv' in manifest)
+
+    n = v01['number']
+    fu.submit(fx.followup(n, close=True, zone=v01['cZone']), str(uuid.uuid4()))
+    case = {}
+    for _ in range(int(timeout / 5)):
+        case = admin.call('GET', f'/Case/{v01["id"]}')
+        stream = admin.call('GET', f'/Case/{v01["id"]}/stream', params={'maxSize': 50})['list']
+        if case['status'] == 'Closed' and any('Follow-up visit' in (x.get('post') or '') for x in stream):
+            break
+        time.sleep(5)
+    check('a follow-up closes its case', case.get('status') == 'Closed', case.get('status'))
+    check('with the outcome', case.get('cReferralOutcome') == 'admitted', case.get('cReferralOutcome'))
+    check('and nothing else changed', (case.get('cZone'), case.get('priority')) == (v01['cZone'], v01['priority']),
+          (case.get('cZone'), case.get('priority')))
+    stream = admin.call('GET', f'/Case/{v01["id"]}/stream', params={'maxSize': 50})['list']
+    check('a note on the case', any('Outcome: Arrived, admitted' in (x.get('post') or '') for x in stream))
+
+    fu.submit(fx.followup(n, close=False, outcome='died', zone=v01['cZone']), str(uuid.uuid4()))
+    fu.submit(fx.followup(999999, close=True), str(uuid.uuid4()))
+    notes = 0
+    for _ in range(int(timeout / 5)):
+        stream = admin.call('GET', f'/Case/{v01["id"]}/stream', params={'maxSize': 50})['list']
+        notes = sum('Follow-up visit' in (x.get('post') or '') for x in stream)
+        if notes >= 2:
+            break
+        time.sleep(5)
+    case = admin.call('GET', f'/Case/{v01["id"]}')
+    check('a closed case gets a note only', notes == 2 and case['status'] == 'Closed'
+          and case['cReferralOutcome'] == 'admitted', (notes, case['status'], case['cReferralOutcome']))
+    fu_key = read_secrets(ARGS.secrets).get('ESPO_FOLLOWUP_API_KEY')
+    if fu_key:
+        fu_user = Espo(ARGS.espo_url, api_key=fu_key)
+        before = admin.call('GET', f'/Case/{v01["id"]}')['priority']
+        status(lambda: fu_user.call('PUT', f'/Case/{v01["id"]}', body={'priority': 'Low'}))
+        check("the follow-up user can't change other fields",
+              admin.call('GET', f'/Case/{v01["id"]}')['priority'] == before)
+        check("nor create cases", status(lambda: fu_user.call('POST', '/Case', body={'name': 'x'})) == 403)
+    st = {}
+    for _ in range(int(timeout / 5)):
+        st = json.loads((Path(ARGS.bridge_state) / 'status.json').read_text())
+        if st.get('failed'):
+            break
+        time.sleep(5)
+    check('an unknown case number is recorded', 'CS-999999' in (st.get('oldest_error') or ''), st.get('oldest_error'))
+    for _ in range(int(timeout / 5)):
+        csv_text = media_csv(fu, fu.uid, 'open_cases.csv') or ''
+        if f'cs_{n},' not in csv_text:
+            break
+        time.sleep(5)
+    check('the closed case leaves the list', f'cs_{n},' not in csv_text)
+    # Leave no failure behind for the status page (test only)
+    fu.call('DELETE', f'/api/v2/assets/{fu.uid}/')
+
+
 def ledger_check(admin, kobo, uid, status_path, timeout):
     """A refused visit doesn't block the next one, is recorded, and retries by itself."""
     print('\n-- ledger')
     zone_def = admin.call('GET', '/Metadata', {'key': 'entityDefs.Case.fields.cZone'})
     zone_labels = TEMPLATE['labels']['zone']
     have = before = len(cases(admin, uid))
+    # A zone of this run's own: box.sh's timer may have set up an earlier run's form since
+    new_zone = f'zone_t{uuid.uuid4().hex[:6]}'
     bad, good = str(uuid.uuid4()), str(uuid.uuid4())
     # V02 (one case, nutrition) in a zone EspoCRM's cZone doesn't have; then V03 as it is
-    kobo.submit({**fx.with_reasons(fx.VISITS[1]['answers']), 'zone': 'zone_9'}, bad)
+    kobo.submit({**fx.with_reasons(fx.VISITS[1]['answers']), 'zone': new_zone}, bad)
     kobo.submit(fx.with_reasons(fx.VISITS[2]['answers']), good)
     got, took = wait_for(admin, uid, have + 1, timeout)
     ids = {c['cKoboSubmissionUuid'] for c in got}
@@ -275,17 +395,17 @@ def ledger_check(admin, kobo, uid, status_path, timeout):
           st.get('oldest_error'))
     # The fix: the zone added to the Kobo form, then setup (box.sh's timer runs it every
     # 10 min); it adds the option from the form and makes the bridge retry now
-    check('zone added to the Kobo form and redeployed', kobo.add_choice('zone', 'zone_9', 'Zone 9') in (200, 201))
+    check('zone added to the Kobo form and redeployed', kobo.add_choice('zone', new_zone, 'Test zone') in (200, 201))
     try:
         out = subprocess.run([str(HERE / 'espocrm.sh'), 'setup', '--if-form-changed'],
                              capture_output=True, text=True)
-        check('setup takes the option from the form', out.returncode == 0 and 'cZone: zone_9' in out.stdout,
+        check('setup takes the option from the form', out.returncode == 0 and f'cZone: {new_zone}' in out.stdout,
               (out.stdout + out.stderr).strip().splitlines()[-1:] if out.stdout or out.stderr else '')
         got, took = wait_for(admin, uid, have + 2, timeout)
         case = next((c for c in got if c['cKoboSubmissionUuid'] == bad), None)
         check('the refused visit becomes a case by itself', case is not None, f'after {took:.0f}s')
         if case:
-            check('with the zone from the form', admin.call('GET', f'/Case/{case["id"]}')['cZone'] == 'zone_9')
+            check('with the zone from the form', admin.call('GET', f'/Case/{case["id"]}')['cZone'] == new_zone)
         for _ in range(int(timeout / 5)):
             st = json.loads(status_path.read_text())
             if not st.get('failed'):
@@ -317,7 +437,10 @@ def main():
     ap.add_argument('--ledger', action='store_true', help='also check failed submissions and retries')
     ap.add_argument('--bridge-state', default='/var/lib/kobo-box/bridge')
     ap.add_argument('--out', default=str(HERE.parent / 'results'))
+    ap.add_argument('--followup', action='store_true', help='also check follow-up visits (real Kobo)')
     args = ap.parse_args()
+    global ARGS
+    ARGS = args
     sec = read_secrets(args.secrets)
     admin = Espo(args.espo_url, basic=f'admin:{sec["ESPO_ADMIN_PASSWORD"]}')
     kobo = (FakeKobo(args.fake_kobo) if args.fake_kobo else
@@ -391,6 +514,8 @@ def main():
 
     if args.ledger:
         ledger_check(admin, kobo, uid, Path(args.bridge_state) / 'status.json', args.timeout)
+    if args.followup and not args.fake_kobo:
+        followup_check(admin, kobo, uid, Path(args.token_file).read_text().strip(), args.timeout)
 
     failed = [r for r in RESULTS if not r['ok']]
     out = Path(args.out) / f'w11-e2e-{started.strftime("%Y%m%d-%H%M%S")}.json'

@@ -64,6 +64,8 @@ services:
     environment:
       ESPO_URL: http://espocrm
       ESPO_API_KEY: ${ESPO_BRIDGE_API_KEY}
+      ESPO_FOLLOWUP_API_KEY: ${ESPO_FOLLOWUP_API_KEY:-}
+      BRIDGE_LIST_MIN_SECONDS: ${BRIDGE_LIST_MIN_SECONDS:-900}
       KOBO_URL: ${KOBO_URL}
       KOBO_TOKEN_FILE: /run/kobo-token
       BRIDGE_TEMPLATE: /app/templates/${BRIDGE_TEMPLATE}.toml

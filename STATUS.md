@@ -42,8 +42,9 @@ are in [PLAN.md](PLAN.md); per-run results are in [remote/results/NOTES.md](remo
    `firstboot.sh` with case management and the label card, restores onto a replacement box,
    and updates from a newer pack. What's left needs the box: hotspot + local DNS, the
    autoinstall USB with LUKS + TPM, low-battery shutdown (`remote/box/README.md`).
-0b. **W11 next (no hardware needed):** the ledger and choices from the form are done
-   (2026-11-03); next, follow-up visits written back to exactly one case (PLAN 3j step 3).
+0b. **W11:** the ledger, choices from the form and follow-ups are done (2026-11-03); left:
+   phase 2 (case status back to Kobo, edited submissions, an EspoCRM MCP for agents, UI
+   languages) and follow-ups on a real phone (with the hotspot).
 1. **W5 hardware:** buy the Strix Halo 128 GB dev unit and re-run the same tests on it
    (`gpu-tiers.sh` equivalents, `w4-run.py`), at full power and capped. This decides the
    kit; everything else so far is a cloud stand-in.
@@ -266,6 +267,15 @@ Ponto's local EspoCRM testing (`~/code/ponto/infra/espocrm`), with per-box secre
       reaches EspoCRM with no one on the box and refused visits retry at once. The bridge
       opens no case while a mapped field is missing (EspoCRM would drop the value): on a new
       box, visits wait until setup has made the fields. 22 unit tests; e2e 38/38 on the rig.
+
+- [x] **Follow-up visits update their case** (2026-11-03, PLAN 3j step 3): a follow-up form
+      picks the case from `open_cases.csv`, which the bridge keeps on it (open cases, minimal
+      columns, at most every 15 min); each follow-up updates exactly one case (else the
+      ledger), only the listed fields and the status, as `kobo-followup` (edit those only,
+      no create), with a note on the stream; closed cases get the note only. e2e 53/53 on
+      the rig. Found on the way: a 10-minute timer that does its job makes a test's
+      "undo" come back (the earlier run's form still had the test zone): tests now use a
+      zone of their own. Not tested on a phone yet.
 
 ### 3e. W12: a box non-technical teams can run (started 2026-10-30)
 `remote/box/` ([README](remote/box/README.md), PLAN 3k). Tested on the CPU rig.

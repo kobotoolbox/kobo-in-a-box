@@ -86,6 +86,25 @@ Until a form is shared with the bridge (a new box), select fields wait, and the 
 no case while a mapped field is missing in EspoCRM (it would drop the value silently): the
 submissions wait in the ledger until setup has made the field.
 
+**Follow-up visits** (`[followup]` in the template). A second Kobo form records what
+happened: the CHW picks the case (`select_one_from_file open_cases.csv`, filtered by their
+zone; `pulldata()` shows its reason and due date), says whether the person reached care and
+the outcome, and whether to close the case. The bridge keeps `open_cases.csv` on that form:
+open cases only, the columns `name` (`cs_<number>`), `label` (`CS-12 · Z2-0147 · Child
+danger signs · due 28 Oct`), `zone`, `team`, `reason`, `due` and nothing else, since the
+whole file goes to every phone with the form. It's uploaded when it changed, at most every
+`BRIDGE_LIST_MIN_SECONDS` (15 min: each upload is a redeploy). Each follow-up then:
+- updates **exactly one case**, found by its number, or is recorded in the ledger (0 or
+  several matches, no case chosen), never a guess;
+- writes **only the listed fields** (`outcome → cReferralOutcome`) and the status
+  (`close_case`), as the API user `kobo-followup`, whose role can edit nothing else and
+  create nothing (`kobo-bridge`, which opens cases, can't edit any);
+- is a **note on the case's stream** with what was recorded, so staff see it even if they
+  changed the field since; a **closed case** gets the note only and isn't reopened;
+- carries its submission's uuid in the note, so it's never applied twice.
+On a box, share the follow-up form with `cases-bridge` with "Edit form" as well as "View
+submissions", so it can update the list (the label card says so).
+
 **Another form.** Copy the template, set `BRIDGE_TEMPLATE` in `espocrm.env`, and run
 `./espocrm.sh setup`: it adds the new teams and fields and their options. It doesn't
 delete fields a template no longer uses.
@@ -149,6 +168,14 @@ token Kobo refuses: the page warns "the link to KoboToolbox is not working". The
 switch from the old cursor volume rescanned 13 submissions: 10 existing, no duplicates. The
 backup has the ledger.
 
+**Follow-ups (2026-11-03):** 28 unit tests. `e2e-espo.py --edge --ledger --followup` on
+the rig, real Kobo: 53/53. The follow-up form gets `open_cases.csv` (header and no names or
+phones checked) and it's in the form's OpenRosa manifest for KoboCollect; a follow-up
+closes its case with the outcome, nothing else changed, and a note; a second one on the
+closed case adds a note only; `kobo-followup` can't change other fields or create cases;
+an unknown case number is in the ledger; the closed case leaves the list. Not tested:
+`pulldata()` and the `choice_filter` on a real phone and in Enketo.
+
 **Choices from the form (2026-11-03):** 22 unit tests (KPI's stored form and XLSForm style
 read alike, a choice added in Kobo reaches the case, template options win, setup only adds
 options and keeps labels, the union over several projects, no case before the fields
@@ -173,6 +200,9 @@ the rig.
   ~330 MB after setup; ~200 MB of RAM idle (MariaDB ~115 MB).
 
 ## Not done yet (phase 2)
+
+- Follow-ups on a phone: KoboCollect and Enketo with `open_cases.csv` (`pulldata`, the
+  zone filter), with the hotspot (W12).
 
 - Case status back to Kobo (an EspoCRM webhook → set the submission's validation status).
 - Edited Kobo submissions don't update their case (the cursor only moves forward).

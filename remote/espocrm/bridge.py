@@ -24,6 +24,16 @@ form's deployed version changes, since that's usually the fix. Nothing is droppe
 Kobo or EspoCRM can't be reached, the pass ends and the cursor stays, as before. A lost
 ledger means a full rescan, which the uuid lookup makes harmless.
 
+Follow-up visits ([followup] in the template) update the case they're about. The
+follow-up form picks the case from open_cases.csv, which the bridge keeps on that form
+(open cases only, minimal columns; uploaded when it changed, redeployed at most every
+BRIDGE_LIST_MIN_SECONDS). Each follow-up updates exactly one case, found by its number, or
+is recorded as a failure (0 or several matches); only the template's listed fields and the
+status are written, by a second EspoCRM user that can edit nothing else
+(ESPO_FOLLOWUP_API_KEY); every follow-up is also a note on the case's stream. A closed case
+isn't reopened: it gets the note only. The note carries the submission's uuid, so a
+follow-up is never applied twice.
+
 Choices come from the deployed form, not from a copy in the template: each project's
 option labels (and select types) are read from the version it has deployed, again when
 that changes (with_form). Options the template writes itself win (for calculated
@@ -70,7 +80,7 @@ class BridgeError(Exception):
     def rejected(self):
         """This submission was refused (record it, go on), rather than the service being
         unavailable or the bridge's own key refused (end the pass, try again later)."""
-        return self.status == 'template' or (
+        return self.status in ('template', 'nomatch') or (
             isinstance(self.status, int) and 400 <= self.status < 500
             and self.status not in (401, 408, 429))
 
@@ -141,6 +151,31 @@ class Kobo(Api):
             if isinstance(e, BridgeError) and not e.rejected:
                 raise
             return self.call('GET', f'/api/v2/assets/{uid}/')['content']
+
+    def replace_media(self, uid, filename, data):
+        """Put `filename` on the form (replacing an older copy) and redeploy, so phones get it."""
+        files = self.call('GET', f'/api/v2/assets/{uid}/files/', {'file_type': 'form_media'})
+        for f in files.get('results', []):
+            if (f.get('metadata') or {}).get('filename') == filename:
+                self.call('DELETE', f'/api/v2/assets/{uid}/files/{f["uid"]}/')
+        boundary = 'kobo-box-' + hashlib.sha256(data).hexdigest()[:16]
+        parts = [('file_type', 'form_media'), ('description', 'Open cases (kobo-in-a-box bridge)'),
+                 ('metadata', json.dumps({'filename': filename}))]
+        body = b''.join(f'--{boundary}\r\nContent-Disposition: form-data; name="{k}"\r\n\r\n{v}\r\n'.encode()
+                        for k, v in parts)
+        body += (f'--{boundary}\r\nContent-Disposition: form-data; name="content"; filename="{filename}"\r\n'
+                 'Content-Type: text/csv\r\n\r\n').encode() + data + f'\r\n--{boundary}--\r\n'.encode()
+        req = urllib.request.Request(f'{self.base}/api/v2/assets/{uid}/files/', data=body, method='POST',
+                                     headers={**self.headers, 'Accept': 'application/json',
+                                              'Content-Type': f'multipart/form-data; boundary={boundary}'})
+        try:
+            urllib.request.urlopen(req, timeout=self.timeout).read()
+        except urllib.error.HTTPError as e:
+            raise BridgeError(f'POST files of {uid}: HTTP {e.code}', status=e.code) from e
+        except (urllib.error.URLError, TimeoutError, ConnectionError) as e:
+            raise BridgeError(f'POST files of {uid}: unreachable ({type(e).__name__})') from e
+        version = self.call('GET', f'/api/v2/assets/{uid}/')['version_id']
+        self.call('PATCH', f'/api/v2/assets/{uid}/deployment/', body={'active': True, 'version_id': version})
 
     def submission(self, uid, sub_id):
         """One submission, or None if it was deleted."""
@@ -340,6 +375,13 @@ class Ledger:
 
     visible = None  # the projects of the last pass (sync_once); None: all
 
+    def seen_value(self, key):
+        row = self.db.execute('SELECT value FROM seen WHERE key = ?', (key,)).fetchone()
+        return row[0] if row else None
+
+    def set_seen(self, key, value):
+        self.db.execute('INSERT OR REPLACE INTO seen VALUES (?, ?)', (key, value))
+
     def retry_now(self):
         """Every failure due now (espocrm-setup.py, after it changed EspoCRM's fields)."""
         self.db.execute('UPDATE failed SET next_try = 0')
@@ -350,6 +392,107 @@ class Ledger:
         if visible_only and self.visible is not None:
             rows = [r for r in rows if r['asset'] in self.visible]
         return rows
+
+
+CLOSED = ('Closed', 'Rejected', 'Duplicate')
+
+
+def case_number(t, sub):
+    """The case a follow-up is about: its key question's value is cs_<number>."""
+    value = str(flat(sub).get(t['followup']['key']) or '')
+    if not value.startswith('cs_') or not value[3:].isdigit():
+        raise BridgeError(f'{t["followup"]["key"]}: no case chosen', status='nomatch')
+    return int(value[3:])
+
+
+def followup(t, sub, espo, espo_fu, uid, labels, counts):
+    """Apply a follow-up visit to its case. Raises BridgeError."""
+    fu = t['followup']
+    n = case_number(t, sub)
+    found = espo.call('GET', '/Case', {'where[0][type]': 'equals', 'where[0][attribute]': 'number',
+                                       'where[0][value]': n, 'select': 'id,status', 'maxSize': 2})['list']
+    if len(found) != 1:  # never a guess
+        raise BridgeError(f'{len(found)} cases numbered CS-{n}', status='nomatch')
+    case = found[0]
+    marker = f'(Kobo follow-up {sub["_uuid"]})'
+    stream = espo_fu.call('GET', f'/Case/{case["id"]}/stream', {'maxSize': 200}).get('list', [])
+    if any(marker in (note.get('post') or '') for note in stream):
+        counts['existing'] += 1
+        return
+    a = flat(sub)
+
+    def lab(q):
+        opts = labels.get(q) or {}
+        return ', '.join(opts.get(x, x) for x in answers(a.get(q))) if opts else str(a.get(q))
+
+    lines = [f'{title}: {lab(q)}' for title, q in fu.get('note', []) if a.get(q) not in (None, '')]
+    closed = case['status'] in CLOSED
+    if not closed:
+        body = {espo_field: a[q] for q, espo_field in fu.get('fields', {}).items() if a.get(q) not in (None, '')}
+        status = fu.get('status', {})
+        if status and a.get(status['question']) in status['map']:
+            body['status'] = status['map'][a[status['question']]]
+        if body:
+            espo_fu.call('PUT', f'/Case/{case["id"]}', body=body)
+    else:
+        lines.append(f'(The case was already {case["status"].lower()}: not changed.)')
+    # Last: the note is what marks this follow-up as applied
+    espo_fu.call('POST', '/Note', body={'type': 'Post', 'parentType': 'Case', 'parentId': case['id'],
+                                        'post': 'Follow-up visit\n' + '\n'.join(lines) + '\n' + marker})
+    counts['closed_note' if closed else 'updated'] += 1
+    print(f'follow-up {sub["_id"]} of {uid} -> case CS-{n}' + (' (closed: note only)' if closed else ''))
+
+
+def open_cases_csv(t, espo):
+    """The follow-up form's list of open cases: only what a CHW needs to pick the right one
+    (the whole file goes to every phone with the form)."""
+    rows, offset = [], 0
+    while True:
+        page = espo.call('GET', '/Case', {
+            'where[0][type]': 'notIn', 'where[0][attribute]': 'status',
+            **{f'where[0][value][{i}]': v for i, v in enumerate(CLOSED)},
+            'select': 'number,cZone,cHouseholdId,cReferralReasons,cFollowUpDue,teamsNames',
+            'orderBy': 'number', 'order': 'asc', 'maxSize': 200, 'offset': offset})
+        rows += page['list']
+        offset += len(page['list'])
+        if not page['list'] or offset >= page.get('total', 0):
+            break
+    reasons = t['labels'].get('referral_reasons') or {}
+    out = [['name', 'label', 'zone', 'team', 'reason', 'due']]
+    for c in rows:
+        reason = ', '.join(reasons.get(r, r) for r in c.get('cReferralReasons') or [])
+        due = (datetime.strptime(c['cFollowUpDue'], '%Y-%m-%d %H:%M:%S').strftime('%d %b').lstrip('0')
+               if c.get('cFollowUpDue') else '')
+        teams = ', '.join((c.get('teamsNames') or {}).values())
+        label = ' · '.join(x for x in (f'CS-{c["number"]}', c.get('cHouseholdId') or '', reason,
+                                        f'due {due}' if due else '') if x)
+        out.append([f'cs_{c["number"]}', label, c.get('cZone') or '', teams, reason, due])
+
+    def cell(v):
+        v = str(v)
+        return '"' + v.replace('"', '""') + '"' if any(ch in v for ch in ',"\n') else v
+    return ''.join(','.join(cell(v) for v in row) + '\n' for row in out).encode()
+
+
+def sync_open_cases(t, kobo, espo, ledger, now, min_seconds):
+    """open_cases.csv onto each follow-up form, when it changed, at most every min_seconds
+    (each upload is a redeploy and a new form version)."""
+    fu = t.get('followup')
+    if not fu:
+        return 0
+    data = open_cases_csv(t, espo)
+    digest = hashlib.sha256(data).hexdigest()[:16]
+    uploaded = 0
+    for uid in kobo.projects(fu['form']):
+        last = ledger.seen_value(f'list:{uid}')
+        last_hash, last_time = (last.split('@') + ['0'])[:2] if last else ('', '0')
+        if last_hash == digest or now - float(last_time) < min_seconds:
+            continue
+        kobo.replace_media(uid, fu['list'], data)
+        ledger.set_seen(f'list:{uid}', f'{digest}@{now}')
+        uploaded += 1
+        print(f'{fu["list"]} on {uid}: {data.count(b"\n") - 1} open case(s)')
+    return uploaded
 
 
 def missing_fields(t, espo):
@@ -381,20 +524,25 @@ def handle(t, sub, kobo_url, uid, teams, espo, counts):
               f'({body["priority"]}, {len(body["teamsIds"])} team(s))')
 
 
-def sync_once(t, kobo, espo, kobo_url, ledger, now=None, forms=None):
+def sync_once(t, kobo, espo, kobo_url, ledger, now=None, forms=None, espo_fu=None,
+              list_min_seconds=900):
     """One pass over every project with the template's name: due retries first, then new
     submissions. Returns counts. Raises BridgeError when Kobo or EspoCRM is unavailable.
     forms: {uid: (version, template with that version's choices)}, kept between passes."""
     now = time.time() if now is None else now
     forms = {} if forms is None else forms
     teams = team_ids(t, espo)
-    counts = {'seen': 0, 'created': 0, 'skipped': 0, 'existing': 0, 'failed': 0, 'retried': 0}
+    counts = {'seen': 0, 'created': 0, 'skipped': 0, 'existing': 0, 'failed': 0, 'retried': 0,
+              'updated': 0, 'closed_note': 0, 'lists': 0}
     if ledger.retry_all_if_changed('template', t['hash']):
         print('template changed: retrying every failed submission')
 
-    def attempt(uid, sub):
+    def attempt(uid, sub, apply=None):
         try:
-            handle(t, sub, kobo_url, uid, teams, espo, counts)
+            if apply:
+                apply(sub)
+            else:
+                handle(t, sub, kobo_url, uid, teams, espo, counts)
             ledger.resolved(uid, sub['_id'])
         except BridgeError as e:
             if not e.rejected:
@@ -404,9 +552,10 @@ def sync_once(t, kobo, espo, kobo_url, ledger, now=None, forms=None):
             print(f'submission {sub["_id"]} of {uid} not a case ({n} attempt(s)): {e}')
 
     projects = kobo.projects(t['form']['name'])
+    fu_projects = kobo.projects(t['followup']['form']) if t.get('followup') and espo_fu else {}
     # Failures of projects no longer visible (deleted, or not shared with the bridge any
     # more) are kept, in case they come back, but aren't counted as waiting
-    ledger.visible = set(projects)
+    ledger.visible = set(projects) | set(fu_projects)
     base = t
     for uid, version in projects.items():
         if ledger.retry_all_if_changed(f'version:{uid}', version, asset=uid):
@@ -432,6 +581,31 @@ def sync_once(t, kobo, espo, kobo_url, ledger, now=None, forms=None):
                 ledger.advance(uid, sub['_id'])
             if len(subs) < PAGE:
                 break
+    t = base
+    for uid, version in fu_projects.items():
+        labels = {q: opts for q, (_, opts) in form_choices(kobo.form(uid, version)).items()}
+
+        def apply(sub, uid=uid, labels=labels):
+            followup(t, sub, espo, espo_fu, uid, labels, counts)
+        if ledger.retry_all_if_changed(f'version:{uid}', version, asset=uid):
+            print(f'{uid}: new follow-up form version, retrying its failed submissions')
+        for sub_id in ledger.due(uid, now):
+            counts['retried'] += 1
+            sub = kobo.submission(uid, sub_id)
+            if sub is None:
+                ledger.resolved(uid, sub_id)
+                continue
+            attempt(uid, sub, apply)
+        while True:
+            subs = kobo.submissions_after(uid, ledger.cursor(uid))
+            for sub in subs:
+                counts['seen'] += 1
+                attempt(uid, sub, apply)
+                ledger.advance(uid, sub['_id'])
+            if len(subs) < PAGE:
+                break
+    if fu_projects:
+        counts['lists'] = sync_open_cases(t, kobo, espo, ledger, now, list_min_seconds)
     return counts
 
 
@@ -480,6 +654,11 @@ def main():
     kobo_url = env['KOBO_URL']
     kobo = Kobo(kobo_url, Path(env['KOBO_TOKEN_FILE']).read_text().strip())
     espo = Espo(env['ESPO_URL'], api_key=env['ESPO_API_KEY'])
+    espo_fu = (Espo(env['ESPO_URL'], api_key=env['ESPO_FOLLOWUP_API_KEY'])
+               if env.get('ESPO_FOLLOWUP_API_KEY') else None)
+    if t.get('followup') and espo_fu is None:
+        print('no ESPO_FOLLOWUP_API_KEY: follow-up visits wait (espocrm.sh setup makes it)')
+    list_min = int(env.get('BRIDGE_LIST_MIN_SECONDS', '900'))
     state_dir = Path(env.get('BRIDGE_STATE_DIR', '.'))
     state_dir.mkdir(parents=True, exist_ok=True)
     ledger = Ledger(state_dir / 'bridge.sqlite')
@@ -494,9 +673,9 @@ def main():
             if hashlib.sha256(Path(env['BRIDGE_TEMPLATE']).read_bytes()).hexdigest()[:16] != t['hash']:
                 t = load_template(env['BRIDGE_TEMPLATE'])
                 print('template reloaded')
-            counts = sync_once(t, kobo, espo, kobo_url, ledger, now, forms)
+            counts = sync_once(t, kobo, espo, kobo_url, ledger, now, forms, espo_fu, list_min)
             last_success = now
-            if counts['seen'] or counts['failed'] or counts['retried'] or cmd == 'once':
+            if counts['seen'] or counts['failed'] or counts['retried'] or counts['lists'] or cmd == 'once':
                 print('pass:', ', '.join(f'{k} {v}' for k, v in counts.items()))
         except BridgeError as e:
             error = str(e)
