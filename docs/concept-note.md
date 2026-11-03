@@ -2,7 +2,7 @@
 
 **Offline data collection, analysis and AI for humanitarian teams working without reliable internet**
 
-KoboToolbox · Draft for partners and donors · October 2026
+KoboToolbox · Draft for partners and donors · November 2026
 
 ---
 
@@ -27,7 +27,7 @@ combines their data for analysis and reporting, still with no internet. And when
 a connection is available, a kit or hub can sync its data to a KoboToolbox server in the
 cloud. Each organisation decides, project by project, how far its data travels.
 
-The new generation of the kit adds five things:
+The new generation of the kit adds six things:
 
 1. **Local AI processing inside KoboToolbox.** Transcription of recorded interviews,
    translation, and qualitative analysis run on the box itself using open AI models.
@@ -54,10 +54,14 @@ The new generation of the kit adds five things:
    (a referral, a complaint, a protection concern) become cases automatically, routed to
    the right team with a priority and a deadline, and staff work them through to an
    outcome on the box, still with no internet.
+6. **Paper forms, where phones are short.** Sheets printed from any KoboToolbox form are
+   filled in by hand, scanned or photographed, read on the box (handwriting included) and
+   checked by a person before they reach KoboToolbox, so paper interviews no longer mean
+   weeks of data entry.
 
 The basic kit has already been used in the field, most recently in Kobo's response to
 Hurricane Melissa in Jamaica. The AI processing, the AI assistant, the library, case
-management and dashboards are working in a simulated offline test environment, as
+management, dashboards and paper forms are working in a simulated offline test environment, as
 described below; the knowledge base is built for KoboToolbox's online services and is
 being adapted to run on the box. The next step is a **field pilot with one partner
 organisation**, followed by kits that arrive ready to switch on: installed from a single
@@ -165,7 +169,14 @@ per person per day, people per latrine, covered living space per person).
 child with danger signs, a household reporting a protection concern or a complaint
 needing an answer, a case opens on the box within a minute, assigned to the right team,
 with how urgent it is and when it must be followed up. Staff record what happened and
-close it. Each worker sees only their own team's cases.
+close it. Each worker sees only their own team's cases. When they go back to the
+household, they pick the case from a list on the follow-up form and record what happened,
+and the case is updated from that.
+
+**Teams working on paper**, where there aren't enough phones, phones are unsafe to carry or
+respondents prefer it, print numbered sheets from the kit, fill them in by hand, and scan
+or photograph them back in at the end of the day. The answers reach KoboToolbox after a
+person has checked them against the scan, with no one typing them in.
 
 **Anyone who is stuck** can ask the assistant. With no internet there is no help centre,
 forum or helpdesk to turn to, so the knowledge base stands in for them: "how do I make
@@ -215,19 +226,52 @@ deployments that need it:
 - **Limited by design.** Case workers can't delete or export cases; the bridge can only
   create them; a caregiver's phone number reaches the case only if they agreed to be
   called back.
-- **Planned: follow-up from the field.** The list of open cases would be sent to the
-  phones as a choice list in a follow-up form, so a health worker picks the case they are
-  following up (for example "CS-12 · household Z2-0147 · child danger signs · due 31 Oct")
-  and records what happened. The outcome then goes back onto the case, without anyone
-  re-typing it. The list carries only a case number, household code, area and reason,
-  never names, phone numbers or health details, because it is stored on every phone that
-  has the form.
+- **Follow-up from the field.** The kit keeps the list of open cases on a follow-up
+  form, so a health worker picks the case they are following up (for example "CS-12 ·
+  household Z2-0147 · child danger signs · due 31 Oct") and records what happened. The
+  outcome goes onto exactly that case, and closes it if it's done, without anyone
+  re-typing it; a closed case is never reopened by a follow-up, only given a note. The
+  list carries only a case number, household code, area, reason and due date, never names,
+  phone numbers or health details, because it is stored on every phone that has the form.
+- **Both ways with KoboToolbox.** Correcting a submission in KoboToolbox updates the
+  answers on its case, and the case's status comes back to the submission (closed as
+  Approved, pending as On hold), so the data table and exports show which referrals were
+  followed up.
+- **The assistant can read cases.** It lists, counts and summarises cases ("which urgent
+  cases are overdue, by team?") and can add a note after asking, but can't change, open or
+  delete a case, and never sees names or phone numbers.
 
 It was tested with a community health referral scenario: made-up home visits in a camp,
 where children are screened for danger signs and malnutrition, pregnant women for danger
 signs, and households for suspected cholera. The form works out the referral, and each
 one becomes a case for the referral coordinators, the nutrition team or surveillance,
 from urgent (6 hours, suspected cholera) to normal (7 days, moderate malnutrition).
+
+### Paper forms (optional)
+
+Paper is still the fallback in many operations: phones run out, break or are unsafe to
+carry, and some interviews go better on paper. Today that means weeks of re-typing. The kit
+runs **KoboToolbox Paper Forms** (kobo-field-forms, open source) at `paper.kobo.local`,
+with no internet:
+
+- **Print from any form.** A form shared with the kit's paper forms account becomes
+  numbered sheets, in A4, A5 or Letter, single or double-sided, in the form's languages
+  (Arabic included). Choices are bubbles to fill in; numbers, dates and short answers have a
+  box per character.
+- **Scan or photograph.** Each page carries corner markers and a QR code, so a crooked
+  phone photo is straightened and matched to the exact form version it was printed from.
+- **Read on the kit.** Filled bubbles and written numbers are read by the kit itself;
+  handwritten words by the same AI model that translates in KoboToolbox. Anything unsure is
+  flagged.
+- **A person checks before anything is sent.** Each answer sits next to its scan, flagged
+  ones first, and a sheet with unresolved flags can't be submitted. A sheet sent twice is a
+  duplicate in KoboToolbox, not a second record.
+- **Limited by design.** Staff open it with one password from the label card. It submits
+  through its own KoboToolbox account, which sees only the forms shared with it; the
+  scans and readings stay on the kit and are in its backups.
+
+Without the AI model, choices and numbers are still read, and written words are flagged for
+typing in.
 
 ### Three ways to run it: alone, as a network, or connected
 
@@ -306,7 +350,7 @@ syncing needs:
   locally is essential, the setup must be simple enough to need no networking
   expertise, and the kit should ship ready to run, including on a preloaded USB stick.
 
-### Testing of the AI and library components (October 2026)
+### Testing of the AI and library components (October–November 2026)
 
 We built a test environment in the cloud that simulates the field kit, including a
 switch that cuts all internet access. We tested on two kinds of machine: an ordinary
@@ -325,7 +369,8 @@ a data-centre graphics card standing in for the recommended tier while it is out
 | AI assistant (agent) | Too slow without a graphics card. With one, on 30 realistic field requests about a test survey ("how many households per district?", "find the duplicates", "put the duplicates on hold"): the larger model (gpt-oss-120b) got **24 of 30** right, including every change to data; the smaller one (Gemma 4 26B) got **22 of 30**, reliable for questions but not for changes |
 | AI assistant safety | Both models refused every request to delete data (deleting is blocked) and never touched another server, also with internet blocked. Changes are set to need the user's confirmation; checking that this applies to every KoboToolbox action is part of the next round |
 | Memory needed per tier | Transcription plus translation and analysis fit a laptop graphics card with 8 GB. The larger assistant model needs about 63 GB, so it runs only on the recommended 128 GB tier |
-| Case management (optional) | All 27 checks of the health referral scenario passed online and offline, including a start with the internet already cut. Every expected case opened within 16–32 seconds, routed to the right team, with no duplicates; each role saw only what it should. A capture of the network traffic saw nothing leave the box. About 1.6 GB of software and 200 MB of memory |
+| Case management (optional) | All 27 checks of the health referral scenario passed online and offline, including a start with the internet already cut. Every expected case opened within 16–32 seconds, routed to the right team, with no duplicates; each role saw only what it should. A capture of the network traffic saw nothing leave the box. Follow-up visits, edits and statuses both ways, and a submission case management refused (kept and retried without holding up the others) were tested end to end on the test environment. About 1.6 GB of software and 200 MB of memory |
+| Paper forms (optional) | With internet blocked, synthetic filled-in sheets in four print layouts (A4 and A5, Letter double-sided, English and Arabic) were scanned, read with the kit's AI model and submitted to its KoboToolbox: **93.7–95.2%** of answers read with no one typing, every stored value matched what was sent, and no wrong reading went unflagged in that test. Handwritten words are the weak point (73–87% read right), and a demonstration sheet showed a confident misread (a surname with one letter wrong, not flagged), so reviewers check every answer. Real handwriting still needs testing |
 | Backups and recovery | Plugging in a backup drive backs up the data, recordings, settings and case records by itself, in seconds for the test data, also with internet blocked. Two deleted projects (63 submissions and an audio recording) were restored on the same kit in under a minute. A freshly installed replacement kit restored from the drive in under two minutes, with the original kit's passwords, all projects, the recording byte for byte, and new submissions from a phone working afterwards |
 | Offline library | 13 installers and documents (about 5 GB), each checked against a published or recorded fingerprint; guides load with no internet; large uploads (a 40 MB audio interview) and downloads work through the box. Nine humanitarian standards (Sphere, child protection, education; 44 MB) have since been added from their publisher's open-access editions, with their fingerprints recorded |
 
@@ -358,6 +403,9 @@ contexts where it matters most.
 - **Many sites, one picture.** With a hub kit, coordinators see combined data from every
   site as teams rotate back to base, and can compare districts, spot gaps and adjust
   plans across the whole operation without a connection.
+- **Paper doesn't mean re-typing.** Where phones run short, paper sheets printed from the
+  same form are scanned in at the end of the day and checked against the scan, so paper
+  interviews reach the dataset in hours rather than weeks.
 - **Setup time.** Phones and laptops can be set up entirely from the box: apps,
   KoboCollect project settings and guides, with no app store or internet needed.
 
@@ -395,6 +443,7 @@ risk to a single physical device. Both sides need managing.
 | AI assistants keep conversation histories containing personal data | Stored only on the encrypted device; a retention and deletion policy for each deployment |
 | A dashboard shows more than intended to people on the Wi-Fi | New dashboards start unpublished; sensitive ones use a password; dashboards show summaries, and the owner chooses what goes on them |
 | Case records hold names, phone numbers and health or protection details | Encrypted disk; case workers see only their team's cases and can't delete or export; phone numbers only with consent; backups readable only by the kit's administrator; a retention policy per deployment. Case logins still go over the Wi-Fi without encryption, which is to be fixed before field use |
+| Printed sheets and their scans hold respondents' answers | Filled sheets are handled like any paper record (kept, transported and destroyed under the deployment's rules); scans and readings stay on the encrypted kit and in its backups; the paper forms account sees only the forms shared with it. Its password still goes over the Wi-Fi without encryption, as for case management, to be fixed before field use |
 | Someone writes instructions to the assistant into a form answer | Answers are treated as data, never as instructions; the assistant can't delete data or make changes without confirmation; this case is part of the assistant's test set |
 | Documents added to the knowledge base contain personal data, or text written to mislead the assistant | The knowledge base is for reference material only; the assistant treats document text as information, not instructions, and still can't delete data or make changes without confirmation |
 
@@ -429,6 +478,10 @@ control, retention limits, and a data-sharing plan for when data moves to the cl
   kit skips stretches with no speech before transcribing, flags doubtful passages for
   review, and tests each language with noisy and silent clips as well as clear speech. In
   protection work, a transcript is checked by a person before anything is done with it.
+- **Handwriting can be misread with confidence.** The AI model reading handwritten words
+  flags what it is unsure of, but in testing it also misread a surname by one letter
+  without flagging it. Paper sheets are checked answer by answer against the scan before
+  they are submitted, not only the flagged ones.
 - **Errors are expected and measured.** We publish measured error rates per language
   and per hardware tier, so teams know how much checking is needed.
 - **Answers show their sources.** The assistant cites the guide or document behind each
@@ -484,10 +537,12 @@ control, retention limits, and a data-sharing plan for when data moves to the cl
   from the USB stick, can be restored from that drive with the passphrase on the original
   kit's label card. The kit also keeps a nightly copy of its databases on its own disk,
   to undo mistakes.
-- **Updates.** Kits can't update themselves in the field. Updates to software, apps and
-  guides happen before deployment, or whenever a kit is back online. Later, a kit will be
-  able to update from a USB stick, checking a digital signature first so that only
-  genuine updates are installed.
+- **Updates from a stick.** Kits never download updates by themselves. A newer version of
+  the content, copied to a USB stick by whoever prepares the kits, updates a kit in use when
+  plugged in: the kit first checks the stick's digital signature, so only genuine updates
+  are installed, backs up its data, updates itself in a few minutes and says on its status
+  page when the stick can be removed. Forms, submissions, cases and passwords stay as they
+  were. This works in testing.
 
 ### 4.6 People and skills
 
@@ -533,11 +588,14 @@ Being clear about limits is part of using the kit responsibly:
 
 - It does **not replace connectivity for coordination**: emails, cluster reporting and
   calls with headquarters still need a connection, even an occasional one.
-- **Case management works in one direction for now.** Cases are opened from KoboToolbox,
-  but a case's outcome doesn't flow back to the submission yet, editing a submission
-  doesn't update its case, and follow-up visits can't yet be recorded against a case from
-  the phone (planned). Its screens exist in Arabic, French, Portuguese, Spanish,
-  Turkish and about 30 other languages, but not Swahili.
+- **Case management has been tested only in the test environment.** Follow-up visits
+  from KoboCollect on a phone over the kit's own Wi-Fi are still to be tried. Its screens
+  exist in Arabic, French, Portuguese, Spanish, Turkish and about 30 other languages, but
+  not Swahili.
+- **Paper forms are not yet proven on real handwriting.** The tests used synthetic
+  filled-in sheets; real handwriting, pens, paper and phone photos in poor light will read
+  less well, and handwritten words in scripts beyond those tested may not read at all
+  (choices and numbers still do).
 - Each kit serves **one site at a time**, over its own Wi-Fi. Combining sites needs a
   kit to come back to base or a physical link (cable, local radio link) to the hub;
   sites with no link at all are combined when the kit is carried back.
@@ -582,10 +640,17 @@ recording leaves the camp, and nothing passes through a third-party service.
 screening form. A child with severe malnutrition is found in the morning; by the time the
 worker syncs at the health post, a case is waiting for the nutrition team, due within 48
 hours. A suspected cholera case goes straight to surveillance, marked urgent. Once
-follow-up from the field is added, the worker who visits the household again picks the
-case from a list on their phone and records whether the child reached the clinic. At the end
+the worker visits the household again, they pick the case from a list on their phone and records whether the child reached the clinic. At the end
 of the week the supervisor sees which referrals arrived, which didn't, and which teams are
 behind, without the data leaving the camp.
+
+**A distribution survey when the phones run out.** Half a team's phones were lost in a
+flood, and the post-distribution monitoring can't wait. The supervisor prints two hundred
+numbered sheets of the same form from the kit and hands them out with the remaining phones.
+In the evening, team leaders photograph the filled-in sheets with a phone over the kit's
+Wi-Fi; the next morning a data assistant goes through them beside the scans, corrects the
+few names the kit flagged, and submits them. By midday the paper and phone interviews are
+in the same KoboToolbox project.
 
 **Multi-district assessment with a hub.** Four teams cover four districts, each with a
 budget kit, and rotate back to a field base every few days. At the base, each kit is
@@ -642,9 +707,10 @@ confirm speed, power draw and heat before buying pilot kits.
 | **Dashboards** | Kobo's dashboard service running on the kit, built by the assistant: working offline in testing, with live updates, sharing on the Wi-Fi and maps of administrative areas. Next: a map background for the pilot region, and measuring the assistant on dashboard requests | ✅ Working in testing |
 | **Knowledge base** | Guides indexed on the box and searchable by the assistant, across languages; the deployment's own documents added before or during a mission; tested with the support chatbot's question set | 2–3 weeks; can start now |
 | **Case management (optional)** | EspoCRM on the kit with a bridge that opens cases from KoboToolbox submissions, routed by rules per form: working online and offline in testing, with a health referral scenario: follow-up visits that pick the case from a list and update it, edits and case status both ways with KoboToolbox, the assistant reading cases. Next: follow-ups on a phone with the kit's Wi-Fi, interface languages for the pilot, encrypted logins | ✅ Working in testing |
+| **Paper forms (optional)** | KoboToolbox Paper Forms on the kit: sheets printed from any shared form, scanned or photographed, read on the kit with its AI model, checked and submitted to its KoboToolbox: working offline in testing on synthetic sheets. Next: real handwriting and phone photos over the kit's Wi-Fi on the recommended computer, then signing in with each user's own KoboToolbox account | ✅ Working in testing |
 | **Hardware** | Buy and test one recommended unit; measure speed, power and heat, re-running the same AI and assistant tests; test how many phones and users one kit supports at once; time a full restore from a backup drive | Next |
 | **Multi-site sync** | Kit-to-hub and hub-to-cloud syncing with kobo-transfer, automated and shown on the kit's status page; identical forms on every kit | Sync to a cloud server tested on the prototype; hub workflow to build and test |
-| **Packaging** | Kits that arrive ready to switch on: one-USB installation before shipping; per-kit passwords and keys made on first start; AI settings chosen from the hardware; backups by plugging in a drive; status page; quick-start guide. Backups, restore onto a replacement kit, the self-adjusting AI and network settings, the status page, installing a kit from its content with no internet, and the first start that makes each kit's own passwords and label card are working in testing (11 minutes at the factory and 6 at first start on a fresh computer). Next: the kit's own Wi-Fi and the bootable USB stick, on the recommended computer | Started; 3–5 weeks, partly on the recommended hardware |
+| **Packaging** | Kits that arrive ready to switch on: one-USB installation before shipping; per-kit passwords and keys made on first start; AI settings chosen from the hardware; backups by plugging in a drive; status page; quick-start guide. Backups, restore onto a replacement kit, the self-adjusting AI and network settings, the status page, installing a kit from its content with no internet, the first start that makes each kit's own passwords and label card, and updates from a signed stick are working in testing (11 minutes at the factory and 6 at first start on a fresh computer). Next: the kit's own Wi-Fi and the bootable USB stick, on the recommended computer | Started; 3–5 weeks, partly on the recommended hardware |
 | **Field pilot** | One partner organisation, 3–6 languages, real conditions | After the above |
 | **Scale-up** | Kits available to partners; changes merged into the main KoboToolbox product | After the pilot |
 
@@ -679,14 +745,15 @@ confirm speed, power draw and heat before buying pilot kits.
 - **Fund kits and the pilot:** a development unit, pilot kits (computer, power, Wi-Fi,
   case, optional Android devices), and field costs for the pilot.
 - **Fund development:** completing local transcription and translation in KoboToolbox,
-  the AI assistant, dashboards, the knowledge base and case management on the kit, and
-  the one-USB installer.
+  the AI assistant, dashboards, the knowledge base, case management and paper forms on the
+  kit, and the one-USB installer.
 - **Share reference material:** procedures, protocols and sector guidance (in the
   languages your teams use) that should travel with a kit's library and knowledge base.
 - **Standards bodies:** permission to carry your publications, and their translations,
   on kits for programme use, and early copies of new editions.
 - **Help with languages:** recordings and reference transcripts in the languages your
-  operations use, so we can measure and improve AI quality for them.
+  operations use, and filled-in paper sheets in their scripts, so we can measure and
+  improve AI quality for them.
 - **Host a pilot:** an operation where offline data collection, qualitative interviews or
   sensitive data make this approach worth testing.
 - **Share expertise:** data protection, field logistics, power systems, and
@@ -749,6 +816,8 @@ with the internet cut off.
          │                                                    │
          │  Optional: case management ── cases.kobo.local     │
          │   (EspoCRM; a bridge opens cases from submissions) │
+         │  Optional: paper forms ── paper.kobo.local         │
+         │   (print, scan, read and submit to KoboToolbox)    │
          │                                                    │
          │  Encrypted disk · no internet required             │
          └────────────────────────────────────────────────────┘
@@ -784,6 +853,12 @@ with the internet cut off.
   per form (which submissions, field mapping, team, priority, follow-up time). The same
   file sets up EspoCRM's teams and case fields; the roles are the same on every kit. EspoCRM's checks for new versions,
   which would call out to the internet, are switched off.
+- **Paper forms:** KoboToolbox Paper Forms (kobo-field-forms, open source), which prints
+  sheets from a deployed form, finds and straightens pages by their markers and QR code,
+  reads bubbles and digits itself and handwritten words with the kit's Gemma 4 model, and
+  submits checked sheets through KoboToolbox's API as its own account, with a unique ID per
+  sheet so a resubmission is a duplicate. The kit's first start makes its account and
+  password, and its store is in the kit's backups.
 - **Sync:** kobo-transfer (open source, by Kobo), preinstalled on every kit. It copies new
   submissions, attachments, validation statuses and analysis results between KoboToolbox
   servers, one project at a time, keeping each submission's unique ID so repeat runs
@@ -831,4 +906,5 @@ with the internet cut off.
 | **Humanitarian Standards Partnership** | Sphere and the bodies behind its companion standards (child protection, education, livestock, economic recovery, market analysis, inclusion), which publish them together |
 | **Case management** | Following up individual people or households after data collection (referrals, complaints, protection cases) until each case is closed |
 | **EspoCRM** | An open-source system for managing cases and contacts, which the kit can run for case management |
+| **KoboToolbox Paper Forms** | Open-source tool (kobo-field-forms) that prints paper sheets from a KoboToolbox form and turns scans of the filled-in sheets back into submissions |
 | **kobo-transfer** | Kobo's open-source tool for copying projects and submissions between KoboToolbox servers |
