@@ -3,12 +3,13 @@
 Living reference for where the work stands. The overall plan and workstreams (W1–W7)
 are in [PLAN.md](PLAN.md); per-run results are in [remote/results/NOTES.md](remote/results/NOTES.md).
 
-## Where we are (2026-10-30)
+## Where we are (2026-11-03)
 
 - **Rigs:** the CPU rig (`s-8vcpu-32gb-amd`: Kobo, the KPI backport, kobo-mcp, OpenCode, test
-  data) is parked as `kobo-box-ai-snapshot` in ams3. Since 2026-10-30 its Kobo is on the fixed
-  address (`BOX_IP=10.254.254.254`) with W12's units installed, so a restore no longer needs
-  `run.py`; `/root/fake-usb.img` is an exFAT `KOBOBACKUP` drive for tests
+  data) is parked as `kobo-box-ai-snapshot` in ams3. Its Kobo is 2.026.37d (since
+  2026-11-02, with the backport rebased onto it) on the fixed address
+  (`BOX_IP=10.254.254.254`) with W12's units installed, so a restore needs no `run.py`; it
+  holds the test pack signing key (`/root/kobo-pack-signing.key`); `/root/fake-usb.img` is an exFAT `KOBOBACKUP` drive for tests
   (`losetup -fP /root/fake-usb.img` plugs it in). GPU work runs on a separate H100
   (`NAME=kobo-box-gpu`), deleted after each session: the 20–48 GB GPU sizes stay out of stock.
 - **Proven offline, end to end:**
@@ -19,9 +20,13 @@ are in [PLAN.md](PLAN.md); per-run results are in [remote/results/NOTES.md](remo
   - OpenCode agents doing field tasks through kobo-mcp (W4).
   - Optional case management (W11): EspoCRM at `cases.kobo.local`, with Kobo submissions
     opened as routed cases by a bridge (health referral scenario, 27/27 online and offline).
-  - A box that runs itself (W12, started): Kobo on a fixed internal address (survives
-    reboots and network changes with no `run.py`), AI settings from the hardware, and
-    encrypted backups by plugging in a `KOBOBACKUP` drive, restored on the same box.
+  - A box that runs itself (W12), everything that doesn't need the hardware: Kobo on a
+    fixed internal address, AI settings from the hardware, encrypted backups by plugging in
+    a `KOBOBACKUP` drive, restored on the same box or onto a replacement (EspoCRM
+    included), the status page, a watchdog for hung model servers; kits made from a signed
+    content pack (offline factory install, then a first power-on that gives each box its own
+    name, passwords, case management and label card: 17 min), and updates by plugging in a
+    newer signed pack (37c → 37d in 4 min, data kept).
 - **Models:**
   - KPI batch work: Gemma 4 E4B with thinking off (qual 3/3, translation chrF ~59) and
     Whisper large-v3-turbo (~2% WER, Spanish). Together 6.3 GB: they fit an 8 GB GPU.
@@ -32,10 +37,14 @@ are in [PLAN.md](PLAN.md); per-run results are in [remote/results/NOTES.md](remo
   at ~31 tokens/s means minutes per step.
 
 **Next, in order:**
-0. **W12, what can be done before the hardware:** done (2026-11-02): the status page, the
-   content pack with `install.sh --pack` (now the factory step), and `firstboot.sh` with the
-   label card. What's left needs the box: hotspot + local DNS, the autoinstall USB with LUKS + TPM
-   (`remote/box/README.md` has the order and the design).
+0. **W12, what can be done before the hardware:** done (2026-11-02): the status page and
+   watchdog, the signed content pack with `install.sh --pack` (the factory step),
+   `firstboot.sh` with case management and the label card, restores onto a replacement box,
+   and updates from a newer pack. What's left needs the box: hotspot + local DNS, the
+   autoinstall USB with LUKS + TPM, low-battery shutdown (`remote/box/README.md`).
+0b. **W11 next (no hardware needed):** the bridge ledger (rejected submissions recorded and
+   retried, on the status page, in backups), then choices from the deployed form and
+   follow-ups written back to one case (PLAN 3j).
 1. **W5 hardware:** buy the Strix Halo 128 GB dev unit and re-run the same tests on it
    (`gpu-tiers.sh` equivalents, `w4-run.py`), at full power and capped. This decides the
    kit; everything else so far is a cloud stand-in.
@@ -134,6 +143,9 @@ Testing W2 on the CPU droplet (state kept in the snapshot):
   a new user with an unverified email, with `offline.sh on`.
 - **Homepage screenshots:** `site/kobo-shots.py` runs in the Playwright image on the
   droplet (command in its docstring, plus `--add-host` for the four `*.kobo.local` names).
+  The box's own pages (status page, label card) come from `site/box-shots.py`, which
+  renders them on the laptop with the box's code and made-up values, so no real box's
+  passwords end up in a screenshot.
 - **Firewall:** this network's outgoing IP rotates (several changes on 2026-10-28).
   When SSH times out, compare `curl -4 ifconfig.me` with the firewall's inbound rules and
   add the new IP with `doctl compute firewall add-rules` (don't replace the list: the

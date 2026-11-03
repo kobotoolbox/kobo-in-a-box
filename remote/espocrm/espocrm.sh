@@ -25,10 +25,14 @@ compose() { docker compose -p kobo-cases -f docker-compose.espocrm.yml "$@"; }
 load_secrets() {
     if [[ ! -s "$ESPO_SECRETS" ]]; then
         # First start on this box: passwords nobody else has
+        # The admin's in four groups of four, typed off the label card (no 0/O, 1/l/I);
+        # the database's are only ever read by machines
         ( umask 077
-          for k in ESPO_ADMIN_PASSWORD ESPO_DB_PASSWORD ESPO_DB_ROOT_PASSWORD; do
+          echo "ESPO_ADMIN_PASSWORD=$(python3 -I -c 'import secrets; a = "abcdefghjkmnpqrstuvwxyz23456789"
+print("-".join("".join(secrets.choice(a) for _ in range(4)) for _ in range(4)))')"
+          for k in ESPO_DB_PASSWORD ESPO_DB_ROOT_PASSWORD; do
               echo "$k=$(openssl rand -hex 16)"
-          done > "$ESPO_SECRETS" )
+          done ) > "$ESPO_SECRETS"
         echo "generated passwords in $ESPO_SECRETS"
     fi
     set -a; source "$ESPO_SECRETS"; set +a

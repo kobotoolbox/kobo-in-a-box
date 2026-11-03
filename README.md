@@ -9,7 +9,12 @@ Use test data only. This is a cloud VM, not a field device.
 
 See [PLAN.md](PLAN.md) for the overall plan: hardware choice, KPI changes, and
 OpenCode/OpenWork agents with kobo-mcp. [STATUS.md](STATUS.md) tracks where the work
-stands and the next steps. [docs/concept-note.md](docs/concept-note.md) is the
+stands and the next steps. In short (2026-11-03): KoboToolbox with local AI, the
+library, kobo-mcp, agents and case management all work offline on the rig; kits can be
+made from a signed content pack, set themselves up at first power-on, back up, restore onto
+a replacement and update themselves from a newer pack, all tested on DigitalOcean. What's
+left for a pilot mostly needs the recommended computer (W5): its Wi-Fi hotspot, the
+encrypted autoinstall USB, power measurements. [docs/concept-note.md](docs/concept-note.md) is the
 non-technical overview for partners and donors.
 
 ## Layout

@@ -132,7 +132,7 @@ def main():
         '<meta name="viewport" content="width=device-width, initial-scale=1">'
         f'<title>Label card: {e(name)}</title><style>{CSS}</style></head><body>\n'
         f'<h1>Kobo in a box: {e(name)}</h1>\n'
-        f'<p class="lead">Made on {date.today():%d %B %Y}, when this kit was first switched on.</p>\n'
+        f'<p class="lead">Made on {date.today().day} {date.today():%B %Y}, when this kit was first switched on.</p>\n'
         + '\n'.join(sections)
         + '\n<p class="warn">Keep this card somewhere other than the kit and the backup drive. '
           'Anyone with the card and the kit can read its data.</p>\n'
