@@ -4,9 +4,19 @@ Set up the box's EspoCRM for a case template (W11). Idempotent; espocrm.sh runs 
 every `up`. Run ON THE BOX with EspoCRM up:
 
     python3 -I espocrm-setup.py [--template templates/health-referral.toml] [--demo-users]
+                                [--if-form-changed]
 
 From the template: a team per route, the Case fields (created, or their options updated),
-and two panels on the case page ("Referral details", "Kobo"). Always:
+and two panels on the case page ("Referral details", "Kobo"). Select fields take their
+options from the deployed Kobo form (every deployed project with the template's form
+name, read with the bridge's token through the box's edge): add a choice in Kobo,
+redeploy, and the next setup adds it here. Options are only ever added, never removed,
+so older cases keep their values; options the template writes itself win. Without a
+deployed form yet (a new box), fields whose options come from the form wait for it. After
+a change, the bridge's failed submissions are retried at once.
+
+--if-form-changed does nothing unless a form's deployed version or the template changed
+since the last setup (box.sh's timer runs it every 10 minutes). Always:
   - roles: "Case worker" (their teams' cases, no delete, no export), "Case supervisor"
     (all cases, no delete) and "Kobo bridge" (create and read cases only);
   - the bridge's API user, `kobo-bridge`, whose key goes to the secrets file;
@@ -18,6 +28,7 @@ Talks to EspoCRM as admin at --url (default http://127.0.0.1:$ESPO_PORT), with t
 password from the secrets file ($ESPO_SECRETS).
 """
 import argparse
+import json
 import os
 import re
 import secrets
@@ -26,7 +37,8 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))  # -I leaves the script's own directory off the path
-from bridge import BRIDGE_FIELDS, BridgeError, Espo, load_template  # noqa: E402
+from bridge import (BRIDGE_FIELDS, BridgeError, Espo, Kobo, Ledger, form_choices,  # noqa: E402
+                    load_template, with_form)
 
 NO_DELETE = {'create': 'yes', 'delete': 'no'}
 ROLES = {
@@ -77,28 +89,58 @@ def ensure(espo, entity, attr, value, body):
     return espo.call('POST', f'/{entity}', body=body), True
 
 
-def field_spec(f):
+def field_spec(f, have=None, labels=None):
+    """have: the options EspoCRM has now, kept (and their labels) so cases keep their values."""
     spec = {'type': f['type'], 'label': f['label']}
     if f['type'] in ('enum', 'multiEnum'):
-        names = list(f['options'])
+        names = [o for o in (have or []) if o] + [o for o in f['options'] if o not in (have or [])]
         # An empty first option, so an enum can stay unanswered (it defaults to the first)
         spec['options'] = [''] + names if f['type'] == 'enum' else names
-        spec['translatedOptions'] = f['options']
+        spec['translatedOptions'] = {**{o: (labels or {}).get(o, o) for o in names}, **f['options']}
     return spec
 
 
 def ensure_fields(espo, fields):
+    """Returns True if a field was created or got options."""
     defs = espo.call('GET', '/Metadata', {'key': 'entityDefs.Case.fields'}) or {}
+    i18n = (espo.call('GET', '/I18n') or {}).get('Case', {}).get('options', {})
+    changed = False
     for f in fields:
-        name, spec = f['espo'], field_spec(f)
+        name = f['espo']
+        if 'type' not in f or (f['type'] in ('enum', 'multiEnum') and 'options' not in f):
+            print(f'field waits for the Kobo form: Case.{name} ({f["kobo"]})')
+            continue
         if name not in defs:
             # EspoCRM adds the "c" itself: cZone is created as "zone"
             espo.call('POST', '/Admin/fieldManager/Case',
-                      body={'name': name[1].lower() + name[2:], **spec})
+                      body={'name': name[1].lower() + name[2:], **field_spec(f)})
             print(f'field created: Case.{name}')
-        elif 'options' in spec and defs[name].get('options') != spec['options']:
+            changed = True
+            continue
+        spec = field_spec(f, defs[name].get('options'), i18n.get(name))
+        if 'options' in spec and defs[name].get('options') != spec['options']:
             espo.call('PUT', f'/Admin/fieldManager/Case/{name}', body=spec)
-            print(f'field options updated: Case.{name}')
+            added = [o for o in spec['options'] if o not in (defs[name].get('options') or [])]
+            print(f'field options added: Case.{name}: {", ".join(added)}')
+            changed = True
+    return changed
+
+
+def kobo_forms(t, kobo):
+    """{uid: deployed version} and the union of their choices, or ({}, {}) without Kobo."""
+    if kobo is None:
+        return {}, {}
+    try:
+        projects = kobo.projects(t['form']['name'])
+        choices = {}
+        for uid, version in projects.items():
+            for q, (kind, options) in form_choices(kobo.form(uid, version)).items():
+                have = choices.setdefault(q, (kind, {}))[1]
+                have.update({k: v for k, v in options.items() if k not in have})
+        return projects, choices
+    except BridgeError as e:
+        print(f'Kobo not reachable ({e}): options from the template only')
+        return {}, {}
 
 
 def panel(label, names):
@@ -128,9 +170,31 @@ def main():
     ap.add_argument('--url', default=f'http://127.0.0.1:{os.environ.get("ESPO_PORT", "8084")}')
     ap.add_argument('--secrets', default=os.environ.get('ESPO_SECRETS', '/root/espocrm.secrets'))
     ap.add_argument('--demo-users', action='store_true')
+    ap.add_argument('--if-form-changed', action='store_true')
+    # Kobo through the box's edge on port 80 (setup runs on the host, not in Docker)
+    ap.add_argument('--kobo-url', default=os.environ.get('KOBO_SETUP_URL', 'http://127.0.0.1'))
+    ap.add_argument('--kobo-host', default=os.environ.get('KOBO_SETUP_HOST', 'kf.kobo.local'))
+    ap.add_argument('--token-file', default=os.environ.get('KOBO_TOKEN_FILE', ''))
+    ap.add_argument('--state-dir', default=os.environ.get('BRIDGE_STATE_DIR', ''))
     args = ap.parse_args()
     secrets_path = Path(args.secrets)
     t = load_template(args.template)
+    kobo = None
+    if args.token_file and Path(args.token_file).is_file():
+        kobo = Kobo(args.kobo_url, Path(args.token_file).read_text().strip())
+        if args.kobo_host:
+            kobo.headers['Host'] = args.kobo_host
+    projects, choices = kobo_forms(t, kobo)
+    seen_path = Path(args.state_dir) / 'setup.json' if args.state_dir else None
+    seen = {'template': t['hash'], 'forms': projects}
+    if args.if_form_changed:
+        try:
+            if json.loads(seen_path.read_text()) == seen:
+                return
+        except (OSError, ValueError, AttributeError):
+            pass
+        print(f'form or template changed: setting up again ({", ".join(sorted(projects)) or "no form yet"})')
+    t = with_form(t, choices)
     espo = Espo(args.url, basic=f'admin:{read_secrets(secrets_path)["ESPO_ADMIN_PASSWORD"]}')
 
     espo.call('PUT', '/Settings', body={
@@ -140,8 +204,11 @@ def main():
     print(f'settings: version checks off, time zone {os.environ.get("ESPO_TIMEZONE", "UTC")}')
 
     template_fields = [f for f in t['field'] if f.get('espo')]
-    ensure_fields(espo, BRIDGE_FIELDS + template_fields)
-    ensure_layouts(espo, template_fields)
+    changed = ensure_fields(espo, BRIDGE_FIELDS + template_fields)
+    ensure_layouts(espo, [f for f in template_fields if 'type' in f])
+    if changed and seen_path and (seen_path.parent / 'bridge.sqlite').exists():
+        Ledger(seen_path.parent / 'bridge.sqlite').retry_now()
+        print("bridge: its failed submissions are retried now")
 
     teams = {}
     for name in sorted({r['team'] for r in t['route']}):
@@ -186,6 +253,9 @@ def main():
 
     write_secrets(secrets_path, found)
     print(f'wrote {", ".join(found)} to {secrets_path}')
+    if seen_path:
+        seen_path.parent.mkdir(parents=True, exist_ok=True)
+        seen_path.write_text(json.dumps(seen, indent=2) + '\n')
 
 
 if __name__ == '__main__':

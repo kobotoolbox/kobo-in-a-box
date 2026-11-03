@@ -4,7 +4,10 @@
 # DROPLET in /root/kobo-box-ai/espocrm.
 #
 #   ./espocrm.sh up [--demo-users]   start EspoCRM, set it up for the template, start the bridge
-#   ./espocrm.sh setup [--demo-users] re-run espocrm-setup.py (teams, roles, fields, layouts)
+#   ./espocrm.sh setup [--demo-users] re-run espocrm-setup.py (teams, roles, fields, layouts,
+#                                    options from the deployed Kobo form)
+#   ./espocrm.sh setup --if-form-changed   only if a form version or the template changed
+#                                    (box.sh's timer, every 10 min)
 #   ./espocrm.sh pull                fetch the images (online; the box then starts offline)
 #   ./espocrm.sh down | logs | status
 #   ./espocrm.sh failed              Kobo submissions that couldn't become cases, and why
@@ -84,7 +87,12 @@ case "${1:-}" in
         echo "EspoCRM on http://cases.kobo.local (admin password in $ESPO_SECRETS); bridge polling $KOBO_URL"
         ;;
     pull) docker pull -q "$ESPO_IMAGE"; docker pull -q "$ESPO_DB_IMAGE"; docker pull -q "$BRIDGE_IMAGE" ;;
-    setup) shift; load_secrets; setup "$@" ;;
+    setup)
+        shift
+        if [[ "${1:-}" == --if-form-changed ]] && [[ -z "$(docker ps -q --filter label=com.docker.compose.project=kobo-cases --filter label=com.docker.compose.service=espocrm)" ]]; then
+            exit 0  # case management isn't running on this box
+        fi
+        load_secrets; setup "$@" ;;
     down) load_secrets; compose --profile bridge down; library_link off ;;
     logs) load_secrets; compose --profile bridge logs -f --tail 100 ;;
     status) load_secrets; compose --profile bridge ps ;;
@@ -148,5 +156,5 @@ case "${1:-}" in
         fi
         echo "restored $dir"
         ;;
-    *) sed -n '2,16p' "$0" | sed 's/^# \{0,1\}//' >&2; exit 1 ;;
+    *) sed -n '2,19p' "$0" | sed 's/^# \{0,1\}//' >&2; exit 1 ;;
 esac

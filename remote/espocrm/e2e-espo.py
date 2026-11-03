@@ -10,8 +10,9 @@ Run ON THE DROPLET with Kobo, the edge and `espocrm.sh up --demo-users`:
 shares the form with the bridge's own Kobo account, as on a box set up by firstboot.sh
 (`--share-with cases-bridge`); without it the bridge must use the e2e user's token (rig).
 --ledger adds the ledger check: a visit EspoCRM refuses (a zone it doesn't have) is recorded,
-the next visit still becomes a case, and once the zone is added in EspoCRM the refused one
-becomes a case by itself on its first retry (~1 min). --bridge-state is where the bridge
+the next visit still becomes a case; then the zone is added to the Kobo form (redeployed),
+`espocrm.sh setup --if-form-changed` gives EspoCRM the option from the form, and the
+refused visit becomes a case by itself. --bridge-state is where the bridge
 writes status.json (default /var/lib/kobo-box/bridge). --fake-kobo PORT
 serves the visits from a fake Kobo on this machine instead (to try the EspoCRM side on a
 laptop; point the bridge's KOBO_URL at it).
@@ -29,6 +30,7 @@ Writes ../results/w11-e2e-<time>.json.
 import argparse
 import json
 import re
+import subprocess
 import sys
 import threading
 import time
@@ -108,6 +110,17 @@ class RealKobo:
                 raise SystemExit(out)
         return self.uid
 
+    def add_choice(self, list_name, name, label):
+        """Edit the form in Kobo and redeploy it, as a project manager would."""
+        s, asset = self.call('GET', f'/api/v2/assets/{self.uid}/')
+        content = asset['content']
+        content['choices'].append({'list_name': list_name, 'name': name, 'label': [label]})
+        s, asset = self.call('PATCH', f'/api/v2/assets/{self.uid}/', {'content': content})
+        s, dep = self.call('PATCH', f'/api/v2/assets/{self.uid}/deployment/',
+                           {'active': True, 'version_id': asset['version_id']})
+        self.version = self.call('GET', f'/api/v2/assets/{self.uid}/')[1]['deployed_version_id']
+        return s
+
     def submit(self, answers, sub_uuid):
         fields = ''.join(f'<{k}>{"" if v is None else v}</{k}>' for k, v in answers.items())
         xml = (f'<{self.uid} id="{self.uid}" version="{self.version}">{fields}'
@@ -129,6 +142,7 @@ class FakeKobo:
 
     def __init__(self, port):
         self.uid, self.subs = f'aFake{uuid.uuid4().hex[:12]}', []
+        self.version, self.content = 'vFake1', json.loads(json.dumps(fx.FORM))
         fake = self
 
         class Handler(BaseHTTPRequestHandler):
@@ -141,7 +155,10 @@ class FakeKobo:
                 if url.path == '/api/v2/assets/':
                     out = {'next': None, 'results': [{'uid': fake.uid, 'name': NAME,
                                                       'has_deployment': True,
-                                                      'deployed_version_id': 'vFake1'}]}
+                                                      'deployed_version_id': fake.version}]}
+                elif url.path in (f'/api/v2/assets/{fake.uid}/',
+                                  f'/api/v2/assets/{fake.uid}/versions/{fake.version}/'):
+                    out = {'uid': fake.uid, 'content': fake.content}
                 elif url.path.startswith(f'/api/v2/assets/{fake.uid}/data/') and url.path.count('/') == 7:
                     # One submission, as the bridge's retries fetch it
                     sub_id = int(url.path.rstrip('/').rsplit('/', 1)[1])
@@ -168,6 +185,11 @@ class FakeKobo:
     def deploy(self):
         check('fake Kobo serving', True, self.uid)
         return self.uid
+
+    def add_choice(self, list_name, name, label):
+        self.content['choices'].append({'list_name': list_name, 'name': name, 'label': [label]})
+        self.version = f'vFake{int(self.version[5:]) + 1}'
+        return 200
 
     def submit(self, answers, sub_uuid):
         self.subs.append({'_id': len(self.subs) + 1, '_uuid': sub_uuid,
@@ -251,27 +273,34 @@ def ledger_check(admin, kobo, uid, status_path, timeout):
     check('status.json counts it', st.get('failed') == 1, st.get('failed'))
     check('status.json says why, without answers', 'cZone' in (st.get('oldest_error') or ''),
           st.get('oldest_error'))
-    # The fix, as setup would make it once the form has the zone (PLAN 3j step 2)
-    options = zone_def['options'] + ['zone_9']
-    translated = {**zone_labels, 'zone_9': 'Zone 9'}
-    s_ = status(lambda: admin.call('PUT', '/Admin/fieldManager/Case/cZone', body={
-        'type': 'enum', 'label': 'Zone', 'options': options, 'translatedOptions': translated}))
-    check('zone added in EspoCRM', s_ == 200, s_)
+    # The fix: the zone added to the Kobo form, then setup (box.sh's timer runs it every
+    # 10 min); it adds the option from the form and makes the bridge retry now
+    check('zone added to the Kobo form and redeployed', kobo.add_choice('zone', 'zone_9', 'Zone 9') in (200, 201))
     try:
-        got, took = wait_for(admin, uid, have + 2, 120 + timeout)
-        check('the refused visit becomes a case by itself', bad in {c['cKoboSubmissionUuid'] for c in got},
-              f'after {took:.0f}s')
+        out = subprocess.run([str(HERE / 'espocrm.sh'), 'setup', '--if-form-changed'],
+                             capture_output=True, text=True)
+        check('setup takes the option from the form', out.returncode == 0 and 'cZone: zone_9' in out.stdout,
+              (out.stdout + out.stderr).strip().splitlines()[-1:] if out.stdout or out.stderr else '')
+        got, took = wait_for(admin, uid, have + 2, timeout)
+        case = next((c for c in got if c['cKoboSubmissionUuid'] == bad), None)
+        check('the refused visit becomes a case by itself', case is not None, f'after {took:.0f}s')
+        if case:
+            check('with the zone from the form', admin.call('GET', f'/Case/{case["id"]}')['cZone'] == 'zone_9')
         for _ in range(int(timeout / 5)):
             st = json.loads(status_path.read_text())
             if not st.get('failed'):
                 break
             time.sleep(5)
         check('and leaves the ledger', st.get('failed') == 0, st.get('failed'))
+        again = subprocess.run([str(HERE / 'espocrm.sh'), 'setup', '--if-form-changed'],
+                               capture_output=True, text=True)
+        check('setup again: nothing to do', again.returncode == 0 and not again.stdout.strip(),
+              again.stdout.strip()[:80])
     finally:
-        # Back to the template's options (cases in zone 9 keep their value)
+        # Test only: setup never removes options, so take zone 9 out by hand
         admin.call('PUT', '/Admin/fieldManager/Case/cZone', body={
             'type': 'enum', 'label': 'Zone', 'options': zone_def['options'],
-            'translatedOptions': {k: v for k, v in translated.items() if k != 'zone_9'}})
+            'translatedOptions': zone_labels})
     check('no duplicates', len(cases(admin, uid)) == before + 2, len(cases(admin, uid)))
 
 

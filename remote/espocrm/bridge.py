@@ -24,6 +24,11 @@ form's deployed version changes, since that's usually the fix. Nothing is droppe
 Kobo or EspoCRM can't be reached, the pass ends and the cursor stays, as before. A lost
 ledger means a full rescan, which the uuid lookup makes harmless.
 
+Choices come from the deployed form, not from a copy in the template: each project's
+option labels (and select types) are read from the version it has deployed, again when
+that changes (with_form). Options the template writes itself win (for calculated
+questions, which have no choices in the form, or to relabel).
+
 status.json (for the box's status page) and the logs carry ids, counts and HTTP reasons,
 never answers.
 """
@@ -124,7 +129,18 @@ class Kobo(Api):
                           if a['name'] == name and a.get('has_deployment')})
             if not page.get('next'):
                 return found
-            page = self.call('GET', page['next'])
+            # Kobo's absolute URL names kf.kobo.local: the path only, through our own base
+            nxt = urllib.parse.urlsplit(page['next'])
+            page = self.call('GET', nxt.path + ('?' + nxt.query if nxt.query else ''))
+
+    def form(self, uid, version):
+        """The deployed version's content (survey, choices), or the asset's if that fails."""
+        try:
+            return self.call('GET', f'/api/v2/assets/{uid}/versions/{version}/')['content']
+        except (BridgeError, KeyError, TypeError) as e:
+            if isinstance(e, BridgeError) and not e.rejected:
+                raise
+            return self.call('GET', f'/api/v2/assets/{uid}/')['content']
 
     def submission(self, uid, sub_id):
         """One submission, or None if it was deleted."""
@@ -148,6 +164,45 @@ def load_template(path):
     t.setdefault('route', [])
     t['labels'] = {f['kobo']: f.get('options', {}) for f in t['field'] if f.get('kobo')}
     return t
+
+
+def first_label(label, default):
+    labels = label if isinstance(label, list) else [label]
+    return next((x for x in labels if x), default)
+
+
+def form_choices(content):
+    """{question: (select_one|select_multiple, {choice name: label})} for a Kobo form's
+    select questions: KPI's stored content (type + select_from_list_name, $autoname,
+    labels per translation: the first is used) or XLSForm-style types ("select_one zone")."""
+    lists = {}
+    for c in content.get('choices') or []:
+        name = str(c.get('name', c.get('$autovalue', '')))
+        lists.setdefault(c.get('list_name'), {})[name] = first_label(c.get('label'), name)
+    found = {}
+    for row in content.get('survey') or []:
+        kind, list_name = row.get('type', ''), row.get('select_from_list_name')
+        if ' ' in kind and not list_name:
+            kind, list_name = kind.split(' ', 1)
+        if kind in ('select_one', 'select_multiple') and list_name:
+            found[row.get('name') or row.get('$autoname')] = (kind, lists.get(list_name, {}))
+    return found
+
+
+def with_form(t, choices):
+    """The template with the form's choices: options and select types for every [[field]]
+    whose question is a select in the form, unless the template gives options itself."""
+    fields = []
+    for f in t['field']:
+        q = f.get('kobo')
+        if q in choices and 'options' not in f:
+            kind, options = choices[q]
+            f = {**f, 'options': options}
+            if f.get('espo'):
+                f.setdefault('type', 'multiEnum' if kind == 'select_multiple' else 'enum')
+        fields.append(f)
+    return {**t, 'field': fields,
+            'labels': {f['kobo']: f.get('options', {}) for f in fields if f.get('kobo')}}
 
 
 def flat(sub):
@@ -285,12 +340,23 @@ class Ledger:
 
     visible = None  # the projects of the last pass (sync_once); None: all
 
+    def retry_now(self):
+        """Every failure due now (espocrm-setup.py, after it changed EspoCRM's fields)."""
+        self.db.execute('UPDATE failed SET next_try = 0')
+
     def failures(self, visible_only=False):
         rows = [dict(zip(('asset', 'sub_id', 'uuid', 'error', 'attempts', 'next_try', 'first_seen'), r))
                 for r in self.db.execute('SELECT * FROM failed ORDER BY first_seen, asset, sub_id')]
         if visible_only and self.visible is not None:
             rows = [r for r in rows if r['asset'] in self.visible]
         return rows
+
+
+def missing_fields(t, espo):
+    """The template's Case fields EspoCRM doesn't have (yet). EspoCRM drops values for
+    unknown fields without an error, so no case is opened until setup has made them."""
+    have = espo.call('GET', '/Metadata', {'key': 'entityDefs.Case.fields'}) or {}
+    return sorted(f['espo'] for f in BRIDGE_FIELDS + t['field'] if f.get('espo') and f['espo'] not in have)
 
 
 def handle(t, sub, kobo_url, uid, teams, espo, counts):
@@ -303,6 +369,9 @@ def handle(t, sub, kobo_url, uid, teams, espo, counts):
         raise BridgeError(f'template: {type(e).__name__}', status='template') from None
     if body is None:
         counts['skipped'] += 1
+    elif t.get('missing'):
+        raise BridgeError(f'fields not in EspoCRM yet ({", ".join(t["missing"])}): espocrm.sh setup '
+                          '(box.sh runs it every 10 min)', status='template')
     elif espo.find('Case', 'cKoboSubmissionUuid', sub['_uuid'], select='id'):
         counts['existing'] += 1
     else:
@@ -312,10 +381,12 @@ def handle(t, sub, kobo_url, uid, teams, espo, counts):
               f'({body["priority"]}, {len(body["teamsIds"])} team(s))')
 
 
-def sync_once(t, kobo, espo, kobo_url, ledger, now=None):
+def sync_once(t, kobo, espo, kobo_url, ledger, now=None, forms=None):
     """One pass over every project with the template's name: due retries first, then new
-    submissions. Returns counts. Raises BridgeError when Kobo or EspoCRM is unavailable."""
+    submissions. Returns counts. Raises BridgeError when Kobo or EspoCRM is unavailable.
+    forms: {uid: (version, template with that version's choices)}, kept between passes."""
     now = time.time() if now is None else now
+    forms = {} if forms is None else forms
     teams = team_ids(t, espo)
     counts = {'seen': 0, 'created': 0, 'skipped': 0, 'existing': 0, 'failed': 0, 'retried': 0}
     if ledger.retry_all_if_changed('template', t['hash']):
@@ -336,9 +407,15 @@ def sync_once(t, kobo, espo, kobo_url, ledger, now=None):
     # Failures of projects no longer visible (deleted, or not shared with the bridge any
     # more) are kept, in case they come back, but aren't counted as waiting
     ledger.visible = set(projects)
+    base = t
     for uid, version in projects.items():
         if ledger.retry_all_if_changed(f'version:{uid}', version, asset=uid):
             print(f'{uid}: new form version, retrying its failed submissions')
+        if forms.get(uid, (None,))[0] != (version, base['hash']):
+            forms[uid] = ((version, base['hash']), with_form(base, form_choices(kobo.form(uid, version))))
+        t = forms[uid][1]
+        # Checked every pass (one request): setup may have made the fields since
+        t = {**t, 'missing': missing_fields(t, espo)}
         for sub_id in ledger.due(uid, now):
             counts['retried'] += 1
             sub = kobo.submission(uid, sub_id)
@@ -408,7 +485,7 @@ def main():
     ledger = Ledger(state_dir / 'bridge.sqlite')
     poll = int(env.get('BRIDGE_POLL_SECONDS', '30'))
     print(f'bridge: "{t["form"]["name"]}" from {kobo_url} every {poll}s')
-    last_success = None
+    last_success, forms = None, {}
     while True:
         now, counts, error = time.time(), {}, None
         try:
@@ -417,7 +494,7 @@ def main():
             if hashlib.sha256(Path(env['BRIDGE_TEMPLATE']).read_bytes()).hexdigest()[:16] != t['hash']:
                 t = load_template(env['BRIDGE_TEMPLATE'])
                 print('template reloaded')
-            counts = sync_once(t, kobo, espo, kobo_url, ledger, now)
+            counts = sync_once(t, kobo, espo, kobo_url, ledger, now, forms)
             last_success = now
             if counts['seen'] or counts['failed'] or counts['retried'] or cmd == 'once':
                 print('pass:', ', '.join(f'{k} {v}' for k, v in counts.items()))

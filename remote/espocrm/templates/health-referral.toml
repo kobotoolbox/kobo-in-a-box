@@ -85,8 +85,12 @@ follow_up_hours = 168
 
 # --- Fields: Kobo question → EspoCRM Case field ----------------------------------------
 # espo: the Case field (EspoCRM prefixes custom fields with "c"); none = description only
-# type: varchar | text | int | date | enum | multiEnum
-# options: Kobo choice name → label (the same names are stored in EspoCRM)
+# type: varchar | text | int | date | enum | multiEnum; left out for the form's select
+#   questions (select_one → enum, select_multiple → multiEnum)
+# options: Kobo choice name → label (the same names are stored in EspoCRM). Left out for
+#   select questions: espocrm-setup.py and the bridge read them from the deployed form, so
+#   a choice added in Kobo needs no change here. Written here, they win: for calculated
+#   questions (no choices in the form), or to relabel
 
 [[field]]
 kobo = "referral_reasons"
@@ -98,9 +102,7 @@ options = { child_danger_signs = "Child danger signs", pregnancy_danger_signs = 
 [[field]]
 kobo = "referred_to"
 espo = "cReferredTo"
-type = "enum"
 label = "Referred to"
-options = { health_post = "Zone health post", hospital = "District hospital", otp = "OTP site", tsfp = "TSFP site", ctu = "Cholera treatment unit" }
 
 [[field]]
 kobo = "visit_date"
@@ -111,16 +113,12 @@ label = "Visit date"
 [[field]]
 kobo = "chw"
 espo = "cChw"
-type = "enum"
 label = "CHW"
-options = { chw_amani = "Amani Bizimana", chw_furaha = "Furaha Ndayishimiye", chw_imani = "Imani Kabura", chw_neema = "Neema Hakizimana" }
 
 [[field]]
 kobo = "zone"
 espo = "cZone"
-type = "enum"
 label = "Zone"
-options = { zone_1 = "Zone 1", zone_2 = "Zone 2", zone_3 = "Zone 3", zone_4 = "Zone 4" }
 
 [[field]]
 kobo = "household_id"
@@ -131,9 +129,7 @@ label = "Household ID"
 [[field]]
 kobo = "patient_type"
 espo = "cPatientType"
-type = "enum"
 label = "Patient"
-options = { child_u5 = "Child under 5", pregnant = "Pregnant woman", other = "Other household member" }
 
 [[field]]
 kobo = "age_months"
@@ -144,9 +140,7 @@ label = "Age (months)"
 [[field]]
 kobo = "sex"
 espo = "cSex"
-type = "enum"
 label = "Sex"
-options = { female = "Female", male = "Male" }
 
 [[field]]
 kobo = "caregiver_name"
@@ -173,30 +167,24 @@ type = "enum"
 label = "Referral outcome"
 options = { arrived_treated = "Arrived, treated and sent home", admitted = "Arrived, admitted", enrolled = "Enrolled in programme", not_arrived = "Did not arrive", refused = "Refused referral", transferred = "Transferred", died = "Died" }
 
-# Description only (labels for the details lines)
+# Description only (their labels for the details lines come from the form)
 [[field]]
 kobo = "danger_signs"
-options = { unable_to_drink = "Unable to drink or breastfeed", vomits_everything = "Vomits everything", convulsions = "Convulsions", lethargic = "Lethargic or unconscious", chest_indrawing = "Chest indrawing", none = "None" }
 
 [[field]]
 kobo = "pregnancy_danger_signs"
-options = { bleeding = "Vaginal bleeding", severe_headache = "Severe headache or blurred vision", fever = "Fever", swelling = "Swelling of face or hands", reduced_movement = "Baby moving less", none = "None" }
 
 [[field]]
 kobo = "fever"
-options = { yes = "Yes", no = "No" }
 
 [[field]]
 kobo = "rdt"
-options = { positive = "Positive", negative = "Negative", not_done = "Not done" }
 
 [[field]]
 kobo = "diarrhoea"
-options = { none = "None", acute_watery = "Acute watery", bloody = "Bloody", persistent = "14 days or more" }
 
 [[field]]
 kobo = "severe_dehydration"
-options = { yes = "Yes", no = "No" }
 
 [[field]]
 kobo = "notes"

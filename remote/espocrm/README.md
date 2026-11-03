@@ -74,9 +74,21 @@ password, which sees only the forms shared with it (*View submissions*). Its tok
 reads after `espocrm.env`. The label card tells staff to share the form with it. Test that
 path with `e2e-espo.py --edge --share-with cases-bridge`.
 
+**Choices come from the Kobo form.** The template says which questions become which case
+fields and how cases are routed; it doesn't copy the form's choices. Setup and the bridge
+read them from each project's deployed version (select_one → enum, select_multiple →
+multiEnum, the first label). Add a zone in Kobo and redeploy: within 10 minutes
+(`kobo-box-cases-setup.timer`, `espocrm.sh setup --if-form-changed`) the field has the
+option, and any visit refused for it in the meantime becomes a case by itself. Options are
+only ever added, so older cases keep their values. Options written in the template win:
+for calculated questions (`referral_reasons` has no choices in the form) or to relabel.
+Until a form is shared with the bridge (a new box), select fields wait, and the bridge opens
+no case while a mapped field is missing in EspoCRM (it would drop the value silently): the
+submissions wait in the ledger until setup has made the field.
+
 **Another form.** Copy the template, set `BRIDGE_TEMPLATE` in `espocrm.env`, and run
-`./espocrm.sh setup`: it adds the new teams and fields and updates changed options. It
-doesn't delete fields a template no longer uses.
+`./espocrm.sh setup`: it adds the new teams and fields and their options. It doesn't
+delete fields a template no longer uses.
 
 **Backups.** `./espocrm.sh backup` writes a database dump, EspoCRM's files and the secrets
 to `/root/backups/espocrm-<time>/` (owner-only: the cases hold personal data).
@@ -137,6 +149,15 @@ token Kobo refuses: the page warns "the link to KoboToolbox is not working". The
 switch from the old cursor volume rescanned 13 submissions: 10 existing, no duplicates. The
 backup has the ledger.
 
+**Choices from the form (2026-11-03):** 22 unit tests (KPI's stored form and XLSForm style
+read alike, a choice added in Kobo reaches the case, template options win, setup only adds
+options and keeps labels, the union over several projects, no case before the fields
+exist). `e2e-espo.py --ledger` now fixes the refused visit the real way: the zone added
+to the Kobo form and redeployed through KPI's API, then `espocrm.sh setup
+--if-form-changed`: the visit became a case 22 s later with `cZone = zone_9` and the
+form's label in its name, and a second setup did nothing: 37/37 on the laptop, 38/38 on
+the rig.
+
 **First version (2026-10-30):**
 
 - Unit tests: 9 pass (here and on the rig).
@@ -155,7 +176,6 @@ backup has the ledger.
 
 - Case status back to Kobo (an EspoCRM webhook → set the submission's validation status).
 - Edited Kobo submissions don't update their case (the cursor only moves forward).
-- Choices still copied into the template by hand (PLAN 3j step 2: from the deployed form).
 - An EspoCRM MCP for the box's agents (search and summarise cases, add notes; writes ask
   first), and W4-style tasks for it.
 - EspoCRM's UI in the pilot languages. It ships ar, es, fr, pt, tr and ~30 others (set

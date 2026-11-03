@@ -89,6 +89,29 @@ EOF
 ACTION=="add|change", SUBSYSTEM=="block", ENV{ID_FS_LABEL}=="KOBOPACK", TAG+="systemd", ENV{SYSTEMD_WANTS}+="kobo-box-update-drive.service"
 EOF
 
+    # Case management: a choice added to the Kobo form reaches EspoCRM's fields by itself
+    # (espocrm-setup.py reads the deployed form; a no-op unless its version changed)
+    cat > "$UNIT_DIR/kobo-box-cases-setup.service" <<EOF
+[Unit]
+Description=Kobo in a box: case management follows changes to the Kobo form
+After=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=$HERE/../espocrm/espocrm.sh setup --if-form-changed
+EOF
+    cat > "$UNIT_DIR/kobo-box-cases-setup.timer" <<EOF
+[Unit]
+Description=Kobo in a box: check the case form every 10 minutes
+
+[Timer]
+OnBootSec=10min
+OnUnitActiveSec=10min
+
+[Install]
+WantedBy=timers.target
+EOF
+
     # Nightly, to the box's own disk: databases and settings only (media would double the
     # disk use). Protects against mistakes and corruption, not against losing the box.
     cat > "$UNIT_DIR/kobo-box-backup.service" <<EOF
@@ -136,7 +159,7 @@ WantedBy=timers.target
 EOF
     systemctl daemon-reload
     udevadm control --reload
-    systemctl enable --now kobo-box-ip.service kobo-box-backup.timer kobo-box-status.timer
+    systemctl enable --now kobo-box-ip.service kobo-box-backup.timer kobo-box-status.timer kobo-box-cases-setup.timer
     echo "Installed: kobo-box-ip ($BOX_IP), nightly backup timer, KOBOBACKUP drive rule, KOBOPACK update rule, status page timer"
 }
 
@@ -182,8 +205,8 @@ case "${1:-}" in
         ;;
     install) install_units ;;
     uninstall)
-        systemctl disable --now kobo-box-ip.service kobo-box-backup.timer kobo-box-status.timer 2>/dev/null || true
-        rm -f "$UNIT_DIR"/kobo-box-{ip,backup,backup-drive,update-drive,status}.service "$UNIT_DIR"/kobo-box-{backup,status}.timer \
+        systemctl disable --now kobo-box-ip.service kobo-box-backup.timer kobo-box-status.timer kobo-box-cases-setup.timer 2>/dev/null || true
+        rm -f "$UNIT_DIR"/kobo-box-{ip,backup,backup-drive,update-drive,status,cases-setup}.service "$UNIT_DIR"/kobo-box-{backup,status,cases-setup}.timer \
             "$UNIT_DIR/media-kobobackup.mount" /etc/udev/rules.d/99-kobo-box-{backup,update}.rules
         systemctl daemon-reload
         udevadm control --reload

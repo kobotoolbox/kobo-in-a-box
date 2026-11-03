@@ -5,6 +5,7 @@ Unit tests for the bridge, with Kobo and EspoCRM faked in memory (no network):
 
 The live checks against a running EspoCRM and Kobo are in e2e-espo.py.
 """
+import importlib.util
 import json
 import tempfile
 import unittest
@@ -15,7 +16,25 @@ from pathlib import Path
 import bridge
 import health_fixture as fx
 
-TEMPLATE = bridge.load_template(Path(__file__).parent / 'templates' / 'health-referral.toml')
+BASE = bridge.load_template(Path(__file__).parent / 'templates' / 'health-referral.toml')
+# As the bridge uses it: with the deployed form's choices
+TEMPLATE = bridge.with_form(BASE, bridge.form_choices(fx.FORM))
+spec = importlib.util.spec_from_file_location('setup', Path(__file__).parent / 'espocrm-setup.py')
+setup = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(setup)
+
+
+def kpi_stored(form):
+    """fx.FORM as KPI stores it after a deploy: type and select_from_list_name split,
+    $autoname, labels per translation."""
+    survey = []
+    for row in form['survey']:
+        row = {**row, '$autoname': row['name'], '$kuid': 'k' + row['name']}
+        if ' ' in row['type']:
+            row['type'], row['select_from_list_name'] = row['type'].split(' ', 1)
+        survey.append(row)
+    choices = [{**c, '$autovalue': c['name']} for c in form['choices']]
+    return {'survey': survey, 'choices': choices, 'translations': [None]}
 TEAMS = {fx.RC: 'team-rc', fx.NUT: 'team-nut', fx.SURV: 'team-surv'}
 TEAM_NAMES = {v: k for k, v in TEAMS.items()}
 SUBMITTED = '2026-10-27T09:30:00'
@@ -30,6 +49,7 @@ def submission(n, visit):
 class FakeKobo:
     def __init__(self, subs, uid='aHealth'):
         self.uid, self.subs, self.version = uid, subs, 'v1'
+        self.content = kpi_stored(fx.FORM)
 
     def projects(self, name):
         return {self.uid: self.version} if name == TEMPLATE['form']['name'] else {}
@@ -40,12 +60,17 @@ class FakeKobo:
     def submission(self, uid, sub_id):
         return next((s for s in self.subs if s['_id'] == sub_id), None)
 
+    def form(self, uid, version):
+        return self.content
+
 
 class FakeEspo:
     """reject: zones EspoCRM refuses, as it does a value missing from an enum's options."""
 
     def __init__(self, fail_after=None, reject=()):
         self.cases, self.fail_after, self.reject = [], fail_after, set(reject)
+        # The Case fields setup made
+        self.fields = {f['espo'] for f in bridge.BRIDGE_FIELDS + TEMPLATE['field'] if f.get('espo')}
 
     def find(self, entity, attr, value, select=None):
         if entity == 'Team':
@@ -53,6 +78,8 @@ class FakeEspo:
         return next((c for c in self.cases if c.get(attr) == value), None)
 
     def call(self, method, path, params=None, body=None):
+        if (method, path) == ('GET', '/Metadata'):
+            return {f: {'type': 'varchar'} for f in self.fields}
         assert (method, path) == ('POST', '/Case')
         if self.fail_after is not None and len(self.cases) >= self.fail_after:
             raise bridge.BridgeError('POST /Case: unreachable (ConnectionRefusedError)')
@@ -108,6 +135,54 @@ class ToCase(unittest.TestCase):
         self.assertNotIn('cFollowUpDue', body)
 
 
+class Choices(unittest.TestCase):
+    def test_kpi_stored_and_xlsform_style_give_the_same_choices(self):
+        self.assertEqual(bridge.form_choices(kpi_stored(fx.FORM)), bridge.form_choices(fx.FORM))
+        kind, zones = bridge.form_choices(kpi_stored(fx.FORM))['zone']
+        self.assertEqual((kind, zones), ('select_one', fx.ZONES))
+        self.assertEqual(bridge.form_choices(fx.FORM)['danger_signs'][0], 'select_multiple')
+
+    def test_types_and_labels_from_the_form_template_options_win(self):
+        fields = {f['kobo']: f for f in TEMPLATE['field'] if f.get('kobo')}
+        self.assertEqual((fields['zone']['type'], fields['zone']['options']), ('enum', fx.ZONES))
+        # referral_reasons is calculated in the form: the template's own options stay
+        self.assertEqual(fields['referral_reasons']['options'],
+                         {f['kobo']: f for f in BASE['field'] if f.get('kobo')}['referral_reasons']['options'])
+        self.assertEqual(TEMPLATE['labels']['rdt']['not_done'], 'Not done')
+        relabelled = {**BASE, 'field': [{**f, 'options': {'zone_1': 'North'}} if f.get('kobo') == 'zone' else f
+                                        for f in BASE['field']]}
+        self.assertEqual(bridge.with_form(relabelled, bridge.form_choices(fx.FORM))['labels']['zone'],
+                         {'zone_1': 'North'})
+
+    def test_a_choice_added_in_kobo_reaches_the_case(self):
+        form = kpi_stored(fx.FORM)
+        form['choices'].append({'list_name': 'zone', 'name': 'zone_5', 'label': ['Zone 5 (new)']})
+        sub = submission(1, {**fx.VISITS[0], 'answers': {**fx.VISITS[0]['answers'], 'zone': 'zone_5'}})
+        body = bridge.to_case(bridge.with_form(BASE, bridge.form_choices(form)), sub, 'http://kf', 'aHealth', TEAMS)
+        self.assertEqual(body['cZone'], 'zone_5')
+        self.assertTrue(body['name'].endswith('Zone 5 (new)'))
+
+    def test_setup_only_adds_options_and_keeps_their_labels(self):
+        f = {'espo': 'cZone', 'type': 'enum', 'label': 'Zone', 'options': {'zone_2': 'Zone 2', 'zone_5': 'Zone 5'}}
+        got = setup.field_spec(f, have=['', 'zone_1', 'zone_2'], labels={'zone_1': 'Zone 1', 'zone_2': 'Old'})
+        self.assertEqual(got['options'], ['', 'zone_1', 'zone_2', 'zone_5'])
+        self.assertEqual(got['translatedOptions'], {'zone_1': 'Zone 1', 'zone_2': 'Zone 2', 'zone_5': 'Zone 5'})
+
+    def test_setup_unions_the_choices_of_every_project(self):
+        class TwoProjects:
+            def projects(self, name):
+                return {'a': 'v1', 'b': 'v7'}
+
+            def form(self, uid, version):
+                form = kpi_stored(fx.FORM)
+                if uid == 'b':
+                    form['choices'].append({'list_name': 'zone', 'name': 'zone_5', 'label': ['Zone 5']})
+                return form
+        projects, choices = setup.kobo_forms(BASE, TwoProjects())
+        self.assertEqual(projects, {'a': 'v1', 'b': 'v7'})
+        self.assertEqual(list(choices['zone'][1]), [*fx.ZONES, 'zone_5'])
+
+
 class Sync(unittest.TestCase):
     def setUp(self):
         self.dir = tempfile.TemporaryDirectory()
@@ -118,7 +193,8 @@ class Sync(unittest.TestCase):
     def tearDown(self):
         self.dir.cleanup()
 
-    def sync(self, kobo, espo, ledger=None, t=TEMPLATE, now=1000.0):
+    def sync(self, kobo, espo, ledger=None, t=BASE, now=1000.0):
+        # The template without choices: the bridge reads them from the (fake) form
         return bridge.sync_once(t, kobo, espo, 'http://kf', ledger or self.ledger, now)
 
     def test_creates_once_then_only_new_submissions(self):
@@ -194,7 +270,7 @@ class Sync(unittest.TestCase):
         self.assertEqual(len(self.ledger.failures()), 1)
         espo.reject.clear()
         self.assertEqual(self.sync(kobo, espo, now=1003)['retried'], 0)
-        changed = {**TEMPLATE, 'hash': 'other'}
+        changed = {**BASE, 'hash': 'other'}
         self.assertEqual(self.sync(kobo, espo, t=changed, now=1004)['created'], 1)
 
     def test_deleted_in_kobo_leaves_the_ledger(self):
@@ -225,6 +301,19 @@ class Sync(unittest.TestCase):
         bridge.write_status(path, self.ledger, counts, None, 1000, 1000)
         status = json.loads(path.read_text())
         self.assertEqual((status['failed'], status['failed_elsewhere']), (0, counts['failed']))
+
+    def test_no_case_until_setup_has_made_the_fields(self):
+        # A new box: the form was just shared, setup hasn't made its select fields yet
+        kobo, espo = FakeKobo(self.subs), FakeEspo()
+        espo.fields -= {'cZone', 'cChw'}
+        counts = self.sync(kobo, espo)
+        self.assertEqual((counts['created'], counts['failed']), (0, self.wanted))
+        self.assertIn('cChw, cZone', self.ledger.failures()[0]['error'])
+        # setup makes them and asks for a retry now (Ledger.retry_now)
+        espo.fields |= {'cZone', 'cChw'}
+        self.ledger.retry_now()
+        self.assertEqual(self.sync(kobo, espo, now=1001)['created'], self.wanted)
+        self.assertTrue(all('cZone' in c for c in espo.cases))
 
     def test_pages_through_more_than_one_page(self):
         many = [submission(i + 1, fx.VISITS[1]) for i in range(bridge.PAGE + 5)]

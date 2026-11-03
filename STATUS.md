@@ -42,8 +42,8 @@ are in [PLAN.md](PLAN.md); per-run results are in [remote/results/NOTES.md](remo
    `firstboot.sh` with case management and the label card, restores onto a replacement box,
    and updates from a newer pack. What's left needs the box: hotspot + local DNS, the
    autoinstall USB with LUKS + TPM, low-battery shutdown (`remote/box/README.md`).
-0b. **W11 next (no hardware needed):** the ledger is done (2026-11-03); next, choices from
-   the deployed form (PLAN 3j step 2), then follow-ups written back to one case (step 3).
+0b. **W11 next (no hardware needed):** the ledger and choices from the form are done
+   (2026-11-03); next, follow-up visits written back to exactly one case (PLAN 3j step 3).
 1. **W5 hardware:** buy the Strix Halo 128 GB dev unit and re-run the same tests on it
    (`gpu-tiers.sh` equivalents, `w4-run.py`), at full power and capped. This decides the
    kit; everything else so far is a cloud stand-in.
@@ -258,6 +258,14 @@ Ponto's local EspoCRM testing (`~/code/ponto/infra/espocrm`), with per-box secre
       on the host (`/var/lib/kobo-box/bridge`), in backups, on the status page, and in
       `espocrm.sh failed`. 16 unit tests; `e2e-espo.py --ledger` 35/35 on the rig. EspoCRM's
       admin password is now four groups of four (a fresh install signs in with it).
+
+- [x] **Choices from the deployed form** (2026-11-03, PLAN 3j step 2): the template no longer
+      copies the form's choices (~40 lines gone); setup and the bridge read them from each
+      project's deployed version, options are only added, and `kobo-box-cases-setup.timer`
+      runs `espocrm.sh setup --if-form-changed` every 10 min, so a zone added in Kobo
+      reaches EspoCRM with no one on the box and refused visits retry at once. The bridge
+      opens no case while a mapped field is missing (EspoCRM would drop the value): on a new
+      box, visits wait until setup has made the fields. 22 unit tests; e2e 38/38 on the rig.
 
 ### 3e. W12: a box non-technical teams can run (started 2026-10-30)
 `remote/box/` ([README](remote/box/README.md), PLAN 3k). Tested on the CPU rig.

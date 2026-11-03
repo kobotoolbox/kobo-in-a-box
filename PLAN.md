@@ -626,6 +626,8 @@ other 4xx errors (field removed, team renamed, permissions), but it's less urgen
 **Questions for you:**
 - Follow-ups on closed cases: note only (recommended), or reopen?
 - Should setup run itself on form changes (step 2's timer, recommended), or only by hand?
+  Built with the timer (2026-11-03); `systemctl disable kobo-box-cases-setup.timer` makes it
+  by hand only.
 
 ### 3k. A box non-technical teams can run (W12)
 
@@ -785,7 +787,7 @@ Built and tested 2026-10-30; details in [STATUS.md](STATUS.md).
 - [ ] Open cases as a choice list in Kobo forms, and follow-up visits written back to the case (3j; planned)
 - [x] Confirm EspoCRM rejects an enum value outside its options (3j plan, step 0): a 400 naming the field; an unknown field is silently dropped
 - [x] Bridge ledger (3j step 1, from 510's kobo-connect): rejected submissions recorded and retried, not blocking the form; `status.json`, status page warning, `espocrm.sh failed`; state in backups (2026-11-03)
-- [ ] Choices from the deployed Kobo form (3j step 2); setup re-runs when the form's version changes
+- [x] Choices from the deployed Kobo form (3j step 2); setup re-runs when the form's version changes (2026-11-03: `kobo-box-cases-setup.timer`)
 - [ ] Follow-up visits update exactly one case, listed fields only, plus a stream note; prefill from `open_cases.csv` (3j step 3; with the open-cases item above)
 - [ ] Phase 2: case status back to Kobo; edited submissions; EspoCRM MCP + agent tasks; UI languages for the pilot (per-box secrets from `firstboot.sh` and images in the content pack: done 2026-11-02)
 
