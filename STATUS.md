@@ -42,9 +42,8 @@ are in [PLAN.md](PLAN.md); per-run results are in [remote/results/NOTES.md](remo
    `firstboot.sh` with case management and the label card, restores onto a replacement box,
    and updates from a newer pack. What's left needs the box: hotspot + local DNS, the
    autoinstall USB with LUKS + TPM, low-battery shutdown (`remote/box/README.md`).
-0b. **W11 next (no hardware needed):** the bridge ledger (rejected submissions recorded and
-   retried, on the status page, in backups), then choices from the deployed form and
-   follow-ups written back to one case (PLAN 3j).
+0b. **W11 next (no hardware needed):** the ledger is done (2026-11-03); next, choices from
+   the deployed form (PLAN 3j step 2), then follow-ups written back to one case (step 3).
 1. **W5 hardware:** buy the Strix Halo 128 GB dev unit and re-run the same tests on it
    (`gpu-tiers.sh` equivalents, `w4-run.py`), at full power and capped. This decides the
    kit; everything else so far is a cloud stand-in.
@@ -154,8 +153,8 @@ Testing W2 on the CPU droplet (state kept in the snapshot):
   /24 for the session works, and the next `provision.sh` resets the rules anyway.
 
 ### 3. W3: kobo-mcp offline profile ✅ done 2026-10-28 (droplet-tested, online and offline)
-kobo-mcp branch `w3-offline-box` in `~/Desktop/work/repos/kobo-mcp` (local, not pushed;
-962 unit tests pass, ruff clean):
+kobo-mcp branch `w3-offline-box` in `~/Desktop/work/repos/kobo-mcp`, merged into `main` and
+pushed 2026-11-03 (962 unit tests pass, ruff clean):
 - [x] `HTTP_KOBO_HOSTS` (`9023390`): plain http only for hosts also in `EXTRA_KOBO_HOSTS`
       (checked at startup). Bare `kf.kobo.local` gets `http://`; the token goes over http only
       to such a host; the connection guard trusts port 80 for them only. Sign-in page links
@@ -186,7 +185,7 @@ kobo-mcp branch `w3-offline-box` in `~/Desktop/work/repos/kobo-mcp` (local, not 
 ### 3a. W9: dashboards on the box (PLAN 3h), server-side settings done 2026-10-29
 kobo-dash branch `w9-offline-box`, in a separate worktree `~/Desktop/work/repos/kobo-dash-w9`
 (the main `kobo-dash` checkout has someone's uncommitted map/theme work on `main`; untouched).
-Local, not pushed. Whole suite: 838 passed with the viewer built (`npm run build`);
+Merged into `main` and pushed 2026-11-03. Whole suite: 838 passed with the viewer built (`npm run build`);
 without the build, `test_indexing_and_embedding` fails and 4 tests skip, on `main` too.
 - [x] Kobo over http (`40002c7`): `ALLOWED_SERVERS` may list `http://kf.kobo.local`; the token
       goes over http only to that exact server. Also fixes a gap: a scheme-switching `next`
@@ -251,6 +250,14 @@ Ponto's local EspoCRM testing (`~/code/ponto/infra/espocrm`), with per-box secre
   The bridge uses `host-gateway` instead. Fixed for good by W12's fixed address (3e below). Port 8081 is the batch LLM's, so EspoCRM is on 8084.
 - The rig is still running with the stack up (`espocrm.sh down` to stop it). SSH from
   92.184.112.0/24 was added to `kobo-box-ai-fw` for this session.
+
+- [x] **Bridge ledger** (2026-11-03, PLAN 3j steps 0–1): EspoCRM answers a choice it doesn't
+      have with a 400 naming the field (and silently drops an unknown field). A refused
+      submission is now recorded in `bridge.sqlite` and retried (1 min, 10 min, 1 h, 6 h; at
+      once when the template or form version changes), and the rest carry on; the state is
+      on the host (`/var/lib/kobo-box/bridge`), in backups, on the status page, and in
+      `espocrm.sh failed`. 16 unit tests; `e2e-espo.py --ledger` 35/35 on the rig. EspoCRM's
+      admin password is now four groups of four (a fresh install signs in with it).
 
 ### 3e. W12: a box non-technical teams can run (started 2026-10-30)
 `remote/box/` ([README](remote/box/README.md), PLAN 3k). Tested on the CPU rig.

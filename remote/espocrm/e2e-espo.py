@@ -8,7 +8,11 @@ Run ON THE DROPLET with Kobo, the edge and `espocrm.sh up --demo-users`:
 
 --edge also loads EspoCRM through the edge as http://cases.kobo.local. --share-with USER
 shares the form with the bridge's own Kobo account, as on a box set up by firstboot.sh
-(`--share-with cases-bridge`); without it the bridge must use the e2e user's token (rig). --fake-kobo PORT
+(`--share-with cases-bridge`); without it the bridge must use the e2e user's token (rig).
+--ledger adds the ledger check: a visit EspoCRM refuses (a zone it doesn't have) is recorded,
+the next visit still becomes a case, and once the zone is added in EspoCRM the refused one
+becomes a case by itself on its first retry (~1 min). --bridge-state is where the bridge
+writes status.json (default /var/lib/kobo-box/bridge). --fake-kobo PORT
 serves the visits from a fake Kobo on this machine instead (to try the EspoCRM side on a
 laptop; point the bridge's KOBO_URL at it).
 
@@ -136,7 +140,15 @@ class FakeKobo:
                 q = {k: v[0] for k, v in parse_qs(url.query).items()}
                 if url.path == '/api/v2/assets/':
                     out = {'next': None, 'results': [{'uid': fake.uid, 'name': NAME,
-                                                      'has_deployment': True}]}
+                                                      'has_deployment': True,
+                                                      'deployed_version_id': 'vFake1'}]}
+                elif url.path.startswith(f'/api/v2/assets/{fake.uid}/data/') and url.path.count('/') == 7:
+                    # One submission, as the bridge's retries fetch it
+                    sub_id = int(url.path.rstrip('/').rsplit('/', 1)[1])
+                    out = next((x for x in fake.subs if x['_id'] == sub_id), None)
+                    if out is None:
+                        self.send_error(404)
+                        return
                 elif url.path == f'/api/v2/assets/{fake.uid}/data/':
                     after = json.loads(q['query'])['_id']['$gt']
                     out = {'results': [s for s in fake.subs if s['_id'] > after][:int(q['limit'])]}
@@ -213,6 +225,56 @@ def external_assets(base):
     return sorted(set(hits))
 
 
+def ledger_check(admin, kobo, uid, status_path, timeout):
+    """A refused visit doesn't block the next one, is recorded, and retries by itself."""
+    print('\n-- ledger')
+    zone_def = admin.call('GET', '/Metadata', {'key': 'entityDefs.Case.fields.cZone'})
+    zone_labels = TEMPLATE['labels']['zone']
+    have = before = len(cases(admin, uid))
+    bad, good = str(uuid.uuid4()), str(uuid.uuid4())
+    # V02 (one case, nutrition) in a zone EspoCRM's cZone doesn't have; then V03 as it is
+    kobo.submit({**fx.with_reasons(fx.VISITS[1]['answers']), 'zone': 'zone_9'}, bad)
+    kobo.submit(fx.with_reasons(fx.VISITS[2]['answers']), good)
+    got, took = wait_for(admin, uid, have + 1, timeout)
+    ids = {c['cKoboSubmissionUuid'] for c in got}
+    check('the visit after a refused one still becomes a case', good in ids, f'after {took:.0f}s')
+    check('the refused visit has no case (yet)', bad not in ids)
+    st = {}
+    for _ in range(int(timeout / 5)):
+        try:
+            st = json.loads(status_path.read_text())
+        except (OSError, ValueError):
+            st = {}
+        if st.get('failed'):
+            break
+        time.sleep(5)
+    check('status.json counts it', st.get('failed') == 1, st.get('failed'))
+    check('status.json says why, without answers', 'cZone' in (st.get('oldest_error') or ''),
+          st.get('oldest_error'))
+    # The fix, as setup would make it once the form has the zone (PLAN 3j step 2)
+    options = zone_def['options'] + ['zone_9']
+    translated = {**zone_labels, 'zone_9': 'Zone 9'}
+    s_ = status(lambda: admin.call('PUT', '/Admin/fieldManager/Case/cZone', body={
+        'type': 'enum', 'label': 'Zone', 'options': options, 'translatedOptions': translated}))
+    check('zone added in EspoCRM', s_ == 200, s_)
+    try:
+        got, took = wait_for(admin, uid, have + 2, 120 + timeout)
+        check('the refused visit becomes a case by itself', bad in {c['cKoboSubmissionUuid'] for c in got},
+              f'after {took:.0f}s')
+        for _ in range(int(timeout / 5)):
+            st = json.loads(status_path.read_text())
+            if not st.get('failed'):
+                break
+            time.sleep(5)
+        check('and leaves the ledger', st.get('failed') == 0, st.get('failed'))
+    finally:
+        # Back to the template's options (cases in zone 9 keep their value)
+        admin.call('PUT', '/Admin/fieldManager/Case/cZone', body={
+            'type': 'enum', 'label': 'Zone', 'options': zone_def['options'],
+            'translatedOptions': {k: v for k, v in translated.items() if k != 'zone_9'}})
+    check('no duplicates', len(cases(admin, uid)) == before + 2, len(cases(admin, uid)))
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--token-file', default='/root/e2e-token')
@@ -223,6 +285,8 @@ def main():
                     help="share the form with the bridge's Kobo account (a box: cases-bridge)")
     ap.add_argument('--fake-kobo', type=int, metavar='PORT')
     ap.add_argument('--timeout', type=int, default=180, help='seconds to wait for the bridge')
+    ap.add_argument('--ledger', action='store_true', help='also check failed submissions and retries')
+    ap.add_argument('--bridge-state', default='/var/lib/kobo-box/bridge')
     ap.add_argument('--out', default=str(HERE.parent / 'results'))
     args = ap.parse_args()
     sec = read_secrets(args.secrets)
@@ -295,6 +359,9 @@ def main():
     for base in bases:
         hits = external_assets(base)
         check(f'no external assets ({base})', not hits, ', '.join(hits))
+
+    if args.ledger:
+        ledger_check(admin, kobo, uid, Path(args.bridge_state) / 'status.json', args.timeout)
 
     failed = [r for r in RESULTS if not r['ok']]
     out = Path(args.out) / f'w11-e2e-{started.strftime("%Y%m%d-%H%M%S")}.json'

@@ -7,6 +7,7 @@
 #   ./espocrm.sh setup [--demo-users] re-run espocrm-setup.py (teams, roles, fields, layouts)
 #   ./espocrm.sh pull                fetch the images (online; the box then starts offline)
 #   ./espocrm.sh down | logs | status
+#   ./espocrm.sh failed              Kobo submissions that couldn't become cases, and why
 #   ./espocrm.sh backup [dir]        database dump + EspoCRM's files (default /root/backups)
 #   ./espocrm.sh restore <dir>       put a backup back (stops EspoCRM while it does); from
 #                                    another box too: its passwords then replace this box's
@@ -76,6 +77,8 @@ case "${1:-}" in
         # The daemon gives up for good if it started while EspoCRM was still installing
         compose restart espocrm-daemon >/dev/null
         setup "$@"
+        # Owner-only: submission ids and EspoCRM's reasons (no answers, but still the box's)
+        install -d -m 700 "$BRIDGE_STATE_DIR"
         compose --profile bridge up -d --force-recreate bridge
         library_link on
         echo "EspoCRM on http://cases.kobo.local (admin password in $ESPO_SECRETS); bridge polling $KOBO_URL"
@@ -85,6 +88,7 @@ case "${1:-}" in
     down) load_secrets; compose --profile bridge down; library_link off ;;
     logs) load_secrets; compose --profile bridge logs -f --tail 100 ;;
     status) load_secrets; compose --profile bridge ps ;;
+    failed) python3 -I bridge.py failed "$BRIDGE_STATE_DIR" ;;
     backup)
         load_secrets
         umask 077  # the dump holds personal data
@@ -94,6 +98,13 @@ case "${1:-}" in
             | gzip > "$dir/espocrm.sql.gz"
         compose exec -T espocrm tar -C /var/www/html -czf - data custom client/custom > "$dir/files.tar.gz"
         cp "$ESPO_SECRETS" "$dir/secrets"
+        if [[ -f "$BRIDGE_STATE_DIR/bridge.sqlite" ]]; then
+            # The bridge's ledger (which submissions are still to become cases), consistently
+            # while it runs
+            mkdir -p "$dir/bridge"
+            python3 -I -c 'import sqlite3, sys; sqlite3.connect(sys.argv[1]).backup(sqlite3.connect(sys.argv[2]))' \
+                "$BRIDGE_STATE_DIR/bridge.sqlite" "$dir/bridge/bridge.sqlite"
+        fi
         echo "backup in $dir"
         ;;
     restore)
@@ -122,6 +133,11 @@ case "${1:-}" in
         fi
         gunzip -c "$dir/espocrm.sql.gz" | compose exec -T db mariadb -uroot -p"$ESPO_DB_ROOT_PASSWORD" espocrm
         compose run --rm --no-deps -T --entrypoint tar espocrm -C /var/www/html -xzf - < "$dir/files.tar.gz"
+        if [[ -f "$dir/bridge/bridge.sqlite" ]]; then
+            mkdir -p "$BRIDGE_STATE_DIR"
+            rm -f "$BRIDGE_STATE_DIR"/bridge.sqlite*
+            install -m 600 "$dir/bridge/bridge.sqlite" "$BRIDGE_STATE_DIR/bridge.sqlite"
+        fi
         if $other_box; then
             # Recreated, so the containers get the restored passwords and the bridge its key
             compose up -d db espocrm espocrm-daemon
@@ -132,5 +148,5 @@ case "${1:-}" in
         fi
         echo "restored $dir"
         ;;
-    *) sed -n '2,15p' "$0" | sed 's/^# \{0,1\}//' >&2; exit 1 ;;
+    *) sed -n '2,16p' "$0" | sed 's/^# \{0,1\}//' >&2; exit 1 ;;
 esac

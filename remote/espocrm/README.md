@@ -83,7 +83,9 @@ to `/root/backups/espocrm-<time>/` (owner-only: the cases hold personal data).
 `restore <dir>` puts one back, on the same box or another one. From another box (a
 replacement), its passwords replace this box's: the MariaDB users get the backup's
 passwords, the backup's `secrets` becomes `$ESPO_SECRETS` (the old one is kept as
-`.before-restore-<time>`), and the containers are recreated with them. `box/backup.sh
+`.before-restore-<time>`), and the containers are recreated with them. Backups include
+the bridge's ledger, so submissions still waiting to become cases are still waiting after
+a restore. `box/backup.sh
 restore` does this as part of a whole-box restore.
 
 ## How it works, and why
@@ -93,6 +95,23 @@ restore` does this as part of a whole-box restore.
   down the next pass catches up. The cursor is the last submission `_id` per project. Before
   creating a case, the bridge looks it up by the submission's uuid, so a lost cursor never
   duplicates one. If EspoCRM fails mid-pass, the cursor stays before the failed submission.
+- **One bad submission never blocks the rest** (the ledger, from 510's kobo-connect). When
+  EspoCRM refuses a case (a 4xx: e.g. a zone or reason the template doesn't have, which it
+  answers with a 400 naming the field) or the template can't map a submission, the bridge
+  records it in `bridge.sqlite` and moves on. It's retried after 1 min, 10 min, 1 h, then
+  every 6 h, and at once when the template or the form's deployed version changes. A
+  submission deleted in Kobo leaves the ledger; nothing else is dropped. Only "unreachable"
+  (no connection, 5xx, a refused key) ends the pass with the cursor kept. The ledger and
+  `status.json` are in `BRIDGE_STATE_DIR` (`/var/lib/kobo-box/bridge`, owner-only) on the
+  host, so the status page and backups see them; `./espocrm.sh failed` lists what's waiting
+  and why. A lost ledger means a rescan, which the uuid lookup makes harmless.
+- **Status page:** "N Kobo submissions couldn't become cases. They are kept and tried again"
+  (amber, call support), and "no cases have come from Kobo for N minutes: the link to
+  KoboToolbox is not working" when the bridge hasn't had a good pass for 10 minutes. Only
+  failures of projects the bridge can still see count; a deleted or unshared project's stay
+  in the ledger in case it comes back.
+- **A field EspoCRM doesn't have is silently dropped** (it answers 200). Setup creates
+  every template field, so that only happens if one is removed by hand.
   Default: every 30 s.
 - **Kobo through the edge.** The bridge resolves `kf.kobo.local` to `host-gateway`, i.e.
   the box's own edge nginx on port 80, so a changed box IP doesn't break it. (The rig's
@@ -105,7 +124,20 @@ restore` does this as part of a whole-box restore.
   (that's the paid Advanced Pack).
 - **Logs** carry ids and counts, never answers.
 
-## Tested (2026-10-30)
+## Tested
+
+**The ledger (2026-11-03):** 16 unit tests (a refused visit between good ones, backoff,
+retry on a template or form change, deleted in Kobo, template errors quoting no answer,
+missing team, a project no longer visible, status.json without answers). `e2e-espo.py
+--ledger`: a visit in a zone EspoCRM doesn't have is recorded with the reason and the next
+visit still becomes a case; with the zone added in EspoCRM, the refused visit became a case
+by itself 59 s later, no duplicates: 34/34 on the laptop (fake Kobo), 35/35 on the rig
+(real Kobo), where the status page warned meanwhile and went back to green. A bridge whose
+token Kobo refuses: the page warns "the link to KoboToolbox is not working". The rig's
+switch from the old cursor volume rescanned 13 submissions: 10 existing, no duplicates. The
+backup has the ledger.
+
+**First version (2026-10-30):**
 
 - Unit tests: 9 pass (here and on the rig).
 - Laptop (EspoCRM in Docker, fake Kobo): 26/26.
@@ -123,6 +155,7 @@ restore` does this as part of a whole-box restore.
 
 - Case status back to Kobo (an EspoCRM webhook → set the submission's validation status).
 - Edited Kobo submissions don't update their case (the cursor only moves forward).
+- Choices still copied into the template by hand (PLAN 3j step 2: from the deployed form).
 - An EspoCRM MCP for the box's agents (search and summarise cases, add notes; writes ask
   first), and W4-style tasks for it.
 - EspoCRM's UI in the pilot languages. It ships ar, es, fr, pt, tr and ~30 others (set

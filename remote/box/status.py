@@ -22,7 +22,7 @@ import sys
 import time
 import urllib.error
 import urllib.request
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -283,7 +283,34 @@ def cases():
     port = env_file(REMOTE / 'espocrm' / 'espocrm.env').get('ESPO_PORT', '8084')
     web = http(f'http://127.0.0.1:{port}/', host=f'cases.{DOMAIN}')
     down = not_running(cs)
+    espo_env = env_file(REMOTE / 'espocrm' / 'espocrm.env')
+    try:
+        bridge = json.loads(Path(espo_env.get('BRIDGE_STATE_DIR', '/var/lib/kobo-box/bridge'),
+                                 'status.json').read_text())
+    except (OSError, ValueError):
+        bridge = {}
     if web in (200, 302) and not down:
+        failed = bridge.get('failed') or 0
+        if failed:
+            return check(name, 'warn', (f'Working, but {failed} Kobo submissions couldn\'t become cases. ' if failed > 1 else
+                          "Working, but 1 Kobo submission couldn't become a case. ")
+                         + 'They are kept and tried again by themselves.',
+                         'Call support: they can see which ones and why (espocrm.sh failed).')
+        last = bridge.get('last_success')
+        if bridge.get('last_pass') and not starting():
+            # Kobo can't be reached, or refuses the bridge's token: not for 10 minutes, or
+            # not once since the bridge started
+            if last:
+                minutes = (time.time() - datetime.strptime(last, '%Y-%m-%dT%H:%M:%SZ')
+                           .replace(tzinfo=timezone.utc).timestamp()) // 60
+                stale = minutes >= 10
+                since = f'for {int(minutes)} minutes'
+            else:
+                stale, since = bridge.get('ok') is False, 'since it started'
+            if stale:
+                return check(name, 'warn', f'Working, but no cases have come from Kobo {since}: '
+                             'the link to KoboToolbox is not working.',
+                             'Restart the box. ' + CALL_SUPPORT)
         return check(name, 'ok', 'Working.')
     if starting():
         return check(name, 'busy', 'Starting up.')

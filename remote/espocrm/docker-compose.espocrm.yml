@@ -67,7 +67,7 @@ services:
       KOBO_URL: ${KOBO_URL}
       KOBO_TOKEN_FILE: /run/kobo-token
       BRIDGE_TEMPLATE: /app/templates/${BRIDGE_TEMPLATE}.toml
-      BRIDGE_STATE: /state/cursor.json
+      BRIDGE_STATE_DIR: /state
       BRIDGE_POLL_SECONDS: ${BRIDGE_POLL_SECONDS}
     # -u: -I ignores PYTHONUNBUFFERED, and logs would sit in the buffer
     command: ["python3", "-I", "-u", "/app/bridge.py", "run"]
@@ -75,9 +75,10 @@ services:
       - ./bridge.py:/app/bridge.py:ro
       - ./templates:/app/templates:ro
       - ${KOBO_TOKEN_FILE:-/dev/null}:/run/kobo-token:ro
-      - bridge-state:/state
+      # The ledger (cursor, failed submissions) and status.json, on the host so the box's
+      # status page and backups can read them
+      - ${BRIDGE_STATE_DIR}:/state
 
 volumes:
   db:
   espocrm:
-  bridge-state:

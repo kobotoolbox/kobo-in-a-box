@@ -783,8 +783,8 @@ Built and tested 2026-10-30; details in [STATUS.md](STATUS.md).
 - [x] `bridge.py`: Kobo → cases by polling, deduplicated, safe across restarts; 9 unit tests
 - [x] Health referral scenario (form with referral logic, 13 visits) and `e2e-espo.py`: 27/27 on the rig online and offline, no outbound packets
 - [ ] Open cases as a choice list in Kobo forms, and follow-up visits written back to the case (3j; planned)
-- [ ] Confirm EspoCRM rejects an enum value outside its options (3j plan, step 0)
-- [ ] Bridge ledger (3j step 1, from 510's kobo-connect): rejected submissions recorded and retried, not blocking the form; `status.json`, status page warning, `espocrm.sh failed`; state in backups
+- [x] Confirm EspoCRM rejects an enum value outside its options (3j plan, step 0): a 400 naming the field; an unknown field is silently dropped
+- [x] Bridge ledger (3j step 1, from 510's kobo-connect): rejected submissions recorded and retried, not blocking the form; `status.json`, status page warning, `espocrm.sh failed`; state in backups (2026-11-03)
 - [ ] Choices from the deployed Kobo form (3j step 2); setup re-runs when the form's version changes
 - [ ] Follow-up visits update exactly one case, listed fields only, plus a stream note; prefill from `open_cases.csv` (3j step 3; with the open-cases item above)
 - [ ] Phase 2: case status back to Kobo; edited submissions; EspoCRM MCP + agent tasks; UI languages for the pilot (per-box secrets from `firstboot.sh` and images in the content pack: done 2026-11-02)
