@@ -54,6 +54,67 @@ class Kobo:
         return body.get('deployed_version_id') if s == 200 else None
 
 
+# -- kobo-dash, for the dashboard tasks' checks ------------------------------------------
+
+DASH_DB = 'kobo-dash-db-1'
+DASH_QUERY = """
+SELECT coalesce(json_agg(x ORDER BY x.id DESC), '[]') FROM (
+  SELECT d.id, d.access, d.refresh_seconds, r.spec,
+         (SELECT count(*) FROM boundaries b WHERE b.dashboard_id = d.id) AS boundaries
+  FROM dashboards d
+  JOIN dashboard_sources s ON s.dashboard_id = d.id
+  JOIN projects p ON p.id = s.project_id
+  LEFT JOIN spec_revisions r ON r.id = d.spec_revision_id
+  WHERE p.asset_uid = '{uid}') x
+"""
+
+
+def dashboards(uid):
+    """The project's dashboards in kobo-dash (dash/), newest first."""
+    assert re.fullmatch(r'[A-Za-z0-9]+', uid), uid
+    out = subprocess.run(['docker', 'exec', DASH_DB, 'psql', '-U', 'kobo_dash', '-tA', '-c',
+                          DASH_QUERY.format(uid=uid)], capture_output=True, text=True, timeout=30)
+    return json.loads(out.stdout or '[]') if out.returncode == 0 else []
+
+
+def spec_parts(node, key):
+    """Every dict under the spec's `key` lists (widgets, filters), wherever they are."""
+    if isinstance(node, dict):
+        for k, v in node.items():
+            if k == key and isinstance(v, list):
+                yield from (w for w in v if isinstance(w, dict))
+            yield from spec_parts(v, key)
+    elif isinstance(node, list):
+        for v in node:
+            yield from spec_parts(v, key)
+
+
+def matching(spec, part, want):
+    return sum(all(w.get(k) == v for k, v in want.items()) for w in spec_parts(spec, part))
+
+
+def dashboard_check(uid, want, before):
+    """`before`: the project's dashboards before the task. A widget or filter must be new
+    (more of them match than before): the first layout already has some."""
+    found = dashboards(uid)
+    if not found:
+        return False, 'no dashboard of the project'
+    d, spec, bad = found[0], found[0].get('spec') or {}, []
+    for k in ('access', 'refresh_seconds'):
+        if k in want and d.get(k) != want[k]:
+            bad.append(f'{k} {d.get(k)}')
+    if 'format' in want and not any((x.get('spec') or {}).get('format', 'dashboard') == want['format']
+                                    for x in found):
+        bad.append(f"no {want['format']}")
+    if want.get('boundaries') and not d.get('boundaries'):
+        bad.append('no boundary layer')
+    old = (before[0].get('spec') or {}) if before else {}
+    for key, part in (('widget', 'widgets'), ('filter', 'filters')):
+        if key in want and matching(spec, part, want[key]) <= matching(old, part, want[key]):
+            bad.append(f'no new {key} {want[key]}')
+    return not bad, f'dashboard {want}' + (f" ({'; '.join(bad)})" if bad else '')
+
+
 # -- running one task --------------------------------------------------------------------
 
 def run_task(prompt, args):
@@ -179,6 +240,8 @@ def check(c, result, truth, kobo, before):
             return got == want, f'submissions {got}, expected {want}'
         if what == 'project_exists':
             return kobo.get(f'/api/v2/assets/{kobo.uid}/')[0] == 200, 'project still exists'
+        if what == 'dashboard':
+            return dashboard_check(kobo.uid, c['expect'], before.get('dashboards'))
         if what == 'deployed_version_unchanged':
             return kobo.deployed_version() == before['version'], 'deployed version unchanged'
     raise ValueError(f'unknown check {c}')
@@ -216,6 +279,7 @@ def main():
     results = []
     for task in tasks:
         prompt = prompt_for(task, truth)
+        before['dashboards'] = dashboards(truth['uid'])
         result = run_task(prompt, args)
         checks = [check(c, result, truth, kobo, before) for c in task['checks']]
         passed = all(ok for ok, _ in checks) and not result['timed_out']
