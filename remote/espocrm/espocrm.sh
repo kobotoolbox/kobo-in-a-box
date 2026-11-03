@@ -39,8 +39,13 @@ print("-".join("".join(secrets.choice(a) for _ in range(4)) for _ in range(4)))'
           done ) > "$ESPO_SECRETS"
         echo "generated passwords in $ESPO_SECRETS"
     fi
+    if ! grep -q '^CASES_MCP_TOKEN=' "$ESPO_SECRETS"; then
+        # The assistant's way in to cases_mcp.py (agents.sh puts it in OpenCode's config)
+        ( umask 077; echo "CASES_MCP_TOKEN=$(openssl rand -hex 24)" >> "$ESPO_SECRETS" )
+    fi
     set -a; source "$ESPO_SECRETS"; set +a
-    export ESPO_BRIDGE_API_KEY=${ESPO_BRIDGE_API_KEY:-} ESPO_FOLLOWUP_API_KEY=${ESPO_FOLLOWUP_API_KEY:-}
+    export ESPO_BRIDGE_API_KEY=${ESPO_BRIDGE_API_KEY:-} ESPO_FOLLOWUP_API_KEY=${ESPO_FOLLOWUP_API_KEY:-} \
+        ESPO_EDITS_API_KEY=${ESPO_EDITS_API_KEY:-} ESPO_ASSISTANT_API_KEY=${ESPO_ASSISTANT_API_KEY:-}
 }
 
 wait_ready() {  # EspoCRM installs itself on the first start (~1 min)
@@ -83,6 +88,9 @@ case "${1:-}" in
         # Owner-only: submission ids and EspoCRM's reasons (no answers, but still the box's)
         install -d -m 700 "$BRIDGE_STATE_DIR"
         compose --profile bridge up -d --force-recreate bridge
+        # Cases for the assistant: on a network only OpenCode joins (agents.sh)
+        docker network inspect kobo-assistant >/dev/null 2>&1 || docker network create kobo-assistant >/dev/null
+        compose --profile assistant up -d --force-recreate cases-mcp
         library_link on
         echo "EspoCRM on http://cases.kobo.local (admin password in $ESPO_SECRETS); bridge polling $KOBO_URL"
         ;;
@@ -93,9 +101,9 @@ case "${1:-}" in
             exit 0  # case management isn't running on this box
         fi
         load_secrets; setup "$@" ;;
-    down) load_secrets; compose --profile bridge down; library_link off ;;
-    logs) load_secrets; compose --profile bridge logs -f --tail 100 ;;
-    status) load_secrets; compose --profile bridge ps ;;
+    down) load_secrets; compose --profile bridge --profile assistant down; library_link off ;;
+    logs) load_secrets; compose --profile bridge --profile assistant logs -f --tail 100 ;;
+    status) load_secrets; compose --profile bridge --profile assistant ps ;;
     failed) python3 -I bridge.py failed "$BRIDGE_STATE_DIR" ;;
     backup)
         load_secrets

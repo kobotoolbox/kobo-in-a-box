@@ -45,6 +45,16 @@ cfg['mcp'] = {'kobo': {
     'headers': {'X-Kobo-Token': '{env:KOBO_TOKEN}', 'X-Kobo-Base-URL': 'kf.kobo.local'},
     'timeout': 30000,
 }}
+# Case management's tools, when it runs on this box (espocrm.sh makes the token)
+secrets = {}
+try:
+    secrets = dict(l.split('=', 1) for l in open(os.environ.get('ESPO_SECRETS', '/root/espocrm.secrets')).read().splitlines() if '=' in l)
+except OSError:
+    pass
+if secrets.get('CASES_MCP_TOKEN'):
+    cfg['mcp']['cases'] = {'type': 'remote', 'url': 'http://cases-mcp:8090/mcp', 'enabled': True,
+                           'oauth': False, 'timeout': 30000,
+                           'headers': {'Authorization': 'Bearer ' + secrets['CASES_MCP_TOKEN']}}
 json.dump(cfg, open('opencode/opencode.json', 'w'), indent=2)
 print('wrote opencode/opencode.json for', os.environ['AGENT_MODEL'], 'at', os.environ['AGENT_LLM_URL'])
 PY
@@ -71,6 +81,7 @@ case "${1:-}" in
     up)
         write_config
         export KOBO_TOKEN; KOBO_TOKEN=$(cat "$KOBO_TOKEN_FILE")
+        docker network inspect kobo-assistant >/dev/null 2>&1 || docker network create kobo-assistant >/dev/null
         # Recreate, so OpenCode reads the config just written (it reads it only at start)
         compose --profile agents up -d --build --force-recreate
         wait_for http://localhost:4096/ 180

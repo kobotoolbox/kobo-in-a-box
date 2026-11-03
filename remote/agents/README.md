@@ -7,6 +7,7 @@ without asking.
 | Setting | What it does |
 |---|---|
 | `mcp.kobo` | kobo-mcp at `http://mcp.kobo.local/mcp`, signing in with OAuth (each user pastes their Kobo token once on its `/login` page; PLAN.md §3h) |
+| `mcp.cases` | Case management's tools (`espocrm/cases_mcp.py`), added by `agents.sh` when the box runs it: reads allowed, `cases_add_note` asks; no contact details |
 | `tools`: `kobo_delete_*` → `false` | The model never sees the delete tools. Kobo has no trash |
 | `permission`: `kobo_*` → `ask`, then the 36 read-only tools → `allow` | Reads run freely; anything that changes Kobo (deploying, editing submissions, sharing, dashboards…) asks first. The last matching rule wins, so the catch-all comes first |
 | `webfetch`, `websearch` → `deny` | The box is offline; this avoids slow timeouts |

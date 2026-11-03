@@ -52,6 +52,8 @@
     "kobo_preview_form": "allow",
     "kobo_summarize_submissions": "allow",
     "kobo_whoami": "allow",
+    "cases_*": "allow",
+    "cases_add_note": "ask",
     "webfetch": "deny",
     "websearch": "deny"
   }

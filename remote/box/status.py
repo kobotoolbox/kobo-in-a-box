@@ -294,7 +294,8 @@ def cases():
         if failed:
             return check(name, 'warn', (f'Working, but {failed} Kobo submissions couldn\'t become cases. ' if failed > 1 else
                           "Working, but 1 Kobo submission couldn't become a case. ")
-                         + 'They are kept and tried again by themselves.',
+                         + ('They are kept and tried again by themselves.' if failed > 1
+                            else 'It is kept and tried again by itself.'),
                          'Call support: they can see which ones and why (espocrm.sh failed).')
         last = bridge.get('last_success')
         if bridge.get('last_pass') and not starting():

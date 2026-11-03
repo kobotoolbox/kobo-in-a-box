@@ -63,6 +63,13 @@ class FakeKobo:
     def form(self, uid, version):
         return self.content
 
+    def edited(self, uid):
+        return {x['_id']: x['_uuid'] for x in self.subs if x.get('meta/deprecatedID')}
+
+    def set_validation(self, uid, sub_id, status):
+        self.validation = getattr(self, 'validation', {})
+        self.validation[(uid, sub_id)] = status
+
 
 class FakeEspo:
     """reject: zones EspoCRM refuses, as it does a value missing from an enum's options."""
@@ -80,6 +87,8 @@ class FakeEspo:
     def call(self, method, path, params=None, body=None):
         if (method, path) == ('GET', '/Metadata'):
             return {f: {'type': 'varchar'} for f in self.fields}
+        if (method, path) == ('GET', '/Case') and params.get('where[0][attribute]') == 'modifiedAt':
+            return {'list': [c for c in self.cases if c.get('modifiedAt', '') >= params['where[0][value]']]}
         assert (method, path) == ('POST', '/Case')
         if self.fail_after is not None and len(self.cases) >= self.fail_after:
             raise bridge.BridgeError('POST /Case: unreachable (ConnectionRefusedError)')
@@ -161,6 +170,15 @@ class Choices(unittest.TestCase):
         body = bridge.to_case(bridge.with_form(BASE, bridge.form_choices(form)), sub, 'http://kf', 'aHealth', TEAMS)
         self.assertEqual(body['cZone'], 'zone_5')
         self.assertTrue(body['name'].endswith('Zone 5 (new)'))
+
+    def test_labels_in_the_boxs_language_when_the_form_has_it(self):
+        form = kpi_stored(fx.FORM)
+        form['translations'] = ['English (en)', 'Français (fr)']
+        for c in form['choices']:
+            c['label'] = c['label'] + ([f"Zone {c['name'][-1]} (fr)"] if c['list_name'] == 'zone' else [None])
+        self.assertEqual(bridge.form_choices(form, 'fr_FR')['zone'][1]['zone_2'], 'Zone 2 (fr)')
+        self.assertEqual(bridge.form_choices(form, 'fr_FR')['sex'][1]['female'], 'Female')  # no French: first
+        self.assertEqual(bridge.form_choices(form, 'es_ES')['zone'][1]['zone_2'], 'Zone 2')
 
     def test_setup_only_adds_options_and_keeps_their_labels(self):
         f = {'espo': 'cZone', 'type': 'enum', 'label': 'Zone', 'options': {'zone_2': 'Zone 2', 'zone_5': 'Zone 5'}}
@@ -392,7 +410,10 @@ class CaseEspo(FakeEspo):
             case = super().call(method, path, params, body)
             case.update(number=len(self.cases), status='New')
             return case
-        if method == 'GET' and path == '/Case':
+        if method == 'GET' and path == '/Case' and params.get('where[1][attribute]') == 'cKoboSubmissionId':
+            return {'list': [c for c in self.cases if c['cKoboAsset'] == params['where[0][value]']
+                             and c['cKoboSubmissionId'] == params['where[1][value]']]}
+        if method == 'GET' and path == '/Case' and params.get('where[0][attribute]') != 'modifiedAt':
             where = (params['where[0][attribute]'], params['where[0][type]'])
             if where == ('number', 'equals'):
                 return {'list': [c for c in self.cases if c['number'] == params['where[0][value]']]}
@@ -403,7 +424,9 @@ class CaseEspo(FakeEspo):
             return {'list': [n for n in self.notes if n['parentId'] == path.split('/')[2]]}
         if method == 'PUT' and path.startswith('/Case/'):
             self.puts.append(body)
-            next(c for c in self.cases if c['id'] == path.split('/')[2]).update(body)
+            self.clock = getattr(self, 'clock', 0) + 1
+            next(c for c in self.cases if c['id'] == path.split('/')[2]).update(
+                body, modifiedAt=f'2026-11-03 10:00:{self.clock:02d}')
             return {}
         if method == 'POST' and path == '/Note':
             self.notes.append(body)
@@ -494,6 +517,88 @@ class Followups(unittest.TestCase):
         self.kobo.fu_subs.append(fu_sub(1, fx.followup(1, close=True)))
         counts = bridge.sync_once(BASE, self.kobo, self.espo, 'http://kf', self.ledger, 2000)
         self.assertEqual((counts['updated'], self.ledger.cursor('aFollow')), (0, 0))
+
+
+def edit_of(sub, **answers):
+    """sub as Kobo has it after an edit: same _id, new _uuid, the old one in deprecatedID,
+    and the form's calculations done again on the new answers."""
+    visit = fx.VISITS[sub['_id'] - 1]
+    new = submission(sub['_id'], {**visit, 'answers': {**visit['answers'], **answers}})
+    return {**new, '_submission_time': sub['_submission_time'], 'meta/deprecatedID': 'uuid:' + sub['_uuid']}
+
+
+class Edits(unittest.TestCase):
+    def setUp(self):
+        self.dir = tempfile.TemporaryDirectory()
+        self.ledger = bridge.Ledger(Path(self.dir.name) / 'bridge.sqlite')
+        self.espo = CaseEspo()
+        self.kobo = FollowupKobo([submission(i + 1, v) for i, v in enumerate(fx.VISITS)], [])
+        self.sync(now=1000)
+        self.case1 = self.espo.cases[0]
+
+    def tearDown(self):
+        self.dir.cleanup()
+
+    def sync(self, now):
+        return bridge.sync_once(BASE, self.kobo, self.espo, 'http://kf', self.ledger, now,
+                                espo_fu=self.espo, espo_ed=self.espo)
+
+    def test_an_edit_updates_the_kobo_fields_and_notes_what_changed(self):
+        self.case1.update(status='Assigned', cReferralOutcome='admitted')  # staff's
+        self.kobo.subs[0] = edit_of(self.kobo.subs[0], zone='zone_3', household_id='Z3-0999')
+        counts = self.sync(now=2000)
+        self.assertEqual(counts['edited'], 1)
+        self.assertEqual((self.case1['cZone'], self.case1['cHouseholdId']), ('zone_3', 'Z3-0999'))
+        self.assertEqual((self.case1['status'], self.case1['cReferralOutcome']), ('Assigned', 'admitted'))
+        self.assertEqual(self.case1['cKoboSubmissionUuid'], self.kobo.subs[0]['_uuid'])
+        self.assertTrue(self.case1['name'].endswith('Zone 3'))
+        note = self.espo.notes[-1]['post']
+        self.assertIn('Changed: Zone, Household ID.', note)
+        self.assertNotIn('would now be', note)
+        self.assertNotIn('status', set().union(*self.espo.puts))
+        self.assertEqual(self.sync(now=3000)['edited'], 0)  # applied once
+
+    def test_an_edit_that_would_reroute_says_so_but_changes_neither(self):
+        before = (self.case1['priority'], self.case1['teamsIds'])
+        self.kobo.subs[0] = edit_of(self.kobo.subs[0], muac_mm=108)  # now also SAM
+        self.sync(now=2000)
+        self.assertEqual((self.case1['priority'], self.case1['teamsIds']), before)
+        self.assertIn('would now be Urgent, for Nutrition (OTP), Referral coordinators', self.espo.notes[-1]['post'])
+
+    def test_no_longer_needing_a_case_is_a_note_only(self):
+        sub = self.kobo.subs[1]  # V02: SAM
+        self.kobo.subs[1] = edit_of(sub, muac_mm=140)
+        self.sync(now=2000)
+        self.assertIn('no longer needs follow-up', self.espo.notes[-1]['post'])
+        self.assertEqual(self.espo.cases[1]['status'], 'New')
+
+    def test_now_needing_a_case_opens_one(self):
+        v04 = self.kobo.subs[3]  # no referral
+        self.kobo.subs[3] = edit_of(v04, muac_mm=110)
+        n = len(self.espo.cases)
+        self.assertEqual(self.sync(now=2000)['created'], 1)
+        self.assertEqual(len(self.espo.cases), n + 1)
+
+    def test_an_unedited_case_is_left_alone(self):
+        self.sync(now=2000)
+        self.assertEqual(self.espo.notes, [])
+
+
+class StatusToKobo(unittest.TestCase):
+    def test_closed_and_pending_go_back_once(self):
+        d = tempfile.TemporaryDirectory()
+        self.addCleanup(d.cleanup)
+        ledger = bridge.Ledger(Path(d.name) / 'bridge.sqlite')
+        espo, kobo = CaseEspo(), FollowupKobo([submission(i + 1, v) for i, v in enumerate(fx.VISITS)], [])
+        bridge.sync_once(BASE, kobo, espo, 'http://kf', ledger, 1000, espo_fu=espo)
+        kobo.fu_subs += [fu_sub(1, fx.followup(1, close=True)), fu_sub(2, fx.followup(2, close=False))]
+        counts = bridge.sync_once(BASE, kobo, espo, 'http://kf', ledger, 2000, espo_fu=espo)
+        self.assertEqual(counts['updated'], 2)
+        bridge.sync_once(BASE, kobo, espo, 'http://kf', ledger, 3000, espo_fu=espo)
+        self.assertEqual(kobo.validation, {('aHealth', 1): 'validation_status_approved',
+                                           ('aHealth', 2): 'validation_status_on_hold'})
+        kobo.validation.clear()
+        self.assertEqual(bridge.sync_once(BASE, kobo, espo, 'http://kf', ledger, 4000, espo_fu=espo)['statuses'], 0)
 
 
 if __name__ == '__main__':

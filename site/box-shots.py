@@ -7,7 +7,8 @@ screenshot. The status texts are the ones status.py writes; the values are a tes
 
     python3 site/box-shots.py      # needs Google Chrome; qrencode for the card's QR code
 
-Writes site/static/home/{status-ok,status-update,status-backup,card}.jpg.
+Writes site/static/home/{status-ok,status-update,status-backup,card}.jpg and
+site/static/cases/status-cases.jpg.
 """
 import importlib.util
 import json
@@ -74,11 +75,19 @@ def status_pages(tmp):
             cases, library, disk,
             c('Backups', 'busy', "Backing up to the KOBOBACKUP drive now. Don't unplug it.")],
     }
+    # For site/cases.html
+    states['../cases/status-cases'] = [
+        kobo, ai,
+        c('Case management', 'warn', "Working, but 1 Kobo submission couldn't become a case. "
+          'It is kept and tried again by itself.',
+          'Call support: they can see which ones and why (espocrm.sh failed).'),
+        library, disk]
     checked = datetime.now().astimezone().replace(microsecond=0)
     for name, results in states.items():
-        page = tmp / f'{name}.html'
+        page = tmp / f'{name.replace("/", "_")}.html'
         page.write_text(st.render(results, checked))
-        shoot(page, OUT / f'{name}.jpg', 640, {'status-ok': 1010, 'status-update': 510, 'status-backup': 710}[name])
+        shoot(page, OUT / f'{name}.jpg', 640, {'status-ok': 1010, 'status-update': 510, 'status-backup': 710,
+                                                '../cases/status-cases': 640}[name])
 
 
 def card_page(tmp):

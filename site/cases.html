@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Case management on the kit: Kobo in a box</title>
+<meta name="description" content="How case management works on Kobo in a box: KoboToolbox submissions become cases in EspoCRM, routed to the right team, followed up with a follow-up form, with no internet. Setting it up, day-to-day use, what to do when something goes wrong, privacy, and what was tested.">
+<link rel="icon" href="static/site/icon.png" type="image/png">
+<link rel="stylesheet" href="static/site/home.css">
+</head>
+<body>
+<header class="header">
+  <div class="wrap">
+    <a class="header__brand" href="./"><img src="static/site/logo.svg" alt="KoboToolbox"><span class="header__product">In a box</span></a>
+    <ul class="header__nav">
+      <li><a href="./#how">How it works</a></li>
+      <li><a href="./#field">In the field</a></li>
+      <li><a href="./#ai">AI</a></li>
+      <li><a href="./#library">Library</a></li>
+      <li><a href="./#cases">Case management</a></li>
+      <li><a href="./#results">Results</a></li>
+    </ul>
+    <a class="button button--filled button--m" href="./">Back to the overview</a>
+  </div>
+</header>
+
+<main>
+<section class="banner">
+  <div class="wrap">
+    <h1>Case management on the kit</h1>
+    <p class="banner__lead">Some deployments need to follow up on what forms find: a child referred to hospital, a suspected cholera case, a protection concern. On the kit, each KoboToolbox submission that needs follow-up becomes a case for the right team, the team follows it up, and what happened comes back from the field the same way: with no internet, and no one copying anything by hand.</p>
+    <div class="banner__buttons">
+      <a class="button button--filled" href="#setup">Set it up</a>
+      <a class="button button--light" href="#daily">Day to day</a>
+    </div>
+  </div>
+</section>
+
+<section class="steps" aria-label="The loop">
+  <div class="wrap">
+    <ol>
+      <li><h3>A visit finds something</h3><p>A health worker fills in the referral form in KoboCollect. The form decides whether a referral is needed, and why.</p></li>
+      <li><h3>A case opens</h3><p>Within about 30 seconds the kit opens a case in case management, for the right team, with a priority and a date to follow up by.</p></li>
+      <li><h3>Someone follows up</h3><p>On a follow-up visit, the health worker picks the case in a second form and records what happened. The case is updated, and closed if it's done.</p></li>
+    </ol>
+  </div>
+</section>
+
+<div class="wrap docs">
+<nav class="docs__nav" aria-label="On this page">
+  <ul>
+    <li><a href="#what">What it is</a></li>
+    <li><a href="#who">Who does what</a></li>
+    <li><a href="#setup">Setting it up</a></li>
+    <li><a href="#daily">Day to day</a></li>
+    <li><a href="#followup">Follow-up visits</a></li>
+    <li><a href="#edits">Edits and statuses</a></li>
+    <li><a href="#changes">Changing the forms</a></li>
+    <li><a href="#trouble">When something goes wrong</a></li>
+    <li><a href="#assistant">The assistant</a></li>
+    <li><a href="#privacy">Who sees what</a></li>
+    <li><a href="#languages">Languages</a></li>
+    <li><a href="#tested">What was tested</a></li>
+    <li><a href="#limits">Limits</a></li>
+    <li><a href="#adapting">Adapting it</a></li>
+  </ul>
+</nav>
+
+<article class="prose">
+
+<section id="what">
+<h2>What it is</h2>
+<p>Case management is optional on the kit. When a deployment needs it, the kit runs <a href="https://www.espocrm.com">EspoCRM</a>, an open-source case management system, at <code>cases.kobo.local</code>, next to KoboToolbox. A small program on the kit, the <strong>bridge</strong>, connects the two:</p>
+<ul>
+  <li>it opens a case for each submission of the referral form that needs follow-up, and routes it to a team;</li>
+  <li>it keeps a list of open cases on the follow-up form, so health workers can pick the case they're following up;</li>
+  <li>it writes each follow-up's outcome back onto its case;</li>
+  <li>it updates a case when its submission is edited in KoboToolbox;</li>
+  <li>it shows in KoboToolbox which referrals were followed up.</li>
+</ul>
+<p>Everything stays on the kit: KoboToolbox, the cases and the bridge need no internet. KoboToolbox's own settings are unchanged, and after either side has been down the bridge catches up by itself without duplicating anything.</p>
+<div class="figures figures--half">
+<figure><a href="static/home/landing-cases.jpg"><img src="static/home/landing-cases.jpg" width="900" height="605" alt="The kit's home page with a Case management section under KoboToolbox: an Open case management button and the note Follow-up of referrals and other cases from Kobo forms. Staff accounts only."></a><figcaption>The kit's home page links to case management while it runs.</figcaption></figure>
+<div><p>The kit was tested with one scenario, <strong>community health referrals</strong> in a displacement camp, with made-up people and places. Everything on this page uses it. Another deployment (complaints and feedback, protection referrals, shelter repairs) uses the same parts with its own forms and rules (<a href="#adapting">see Adapting it</a>).</p></div>
+</div>
+</section>
+
+<section id="who">
+<h2>Who does what</h2>
+<div class="table-scroll"><table>
+  <thead><tr><th>Who</th><th>Uses</th><th>Does</th></tr></thead>
+  <tbody>
+    <tr><td>Health workers (enumerators)</td><td>KoboCollect or a web form</td><td>Fill in the referral form at each visit, and the follow-up form when they go back. They need no case management account.</td></tr>
+    <tr><td>Case workers</td><td>Case management, their own account</td><td>See their team's cases, call or visit, record the outcome, close cases. They can't delete or export.</td></tr>
+    <tr><td>Supervisors</td><td>Case management, their own account</td><td>See every case, reassign them, check what's overdue. They can't delete cases.</td></tr>
+    <tr><td>Whoever looks after the kit</td><td>KoboToolbox and case management, with the administrator passwords on the label card</td><td>Share the two forms with the bridge, make staff accounts, read the status page.</td></tr>
+    <tr><td>Support</td><td>The kit's commands, over SSH</td><td>See which submissions couldn't become cases and why, change the rules for a new deployment.</td></tr>
+  </tbody>
+</table></div>
+</section>
+
+<section id="setup">
+<h2>Setting it up</h2>
+<p>When the kit's bundle includes case management, the kit sets it up the first time it is switched on, together with everything else: EspoCRM with passwords nobody else has, and a KoboToolbox account for the bridge called <code>cases-bridge</code>. That account isn't an administrator and can only see the forms shared with it. The label card has the case management address, its administrator password, and these steps.</p>
+<h3>1. Deploy the referral form and share it with the bridge</h3>
+<ol>
+  <li>In KoboToolbox, deploy the referral form. Its name must be exactly the one the kit expects (for the test scenario, <strong>Community health referral</strong>).</li>
+  <li>Open the form's <strong>Settings → Sharing</strong>, add the user <code>cases-bridge</code> and give it <strong>View submissions</strong>. Give it <strong>Validate submissions</strong> too, so the kit can show in KoboToolbox which referrals were followed up (<a href="#edits">see Edits and statuses</a>).</li>
+</ol>
+<h3>2. Deploy the follow-up form and share it too</h3>
+<ol>
+  <li>Deploy the follow-up form (<strong>Community health referral follow-up</strong>).</li>
+  <li>Share it with <code>cases-bridge</code> with <strong>View submissions</strong> and <strong>Edit form</strong>. The bridge needs to edit it to keep the list of open cases on it.</li>
+</ol>
+<h3>3. Make the staff accounts</h3>
+<p>Sign in to <code>cases.kobo.local</code> as <code>admin</code> (password on the label card). Under <strong>Administration → Users</strong>, create an account for each case worker with the role <strong>Case worker</strong> and their team, and for supervisors the role <strong>Case supervisor</strong>. The teams (for the test scenario: Referral coordinators, Nutrition (OTP), Surveillance) are already there. Then <a href="./#field">connect to the Wi-Fi</a> and open <code>cases.kobo.local</code> on any phone or laptop.</p>
+<div class="note"><p>Within 10 minutes of the forms being shared, the kit reads their choices (zones, health workers, referral sites) and sets up the case fields from them. Visits submitted in the meantime wait and become cases as soon as that's done; none are lost.</p></div>
+</section>
+
+<section id="daily">
+<h2>Day to day</h2>
+<h3>A referral becomes a case</h3>
+<p>The referral form works out whether a visit needs a referral and why, as the health worker fills it in, so the phone shows where to refer. When the submission reaches the kit, the bridge opens a case within about 30 seconds: its name says what and where ("Child danger signs: Child under 5, Zone 4"), its description what the health worker found, and its details the answers that matter for follow-up. It goes to every team whose rule matches, with the highest priority and the earliest follow-up time among them:</p>
+<div class="table-scroll"><table>
+  <thead><tr><th>Referral (test scenario)</th><th>Team</th><th>Priority</th><th>Follow up within</th></tr></thead>
+  <tbody>
+    <tr><td>Suspected cholera</td><td>Surveillance</td><td>Urgent</td><td>6 hours</td></tr>
+    <tr><td>Child or pregnancy danger signs</td><td>Referral coordinators</td><td>Urgent</td><td>24 hours</td></tr>
+    <tr><td>Bloody or persistent diarrhoea</td><td>Referral coordinators</td><td>High</td><td>48 hours</td></tr>
+    <tr><td>Severe acute malnutrition</td><td>Nutrition (OTP)</td><td>High</td><td>48 hours</td></tr>
+    <tr><td>Moderate acute malnutrition</td><td>Nutrition (OTP)</td><td>Normal</td><td>7 days</td></tr>
+  </tbody>
+</table></div>
+<figure><a href="static/home/case-urgent.jpg"><img src="static/home/case-urgent.jpg" width="1280" height="1000" alt="An urgent case, Child danger signs: Child under 5, Zone 4, created by kobo-bridge for the Referral coordinators team. The description lists the danger signs and the CHW's notes; referral details give the follow-up time, referral reason, health post, visit date, CHW, zone, household ID, the child's age and sex, and the caregiver's name and phone number, recorded because they agreed to a call back."></a><figcaption>A case as the bridge opened it from a home visit. The caregiver's phone is on it only because they agreed to a call back.</figcaption></figure>
+<h3>Working the cases</h3>
+<p>Case workers see their own team's cases, newest first, with the date to follow up by. They open one, call or visit, record the referral outcome, and close it. Supervisors see all of them, and can filter by team, zone, reason or what's overdue.</p>
+<div class="figures figures--half">
+<figure><a href="static/home/cases-supervisor.jpg"><img src="static/home/cases-supervisor.jpg" width="1440" height="900" alt="EspoCRM's Cases list as the supervisor: names such as Suspected cholera, Child danger signs, Severe acute malnutrition and Bloody diarrhoea, each with status New or Closed, priority Urgent, High or Normal, a follow-up time and the teams it was sent to."></a><figcaption>The supervisor's list: every case, with priority, follow-up deadline and teams.</figcaption></figure>
+<figure><a href="static/home/cases-worker.jpg"><img src="static/home/cases-worker.jpg" width="1440" height="900" alt="The Cases list signed in as the nutrition team's case worker: only cases that involve the Nutrition (OTP) team."></a><figcaption>A nutrition case worker sees only the cases for their team.</figcaption></figure>
+</div>
+</section>
+
+<section id="followup">
+<h2>Follow-up visits</h2>
+<p>When a health worker goes back, or calls, they open the <strong>follow-up form</strong> in KoboCollect or the browser:</p>
+<ol>
+  <li>They choose their zone. The form then lists only the open cases in that zone, each as <em>CS-12 · Z2-0147 · Child danger signs · due 31 Oct</em>: the case number, the household, the reason and the follow-up date.</li>
+  <li>They pick the case. The form shows what it was referred for and by when.</li>
+  <li>They record whether the person reached care, the outcome, and whether to close the case.</li>
+</ol>
+<div class="figures figures--half">
+<figure><a href="static/cases/enketo-followup.jpg"><img src="static/cases/enketo-followup.jpg" width="824" height="1400" alt="The follow-up form in a phone browser: Your zone with Zone 1 selected, then Which case? listing open cases in zone 1, such as CS-2 · Z1-0032 · Severe acute malnutrition · due 1 Nov and CS-8 · Z1-0101 · Child danger signs, Moderate acute malnutrition · due 31 Oct."></a><figcaption>The follow-up form in the browser: only the zone's open cases, by number, household, reason and due date.</figcaption></figure>
+<div>
+<p><strong>The list of open cases</strong> is a file, <code>open_cases.csv</code>, that the kit keeps on the follow-up form. It holds only what's needed to pick the right case (number, household, reason, zone, team, due date), never names or phone numbers, because the whole list goes to every phone that has the form.</p>
+<p>It is updated when cases open or close, at most every 15 minutes, since each update makes phones download the form again. Phones get the new list the next time they update their forms (in KoboCollect: <strong>Get blank form</strong>, or automatic updates in the project settings).</p>
+<figure><a href="static/cases/kobo-media.jpg"><img src="static/cases/kobo-media.jpg" width="1400" height="212" alt="The follow-up form's media settings in KoboToolbox: Attached files, open_cases.csv."></a><figcaption>The list on the follow-up form, in KoboToolbox's media settings. KoboToolbox may say the form needs redeploying to see media changes: the kit has already done that.</figcaption></figure>
+</div>
+</div>
+<p>When the follow-up reaches the kit, the bridge updates <strong>exactly that case</strong>: the outcome, and the status (closed, or pending if it isn't done). Nothing else on the case changes. It also adds a note to the case's history with everything the health worker recorded, so case workers see it even if they had changed the case since. If the case number matches no case, or more than one, nothing is guessed: the follow-up waits, and the status page says so.</p>
+<p><strong>A closed case is never reopened by a follow-up.</strong> It gets the note, saying the case was already closed, and stays as it is: a case worker decides whether it needs reopening.</p>
+<div class="figures figures--half">
+<figure><a href="static/cases/case-closed.jpg"><img src="static/cases/case-closed.jpg" width="1600" height="1281" alt="A case, Moderate acute malnutrition: Child under 5, Zone 1, status Closed, referral outcome Arrived, admitted, modified by kobo-followup."></a><figcaption>A case closed by a follow-up visit, with its outcome.</figcaption></figure>
+<figure><a href="static/cases/case-followup-notes.jpg"><img src="static/cases/case-followup-notes.jpg" width="1200" height="1055" alt="The case's history: kobo-bridge created the case; kobo-followup updated it to Closed; a note Follow-up visit, By Amani Bizimana, Date, Reached care Yes, Outcome Arrived, admitted, Notes Seen at the hospital; then a second follow-up note on the closed case, outcome Died, The case was already closed: not changed."></a><figcaption>Its history: the follow-up note, and a later follow-up on the closed case, added as a note only.</figcaption></figure>
+</div>
+</section>
+
+<section id="edits">
+<h2>Edits and statuses</h2>
+<h3>When a submission is edited in KoboToolbox</h3>
+<p>Submissions get corrected: a wrong zone, a household ID typed twice. When someone edits a referral submission in KoboToolbox, the case follows:</p>
+<ul>
+  <li>the answers that came from KoboToolbox (zone, household, ages, MUAC…) are updated, and a note says which changed;</li>
+  <li>the priority, the teams, the status and anything staff filled in stay as they are. If the edit means the rules would now route the case differently, the note says so, for a case worker to decide;</li>
+  <li>if the edit means the visit no longer needs a case, the case gets a note saying so and isn't closed automatically; if it now needs one, a case opens.</li>
+</ul>
+<figure><a href="static/cases/case-edited-note.jpg"><img src="static/cases/case-edited-note.jpg" width="1200" height="627" alt="A case's history: kobo-bridge created the case; kobo-edits: The Kobo submission was edited. Changed: Zone, Household ID; Admin updated the case to Closed."></a><figcaption>A case whose submission was corrected in KoboToolbox.</figcaption></figure>
+<h3>Case status back in KoboToolbox</h3>
+<p>The case's status goes back to its submission in KoboToolbox: a closed case marks the submission <strong>Approved</strong>, a pending one <strong>On hold</strong>. So the referral form's data table and its exports show which referrals were followed up, without opening case management. Deployments that use KoboToolbox's validation status for data-quality review can turn this off.</p>
+<figure><a href="static/cases/kobo-table.jpg"><img src="static/cases/kobo-table.jpg" width="1600" height="956" alt="KoboToolbox's data table for the Community health referral form: a Validation column, with Approved on the visits whose cases were closed, and the visits' health worker, date, zone, household ID and patient."></a><figcaption>The referral form in KoboToolbox: the visits whose cases were closed are Approved.</figcaption></figure>
+</section>
+
+<section id="changes">
+<h2>Changing the forms</h2>
+<p>Deployments change: a new zone in the camp, another referral site, a new health worker. <strong>Add the choice to the KoboToolbox form and redeploy it.</strong> Case management takes its choices from the form itself, so within 10 minutes the new choice works in cases too, with no one changing anything on the kit. Choices are only ever added, so older cases keep theirs. A visit that used the new choice before that happened waits and becomes a case by itself.</p>
+<p>New questions, a different form name, other teams or routing rules are a change to the kit's rules for the deployment: ask support (<a href="#adapting">see Adapting it</a>).</p>
+</section>
+
+<section id="trouble">
+<h2>When something goes wrong</h2>
+<p>The kit's <a href="./#field">status page</a> at <code>kobo.local/status</code> has a row for case management:</p>
+<div class="figures figures--half">
+<figure><a href="static/cases/status-cases.jpg"><img src="static/cases/status-cases.jpg" width="1280" height="1280" alt="The status page: Working, but something needs attention. Case management in amber: Working, but 1 Kobo submission couldn't become a case. It is kept and tried again by itself. Call support: they can see which ones and why (espocrm.sh failed)."></a><figcaption>One submission couldn't become a case.</figcaption></figure>
+<div><p>Amber means case management works but something needs a look; nothing is lost while it's amber. Red means it isn't working: restart the kit, and if it stays red, call support.</p></div>
+</div>
+<div class="table-scroll"><table>
+  <thead><tr><th>It says</th><th>What it means</th><th>What to do</th></tr></thead>
+  <tbody>
+    <tr><td>Working.</td><td>Cases are opening and follow-ups arriving.</td><td>Nothing.</td></tr>
+    <tr><td>N Kobo submissions couldn't become cases.</td><td>Case management refused them (for example a choice it doesn't have yet), or a follow-up named a case that doesn't exist. They're kept and tried again: after 1 minute, 10 minutes, an hour, then every 6 hours, and straight away when the form changes. All the other submissions carry on.</td><td>Often nothing: a new choice sorts itself out within 10 minutes. If it stays, call support.</td></tr>
+    <tr><td>No cases have come from Kobo for N minutes.</td><td>The bridge can't reach KoboToolbox, or KoboToolbox refuses its account (for example after a password reset of <code>cases-bridge</code>).</td><td>Restart the kit. If it stays, call support.</td></tr>
+    <tr><td>Working, but new cases are not being opened.</td><td>The bridge has stopped.</td><td>Restart the kit. If it stays, call support.</td></tr>
+  </tbody>
+</table></div>
+<p>Nothing is ever dropped. For support, <code>espocrm.sh failed</code> lists the waiting submissions with the reason case management gave, and nothing of their answers.</p>
+<p><strong>Backups and replacement kits.</strong> The kit's backups (plugging in the <code>KOBOBACKUP</code> drive) include the cases, their history, and the submissions still waiting. Restoring onto a replacement kit brings all of it back with the old kit's passwords, with nothing to type but the backup passphrase.</p>
+</section>
+
+<section id="assistant">
+<h2>The assistant</h2>
+<p>When the kit runs the <a href="./#assistant">assistant</a>, it can work with cases too. Ask it, for example, <q>which urgent cases are overdue, by team?</q> or <q>summarise the open nutrition cases in zone 3</q>. It can list and filter cases, read one with its history, count them by team, zone, reason or status, and add a note to a case. It asks before every note, and it can't change any field, open or delete a case. It never sees the caregiver's name or phone number: case management withholds them from it.</p>
+<div class="warning"><p>The assistant needs the recommended computer or a graphics card; it is in testing.</p></div>
+</section>
+
+<section id="privacy">
+<h2>Who sees what</h2>
+<ul>
+  <li><strong>Case workers</strong> see only their own team's cases and can't delete or export them; supervisors see and can export all of them; only the administrator can delete.</li>
+  <li><strong>A caregiver's phone number</strong> is recorded only if they agreed to a call back, and reaches only the case.</li>
+  <li><strong>The list on the follow-up form</strong> has case numbers, household IDs, reasons, zones and dates, nothing more.</li>
+  <li><strong>The bridge works as four separate accounts</strong> in case management, each allowed only its own job:</li>
+</ul>
+<div class="table-scroll"><table>
+  <thead><tr><th>Account</th><th>Can</th><th>Can't</th></tr></thead>
+  <tbody>
+    <tr><td><code>kobo-bridge</code></td><td>Open cases from referrals; read cases</td><td>Change or delete any case</td></tr>
+    <tr><td><code>kobo-followup</code></td><td>Write a follow-up's outcome and status; add notes</td><td>Change any other field, open or delete cases</td></tr>
+    <tr><td><code>kobo-edits</code></td><td>Update the answers that came from KoboToolbox; add notes</td><td>Change priority, teams, status or staff's fields; open or delete cases</td></tr>
+    <tr><td><code>kobo-assistant</code></td><td>Read cases (without names and phone numbers); add notes</td><td>Change, open or delete cases</td></tr>
+  </tbody>
+</table></div>
+<ul>
+  <li><strong>In KoboToolbox</strong>, the bridge's account sees only the two forms shared with it.</li>
+  <li><strong>The kit's logs</strong> hold case numbers, counts and errors, never answers.</li>
+  <li><strong>Nothing leaves the kit</strong>: case management's checks for new versions are off, it sends no email, and a test with all traffic captured saw nothing go out.</li>
+  <li>Case management is reached over plain HTTP on the kit's own Wi-Fi, as KoboToolbox is (<a href="./#limits">see Limits</a>).</li>
+</ul>
+</section>
+
+<section id="languages">
+<h2>Languages</h2>
+<p>Case management's screens come in about 40 languages, among them Arabic, French, Portuguese, Spanish and Turkish, but not Swahili, Hausa or Amharic. Each user can pick their own; the kit sets the default for everyone. Choice labels (zones, reasons, outcomes) come from the KoboToolbox form's translation in that language when the form has one, so they read as the health workers see them.</p>
+</section>
+
+<section id="tested">
+<h2>What was tested</h2>
+<p>On the test environment that simulates the kit, with the health referral scenario:</p>
+<ul>
+  <li><strong>60 of 60 end-to-end checks</strong> through the real KoboToolbox: cases opened, routed and permissions held; a refused visit kept and later turned into a case by itself after the form gained the choice; follow-ups closing their case with only the outcome changed; a follow-up on a closed case added as a note only; an unknown case number kept; a submission edited in KoboToolbox updating its case; a closed case showing as Approved in KoboToolbox.</li>
+  <li><strong>The follow-up form in KoboToolbox's web forms (Enketo):</strong> the case list showed exactly the zone's open cases, and picking one showed its reason and due date. The list was in the form's media for KoboCollect.</li>
+  <li><strong>Offline:</strong> the first version (cases opening and routing) passed with all internet traffic blocked, including a cold start, and a capture of the traffic saw nothing go out. Follow-ups, edits and statuses were tested with the test environment online; they use only the kit's own KoboToolbox and case management, and will be run offline with the next round.</li>
+  <li><strong>Replacement kit:</strong> a backup with 60 cases restored onto a newly installed kit in 2 minutes 19 seconds; every case back, and new visits became cases through the new kit's bridge account.</li>
+  <li><strong>The assistant's tools</strong> checked with the standard client the assistant uses: every tool, no names or phone numbers in the answers, a wrong key refused.</li>
+  <li><strong>Small:</strong> about 1.6 GB of software and 200 MB of memory when idle.</li>
+</ul>
+</section>
+
+<section id="limits">
+<h2>Limits</h2>
+<ul>
+  <li><strong>Not yet tested on a phone.</strong> The follow-up form's case list and prefill worked in the browser; KoboCollect on a phone will be tested with the kit's own Wi-Fi.</li>
+  <li><strong>One scenario so far.</strong> Other deployments need their own forms and rules (<a href="#adapting">see below</a>), and should be tested before use.</li>
+  <li><strong>Photos and repeated groups</strong> in a form don't reach the case yet, and places are a fixed list of zones, not linked records.</li>
+  <li><strong>No Swahili, Hausa or Amharic screens</strong> in case management.</li>
+  <li><strong>Plain HTTP</strong> on the kit's Wi-Fi: anyone on the network could in principle see sign-ins. Keep the Wi-Fi password to staff.</li>
+</ul>
+</section>
+
+<section id="adapting">
+<h2>Adapting it to a deployment</h2>
+<p>A deployment's rules are one file, a <em>template</em>, that says:</p>
+<ul>
+  <li>which KoboToolbox form, and which of its submissions become cases;</li>
+  <li>which questions become which case fields, and what the case is called;</li>
+  <li>the routing: which answers send a case to which team, with what priority and follow-up time;</li>
+  <li>the follow-up form, which of its answers are written back, and which close the case;</li>
+  <li>whether case status goes back to KoboToolbox.</li>
+</ul>
+<p>The form's choices aren't copied into it: they come from the form. The test scenario's template and the technical details (the bridge, setup, the commands support uses) are in the project's <code>remote/espocrm/</code> folder and its README.</p>
+</section>
+
+</article>
+</div>
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <div>
+      <img src="static/site/logo-white.svg" alt="KoboToolbox">
+      <p>Kobo in a box: KoboToolbox, local AI and an offline library for teams working without reliable internet. A prototype in testing.</p>
+    </div>
+    <div>
+      <span class="footer__label">KoboToolbox</span>
+      <ul>
+        <li><a href="https://www.kobotoolbox.org">kobotoolbox.org</a></li>
+        <li><a href="https://support.kobotoolbox.org">Help Center</a></li>
+        <li><a href="https://community.kobotoolbox.org">Community forum</a></li>
+      </ul>
+    </div>
+    <div>
+      <span class="footer__label">On this site</span>
+      <ul>
+        <li><a href="./">Overview</a></li>
+        <li><a href="./#field">In the field</a></li>
+        <li><a href="#setup">Case management: setting it up</a></li>
+        <li><a href="#trouble">Case management: when something goes wrong</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>
+</body>
+</html>

@@ -38,7 +38,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))  # -I leaves the script's own directory off the path
 from bridge import (BRIDGE_FIELDS, BridgeError, Espo, Kobo, Ledger, form_choices,  # noqa: E402
-                    load_template, with_form)
+                    kobo_fields, load_template, with_form)
 
 NO_DELETE = {'create': 'yes', 'delete': 'no'}
 ROLES = {
@@ -67,9 +67,28 @@ ROLES = {
         'assignmentPermission': 'no', 'userPermission': 'no', 'exportPermission': 'no',
         'massUpdatePermission': 'no',
     },
+    # Edited Kobo submissions: edit existing cases, only the fields that come from Kobo
+    # (fieldData, set in main), and post notes; never create or delete. (Field-level "no
+    # edit" applies to creating too, so kobo-bridge, which creates, can't be limited so.)
+    'Kobo edits': {
+        'data': {'Case': {'create': 'no', 'read': 'all', 'edit': 'all', 'delete': 'no', 'stream': 'all'}},
+        'assignmentPermission': 'no', 'userPermission': 'no', 'exportPermission': 'no',
+        'massUpdatePermission': 'no',
+    },
+    # The box's assistant (cases_mcp.py): read cases and post notes, nothing else; contact
+    # details withheld by EspoCRM itself (fieldData, set in main)
+    'Assistant': {
+        'data': {'Case': {'create': 'no', 'read': 'all', 'edit': 'no', 'delete': 'no', 'stream': 'all'},
+                 'Team': {'read': 'all'}},
+        'assignmentPermission': 'no', 'userPermission': 'no', 'exportPermission': 'no',
+        'massUpdatePermission': 'no',
+    },
 }
 API_USERS = {'kobo-bridge': ('Kobo bridge', 'ESPO_BRIDGE_API_KEY'),
-             'kobo-followup': ('Kobo follow-up', 'ESPO_FOLLOWUP_API_KEY')}
+             'kobo-followup': ('Kobo follow-up', 'ESPO_FOLLOWUP_API_KEY'),
+             'kobo-edits': ('Kobo edits', 'ESPO_EDITS_API_KEY'),
+             'kobo-assistant': ('Assistant', 'ESPO_ASSISTANT_API_KEY')}
+HIDDEN_FROM_ASSISTANT = {'cCaregiverName', 'cCaregiverPhone'}
 DETAIL_PANEL, KOBO_PANEL = 'Referral details', 'Kobo'
 LIST = ['name', 'number', 'status', 'priority', 'cFollowUpDue', 'teams', 'assignedUser']
 
@@ -100,7 +119,8 @@ def ensure(espo, entity, attr, value, body):
 
 def field_spec(f, have=None, labels=None):
     """have: the options EspoCRM has now, kept (and their labels) so cases keep their values."""
-    spec = {'type': f['type'], 'label': f['label']}
+    language = os.environ.get('ESPO_LANGUAGE', 'en_US')
+    spec = {'type': f['type'], 'label': (f.get('labels') or {}).get(language, f['label'])}
     if f['type'] in ('enum', 'multiEnum'):
         names = [o for o in (have or []) if o] + [o for o in f['options'] if o not in (have or [])]
         # An empty first option, so an enum can stay unanswered (it defaults to the first)
@@ -143,7 +163,8 @@ def kobo_forms(t, kobo):
         projects = kobo.projects(t['form']['name'])
         choices = {}
         for uid, version in projects.items():
-            for q, (kind, options) in form_choices(kobo.form(uid, version)).items():
+            for q, (kind, options) in form_choices(kobo.form(uid, version),
+                                                   os.environ.get('ESPO_LANGUAGE')).items():
                 have = choices.setdefault(q, (kind, {}))[1]
                 have.update({k: v for k, v in options.items() if k not in have})
         return projects, choices
@@ -206,11 +227,12 @@ def main():
     t = with_form(t, choices)
     espo = Espo(args.url, basic=f'admin:{read_secrets(secrets_path)["ESPO_ADMIN_PASSWORD"]}')
 
+    language = os.environ.get('ESPO_LANGUAGE', 'en_US')
     espo.call('PUT', '/Settings', body={
         'adminNotificationsNewVersion': False, 'adminNotificationsNewExtensionVersion': False,
-        'applicationName': 'Kobo in a box: cases',
+        'applicationName': 'Kobo in a box: cases', 'language': language,
         'timeZone': os.environ.get('ESPO_TIMEZONE', 'UTC')})
-    print(f'settings: version checks off, time zone {os.environ.get("ESPO_TIMEZONE", "UTC")}')
+    print(f'settings: version checks off, language {language}, time zone {os.environ.get("ESPO_TIMEZONE", "UTC")}')
 
     template_fields = [f for f in t['field'] if f.get('espo')]
     changed = ensure_fields(espo, BRIDGE_FIELDS + template_fields)
@@ -225,12 +247,20 @@ def main():
         teams[name] = team['id']
         print(f'team {"created" if new else "exists"}: {name}')
 
-    # The follow-up user may edit the listed fields and the status, nothing else
+    # Field by field: the follow-up user may edit the listed fields and the status, the
+    # edits user the fields that come from Kobo (and the name, description, uuid); the
+    # others have no field limits
     fu = t.get('followup') or {}
-    writable = set(fu.get('fields', {}).values()) | ({'status'} if fu.get('status') else set())
+    writable = {
+        'Kobo follow-up': set(fu.get('fields', {}).values()) | ({'status'} if fu.get('status') else set()),
+        'Kobo edits': {f['espo'] for f in kobo_fields(t)} | {'name', 'description', 'cKoboSubmissionUuid'},
+    }
     case_fields = espo.call('GET', '/Metadata', {'key': 'entityDefs.Case.fields'}) or {}
-    roles_spec = {**ROLES, 'Kobo follow-up': {**ROLES['Kobo follow-up'], 'fieldData': {'Case': {
-        f: {'read': 'yes', 'edit': 'yes' if f in writable else 'no'} for f in case_fields}}}}
+    roles_spec = {name: {**spec, 'fieldData': {'Case': {
+        f: {'read': 'yes', 'edit': 'yes' if f in writable[name] else 'no'} for f in case_fields}}
+        if name in writable else {}} for name, spec in ROLES.items()}
+    roles_spec['Assistant']['fieldData'] = {'Case': {
+        f: {'read': 'no', 'edit': 'no'} for f in HIDDEN_FROM_ASSISTANT if f in case_fields}}
     roles = {}
     for name, spec in roles_spec.items():
         role, new = ensure(espo, 'Role', 'name', name, {'name': name, 'fieldData': {}, **spec})

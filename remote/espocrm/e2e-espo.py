@@ -14,6 +14,9 @@ the next visit still becomes a case; then the zone is added to the Kobo form (re
 `espocrm.sh setup --if-form-changed` gives EspoCRM the option from the form, and the
 refused visit becomes a case by itself. --bridge-state is where the bridge
 writes status.json (default /var/lib/kobo-box/bridge).
+--edits (real Kobo only): a visit edited in Kobo (resubmitted with deprecatedID, as Enketo's
+edit does) updates its case's Kobo fields with a note; a closed case's status goes back to
+Kobo as the submission's validation status.
 --followup (real Kobo only) adds the follow-up form: the bridge puts open_cases.csv on it
 (minimal columns, served to phones in the OpenRosa manifest), a follow-up closes its case
 with the listed fields only and a note, a second one on the closed case is a note only, an
@@ -127,11 +130,13 @@ class RealKobo:
         self.version = self.call('GET', f'/api/v2/assets/{self.uid}/')[1]['deployed_version_id']
         return s
 
-    def submit(self, answers, sub_uuid):
+    def submit(self, answers, sub_uuid, edits=None):
+        """edits: the uuid of the submission this one replaces (an edit)."""
         fields = ''.join(f'<{k}>{"" if v is None else v}</{k}>' for k, v in answers.items())
+        deprecated = f'<deprecatedID>uuid:{edits}</deprecatedID>' if edits else ''
         xml = (f'<{self.uid} id="{self.uid}" version="{self.version}">{fields}'
                f'<__version__>{self.version}</__version__>'
-               f'<meta><instanceID>uuid:{sub_uuid}</instanceID></meta></{self.uid}>')
+               f'<meta><instanceID>uuid:{sub_uuid}</instanceID>{deprecated}</meta></{self.uid}>')
         boundary = uuid.uuid4().hex
         body = (f'--{boundary}\r\nContent-Disposition: form-data; name="xml_submission_file"; '
                 f'filename="s.xml"\r\nContent-Type: text/xml\r\n\r\n{xml}\r\n--{boundary}--\r\n')
@@ -265,6 +270,49 @@ def media_csv(kobo, uid, filename):
         return r.read().decode()
 
 
+def edits_check(admin, kobo, uid, uuids, timeout):
+    """An edit in Kobo updates the case; a case's status goes back to Kobo."""
+    print('\n-- edits and status back to Kobo')
+    v02 = next(c for c in cases(admin, uid) if c['cKoboSubmissionUuid'] == uuids['V02'])
+    case = admin.call('GET', f'/Case/{v02["id"]}')
+    visit = next(v for v in fx.VISITS if v['key'] == 'V02')
+    new_uuid = str(uuid.uuid4())
+    s_ = kobo.submit(fx.with_reasons({**visit['answers'], 'zone': 'zone_3', 'household_id': 'Z3-0777'}),
+                     new_uuid, edits=uuids['V02'])
+    check('visit edited in Kobo', s_ in (200, 201, 202), s_)
+    after = {}
+    for _ in range(int(timeout / 5)):
+        after = admin.call('GET', f'/Case/{v02["id"]}')
+        if after.get('cZone') == 'zone_3':
+            break
+        time.sleep(5)
+    check('the case has the new answers', (after.get('cZone'), after.get('cHouseholdId')) == ('zone_3', 'Z3-0777'),
+          (after.get('cZone'), after.get('cHouseholdId')))
+    check('and the new uuid', after.get('cKoboSubmissionUuid') == new_uuid)
+    check('priority, teams and status kept', (after['priority'], sorted(after['teamsIds']), after['status'])
+          == (case['priority'], sorted(case['teamsIds']), case['status']))
+    stream = admin.call('GET', f'/Case/{v02["id"]}/stream', params={'maxSize': 50})['list']
+    check('a note says what changed', any('Changed: Household ID, Zone.' in (x.get('post') or '')
+                                          or 'Changed: Zone, Household ID.' in (x.get('post') or '') for x in stream))
+    eds = read_secrets(ARGS.secrets).get('ESPO_EDITS_API_KEY')
+    if eds:
+        ed = Espo(ARGS.espo_url, api_key=eds)
+        status(lambda: ed.call('PUT', f'/Case/{v02["id"]}', body={'status': 'Rejected', 'priority': 'Low'}))
+        again = admin.call('GET', f'/Case/{v02["id"]}')
+        check("the edits user can't change status or priority", (again['status'], again['priority'])
+              == (after['status'], after['priority']))
+    # Status back: close it; Kobo shows the submission as approved
+    admin.call('PUT', f'/Case/{v02["id"]}', body={'status': 'Closed'})
+    got = None
+    for _ in range(int(timeout / 5)):
+        s_, sub = kobo.call('GET', f'/api/v2/assets/{uid}/data/{v02["cKoboSubmissionId"]}/')
+        got = ((sub or {}).get('_validation_status') or {}).get('uid') if s_ == 200 else None
+        if got == 'validation_status_approved':
+            break
+        time.sleep(5)
+    check('closing the case approves the submission in Kobo', got == 'validation_status_approved', got)
+
+
 def followup_check(admin, kobo, uid, token, timeout):
     """Follow-up visits update their case; the open-cases list on the follow-up form."""
     print('\n-- follow-ups')
@@ -361,8 +409,9 @@ def followup_check(admin, kobo, uid, token, timeout):
             break
         time.sleep(5)
     check('the closed case leaves the list', f'cs_{n},' not in csv_text)
-    # Leave no failure behind for the status page (test only)
-    fu.call('DELETE', f'/api/v2/assets/{fu.uid}/')
+    # Leave no failure behind for the status page (test only), unless it's wanted for a look
+    if not ARGS.keep_followup:
+        fu.call('DELETE', f'/api/v2/assets/{fu.uid}/')
 
 
 def ledger_check(admin, kobo, uid, status_path, timeout):
@@ -438,6 +487,8 @@ def main():
     ap.add_argument('--bridge-state', default='/var/lib/kobo-box/bridge')
     ap.add_argument('--out', default=str(HERE.parent / 'results'))
     ap.add_argument('--followup', action='store_true', help='also check follow-up visits (real Kobo)')
+    ap.add_argument('--edits', action='store_true', help='also check edits and status back (real Kobo)')
+    ap.add_argument('--keep-followup', action='store_true', help='leave the follow-up form deployed')
     args = ap.parse_args()
     global ARGS
     ARGS = args
@@ -514,6 +565,8 @@ def main():
 
     if args.ledger:
         ledger_check(admin, kobo, uid, Path(args.bridge_state) / 'status.json', args.timeout)
+    if args.edits and not args.fake_kobo:
+        edits_check(admin, kobo, uid, uuids, args.timeout)
     if args.followup and not args.fake_kobo:
         followup_check(admin, kobo, uid, Path(args.token_file).read_text().strip(), args.timeout)
 

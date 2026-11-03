@@ -92,10 +92,12 @@ def main():
     espo_pw = env_file(Path(espo_env.get('ESPO_SECRETS', '/root/espocrm.secrets'))).get('ESPO_ADMIN_PASSWORD', '')
     bridge_user = espo_env.get('BRIDGE_KOBO_USER', '')
     form = followup_form = ''
+    validate = False
     try:
         template = tomllib.loads((TEMPLATES / f"{espo_env.get('BRIDGE_TEMPLATE', '')}.toml").read_text())
         form = template['form']['name']
         followup_form = (template.get('followup') or {}).get('form', '')
+        validate = bool((template.get('kobo_status') or {}).get('map'))
     except (OSError, ValueError, KeyError):
         pass
 
@@ -118,7 +120,8 @@ def main():
             + '<p>For making case workers\' accounts. '
             + (f'Cases open from the Kobo form <strong>{e(form)}</strong> once it is shared, in Kobo, '
                if form else 'Cases open from a Kobo form once it is shared, in Kobo, ')
-            + f'with the user <strong>{e(bridge_user)}</strong> ("View submissions" is enough).'
+            + f'with the user <strong>{e(bridge_user)}</strong> ("View submissions"'
+            + (', and "Validate submissions" so Kobo shows which were followed up).' if validate else ' is enough).')
             + (f' Share the follow-up form <strong>{e(followup_form)}</strong> with it too, with "Edit form" '
                'as well: it keeps the list of open cases on that form.' if followup_form else '')
             + '</p></section>')

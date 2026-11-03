@@ -5,6 +5,8 @@
 #   espocrm         the web app, on 127.0.0.1:${ESPO_PORT} (edge: cases.kobo.local)
 #   espocrm-daemon  EspoCRM's scheduled jobs (notifications, cleanup)
 #   bridge          polls Kobo for new submissions of the template's form, creates cases
+#   cases-mcp       profile `assistant`: cases for the box's assistant (cases_mcp.py), on
+#                   the kobo-assistant network only OpenCode joins; not published
 
 services:
   db:
@@ -65,7 +67,9 @@ services:
       ESPO_URL: http://espocrm
       ESPO_API_KEY: ${ESPO_BRIDGE_API_KEY}
       ESPO_FOLLOWUP_API_KEY: ${ESPO_FOLLOWUP_API_KEY:-}
+      ESPO_EDITS_API_KEY: ${ESPO_EDITS_API_KEY:-}
       BRIDGE_LIST_MIN_SECONDS: ${BRIDGE_LIST_MIN_SECONDS:-900}
+      ESPO_LANGUAGE: ${ESPO_LANGUAGE:-en_US}
       KOBO_URL: ${KOBO_URL}
       KOBO_TOKEN_FILE: /run/kobo-token
       BRIDGE_TEMPLATE: /app/templates/${BRIDGE_TEMPLATE}.toml
@@ -80,6 +84,26 @@ services:
       # The ledger (cursor, failed submissions) and status.json, on the host so the box's
       # status page and backups can read them
       - ${BRIDGE_STATE_DIR}:/state
+
+  cases-mcp:
+    profiles: [assistant]
+    image: ${BRIDGE_IMAGE}
+    restart: unless-stopped
+    depends_on:
+      - espocrm
+    environment:
+      ESPO_URL: http://espocrm
+      ESPO_ASSISTANT_API_KEY: ${ESPO_ASSISTANT_API_KEY:-}
+      CASES_MCP_TOKEN: ${CASES_MCP_TOKEN:-}
+    command: ["python3", "-I", "-u", "/app/cases_mcp.py"]
+    volumes:
+      - ./bridge.py:/app/bridge.py:ro
+      - ./cases_mcp.py:/app/cases_mcp.py:ro
+    networks: [default, kobo-assistant]
+
+networks:
+  kobo-assistant:
+    external: true
 
 volumes:
   db:

@@ -64,6 +64,14 @@ note = [
     ["Notes", "followup_notes"],
 ]
 
+# --- Case status back to Kobo -----------------------------------------------------------
+# The case's status as the Kobo submission's validation status, so Kobo's data table (and
+# its exports) show which referrals were followed up. Leave this out where validation
+# statuses are kept for data-quality review. The bridge's Kobo account then needs
+# "Validate submissions" on the form as well
+[kobo_status]
+map = { Pending = "validation_status_on_hold", Closed = "validation_status_approved" }
+
 # --- Routing: every matching route adds its team -------------------------------------
 # match: question = answer (for multiple-choice questions: the answer includes it)
 [[route]]
@@ -112,6 +120,7 @@ follow_up_hours = 168
 # espo: the Case field (EspoCRM prefixes custom fields with "c"); none = description only
 # type: varchar | text | int | date | enum | multiEnum; left out for the form's select
 #   questions (select_one → enum, select_multiple → multiEnum)
+# labels: the field's label in other languages, e.g. { fr_FR = "Zone" } (ESPO_LANGUAGE)
 # options: Kobo choice name → label (the same names are stored in EspoCRM). Left out for
 #   select questions: espocrm-setup.py and the bridge read them from the deployed form, so
 #   a choice added in Kobo needs no change here. Written here, they win: for calculated

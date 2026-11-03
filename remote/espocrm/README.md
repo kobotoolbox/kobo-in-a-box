@@ -17,7 +17,8 @@ instead of fixed dev ones.
 | `templates/health-referral.toml` | The test scenario: which form, which submissions, how they map to case fields, which team gets what |
 | `health_fixture.py` | The scenario's Kobo form (with the referral rules as calculations), 13 made-up visits and the case each should open |
 | `test_bridge.py` | Unit tests with Kobo and EspoCRM faked: `python3 -m unittest test_bridge` |
-| `e2e-espo.py` | End to end through the running bridge: visits in Kobo → cases, routing, permissions, no external assets |
+| `e2e-espo.py` | End to end through the running bridge: visits in Kobo → cases, routing, permissions, no external assets; `--ledger`, `--edits`, `--followup` |
+| `cases_mcp.py` | The assistant's case tools (MCP server); `test_cases_mcp.py`, `cases-mcp-check.py` |
 
 ## The test scenario: community health referrals
 
@@ -105,6 +106,40 @@ whole file goes to every phone with the form. It's uploaded when it changed, at 
 On a box, share the follow-up form with `cases-bridge` with "Edit form" as well as "View
 submissions", so it can update the list (the label card says so).
 
+**Edited submissions.** Kobo keeps an edited submission's `_id`, gives it a new `_uuid`
+and adds `meta/deprecatedID`. Each pass the bridge asks for those (ids and uuids only) and,
+for one whose uuid it hasn't applied, updates its case as `kobo-edits`: the fields that come
+from Kobo answers, the name, the description and the uuid, plus a note naming what changed.
+Priority, teams, status and staff's fields stay; if the routing rules would now give
+something else, the note says so. An edit that means a case is no longer needed adds that
+note only; one that means it now is opens the case. (Field-level "no edit" in EspoCRM also
+applies when creating, so `kobo-bridge`, which creates cases, can't be the one limited to
+these fields: hence the separate user.)
+
+**Case status back to Kobo** (`[kobo_status]`, optional). Cases changed since the last pass
+(`modifiedAt`) have their status written onto the submission's validation status, e.g.
+Closed → Approved, Pending → On hold. Kobo's data table and exports then show which
+referrals were followed up. Leave it out where validation statuses are for data quality.
+The bridge's Kobo account needs "Validate submissions" on the form.
+
+**The assistant's case tools** (`cases_mcp.py`, the `cases-mcp` service). An MCP server
+(streamable HTTP, JSON responses, stdlib) for OpenCode: `cases_find`, `cases_get`,
+`cases_summary`, `cases_add_note`. It acts as `kobo-assistant` (role "Assistant": read cases,
+post notes, nothing else), and EspoCRM itself withholds the caregiver's name and phone from
+that user (field level), besides the server dropping them. It's on the `kobo-assistant`
+Docker network, which only OpenCode joins, not published, and needs the per-box
+`CASES_MCP_TOKEN` (`espocrm.sh` makes it; `agents.sh` puts it in OpenCode's config, where
+the reads are allowed and `cases_add_note` asks). `cases-mcp-check.py` checks it with the
+official MCP client from the kobo-mcp image.
+
+**Languages.** `ESPO_LANGUAGE` (espocrm.env) is EspoCRM's default language; choice labels
+come from the Kobo form's translation in that language when it has one ("Français (fr)"
+for fr_FR), and a `[[field]]` can carry `labels = { fr_FR = "..." }`.
+
+**API users**, each with only its job: `kobo-bridge` (create and read cases), `kobo-followup`
+(the follow-up fields and status), `kobo-edits` (the Kobo-derived fields), `kobo-assistant`
+(read, notes; no contact details). Their keys are in the secrets file.
+
 **Another form.** Copy the template, set `BRIDGE_TEMPLATE` in `espocrm.env`, and run
 `./espocrm.sh setup`: it adds the new teams and fields and their options. It doesn't
 delete fields a template no longer uses.
@@ -168,6 +203,19 @@ token Kobo refuses: the page warns "the link to KoboToolbox is not working". The
 switch from the old cursor volume rescanned 13 submissions: 10 existing, no duplicates. The
 backup has the ledger.
 
+**Edits, status back, the assistant's tools, languages (2026-11-03):** 35 bridge unit tests
+and 7 for the cases tools. `e2e-espo.py --edge --ledger --edits --followup` on the rig, real
+Kobo: 60/60, including a visit edited through KoboCAT (deprecatedID) updating its case's
+zone and household with a note and nothing else, `kobo-edits` unable to change status or
+priority, and a closed case approving its submission in Kobo. `cases-mcp-check.py` with the
+official client: 8/8 (a wrong token refused, no contact details). With the assistant's own
+key EspoCRM returned neither the phone nor the name. OpenCode showed both `kobo` and
+`cases` MCP servers connected after a cold start, once it waited for kobo-mcp to be healthy
+(before, it gave up on kobo-mcp for good). In Enketo (`site/cases-shots.py`): the follow-up
+form listed the 45 open cases of zone 1 exactly (choice_filter on `open_cases.csv`) and
+picking one showed "Referred for: Severe acute malnutrition. Follow up by 1 Nov."
+(pulldata).
+
 **Follow-ups (2026-11-03):** 28 unit tests. `e2e-espo.py --edge --ledger --followup` on
 the rig, real Kobo: 53/53. The follow-up form gets `open_cases.csv` (header and no names or
 phones checked) and it's in the form's OpenRosa manifest for KoboCollect; a follow-up
@@ -199,15 +247,13 @@ the rig.
 - **Footprint:** images 1.6 GB (EspoCRM 951 MB, MariaDB 455 MB, Python 178 MB); data
   ~330 MB after setup; ~200 MB of RAM idle (MariaDB ~115 MB).
 
-## Not done yet (phase 2)
+## Not done yet
 
-- Follow-ups on a phone: KoboCollect and Enketo with `open_cases.csv` (`pulldata`, the
-  zone filter), with the hotspot (W12).
-
-- Case status back to Kobo (an EspoCRM webhook → set the submission's validation status).
-- Edited Kobo submissions don't update their case (the cursor only moves forward).
-- An EspoCRM MCP for the box's agents (search and summarise cases, add notes; writes ask
-  first), and W4-style tasks for it.
-- EspoCRM's UI in the pilot languages. It ships ar, es, fr, pt, tr and ~30 others (set
-  per user), but not Swahili. The template's labels are English.
+- Follow-ups on a phone: KoboCollect with `open_cases.csv` (`pulldata`, the zone filter),
+  with the hotspot (W12). Enketo is done (`site/cases-shots.py`).
+- Follow-ups, edits and status back haven't been run offline yet (they only use the box's
+  own Kobo and EspoCRM).
+- Photos and repeat groups on the case; locations as linked records (PLAN 3j "Later").
+- W4-style agent tasks for the cases tools (needs the GPU rig).
+- EspoCRM's UI in Swahili, Hausa or Amharic (EspoCRM doesn't ship them).
 - Local HTTPS: case logins go over plain HTTP on the box's Wi-Fi (PLAN §7).

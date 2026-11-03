@@ -42,9 +42,9 @@ are in [PLAN.md](PLAN.md); per-run results are in [remote/results/NOTES.md](remo
    `firstboot.sh` with case management and the label card, restores onto a replacement box,
    and updates from a newer pack. What's left needs the box: hotspot + local DNS, the
    autoinstall USB with LUKS + TPM, low-battery shutdown (`remote/box/README.md`).
-0b. **W11:** the ledger, choices from the form and follow-ups are done (2026-11-03); left:
-   phase 2 (case status back to Kobo, edited submissions, an EspoCRM MCP for agents, UI
-   languages) and follow-ups on a real phone (with the hotspot).
+0b. **W11:** done but for what needs the box or the pilot: follow-ups in KoboCollect on a
+   phone (with the hotspot), an offline run of the newer parts, agent tasks for the cases
+   tools (GPU rig), and the pilot's languages (site/cases.html has the user guide).
 1. **W5 hardware:** buy the Strix Halo 128 GB dev unit and re-run the same tests on it
    (`gpu-tiers.sh` equivalents, `w4-run.py`), at full power and capped. This decides the
    kit; everything else so far is a cloud stand-in.
@@ -276,6 +276,17 @@ Ponto's local EspoCRM testing (`~/code/ponto/infra/espocrm`), with per-box secre
       the rig. Found on the way: a 10-minute timer that does its job makes a test's
       "undo" come back (the earlier run's form still had the test zone): tests now use a
       zone of their own. Not tested on a phone yet.
+
+- [x] **W11 phase 2** (2026-11-03): edited Kobo submissions update their case (as
+      `kobo-edits`: Kobo-derived fields only, a note naming what changed); case status back
+      to Kobo's validation status (`[kobo_status]`); the assistant's case tools
+      (`cases_mcp.py`: find, get, summary, add note; read-only user, no contact details,
+      token, network only OpenCode joins); `ESPO_LANGUAGE` with labels from the form's
+      translation. e2e 60/60 on the rig; MCP check 8/8 with the official client; Enketo:
+      the follow-up form's case list (choice_filter) and prefill (pulldata) work. Found:
+      EspoCRM's field-level "no edit" applies to creating too (hence a separate edits user),
+      and OpenCode never retried kobo-mcp after a cold start (it now waits for its healthcheck).
+      User docs: `site/cases.html`.
 
 ### 3e. W12: a box non-technical teams can run (started 2026-10-30)
 `remote/box/` ([README](remote/box/README.md), PLAN 3k). Tested on the CPU rig.

@@ -790,7 +790,7 @@ Built and tested 2026-10-30; details in [STATUS.md](STATUS.md).
 - [x] Bridge ledger (3j step 1, from 510's kobo-connect): rejected submissions recorded and retried, not blocking the form; `status.json`, status page warning, `espocrm.sh failed`; state in backups (2026-11-03)
 - [x] Choices from the deployed Kobo form (3j step 2); setup re-runs when the form's version changes (2026-11-03: `kobo-box-cases-setup.timer`)
 - [x] Follow-up visits update exactly one case, listed fields only, plus a stream note; prefill from `open_cases.csv` (3j step 3; with the open-cases item above)
-- [ ] Phase 2: case status back to Kobo; edited submissions; EspoCRM MCP + agent tasks; UI languages for the pilot (per-box secrets from `firstboot.sh` and images in the content pack: done 2026-11-02)
+- [x] Phase 2: case status back to Kobo; edited submissions; EspoCRM MCP (agent tasks still to run on the GPU rig); UI languages (mechanism; the pilot's languages to choose) (2026-11-03; per-box secrets from `firstboot.sh` and images in the content pack: done 2026-11-02)
 
 ### W12. A box non-technical teams can run (see 3k)
 Started 2026-10-30; scripts in `remote/box/`, details in [STATUS.md](STATUS.md).

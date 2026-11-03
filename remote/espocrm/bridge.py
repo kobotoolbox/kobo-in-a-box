@@ -34,6 +34,17 @@ status are written, by a second EspoCRM user that can edit nothing else
 isn't reopened: it gets the note only. The note carries the submission's uuid, so a
 follow-up is never applied twice.
 
+Edited Kobo submissions (they keep their _id, get a new _uuid and meta/deprecatedID) update
+their case, as a third EspoCRM user that can edit only the fields that come from Kobo
+(ESPO_EDITS_API_KEY): the case gets the new answers and a note naming what changed.
+Priority, teams, status and staff's own fields stay; if the edit would route the case
+differently, the note says so. An edit that means a case is now needed opens one; one that
+means it no longer is only adds the note.
+
+With [kobo_status] in the template, a case's status goes back to Kobo as the submission's
+validation status (e.g. Closed -> Approved), so Kobo's data table shows which referrals
+were followed up.
+
 Choices come from the deployed form, not from a copy in the template: each project's
 option labels (and select types) are read from the version it has deployed, again when
 that changes (with_form). Options the template writes itself win (for calculated
@@ -152,6 +163,22 @@ class Kobo(Api):
                 raise
             return self.call('GET', f'/api/v2/assets/{uid}/')['content']
 
+    def edited(self, uid):
+        """{_id: _uuid} of the submissions that were edited after they came in."""
+        found, start = {}, 0
+        while True:
+            page = self.call('GET', f'/api/v2/assets/{uid}/data/', {
+                'query': json.dumps({'meta/deprecatedID': {'$exists': True}}),
+                'fields': json.dumps(['_id', '_uuid']), 'limit': 1000, 'start': start})
+            found.update({r['_id']: r['_uuid'] for r in page['results']})
+            start += len(page['results'])
+            if not page.get('next') or not page['results']:
+                return found
+
+    def set_validation(self, uid, sub_id, status):
+        self.call('PATCH', f'/api/v2/assets/{uid}/data/{sub_id}/validation_status/',
+                  body={'validation_status.uid': status})
+
     def replace_media(self, uid, filename, data):
         """Put `filename` on the form (replacing an older copy) and redeploy, so phones get it."""
         files = self.call('GET', f'/api/v2/assets/{uid}/files/', {'file_type': 'form_media'})
@@ -206,14 +233,28 @@ def first_label(label, default):
     return next((x for x in labels if x), default)
 
 
-def form_choices(content):
+def translation_index(content, language):
+    """Which of the form's translations ("Français (fr)") is ESPO_LANGUAGE (fr_FR), or None."""
+    code = (language or '').split('_')[0].lower()
+    for i, name in enumerate(content.get('translations') or []):
+        if code and name and name.rstrip().endswith(f'({code})'):
+            return i
+    return None
+
+
+def form_choices(content, language=None):
     """{question: (select_one|select_multiple, {choice name: label})} for a Kobo form's
     select questions: KPI's stored content (type + select_from_list_name, $autoname,
-    labels per translation: the first is used) or XLSForm-style types ("select_one zone")."""
+    labels per translation: the one in `language` if the form has it, else the first) or
+    XLSForm-style types ("select_one zone")."""
+    i = translation_index(content, language)
     lists = {}
     for c in content.get('choices') or []:
         name = str(c.get('name', c.get('$autovalue', '')))
-        lists.setdefault(c.get('list_name'), {})[name] = first_label(c.get('label'), name)
+        label = c.get('label')
+        if i is not None and isinstance(label, list) and i < len(label) and label[i]:
+            label = label[i]
+        lists.setdefault(c.get('list_name'), {})[name] = first_label(label, name)
     found = {}
     for row in content.get('survey') or []:
         kind, list_name = row.get('type', ''), row.get('select_from_list_name')
@@ -495,6 +536,96 @@ def sync_open_cases(t, kobo, espo, ledger, now, min_seconds):
     return uploaded
 
 
+def kobo_fields(t):
+    """The Case fields an edited submission may change: those filled from Kobo answers."""
+    return [f for f in t['field'] if f.get('kobo') and f.get('espo')]
+
+
+def apply_edit(t, sub, kobo_url, uid, teams, espo, espo_ed, counts):
+    """An edited (or retried) referral submission: update its case, open one, or note it."""
+    try:
+        body = to_case(t, sub, kobo_url, uid, teams)
+    except BridgeError:
+        raise
+    except Exception as e:
+        raise BridgeError(f'template: {type(e).__name__}', status='template') from None
+    fields = kobo_fields(t)
+    found = espo.call('GET', '/Case', {
+        'where[0][type]': 'equals', 'where[0][attribute]': 'cKoboAsset', 'where[0][value]': uid,
+        'where[1][type]': 'equals', 'where[1][attribute]': 'cKoboSubmissionId', 'where[1][value]': sub['_id'],
+        'select': ','.join(['id', 'name', 'description', 'priority', 'teamsIds'] + [f['espo'] for f in fields]),
+        'maxSize': 2})['list']
+    if not found:
+        if body is not None:
+            handle(t, sub, kobo_url, uid, teams, espo, counts)  # needs a case now
+        else:
+            counts['skipped'] += 1
+        return
+    if len(found) > 1:
+        raise BridgeError(f'{len(found)} cases for submission {sub["_id"]}', status='nomatch')
+    case = found[0]
+    marker = f'(Kobo edit {sub["_uuid"]})'
+    stream = espo_ed.call('GET', f'/Case/{case["id"]}/stream', {'maxSize': 200}).get('list', [])
+    if any(marker in (note.get('post') or '') for note in stream):
+        counts['existing'] += 1
+        return
+    if body is None:
+        lines = ['The Kobo submission was edited, and by the form\'s rules it no longer needs '
+                 'follow-up. Nothing on the case was changed: close it if that is right.']
+    else:
+        update = {f['espo']: body.get(f['espo']) for f in fields}
+        changed = [f['label'] for f in fields
+                   if (case.get(f['espo']) or None) != (update[f['espo']] or None)
+                   and str(case.get(f['espo'])) != str(update[f['espo']])]
+        update.update(name=body['name'], description=body['description'],
+                      cKoboSubmissionUuid=sub['_uuid'])
+        names = {v: k for k, v in teams.items()}
+        rerouted = (body['priority'] != case.get('priority')
+                    or sorted(body['teamsIds']) != sorted(case.get('teamsIds') or []))
+        if not changed and not rerouted and body['description'] == case.get('description'):
+            espo_ed.call('PUT', f'/Case/{case["id"]}', body={'cKoboSubmissionUuid': sub['_uuid']})
+            counts['existing'] += 1
+            return
+        espo_ed.call('PUT', f'/Case/{case["id"]}', body=update)
+        lines = ['The Kobo submission was edited. Changed: ' + (', '.join(changed) or 'the details') + '.']
+        if rerouted:
+            lines.append(f'By the rules it would now be {body["priority"]}, for '
+                         f'{", ".join(sorted(names.get(i, i) for i in body["teamsIds"])) or "no team"}: '
+                         'priority and teams were not changed. Check them.')
+    espo_ed.call('POST', '/Note', body={'type': 'Post', 'parentType': 'Case', 'parentId': case['id'],
+                                        'post': '\n'.join(lines) + '\n' + marker})
+    counts['edited'] += 1
+    print(f'edit of submission {sub["_id"]} of {uid} -> case {case["id"]}')
+
+
+def push_status(t, espo, kobo, ledger):
+    """Cases changed since the last pass: their status onto the Kobo submission."""
+    mapping = (t.get('kobo_status') or {}).get('map') or {}
+    if not mapping:
+        return 0
+    since = ledger.seen_value('status_since') or '1970-01-01 00:00:00'
+    page = espo.call('GET', '/Case', {
+        'where[0][type]': 'greaterThanOrEquals', 'where[0][attribute]': 'modifiedAt',
+        'where[0][value]': since, 'select': 'status,cKoboAsset,cKoboSubmissionId,modifiedAt',
+        'orderBy': 'modifiedAt', 'order': 'asc', 'maxSize': 200})
+    pushed = 0
+    for c in page['list']:
+        want, key = mapping.get(c.get('status')), f'vs:{c["id"]}'
+        if want and c.get('cKoboAsset') and c.get('cKoboSubmissionId') and ledger.seen_value(key) != want:
+            try:
+                kobo.set_validation(c['cKoboAsset'], c['cKoboSubmissionId'], want)
+                pushed += 1
+                print(f'case {c["id"]} {c["status"]} -> {c["cKoboAsset"]} submission '
+                      f'{c["cKoboSubmissionId"]}: {want}')
+            except BridgeError as e:
+                if not e.rejected:
+                    raise
+                print(f'case {c["id"]}: validation status not set in Kobo ({e})')
+            ledger.set_seen(key, want)
+        ledger.set_seen('status_since', c['modifiedAt'])
+    return pushed
+
+
 def missing_fields(t, espo):
     """The template's Case fields EspoCRM doesn't have (yet). EspoCRM drops values for
     unknown fields without an error, so no case is opened until setup has made them."""
@@ -525,7 +656,7 @@ def handle(t, sub, kobo_url, uid, teams, espo, counts):
 
 
 def sync_once(t, kobo, espo, kobo_url, ledger, now=None, forms=None, espo_fu=None,
-              list_min_seconds=900):
+              list_min_seconds=900, espo_ed=None):
     """One pass over every project with the template's name: due retries first, then new
     submissions. Returns counts. Raises BridgeError when Kobo or EspoCRM is unavailable.
     forms: {uid: (version, template with that version's choices)}, kept between passes."""
@@ -533,23 +664,28 @@ def sync_once(t, kobo, espo, kobo_url, ledger, now=None, forms=None, espo_fu=Non
     forms = {} if forms is None else forms
     teams = team_ids(t, espo)
     counts = {'seen': 0, 'created': 0, 'skipped': 0, 'existing': 0, 'failed': 0, 'retried': 0,
-              'updated': 0, 'closed_note': 0, 'lists': 0}
+              'updated': 0, 'closed_note': 0, 'lists': 0, 'edited': 0, 'statuses': 0}
     if ledger.retry_all_if_changed('template', t['hash']):
         print('template changed: retrying every failed submission')
 
     def attempt(uid, sub, apply=None):
+        """True when done (or not needed); False when recorded as failed."""
         try:
             if apply:
                 apply(sub)
+            elif espo_ed and sub.get('meta/deprecatedID'):  # an edit, maybe retried
+                apply_edit(t, sub, kobo_url, uid, teams, espo, espo_ed, counts)
             else:
                 handle(t, sub, kobo_url, uid, teams, espo, counts)
             ledger.resolved(uid, sub['_id'])
+            return True
         except BridgeError as e:
             if not e.rejected:
                 raise
             n = ledger.fail(uid, sub, str(e), now)
             counts['failed'] += 1
             print(f'submission {sub["_id"]} of {uid} not a case ({n} attempt(s)): {e}')
+            return False
 
     projects = kobo.projects(t['form']['name'])
     fu_projects = kobo.projects(t['followup']['form']) if t.get('followup') and espo_fu else {}
@@ -561,7 +697,8 @@ def sync_once(t, kobo, espo, kobo_url, ledger, now=None, forms=None, espo_fu=Non
         if ledger.retry_all_if_changed(f'version:{uid}', version, asset=uid):
             print(f'{uid}: new form version, retrying its failed submissions')
         if forms.get(uid, (None,))[0] != (version, base['hash']):
-            forms[uid] = ((version, base['hash']), with_form(base, form_choices(kobo.form(uid, version))))
+            forms[uid] = ((version, base['hash']),
+                          with_form(base, form_choices(kobo.form(uid, version), base.get('language'))))
         t = forms[uid][1]
         # Checked every pass (one request): setup may have made the fields since
         t = {**t, 'missing': missing_fields(t, espo)}
@@ -581,9 +718,18 @@ def sync_once(t, kobo, espo, kobo_url, ledger, now=None, forms=None, espo_fu=Non
                 ledger.advance(uid, sub['_id'])
             if len(subs) < PAGE:
                 break
+        if espo_ed:
+            for sub_id, sub_uuid in kobo.edited(uid).items():
+                key = f'edit:{uid}:{sub_id}'
+                if ledger.seen_value(key) == sub_uuid or sub_id > ledger.cursor(uid):
+                    continue  # applied already, or not reached yet (it'll come in as it is)
+                sub = kobo.submission(uid, sub_id)
+                if sub is not None and attempt(uid, sub):
+                    ledger.set_seen(key, sub_uuid)
     t = base
+    counts['statuses'] = push_status(t, espo, kobo, ledger)
     for uid, version in fu_projects.items():
-        labels = {q: opts for q, (_, opts) in form_choices(kobo.form(uid, version)).items()}
+        labels = {q: opts for q, (_, opts) in form_choices(kobo.form(uid, version), t.get('language')).items()}
 
         def apply(sub, uid=uid, labels=labels):
             followup(t, sub, espo, espo_fu, uid, labels, counts)
@@ -651,6 +797,7 @@ def main():
         sys.exit(__doc__)
     env = os.environ
     t = load_template(env['BRIDGE_TEMPLATE'])
+    t['language'] = env.get('ESPO_LANGUAGE', 'en_US')  # labels from the form in this language
     kobo_url = env['KOBO_URL']
     kobo = Kobo(kobo_url, Path(env['KOBO_TOKEN_FILE']).read_text().strip())
     espo = Espo(env['ESPO_URL'], api_key=env['ESPO_API_KEY'])
@@ -659,6 +806,7 @@ def main():
     if t.get('followup') and espo_fu is None:
         print('no ESPO_FOLLOWUP_API_KEY: follow-up visits wait (espocrm.sh setup makes it)')
     list_min = int(env.get('BRIDGE_LIST_MIN_SECONDS', '900'))
+    espo_ed = Espo(env['ESPO_URL'], api_key=env['ESPO_EDITS_API_KEY']) if env.get('ESPO_EDITS_API_KEY') else None
     state_dir = Path(env.get('BRIDGE_STATE_DIR', '.'))
     state_dir.mkdir(parents=True, exist_ok=True)
     ledger = Ledger(state_dir / 'bridge.sqlite')
@@ -672,10 +820,11 @@ def main():
             # the failures it may fix (sync_once compares its hash)
             if hashlib.sha256(Path(env['BRIDGE_TEMPLATE']).read_bytes()).hexdigest()[:16] != t['hash']:
                 t = load_template(env['BRIDGE_TEMPLATE'])
+                t['language'] = env.get('ESPO_LANGUAGE', 'en_US')
                 print('template reloaded')
-            counts = sync_once(t, kobo, espo, kobo_url, ledger, now, forms, espo_fu, list_min)
+            counts = sync_once(t, kobo, espo, kobo_url, ledger, now, forms, espo_fu, list_min, espo_ed)
             last_success = now
-            if counts['seen'] or counts['failed'] or counts['retried'] or counts['lists'] or cmd == 'once':
+            if any(counts[k] for k in ('seen', 'failed', 'retried', 'lists', 'edited', 'statuses')) or cmd == 'once':
                 print('pass:', ', '.join(f'{k} {v}' for k, v in counts.items()))
         except BridgeError as e:
             error = str(e)

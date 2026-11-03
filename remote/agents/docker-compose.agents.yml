@@ -51,6 +51,13 @@ services:
       HTTP_KOBO_HOSTS: kf.kobo.local
       CUSTOM_KOBO_SERVERS: "false"
       TOOL_PROFILES: ${TOOL_PROFILES}
+    # OpenCode connects to its MCP servers once, at start, and doesn't retry: it waits
+    # for this (below), or a cold start leaves the Kobo tools "failed"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/healthz', timeout=5)"]
+      interval: 5s
+      timeout: 10s
+      retries: 30
 
   opencode:
     profiles: [agents]
@@ -61,6 +68,9 @@ services:
       args:
         OPENCODE_VERSION: ${OPENCODE_VERSION}
     restart: unless-stopped
+    depends_on:
+      kobo-mcp:
+        condition: service_healthy
     ports: ["127.0.0.1:4096:4096"]
     environment:
       OPENCODE_CONFIG: /config/opencode.json
@@ -74,6 +84,12 @@ services:
       - ./opencode:/config:ro
       - opencode-workspace:/workspace
       - opencode-data:/root/.local/share/opencode
+    # kobo-assistant: case management's tools (espocrm/cases_mcp.py), when it's on the box
+    networks: [default, kobo-assistant]
+
+networks:
+  kobo-assistant:
+    external: true
 
 volumes:
   opencode-workspace:
