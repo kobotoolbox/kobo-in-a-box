@@ -43,6 +43,8 @@ remote/
                         (agents/README.md)
   espocrm/              W11 (optional): EspoCRM case management at cases.kobo.local, and a
                         bridge that opens cases from Kobo submissions (espocrm/README.md)
+  paper/                W13 (optional): kobo-field-forms at paper.kobo.local, paper sheets
+                        printed from Kobo forms, scanned and submitted back (paper/README.md)
   box/                  W12: what makes it a kit that runs itself (box/README.md): fixed
                         internal address, AI tier from the hardware, KOBOBACKUP drive backups,
                         the status page at kobo.local/status (status.py), the content

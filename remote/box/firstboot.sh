@@ -15,6 +15,9 @@
 #   cases     case management, when the pack has EspoCRM's images: a Kobo account for the
 #             bridge (cases-bridge, sees only the forms shared with it), EspoCRM with its
 #             own passwords (espocrm.sh up)
+#   paper     paper forms, when the pack has kobo-field-forms' image: a Kobo account
+#             (paper-forms, sees only the forms shared with it) and the app's own
+#             password (paper.sh up)
 #   ai        detect-tier.py and ./ai.sh up auto, for this machine
 #   card      the label card (card.py): Wi-Fi with a QR code, the admin password, the backup
 #             passphrase, the disk's recovery key when there is one
@@ -29,7 +32,7 @@ ETC=/etc/kobo-box
 STATE=/var/lib/kobo-box/firstboot.json
 DONE=$ETC/firstboot-done
 LIBRARY_DIR=${LIBRARY_DIR:-/srv/library}
-STEPS=(name kobo secrets cases ai card)
+STEPS=(name kobo secrets cases paper ai card)
 
 log() { echo "[$(date +%H:%M:%S)] $*"; }
 
@@ -101,6 +104,19 @@ step_cases() {
           'BRIDGE_KOBO_USER=cases-bridge' "KOBO_TOKEN_FILE=$ETC/cases-bridge.token" > "$ETC/espocrm.env" )
     python3 -I "$HERE/kobo-account.py" cases-bridge "$ETC/cases-bridge.token"
     "$REMOTE/espocrm/espocrm.sh" up
+}
+
+step_paper() {
+    local kff_image
+    kff_image=$(sed -n 's/^KFF_IMAGE=//p' "$REMOTE/paper/paper.env")
+    if ! docker image inspect "$kff_image" >/dev/null 2>&1; then
+        log "no paper forms in this pack ($kff_image)"; return
+    fi
+    ( umask 077
+      printf '%s\n' '# This box (firstboot.sh): paper forms sign in to Kobo as their own account' \
+          'PAPER_KOBO_USER=paper-forms' "KOBO_TOKEN_FILE=$ETC/paper-forms.token" > "$ETC/paper.env" )
+    python3 -I "$HERE/kobo-account.py" paper-forms "$ETC/paper-forms.token"
+    "$REMOTE/paper/paper.sh" up
 }
 
 step_ai() {

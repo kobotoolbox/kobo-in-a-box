@@ -1,0 +1,64 @@
+# Paper forms on the box (W13): kobo-field-forms' web app. Started by paper.sh, which
+# sets the env.
+#
+#   kff   the web app, on 127.0.0.1:${PAPER_PORT} (edge: paper.kobo.local); a password on
+#         every request; fetches and submits as the token's Kobo account; reads text with
+#         the box's batch model
+#   e2e   profile `e2e`: kff's end-to-end test (paper.sh e2e), with its own store. Not the
+#         web app's healthcheck or watchdog label: the watchdog would restart the test
+
+x-kff: &kff
+  image: ${KFF_IMAGE}
+  # Kobo through the box's edge nginx (host network, port 80), like a phone on the
+  # Wi-Fi. host-gateway is the host itself, so a new box IP changes nothing here
+  extra_hosts:
+    - "kf.kobo.local:host-gateway"
+  environment: &kff-env
+    KOBO_BASE_URL: ${KOBO_URL}
+    # The box's own closed network: Kobo is plain http there
+    KOBO_ALLOW_HTTP: "true"
+    KOBO_TOKEN_FILE: /run/kobo-token
+    KFF_HOME: /data
+    KFF_VLM_URL: ${KFF_VLM_URL:-}
+    KFF_VLM_MODEL: local
+  volumes:
+    - ${PAPER_DATA_DIR}:/data
+    # A copy paper.sh keeps readable by the app's user (uid 10001), outside the data dir
+    - ${PAPER_TOKEN_COPY}:/run/kobo-token:ro
+  networks: [default, kobo]
+
+services:
+  kff:
+    <<: *kff
+    restart: unless-stopped
+    command: ["kff", "web", "--host", "0.0.0.0", "--port", "8765"]
+    environment:
+      <<: *kff-env
+      KFF_WEB_PASSWORD: ${PAPER_PASSWORD}
+      KFF_ALLOWED_HOSTS: ${PAPER_HOST}
+      KFF_HELP_URL: ${PAPER_HELP_URL}
+    ports: ["127.0.0.1:${PAPER_PORT}:8765"]
+    healthcheck:
+      # 401 without the password: it answers, so it's up
+      test: ["CMD", "python", "-c", "import urllib.request as u, urllib.error as e\ntry: u.urlopen('http://127.0.0.1:8765/', timeout=5)\nexcept e.HTTPError as x: raise SystemExit(x.code != 401)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    # A hung app is restarted by box/watchdog.sh, like the model servers
+    labels:
+      kobo-box.watchdog: restart
+
+  e2e:
+    <<: *kff
+    profiles: [e2e]
+    environment:
+      <<: *kff-env
+      KFF_HOME: /tmp/kff-e2e
+    volumes:
+      - ${PAPER_TOKEN_COPY}:/run/kobo-token:ro
+
+networks:
+  # kobo-docker's frontend network, where the batch model answers as `llm` (ai.sh)
+  kobo:
+    external: true
+    name: ${KOBO_NETWORK}

@@ -851,13 +851,13 @@ Started 2026-10-30; scripts in `remote/box/`, details in [STATUS.md](STATUS.md).
 - [ ] Later: kobo-transfer sync when online
 
 ### W13. Paper forms on the box (~1–2 weeks; see 3l)
-Scheduled 2026-11-03; kff's own milestone 10. Can start now on the CPU rig.
-- [ ] `remote/paper/`: compose for the kff image (`kff-data` volume, `extra_hosts`, `KOBO_ALLOW_HTTP=true`, `KFF_VLM_URL` → the batch llama-server), `paper.sh up|down`; edge route `paper.kobo.local`, landing page link
-- [ ] Access: `paper-forms` Kobo account made by `firstboot.sh` (shared forms only, can add submissions) and a password for the web app, both on the label card
-- [ ] `kff e2e` on the rig against the box's Kobo with `offline.sh on`: every stored value equals what was sent, resubmission a duplicate, wrong-and-unflagged text 0%; no outbound packets
-- [ ] The kff store in `backup.sh` (drive, nightly, restore on a replacement box); kff on the status page
-- [ ] The kff image in the content pack; `install.sh --pack` and `update.sh` bring it along
-- [ ] kff guide links to the library's copies when on the box
+Scheduled 2026-11-03; kff's own milestone 10. Built and tested on a second CPU rig the same day (`remote/paper/`, kff branch `milestone-10`).
+- [x] `remote/paper/`: compose for the kff image (`kff-data` volume, `extra_hosts`, `KOBO_ALLOW_HTTP=true`, `KFF_VLM_URL` → the batch llama-server), `paper.sh up|down`; edge route `paper.kobo.local`, landing page link
+- [x] Access: `paper-forms` Kobo account made by `firstboot.sh` (shared forms only, can add submissions) and a password for the web app, both on the label card
+- [x] `kff e2e` on the rig against the box's Kobo with `offline.sh on`: every stored value equals what was sent, resubmission a duplicate, wrong-and-unflagged 0.0% in all 4 profiles (389 s). No packet capture this time (egress blocked at the firewall)
+- [x] The kff store in `backup.sh` (drive, nightly database-only, restore); kff on the status page. Written, not yet run through a drive backup and restore
+- [ ] The kff image in the content pack (`pack.sh` takes every running image, so it should: not yet built and installed from a pack)
+- [x] kff guide links to the library's copies when on the box (`KFF_HELP_URL`)
 - [ ] On the W5 unit: real paper (kff milestone 9) printed, filled in by hand, scanned and photographed on a field phone over the hotspot; time per sheet while KPI's batch jobs run
 - [ ] Phase 2: sign in with the user's own Kobo account; scripts for the pilot languages
 

@@ -246,6 +246,7 @@ from the next step at the next boot; `/etc/kobo-box/firstboot-done` ends it.
 | kobo | `kobo-setup.py --pinned`: Kobo from the pack's kobo-install, which makes every Kobo password and the Django secret (`--reconfigure` if a power cut came after it started) |
 | secrets | backup passphrase; Wi-Fi name `Kobo-<4 letters>` and a passphrase in four groups of four, for the hotspot |
 | cases | when the pack has EspoCRM's images: the Kobo account `cases-bridge` (not a superuser, no password, sees only forms shared with it) and its token (`kobo-account.py`), `/etc/kobo-box/espocrm.env` pointing the bridge at it, then `espocrm.sh up` (EspoCRM's own passwords) |
+| paper | when the pack has kobo-field-forms' image: the Kobo account `paper-forms` (as `cases-bridge`) and its token, `/etc/kobo-box/paper.env` pointing paper forms at it, then `paper.sh up` (the app's own password, on the card) |
 | ai | `detect-tier.py`, `./ai.sh up auto` |
 | card | `card.py`: the label card |
 

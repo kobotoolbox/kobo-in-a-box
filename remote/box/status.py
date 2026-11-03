@@ -152,6 +152,7 @@ SETUP_STEPS = {  # firstboot.sh's steps, as the focal point sees them
     'kobo': 'setting up KoboToolbox (the longest step)',
     'secrets': 'making its passwords',
     'cases': 'setting up case management',
+    'paper': 'setting up paper forms',
     'ai': 'starting the AI models',
     'card': 'writing the label card',
 }
@@ -321,6 +322,27 @@ def cases():
     return check(name, 'bad', 'Not working.', 'Restart the box. ' + CALL_SUPPORT)
 
 
+def paper():
+    cs = containers('kobo-paper')
+    if not cs:
+        return None
+    name = 'Paper forms'
+    env = {**env_file(REMOTE / 'paper' / 'paper.env'), **env_file('/etc/kobo-box/paper.env')}
+    # 401: it answers, and asks for its password
+    web = http(f"http://127.0.0.1:{env.get('PAPER_PORT', '8087')}/", host=f'paper.{DOMAIN}')
+    if web in (200, 401) and not not_running(cs):
+        # Handwriting is read by the batch model; without it, choices and numbers still are
+        if env.get('KFF_VLM_URL') and http('http://127.0.0.1:8081/health') != 200 and not starting():
+            return check(name, 'warn', 'Working, but handwritten answers are not read: '
+                         'people type them in when they check each sheet.',
+                         'Restart the box. ' + CALL_SUPPORT)
+        return check(name, 'ok', 'Working.')
+    if starting():
+        return check(name, 'busy', 'Starting up.')
+    return check(name, 'bad', 'Not working. Sheets can still be filled in, and scanned once it works again.',
+                 'Restart the box. ' + CALL_SUPPORT)
+
+
 def library():
     cs = containers('kobo-library')
     if cs and not not_running(cs):
@@ -483,7 +505,7 @@ def update():
     return None, False
 
 
-CHECKS = (kobo, ai, assistant, cases, library, disk, backups, battery)
+CHECKS = (kobo, ai, assistant, cases, paper, library, disk, backups, battery)
 
 
 def run_checks():

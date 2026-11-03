@@ -23,6 +23,7 @@ ETC = Path('/etc/kobo-box')
 LIBRARY_DIR = Path(os.environ.get('LIBRARY_DIR', '/srv/library'))
 KOBO_INSTALL = Path(os.environ.get('KOBO_INSTALL', '/root/kobo-install'))
 ESPOCRM = Path(__file__).resolve().parent.parent / 'espocrm'
+PAPER = Path(__file__).resolve().parent.parent / 'paper'
 TEMPLATES = ESPOCRM / 'templates'
 DOMAIN = os.environ.get('KOBO_DOMAIN', 'kobo.local')
 
@@ -101,6 +102,11 @@ def main():
     except (OSError, ValueError, KeyError):
         pass
 
+    # Paper forms, when firstboot.sh set them up on this box
+    paper_env = {**env_file(PAPER / 'paper.env'), **env_file(ETC / 'paper.env')}
+    paper_pw = env_file(Path(paper_env.get('PAPER_SECRETS', '/root/paper.secrets'))).get('PAPER_PASSWORD', '')
+    paper_user = paper_env.get('PAPER_KOBO_USER', '')
+
     def rows(pairs):
         return '<dl>' + ''.join(f'<dt>{e(k)}</dt><dd>{e(v)}</dd>' for k, v in pairs if v) + '</dl>'
 
@@ -125,6 +131,12 @@ def main():
             + (f' Share the follow-up form <strong>{e(followup_form)}</strong> with it too, with "Edit form" '
                'as well: it keeps the list of open cases on that form.' if followup_form else '')
             + '</p></section>')
+    if paper_pw and paper_user:
+        sections.append(
+            '<section><h2>Paper forms</h2>'
+            + rows([('Address', f'http://paper.{DOMAIN}'), ('Username', 'paper'), ('Password', paper_pw)])
+            + '<p>For staff who print sheets and scan them back. A form can be printed once it is shared, '
+            + f'in Kobo, with the user <strong>{e(paper_user)}</strong> ("Add submissions").</p></section>')
     sections += [
         '<section><h2>Backups</h2>'
         + rows([('Backup passphrase', backup_pw)])
