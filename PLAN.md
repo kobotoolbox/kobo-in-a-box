@@ -762,12 +762,12 @@ Done 2026-10-28 on kobo-mcp branch `w3-offline-box`; details in [STATUS.md](STAT
 - [ ] kobo-mcp: `DASH_SERVERS` as a setting (done: `DASH_KOBO_HOSTS`, W3); offline `desk_review` that uses `search_knowledge` (W10)
 - [x] kobo-dash: trusted-host http for Kobo and tiles (or local HTTPS); `BOUNDARIES_DIR` for pre-fetched geoBoundaries; local evidence URLs (2026-10-29, kobo-dash branch `w9-offline-box`; see STATUS.md)
 - [ ] Propose all of the above upstream as settings, not a fork
-- [ ] Compose: box Postgres, kobo-dash web + worker, kobo-mcp in HTTP + OAuth mode; edge routes for `dash.` and `mcp.kobo.local` (SSE unbuffered); per-box keys in `firstboot.sh`
-- [ ] Content pack: raster MBTiles and ADM0–2 boundaries for the deployment countries; prebuilt images
-- [ ] OpenCode as an OAuth MCP client of the box's kobo-mcp, offline
-- [ ] User script creates each owner's view-only `_dash` account
-- [ ] ~10 dashboard tasks in W4's task set (layout from a form, shaded map, combine two projects, a story); score on 26B-A4B and gpt-oss-120b
-- [ ] `offline.sh on`: create, view, live-update and share a dashboard with no outbound traffic
+- [x] Compose: box Postgres, kobo-dash web + worker, kobo-mcp in HTTP mode with the sign-in page (`MCP_OAUTH=false`, `PUBLIC_KOBO_SERVERS=false`: kobo-mcp branch `w9-box`); edge routes for `dash.` and `mcp.kobo.local` (SSE unbuffered); per-box keys (2026-11-03, `remote/dash/`)
+- [x] Content pack: `maps/` (boundaries via `dash.sh boundaries`, raster tiles via `dash.sh tiles`); images from the build machine as before. Still to render: MBTiles for the pilot region
+- [ ] ~~OpenCode as an OAuth MCP client of the box's kobo-mcp, offline~~ Not on plain http: OAuth for MCP clients needs an https issuer, and the sign-in would open a browser on the box, not the user's. OpenCode uses header mode; revisit with local HTTPS and multi-user OpenCode (W4)
+- [x] `dash.sh account <user>` creates each owner's view-only `<user>_dash` account and saves its token in kobo-dash
+- [ ] ~10 dashboard tasks in W4's task set (layout from a form, shaded map, combine two projects, a story); score on 26B-A4B and gpt-oss-120b (11 tasks written and their checks tested, 2026-11-03; scoring needs the GPU rig)
+- [x] `offline.sh on`: create, view, live-update and share a dashboard with no outbound traffic (28/28, packet capture clean, 2026-11-03)
 
 ### W10. Local knowledge base (~2–3 weeks; can start now, see 3i)
 - [ ] `remote/knowledge/`: indexer (support-bot chunker), pgvector + FTS schema, search API, MCP server

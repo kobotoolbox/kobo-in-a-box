@@ -57,6 +57,7 @@
     <li><a href="#assistant">The assistant</a></li>
     <li><a href="#library">Offline library</a></li>
     <li><a href="#cases">Case management</a></li>
+    <li><a href="#dashboards">Dashboards</a></li>
     <li><a href="#results">Results</a></li>
     <li><a href="#models">Models</a></li>
     <li><a href="#hardware">Hardware</a></li>
@@ -223,6 +224,23 @@
 <p>Tested with a community health referral scenario: 60 of 60 end-to-end checks through KoboToolbox, the follow-up form's case list working in KoboToolbox's web forms, and a backup of 60 cases restored onto a replacement kit in just over 2 minutes.</p>
 <p><a class="button button--filled" href="cases.html">Case management in detail</a></p>
 <p>Setting it up, day-to-day use, follow-ups, edits, what to do when something goes wrong, who sees what, and what was tested.</p>
+</section>
+
+<section id="dashboards">
+<h2>Dashboards</h2>
+<p>Ask the assistant for a dashboard of a KoboToolbox project and it builds one at <code>dash.kobo.local</code>: totals, a chart for each question, filters, maps shaded by district. It updates by itself as submissions come in, and pages that are open show the new numbers without reloading. It's the same dashboards service KoboToolbox offers online, running on the kit with no internet.</p>
+<ul>
+  <li><strong>Shared on the Wi-Fi, or not.</strong> A dashboard starts private. Its owner makes it open to anyone on the kit's Wi-Fi with the link, or only with a password. Viewers need no account.</li>
+  <li><strong>Read through a view-only account.</strong> Dashboards never use the owner's own KoboToolbox account: each owner has a second one that can only view the projects they share with it, set up with one command.</li>
+  <li><strong>Maps with no internet.</strong> The kit carries the deployment countries' administrative areas and, prepared before it ships, a basemap of the region.</li>
+</ul>
+<div class="figures">
+<figure><a href="static/dash/phone.jpg"><img src="static/dash/phone.jpg" width="824" height="1800" alt="The same dashboard on a phone, its charts one under another."></a><figcaption>The same dashboard on a phone.</figcaption></figure>
+<figure><a href="static/dash/view.jpg"><img src="static/dash/view.jpg" width="1440" height="900" alt="A dashboard titled Household water survey: filters for submission date, enumerator and district; 63 responses; submissions over time; enumerators (Amina 24, Baraka 15, Chausiku 13, Daudi 11); interview dates; districts; average household size 5.3."></a><figcaption>The assistant's first layout of the test household water survey. Made-up data.</figcaption></figure>
+</div>
+<p>Tested on the test kit with the internet cut off: 28 of 28 checks, from an owner signing in to a new submission reaching an open page, with nothing addressed outside the kit.</p>
+<p><a class="button button--filled" href="dashboards.html">Dashboards in detail</a></p>
+<p>Setting it up, making and sharing a dashboard, maps, what to do when something goes wrong, who sees what, and what was tested.</p>
 </section>
 
 <section id="results">
@@ -450,7 +468,8 @@
     <tr><td>AI in KoboToolbox</td><td>Working end to end in testing; the changes pass KoboToolbox's own test suite and are meant for the main product</td></tr>
     <tr><td>The assistant</td><td>Working in testing on the 30 tasks; next, several users and shorter instructions for speed</td></tr>
     <tr><td>Case management (optional)</td><td>Working in testing with a health referral scenario: cases from submissions, follow-up visits, edits and statuses both ways, the assistant reading cases; next, follow-ups on a phone with the kit's Wi-Fi (<a href="cases.html">details</a>)</td></tr>
-    <tr><td>Dashboards and knowledge base</td><td>Built for KoboToolbox online; being adapted to run on the kit</td></tr>
+    <tr><td>Dashboards</td><td>Working in testing with no internet: made through the assistant's tools, live updates, sharing on the Wi-Fi, maps of administrative areas; next, a basemap for the pilot region and measuring the assistant on dashboard requests (<a href="dashboards.html">details</a>)</td></tr>
+    <tr><td>Knowledge base</td><td>Built for KoboToolbox online; being adapted to run on the kit</td></tr>
     <tr><td>Field hardware</td><td>One recommended unit to buy and test</td></tr>
     <tr><td>Backups and restore</td><td>Working in testing: plug in a drive to back up; restore on the same kit or on a replacement, case management included, with nothing typed but the backup passphrase</td></tr>
     <tr><td>Kits ready to switch on</td><td>Working in testing, everything that doesn't need the recommended computer: AI settings chosen from the hardware, a fixed internal address so the kit works on any network, the status page, AI models restarted when they stop answering, installation from the kit's content with no internet, the first start that gives each kit its own name, passwords, case management and label card (a fresh computer: 17 minutes in all, every test passing), and updates from a signed stick that keep all data (4 minutes for a new KoboToolbox release). Next, the kit's own Wi-Fi and the bootable USB stick with an encrypted disk, on the recommended computer</td></tr>

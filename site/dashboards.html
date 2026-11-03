@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboards on the kit: Kobo in a box</title>
+<meta name="description" content="How live dashboards work on Kobo in a box: the assistant builds them from KoboToolbox projects, they update by themselves as submissions arrive, and anyone on the kit's Wi-Fi can open the ones that are shared, with no internet. Setting it up, sharing, maps, privacy, and what was tested.">
+<link rel="icon" href="static/site/icon.png" type="image/png">
+<link rel="stylesheet" href="static/site/home.css">
+</head>
+<body>
+<header class="header">
+  <div class="wrap">
+    <a class="header__brand" href="./"><img src="static/site/logo.svg" alt="KoboToolbox"><span class="header__product">In a box</span></a>
+    <ul class="header__nav">
+      <li><a href="./#how">How it works</a></li>
+      <li><a href="./#field">In the field</a></li>
+      <li><a href="./#ai">AI</a></li>
+      <li><a href="./#assistant">Assistant</a></li>
+      <li><a href="./#dashboards">Dashboards</a></li>
+      <li><a href="./#results">Results</a></li>
+    </ul>
+    <a class="button button--filled button--m" href="./">Back to the overview</a>
+  </div>
+</header>
+
+<main>
+<section class="banner">
+  <div class="wrap">
+    <h1>Dashboards on the kit</h1>
+    <p class="banner__lead">A live view of what the forms are finding, for the team meeting, the coordinator, or the screen in the office: ask the assistant for a dashboard of a KoboToolbox project, and it builds one that updates by itself as submissions come in. Anyone on the kit's Wi-Fi can open the ones you share. No internet, and no one rebuilding charts by hand.</p>
+    <div class="banner__buttons">
+      <a class="button button--filled" href="#setup">Set it up</a>
+      <a class="button button--light" href="#making">Make one</a>
+    </div>
+  </div>
+</section>
+
+<section class="steps" aria-label="The loop">
+  <div class="wrap">
+    <ol>
+      <li><h3>Ask for one</h3><p>Tell the assistant which project and what you want to see. It builds a first dashboard, a chart per question, and changes it as you ask.</p></li>
+      <li><h3>It keeps itself up to date</h3><p>The kit checks KoboToolbox for new submissions, and pages that are open update by themselves within a minute or two of a refresh.</p></li>
+      <li><h3>Share it on the Wi-Fi</h3><p>A dashboard starts private. Make it open to anyone on the kit's Wi-Fi with the link, or to those with a password.</p></li>
+    </ol>
+  </div>
+</section>
+
+<div class="wrap docs">
+<nav class="docs__nav" aria-label="On this page">
+  <ul>
+    <li><a href="#what">What it is</a></li>
+    <li><a href="#who">Who does what</a></li>
+    <li><a href="#setup">Setting it up</a></li>
+    <li><a href="#making">Making a dashboard</a></li>
+    <li><a href="#sharing">Sharing it</a></li>
+    <li><a href="#maps">Maps</a></li>
+    <li><a href="#trouble">When something goes wrong</a></li>
+    <li><a href="#privacy">Who sees what</a></li>
+    <li><a href="#tested">What was tested</a></li>
+    <li><a href="#limits">Limits</a></li>
+  </ul>
+</nav>
+
+<article class="prose">
+
+<section id="what">
+<h2>What it is</h2>
+<p>The kit runs KoboToolbox's dashboards service at <code>dash.kobo.local</code>, the same one KoboToolbox offers online, adapted to run with no internet. Dashboards are ordinary web pages: they open in any browser on a phone or laptop on the kit's Wi-Fi, and need no app or account to view.</p>
+<ul>
+  <li><strong>The assistant builds them.</strong> It reads the form and makes a first layout: totals, a chart for each question, filters for the obvious ones such as district or enumerator. Then it adds, removes and changes what you ask for: a headline number, a comparison across districts, a map, a filter.</li>
+  <li><strong>They update by themselves.</strong> The kit fetches new submissions on the schedule you choose (every 5 minutes to once a day), or at once when you ask. Open pages show the new numbers without being reloaded.</li>
+  <li><strong>Charts, tables, maps and stories.</strong> Bars, timelines, tables, headline numbers, maps shaded by area, and a "story" version that reads as one scrolling page.</li>
+</ul>
+<div class="figures">
+<figure><a href="static/dash/phone.jpg"><img src="static/dash/phone.jpg" width="824" height="1800" alt="The same dashboard on a phone: the filters, then 63 responses, submissions over time and the enumerator chart, one under another."></a><figcaption>The same dashboard on a phone.</figcaption></figure>
+<figure><a href="static/dash/view.jpg"><img src="static/dash/view.jpg" width="1440" height="900" alt="A dashboard titled Household water survey, updated 12 minutes ago, with filters for submission date, enumerator and district; a headline number of 63 responses; submissions over time; a bar chart of enumerators (Amina 24, Baraka 15, Chausiku 13, Daudi 11); interview dates; districts; and the average household size, 5.3."></a><figcaption>The first layout the assistant made of the test household water survey, as anyone on the Wi-Fi sees it once it's shared.</figcaption></figure>
+</div>
+</section>
+
+<section id="who">
+<h2>Who does what</h2>
+<div class="table-scroll"><table>
+  <thead><tr><th>Who</th><th>Uses</th><th>Does</th></tr></thead>
+  <tbody>
+    <tr><td>Dashboard owners (managers, M&amp;E staff)</td><td>The assistant, and <code>dash.kobo.local</code> with their own KoboToolbox account</td><td>Ask the assistant for dashboards of their projects; share them; set a password; change how often they update.</td></tr>
+    <tr><td>Viewers (the team, partners in the room)</td><td>Any browser on the kit's Wi-Fi</td><td>Open a shared dashboard's link, filter it, read its tables. No account.</td></tr>
+    <tr><td>Whoever looks after the kit</td><td>The status page</td><td>Check that dashboards are working; ask support to give a new owner dashboards.</td></tr>
+    <tr><td>Support</td><td>The kit's commands, over SSH</td><td>Give each owner their dashboard account (below); load maps for a new country.</td></tr>
+  </tbody>
+</table></div>
+</section>
+
+<section id="setup">
+<h2>Setting it up</h2>
+<p>When the kit's bundle includes dashboards, the kit sets them up the first time it is switched on, with keys nobody else has, and the kit's home page links to them.</p>
+<h3>Give each owner a dashboard account</h3>
+<p>Dashboards never use the owner's own KoboToolbox account to read data. Each owner has a second account, named after theirs with <code>_dash</code> at the end (<code>amina</code> gets <code>amina_dash</code>), which only ever gets <strong>view</strong> access to the projects they make dashboards of. So the dashboards service can see those submissions and nothing else, and can't change anything.</p>
+<p>Support makes it with one command per owner: <code>dash.sh account amina</code>. It creates <code>amina_dash</code> in KoboToolbox and connects it to Amina's dashboards. Nobody copies a password or token. When the assistant makes a dashboard, it shares the project with that account itself, view only.</p>
+<h3>Sign in</h3>
+<p>Owners open <code>dash.kobo.local</code> and sign in with their KoboToolbox API token (KoboToolbox: <strong>Account Settings → Security</strong>), on a page that offers only the kit's own KoboToolbox. Their page then lists their dashboards and shows the dashboard account.</p>
+<div class="figures figures--half">
+<figure><a href="static/dash/signin.jpg"><img src="static/dash/signin.jpg" width="1280" height="900" alt="The sign-in page: Connect to KoboToolbox. KoboToolbox Dashboards wants to use your KoboToolbox account; you'll be sent back to dash.kobo.local. The server list shows only kf.kobo.local, then a field for the API token and a Connect button."></a><figcaption>Signing in: only the kit's KoboToolbox is offered.</figcaption></figure>
+<figure><a href="static/dash/admin.jpg"><img src="static/dash/admin.jpg" width="1280" height="1270" alt="Your dashboards, signed in as e2e: Household water survey, Public, up to date, 63 submissions, with Edit layout, Settings, Open and Refresh now; Evidence; and Kobo access showing the dashboard account e2e_dash."></a><figcaption>The owner's page: their dashboards, whether each is shared, and the dashboard account.</figcaption></figure>
+</div>
+</section>
+
+<section id="making">
+<h2>Making a dashboard</h2>
+<p>Ask <a href="./#assistant">the assistant</a> in plain words. Some of the requests it was set to handle on the test household water survey:</p>
+<ul class="prompts">
+  <li><q>Make a live dashboard of the household water survey that I can share with the team later.</q><small>It describes what it will do (share the project with your dashboard account, view only; a first layout of 10 charts), asks you to confirm, then makes it. It starts private.</small></li>
+  <li><q>Add a chart comparing the main source of drinking water across districts.</q></li>
+  <li><q>Let people viewing the dashboard pick a district, so every chart shows just that district.</q></li>
+  <li><q>Add a map of the districts, shaded by how many households were interviewed in each.</q></li>
+  <li><q>What does the dashboard show right now? Give me the main numbers.</q></li>
+  <li><q>Make a second, story-style version that walks a reader through where households get their water.</q></li>
+</ul>
+<p>Every change the assistant makes is saved as a revision, so it can be undone. Owners can also move charts around themselves with <strong>Edit layout</strong> on their page. The assistant asks before anything that shares or changes a dashboard; check what it built before you share it, as it makes mistakes.</p>
+<div class="note"><p>The assistant needs the recommended computer or a graphics card. Dashboard requests are long for a small model; they're among the tasks still to be measured on the recommended computer.</p></div>
+</section>
+
+<section id="sharing">
+<h2>Sharing it</h2>
+<div class="table-scroll"><table>
+  <thead><tr><th>Setting</th><th>Who can open it</th></tr></thead>
+  <tbody>
+    <tr><td>Offline (the start)</td><td>Nobody but its owner, on their page.</td></tr>
+    <tr><td>Public</td><td>Anyone on the kit's Wi-Fi with the link (<code>dash.kobo.local/d/…</code>). Not the internet: the kit has none.</td></tr>
+    <tr><td>Password</td><td>Anyone on the Wi-Fi with the link and the password. The owner sets the password on their page, under <strong>Settings</strong>; never tell it to the assistant.</td></tr>
+  </tbody>
+</table></div>
+<p>Ask the assistant to "publish" or "password-protect" a dashboard, or change it on its <strong>Settings</strong> page, along with how often it checks for new data. Making it offline again closes open pages at once.</p>
+<div class="warning"><p>"Public" means everyone on the Wi-Fi, which at a busy site may be many people. Free-text answers, names and locations shown on a dashboard are visible to all of them. Use a password for anything sensitive, or ask the assistant to leave those questions out.</p></div>
+</section>
+
+<section id="maps">
+<h2>Maps</h2>
+<p>The kit carries the administrative areas (regions, districts) of the deployment's countries, from <a href="https://www.geoboundaries.org">geoBoundaries</a> (open data), so the assistant can shade a map by area with no internet. Matching a form's district choices to the map's areas is something the assistant works out, and may ask you about.</p>
+<p>Under the areas the kit can show a basemap (roads, towns, rivers) for the deployment region, served by the kit itself from OpenStreetMap data prepared before it ships. Without one, maps still show the areas, their shading and GPS points, on a plain background.</p>
+</section>
+
+<section id="trouble">
+<h2>When something goes wrong</h2>
+<p>The <a href="./#field">status page</a> has a Dashboards line:</p>
+<div class="table-scroll"><table>
+  <thead><tr><th>The status page says</th><th>What it means</th><th>What to do</th></tr></thead>
+  <tbody>
+    <tr><td>Working.</td><td>All is well.</td><td>Nothing.</td></tr>
+    <tr><td>Starting up.</td><td>The kit was switched on in the last few minutes.</td><td>Wait.</td></tr>
+    <tr><td>Working, but dashboards are not updating with new submissions.</td><td>Dashboards open, but show the numbers from before.</td><td>Restart the kit. If it stays, call support.</td></tr>
+    <tr><td>Dashboards open, but their owners can't sign in, and the assistant can't reach KoboToolbox.</td><td>Shared dashboards still work; changing them doesn't.</td><td>Restart the kit. If it stays, call support.</td></tr>
+    <tr><td>Not working.</td><td>Dashboards don't open.</td><td>Restart the kit, then call support. Data collection is not affected.</td></tr>
+  </tbody>
+</table></div>
+<p>On the owner's page, each dashboard says whether its data is up to date. "Needs a dashboard account" means support hasn't run <code>dash.sh account</code> for that owner yet; "No access to the project" means the project isn't shared with the dashboard account (ask the assistant to share it, view only); "Kobo unavailable; retrying" clears by itself once KoboToolbox is back.</p>
+<p>Dashboards, their settings and the dashboard accounts are in the kit's <a href="./#field">backups</a>, and come back with a restore, also onto a replacement kit.</p>
+</section>
+
+<section id="privacy">
+<h2>Who sees what</h2>
+<ul>
+  <li><strong>The dashboards service</strong> reads only the projects shared with the owner's dashboard account, view only, and keeps a copy of their submissions to draw the charts. It never holds an owner's own KoboToolbox token. The dashboard accounts' tokens are stored encrypted with a key only this kit has.</li>
+  <li><strong>Viewers</strong> see what the dashboard shows, and nothing else of the project: not the raw submissions, unless a table on the dashboard shows them.</li>
+  <li><strong>The assistant</strong> works with the signed-in user's own KoboToolbox permissions, on the kit's KoboToolbox only.</li>
+  <li><strong>Nothing leaves the kit.</strong> The dashboards, maps and fonts are all on the kit; in the offline test no part of it tried to reach the internet.</li>
+</ul>
+</section>
+
+<section id="tested">
+<h2>What was tested</h2>
+<p>On the test kit with KoboToolbox, the whole path an owner and the assistant take, through the kit's own addresses, with the internet cut off: <strong>28 of 28 checks</strong>.</p>
+<ul>
+  <li>An owner signed in, with only the kit's KoboToolbox offered, and their dashboard account was in place.</li>
+  <li>The assistant's tools added 12 submissions to a new project and made a dashboard of it, sharing the project with the dashboard account, view only.</li>
+  <li>The dashboard stayed closed until it was made public. Then it filled with the 12 submissions and opened for a viewer with no account; its page loaded nothing from outside the kit.</li>
+  <li>An open page heard about a 13th submission by itself, about a minute after a refresh.</li>
+  <li>Lesotho's 10 regions came from the kit into the dashboard as a map layer, and the basemap tiles loaded from the kit.</li>
+  <li>A packet capture during the run saw nothing addressed outside the kit.</li>
+  <li>After a restart, everything came back by itself. A backup restored dashboards onto a kit with other keys.</li>
+</ul>
+<p>Footprint: 1.3 GB of the kit's disk, and about 255 MB of memory when idle.</p>
+</section>
+
+<section id="limits">
+<h2>Limits</h2>
+<ul>
+  <li><strong>Plain http.</strong> Like everything on the kit's Wi-Fi so far, dashboards and sign-in use http, not https: anyone on the Wi-Fi could in principle read the traffic. Keep the Wi-Fi passphrase to the team.</li>
+  <li><strong>A dashboard account per owner</strong> needs support, for now.</li>
+  <li><strong>Desk research</strong> (narratives that cite reports) needs the internet online; on the kit it will use the kit's own document library, which is still being built.</li>
+  <li><strong>Basemaps</strong> have to be prepared for each deployment region before the kit ships. The test used made-up tiles.</li>
+  <li><strong>The assistant on dashboards</strong> hasn't been measured on the recommended computer yet.</li>
+</ul>
+</section>
+
+</article>
+</div>
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <div>
+      <img src="static/site/logo-white.svg" alt="KoboToolbox">
+      <p>Kobo in a box: KoboToolbox, local AI and an offline library for teams working without reliable internet. A prototype in testing.</p>
+    </div>
+    <div>
+      <span class="footer__label">KoboToolbox</span>
+      <ul>
+        <li><a href="https://www.kobotoolbox.org">kobotoolbox.org</a></li>
+        <li><a href="https://support.kobotoolbox.org">Help Center</a></li>
+        <li><a href="https://community.kobotoolbox.org">Community forum</a></li>
+      </ul>
+    </div>
+    <div>
+      <span class="footer__label">On this site</span>
+      <ul>
+        <li><a href="./">Overview</a></li>
+        <li><a href="cases.html">Case management</a></li>
+        <li><a href="#setup">Dashboards: setting it up</a></li>
+        <li><a href="#trouble">Dashboards: when something goes wrong</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>
+</body>
+</html>

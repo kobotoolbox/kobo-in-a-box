@@ -6,7 +6,7 @@ without asking.
 
 | Setting | What it does |
 |---|---|
-| `mcp.kobo` | kobo-mcp at `http://mcp.kobo.local/mcp`, signing in with OAuth (each user pastes their Kobo token once on its `/login` page; PLAN.md §3h) |
+| `mcp.kobo` | The box's kobo-mcp (`../dash/`) at `http://mcp.kobo.local/mcp`, through the edge, in header mode (OAuth for MCP clients needs https; PLAN.md §3h) |
 | `mcp.cases` | Case management's tools (`espocrm/cases_mcp.py`), added by `agents.sh` when the box runs it: reads allowed, `cases_add_note` asks; no contact details |
 | `tools`: `kobo_delete_*` → `false` | The model never sees the delete tools. Kobo has no trash |
 | `permission`: `kobo_*` → `ask`, then the 36 read-only tools → `allow` | Reads run freely; anything that changes Kobo (deploying, editing submissions, sharing, dashboards…) asks first. The last matching rule wins, so the catch-all comes first |
@@ -36,10 +36,10 @@ it when kobo-mcp gains tools.
 
 | File | What it is |
 |---|---|
-| `agents.env` | The agent model, its context and slots, where OpenCode reaches it, kobo-mcp's tool profile, OpenCode's version and password |
-| `docker-compose.agents.yml` | `agent-llm` (profile `llm`: the agent model's own llama-server on :8083), `kobo-mcp` and `opencode` (profile `agents`) |
+| `agents.env` | The agent model, its context and slots, where OpenCode reaches it, OpenCode's version and password (kobo-mcp's settings are in `../dash/dash.env`) |
+| `docker-compose.agents.yml` | `agent-llm` (profile `llm`: the agent model's own llama-server on :8083) and `opencode` (profile `agents`), which waits for kobo-mcp at `mcp.kobo.local` before starting |
 | `Dockerfile.opencode` | OpenCode (pinned) plus the analysis sandbox's basics (Python, pandas, matplotlib); its shell tools run here |
-| `agents.sh` | `llm up\|down` on the GPU machine; `up\|down\|logs` for kobo-mcp + OpenCode; writes `opencode/opencode.json` from `opencode.json` plus the box's provider and kobo-mcp |
+| `agents.sh` | `llm up\|down` on the GPU machine; `up\|down\|logs` for OpenCode (after `../dash/dash.sh up`, which runs kobo-mcp); writes `opencode/opencode.json` from `opencode.json` plus the box's provider and kobo-mcp |
 | `w4-fixture.py` | A household water survey with 63 seeded submissions and known answers (`results/w4-truth.json`), with 3 duplicates, 5 missing answers and 2 inconsistent records planted |
 | `w4-tasks.json` | 30 tasks staff would ask, by category (discovery, counts, breakdowns, data quality, reading, exports, reports, forms, writes, safety), each with checks |
 | `w4-run.py` | Runs each task as a fresh `opencode run --format json --auto` and scores it: Kobo tools used, answer contents, and Kobo's state afterwards |
@@ -63,11 +63,11 @@ ssh root@<gpu> 'bash /root/kobo-box-ai/bootstrap.sh'               # + gpt-oss-1
 doctl compute firewall add-rules <kobo-box-gpu-fw> --inbound-rules "protocol:tcp,ports:8083,tag:kobo-box-ai"
 ssh root@<gpu> '/root/kobo-box-ai/agents/agents.sh llm up'
 
-# CPU rig (snapshot): Kobo on the new IP, then OpenCode + kobo-mcp pointed at the GPU
+# CPU rig (snapshot): Kobo on the new IP, kobo-mcp (dash/), then OpenCode pointed at the GPU
 SIZE=s-8vcpu-32gb-amd ./provision.sh --from-snapshot
 ssh root@<cpu> 'cd /root/kobo-install && python3 run.py; /root/kobo-box-ai/library/library.sh up'
 #   set AGENT_LLM_URL=http://<gpu private ip>:8083/v1 in agents/agents.env, then
-ssh root@<cpu> '/root/kobo-box-ai/agents/agents.sh up'
+ssh root@<cpu> '/root/kobo-box-ai/dash/dash.sh up && /root/kobo-box-ai/agents/agents.sh up'
 ssh root@<cpu> 'cd /root/kobo-box-ai/agents && python3 -I w4-fixture.py && python3 -I w4-run.py --label gemma-26b'
 
 # Offline: no internet, but the private network to the model stays open

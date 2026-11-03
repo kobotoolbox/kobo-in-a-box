@@ -53,9 +53,9 @@ are in [PLAN.md](PLAN.md); per-run results are in [remote/results/NOTES.md](remo
    log), shorter agent prompts (fewer built-in tools, smaller profiles), guidance about each
    form (the enumerator-question mistakes), multi-user sign-in through kobo-mcp's OAuth,
    OpenWork, and a per-process DNS check offline.
-3. **W9 deployment on the box:** kobo-dash and kobo-mcp as compose services behind the
-   edge (`dash.`/`mcp.kobo.local`), the maps/boundaries content pack, dashboard tasks in
-   the W4 set.
+3. **W9:** done on the rig (2026-11-03, `remote/dash/`); left: a real basemap once the
+   pilot countries are chosen, scoring the 11 dashboard tasks on the GPU rig, offline
+   `desk_review` (W10), proposing kobo-mcp's `w9-box` settings upstream.
 4. **W2 to finish:** a KPI image from the branch, the pilot languages' tables, and
    proposing the change upstream (talk to the KPI team).
 5. **W10 knowledge base**, and the W12 steps that need the box: hotspot + local DNS,
@@ -199,13 +199,37 @@ without the build, `test_indexing_and_embedding` fails and 4 tests skip, on `mai
 - [x] `LOCAL_EVIDENCE_ORIGINS` (`7bd2143`): evidence may cite e.g. `http://kobo.local/...`; the
       viewer links http sources only on http pages. kobo-mcp's `save_evidence` wording matches
       (kobo-mcp `f727031`, on `w3-offline-box`).
-- [ ] Still to do (PLAN W9): compose services, edge routes for `dash.`/`mcp.kobo.local`, OAuth
-      sign-in offline, the content pack (MBTiles, boundaries), `_dash` accounts, offline
-      `desk_review` (needs W10), and the offline end-to-end dashboard test.
+- [x] **On the box (2026-11-03, `remote/dash/`, see its README):** Postgres 17, kobo-dash
+      web + poller and the box's one kobo-mcp as a compose project; edge routes `dash.` and
+      `mcp.kobo.local` (live updates unbuffered) and `kobo.local/tiles/`; per-box keys;
+      `dash.sh account <user>` makes the view-only `<user>_dash` account and saves its
+      token in kobo-dash (no token pasted by hand); `dash.sh boundaries` / `tiles` fill the
+      content pack's new `maps/` folder; `firstboot.sh` step `dash`, status page row,
+      backups. OpenCode now reaches kobo-mcp as `mcp.kobo.local` through the edge and
+      waits for its health check (kobo-mcp moved out of `agents/`).
+- [x] kobo-mcp branch `w9-box` (`c11c4e9`, `3fe5b14`; 968 unit tests pass): `MCP_OAUTH=false`
+      (the MCP SDK refuses an http OAuth issuer, so `OAUTH_KEYS` crashed kobo-mcp on
+      `http://mcp.kobo.local`; the sign-in page for kobo-dash doesn't need it, and the agent
+      uses header mode) and `PUBLIC_KOBO_SERVERS=false` (the sign-in page offered Global and
+      EU, unreachable offline).
+- [x] `e2e-dash.py` on the rig, real Kobo: 23/23 online; 28/28 offline with `--maps LSO`
+      (sign-in, dashboard made by kobo-mcp's tools, poller, public/offline, a new
+      submission reaching an open page's event stream in ~66 s, Lesotho's regions from the
+      maps folder, the box's basemap). Packet capture: nothing addressed outside the box
+      (a deliberate connection showed up). Reboot: all back, OpenCode with `kobo` and
+      `cases` connected. Backup/restore, also onto a box with other keys. 1.3 GB of
+      images, ~255 MB RAM idle.
+- [x] W4: 11 dashboard tasks (`dash-*`) and an `after: dashboard` check from kobo-dash's
+      database (a widget or filter must be new); checked against a real dashboard, not
+      yet run with an agent model.
+- [ ] Left: a basemap rendered for the pilot region (made-up tiles in the test); scoring
+      the dashboard tasks (GPU rig); offline `desk_review` (W10); upstream proposals; the
+      sign-in page labels the box's Kobo "kf.kobo.local — kf.kobo.local" (cosmetic).
 
 Box settings for kobo-dash: `ALLOWED_SERVERS=http://kf.kobo.local`, `PUBLIC_URL=http://dash.kobo.local`,
 `MCP_URL=http://mcp.kobo.local`, `TILE_URL=http://kobo.local/tiles/{z}/{x}/{y}.png` (or empty),
-`BOUNDARIES_DIR=/data/boundaries`, `LOCAL_EVIDENCE_ORIGINS=http://kobo.local`.
+`BOUNDARIES_DIR=/data/boundaries`, `LOCAL_EVIDENCE_ORIGINS=http://kobo.local` (all in
+`remote/dash/docker-compose.dash.yml`).
 
 ### 3b. W10: local knowledge base (PLAN 3i), can start now
 - [ ] `remote/knowledge/`: support-bot chunker, bge-m3 on llama-server, pgvector + FTS, MCP server; port its eval cases
