@@ -1,0 +1,201 @@
+{
+  "started": "2026-11-03T07:42:25.608684+00:00",
+  "kobo": "box",
+  "uid": "ax3dkCJpsPzHYFmvQdBKud",
+  "passed": 38,
+  "total": 38,
+  "checks": [
+    {
+      "check": "form created",
+      "ok": true,
+      "detail": "ax3dkCJpsPzHYFmvQdBKud"
+    },
+    {
+      "check": "form deployed",
+      "ok": true,
+      "detail": 200
+    },
+    {
+      "check": "12 visits submitted",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "9 cases from the first 12 visits",
+      "ok": true,
+      "detail": "9 after 16s"
+    },
+    {
+      "check": "V01 case",
+      "ok": true,
+      "detail": "CS 83 Urgent, Referral coordinators"
+    },
+    {
+      "check": "V02 case",
+      "ok": true,
+      "detail": "CS 84 High, Nutrition (OTP)"
+    },
+    {
+      "check": "V03 case",
+      "ok": true,
+      "detail": "CS 85 Normal, Nutrition (OTP)"
+    },
+    {
+      "check": "V04 no case",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "V05 case",
+      "ok": true,
+      "detail": "CS 86 Urgent, Surveillance"
+    },
+    {
+      "check": "V06 case",
+      "ok": true,
+      "detail": "CS 87 Urgent, Nutrition (OTP), Surveillance"
+    },
+    {
+      "check": "V07 case",
+      "ok": true,
+      "detail": "CS 88 Urgent, Referral coordinators"
+    },
+    {
+      "check": "V08 no case",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "V09 case",
+      "ok": true,
+      "detail": "CS 89 High, Referral coordinators"
+    },
+    {
+      "check": "V10 no case",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "V11 case",
+      "ok": true,
+      "detail": "CS 90 Urgent, Nutrition (OTP), Referral coordinators"
+    },
+    {
+      "check": "V12 case",
+      "ok": true,
+      "detail": "CS 91 Urgent, Referral coordinators"
+    },
+    {
+      "check": "later visit picked up",
+      "ok": true,
+      "detail": "after 27s"
+    },
+    {
+      "check": "V13 case",
+      "ok": true,
+      "detail": "CS 92 High, Nutrition (OTP), Referral coordinators"
+    },
+    {
+      "check": "no duplicates",
+      "ok": true,
+      "detail": 10
+    },
+    {
+      "check": "coordinator sees only their team's cases",
+      "ok": true,
+      "detail": "6 of 10"
+    },
+    {
+      "check": "coordinator records an outcome",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "coordinator can't edit another team's case",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "coordinator can't delete",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "bridge can't edit",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "bridge can't delete",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "supervisor sees all",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "no external assets (http://127.0.0.1)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "the visit after a refused one still becomes a case",
+      "ok": true,
+      "detail": "after 16s"
+    },
+    {
+      "check": "the refused visit has no case (yet)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "status.json counts it",
+      "ok": true,
+      "detail": 1
+    },
+    {
+      "check": "status.json says why, without answers",
+      "ok": true,
+      "detail": "POST /Case: HTTP 400 Field validation failure; entityType: Case, field: cZone, type: valid."
+    },
+    {
+      "check": "zone added to the Kobo form and redeployed",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "setup takes the option from the form",
+      "ok": true,
+      "detail": [
+        "wrote ESPO_BRIDGE_API_KEY to /root/espocrm.secrets"
+      ]
+    },
+    {
+      "check": "the refused visit becomes a case by itself",
+      "ok": true,
+      "detail": "after 22s"
+    },
+    {
+      "check": "with the zone from the form",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "and leaves the ledger",
+      "ok": true,
+      "detail": 0
+    },
+    {
+      "check": "setup again: nothing to do",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "no duplicates",
+      "ok": true,
+      "detail": 12
+    }
+  ]
+}
