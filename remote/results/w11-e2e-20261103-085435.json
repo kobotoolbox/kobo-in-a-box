@@ -1,0 +1,321 @@
+{
+  "started": "2026-11-03T08:54:35.896321+00:00",
+  "kobo": "box",
+  "uid": "adVL9RbZ6a3oJBSzc5FzGi",
+  "passed": 60,
+  "total": 60,
+  "checks": [
+    {
+      "check": "form created",
+      "ok": true,
+      "detail": "adVL9RbZ6a3oJBSzc5FzGi"
+    },
+    {
+      "check": "form deployed",
+      "ok": true,
+      "detail": 200
+    },
+    {
+      "check": "12 visits submitted",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "9 cases from the first 12 visits",
+      "ok": true,
+      "detail": "9 after 16s"
+    },
+    {
+      "check": "V01 case",
+      "ok": true,
+      "detail": "CS 143 Urgent, Referral coordinators"
+    },
+    {
+      "check": "V02 case",
+      "ok": true,
+      "detail": "CS 144 High, Nutrition (OTP)"
+    },
+    {
+      "check": "V03 case",
+      "ok": true,
+      "detail": "CS 145 Normal, Nutrition (OTP)"
+    },
+    {
+      "check": "V04 no case",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "V05 case",
+      "ok": true,
+      "detail": "CS 146 Urgent, Surveillance"
+    },
+    {
+      "check": "V06 case",
+      "ok": true,
+      "detail": "CS 147 Urgent, Nutrition (OTP), Surveillance"
+    },
+    {
+      "check": "V07 case",
+      "ok": true,
+      "detail": "CS 148 Urgent, Referral coordinators"
+    },
+    {
+      "check": "V08 no case",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "V09 case",
+      "ok": true,
+      "detail": "CS 149 High, Referral coordinators"
+    },
+    {
+      "check": "V10 no case",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "V11 case",
+      "ok": true,
+      "detail": "CS 150 Urgent, Nutrition (OTP), Referral coordinators"
+    },
+    {
+      "check": "V12 case",
+      "ok": true,
+      "detail": "CS 151 Urgent, Referral coordinators"
+    },
+    {
+      "check": "later visit picked up",
+      "ok": true,
+      "detail": "after 27s"
+    },
+    {
+      "check": "V13 case",
+      "ok": true,
+      "detail": "CS 152 High, Nutrition (OTP), Referral coordinators"
+    },
+    {
+      "check": "no duplicates",
+      "ok": true,
+      "detail": 10
+    },
+    {
+      "check": "coordinator sees only their team's cases",
+      "ok": true,
+      "detail": "6 of 10"
+    },
+    {
+      "check": "coordinator records an outcome",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "coordinator can't edit another team's case",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "coordinator can't delete",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "bridge can't edit",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "bridge can't delete",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "supervisor sees all",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "no external assets (http://127.0.0.1)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "the visit after a refused one still becomes a case",
+      "ok": true,
+      "detail": "after 16s"
+    },
+    {
+      "check": "the refused visit has no case (yet)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "status.json counts it",
+      "ok": true,
+      "detail": 1
+    },
+    {
+      "check": "status.json says why, without answers",
+      "ok": true,
+      "detail": "POST /Case: HTTP 400 Field validation failure; entityType: Case, field: cZone, type: valid."
+    },
+    {
+      "check": "zone added to the Kobo form and redeployed",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "setup takes the option from the form",
+      "ok": true,
+      "detail": [
+        "wrote ESPO_BRIDGE_API_KEY, ESPO_FOLLOWUP_API_KEY, ESPO_EDITS_API_KEY, ESPO_ASSISTANT_API_KEY to /root/espocrm.secrets"
+      ]
+    },
+    {
+      "check": "the refused visit becomes a case by itself",
+      "ok": true,
+      "detail": "after 16s"
+    },
+    {
+      "check": "with the zone from the form",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "and leaves the ledger",
+      "ok": true,
+      "detail": 0
+    },
+    {
+      "check": "setup again: nothing to do",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "no duplicates",
+      "ok": true,
+      "detail": 12
+    },
+    {
+      "check": "visit edited in Kobo",
+      "ok": true,
+      "detail": 201
+    },
+    {
+      "check": "the case has the new answers",
+      "ok": true,
+      "detail": [
+        "zone_3",
+        "Z3-0777"
+      ]
+    },
+    {
+      "check": "and the new uuid",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "priority, teams and status kept",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "a note says what changed",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "the edits user can't change status or priority",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "closing the case approves the submission in Kobo",
+      "ok": true,
+      "detail": "validation_status_approved"
+    },
+    {
+      "check": "form created",
+      "ok": true,
+      "detail": "aje9MXVQsaaf7zcrTyxBXf"
+    },
+    {
+      "check": "form deployed",
+      "ok": true,
+      "detail": 200
+    },
+    {
+      "check": "open_cases.csv on the follow-up form",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "only the minimal columns",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "no names or phones in it",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "in the form's manifest for KoboCollect",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "a follow-up closes its case",
+      "ok": true,
+      "detail": "Closed"
+    },
+    {
+      "check": "with the outcome",
+      "ok": true,
+      "detail": "admitted"
+    },
+    {
+      "check": "and nothing else changed",
+      "ok": true,
+      "detail": [
+        "zone_1",
+        "Normal"
+      ]
+    },
+    {
+      "check": "a note on the case",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "a closed case gets a note only",
+      "ok": true,
+      "detail": [
+        2,
+        "Closed",
+        "admitted"
+      ]
+    },
+    {
+      "check": "the follow-up user can't change other fields",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "nor create cases",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "an unknown case number is recorded",
+      "ok": true,
+      "detail": "0 cases numbered CS-999999"
+    },
+    {
+      "check": "the closed case leaves the list",
+      "ok": true,
+      "detail": ""
+    }
+  ]
+}
