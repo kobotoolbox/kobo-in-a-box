@@ -2,7 +2,8 @@
 # Agents on the box (W4). Run ON THE BOX / DROPLET in /root/kobo-box-ai/agents.
 #
 #   ./agents.sh llm up|down      the agent model's llama-server (a GPU machine)
-#   ./agents.sh up|down|logs     kobo-mcp and OpenCode (the Kobo machine)
+#   ./agents.sh up|down|logs     OpenCode (the Kobo machine), with the box's kobo-mcp
+#                                from ../dash (./dash.sh up first)
 #   ./agents.sh config           write opencode/opencode.json only
 #
 # Settings are in agents.env. OpenCode acts as the Kobo user whose API token is in
@@ -12,9 +13,6 @@ set -euo pipefail
 cd "$(dirname "$0")"
 set -a; source agents.env; set +a
 KOBO_TOKEN_FILE=${KOBO_TOKEN_FILE:-/root/e2e-token}
-BOX_IP=$(grep -o '"local_interface_ip": "[^"]*"' /root/kobo-install/.run.conf 2>/dev/null \
-    | cut -d'"' -f4 || true)
-export BOX_IP=${BOX_IP:-127.0.0.1}
 
 compose() { docker compose -p kobo-agents -f docker-compose.agents.yml "$@"; }
 
@@ -38,10 +36,11 @@ cfg['model'] = cfg['small_model'] = 'box/agent'
 cfg['share'] = 'disabled'
 cfg['mcp'] = {'kobo': {
     'type': 'remote',
-    'url': 'http://kobo-mcp:8080/mcp',
+    'url': 'http://mcp.kobo.local/mcp',
     'enabled': True,
     'oauth': False,
-    # Header mode for the test rig; a shared box uses kobo-mcp's OAuth sign-in instead
+    # Header mode: OAuth for MCP clients needs https (kobo-mcp's MCP_OAUTH), and would
+    # open its sign-in in a browser on the box, not the user's
     'headers': {'X-Kobo-Token': '{env:KOBO_TOKEN}', 'X-Kobo-Base-URL': 'kf.kobo.local'},
     'timeout': 30000,
 }}
@@ -81,11 +80,13 @@ case "${1:-}" in
     up)
         write_config
         export KOBO_TOKEN; KOBO_TOKEN=$(cat "$KOBO_TOKEN_FILE")
+        curl -fsS -o /dev/null -H 'Host: mcp.kobo.local' http://127.0.0.1/healthz \
+            || { echo "kobo-mcp isn't answering at mcp.kobo.local: run ../dash/dash.sh up" >&2; exit 1; }
         docker network inspect kobo-assistant >/dev/null 2>&1 || docker network create kobo-assistant >/dev/null
         # Recreate, so OpenCode reads the config just written (it reads it only at start)
-        compose --profile agents up -d --build --force-recreate
+        compose --profile agents up -d --build --force-recreate --remove-orphans
         wait_for http://localhost:4096/ 180
-        echo "OpenCode on 127.0.0.1:4096 (model at $AGENT_LLM_URL); kobo-mcp for kf.kobo.local ($BOX_IP)" ;;
+        echo "OpenCode on 127.0.0.1:4096 (model at $AGENT_LLM_URL; kobo-mcp at mcp.kobo.local)" ;;
     down) compose --profile agents down ;;
     logs) compose --profile agents logs -f --tail 100 ;;
     *) echo "usage: $0 llm up|down | up | down | logs | config" >&2; exit 1 ;;

@@ -15,6 +15,8 @@
 #   cases     case management, when the pack has EspoCRM's images: a Kobo account for the
 #             bridge (cases-bridge, sees only the forms shared with it), EspoCRM with its
 #             own passwords (espocrm.sh up)
+#   dash      dashboards, when the pack has kobo-dash's images: kobo-dash and the box's
+#             kobo-mcp with their own keys (dash.sh up)
 #   ai        detect-tier.py and ./ai.sh up auto, for this machine
 #   card      the label card (card.py): Wi-Fi with a QR code, the admin password, the backup
 #             passphrase, the disk's recovery key when there is one
@@ -29,7 +31,7 @@ ETC=/etc/kobo-box
 STATE=/var/lib/kobo-box/firstboot.json
 DONE=$ETC/firstboot-done
 LIBRARY_DIR=${LIBRARY_DIR:-/srv/library}
-STEPS=(name kobo secrets cases ai card)
+STEPS=(name kobo secrets cases dash ai card)
 
 log() { echo "[$(date +%H:%M:%S)] $*"; }
 
@@ -101,6 +103,15 @@ step_cases() {
           'BRIDGE_KOBO_USER=cases-bridge' "KOBO_TOKEN_FILE=$ETC/cases-bridge.token" > "$ETC/espocrm.env" )
     python3 -I "$HERE/kobo-account.py" cases-bridge "$ETC/cases-bridge.token"
     "$REMOTE/espocrm/espocrm.sh" up
+}
+
+step_dash() {
+    local image
+    image=$(sed -n 's/^DASH_IMAGE=//p' "$REMOTE/dash/dash.env")
+    if ! docker image inspect "$image" >/dev/null 2>&1; then
+        log "no dashboards in this pack ($image)"; return
+    fi
+    "$REMOTE/dash/dash.sh" up
 }
 
 step_ai() {

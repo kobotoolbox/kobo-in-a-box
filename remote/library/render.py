@@ -150,6 +150,14 @@ def main():
             '<p class="hint">Follow-up of referrals and other cases from Kobo forms. '
             'Staff accounts only.</p>',
         ]
+    # dash.sh up/down
+    if (LIBRARY_DIR / '.services' / 'dash').exists():
+        body += [
+            '<h2>Dashboards</h2>',
+            f'<p><a class="big" href="http://dash.{DOMAIN}/">Open dashboards</a></p>',
+            '<p class="hint">Live dashboards of Kobo data, made by the assistant. '
+            'Owners sign in with their Kobo account; shared ones open for anyone on this Wi-Fi.</p>',
+        ]
     guides = guide_items([r for r in rows if r['section'] == 'docs'], sums)
     if guides:
         body += ['<h2>Guides</h2>', '<ul>', *guides, '</ul>']

@@ -18,6 +18,8 @@
 #                      repository (Packages.gz), for $PACK_OS
 #   images/*.tar.zst   docker save of every image the box's containers run
 #   models/            /opt/models: GGUF weights for every tier, Whisper, test audio
+#   maps/              /opt/maps: the deployment countries' administrative areas and the
+#                      region's basemap tiles, for dashboards (dash.sh boundaries/tiles)
 #   library/           /srv/library as built by library.sh build
 #   kobo-box-ai/       this repo's remote/ folder (no results, no per-box files)
 #   kobo-install/      kobo-install and kobo-docker as git checkouts at the running commits
@@ -36,6 +38,7 @@ KOBO_INSTALL=${KOBO_INSTALL:-/root/kobo-install}
 KOBO_DOCKER=${KOBO_DOCKER:-/root/kobo-docker}
 KPI_E2E=${KPI_E2E:-/root/kpi-e2e}
 MODELS_DIR=${MODELS_DIR:-/opt/models}
+MAPS_DIR=${MAPS_DIR:-/opt/maps}
 LIBRARY_DIR=${LIBRARY_DIR:-/srv/library}
 PACK_OS=${PACK_OS:-ubuntu:24.04}   # the box's Ubuntu; debs are resolved in this image
 # Installed on the box from debs/. Docker's own packages come from Docker's apt repository.
@@ -48,7 +51,7 @@ EXTRA_IMAGES=${EXTRA_IMAGES:-}
 # and only update from a plugged-in stick whose signature they check (box.sh update-drive)
 PACK_SIGNING_KEY=${PACK_SIGNING_KEY:-/root/kobo-pack-signing.key}
 # The folders install.sh and update.sh copy from: no file in them may be missing from SHA256SUMS
-PACK_DIRS='debs images models library kobo-box-ai kobo-install kobo-docker kpi-e2e'
+PACK_DIRS='debs images models maps library kobo-box-ai kobo-install kobo-docker kpi-e2e'
 # Images on the build machine that aren't part of a box (test tooling)
 SKIP_IMAGES='^mcr\.microsoft\.com/playwright/'
 
@@ -122,6 +125,9 @@ build_files() {
     local pack=$1
     log "models from $MODELS_DIR"
     rsync -a --delete --exclude '*.part' "$MODELS_DIR/" "$pack/models/"
+    log "maps from $MAPS_DIR"
+    mkdir -p "$MAPS_DIR"
+    rsync -a --delete "$MAPS_DIR/" "$pack/maps/"
     log "library from $LIBRARY_DIR"
     [[ -f "$LIBRARY_DIR/index.html" ]] || die "no library in $LIBRARY_DIR (library.sh build first)"
     # Never a box's status page or label card (its passwords), nor its services' links
@@ -186,7 +192,7 @@ info = {
     'kpi_backport': os.path.isdir(os.path.join(pack, 'kpi-e2e')),
     'images': images,
     'models': sorted(f for f in os.listdir(os.path.join(pack, 'models')) if not f.startswith('.')),
-    'size_gb': {d: size(d) for d in ('debs', 'images', 'models', 'library', 'kobo-box-ai')},
+    'size_gb': {d: size(d) for d in ('debs', 'images', 'models', 'maps', 'library', 'kobo-box-ai')},
 }
 with open(os.path.join(pack, 'pack.json'), 'w') as f:
     json.dump(info, f, indent=2)

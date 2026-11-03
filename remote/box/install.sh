@@ -36,6 +36,7 @@ PACK=$(cd "$PACK" && pwd)
 ROOT_DIR=/root
 BOX_DIR=$ROOT_DIR/kobo-box-ai
 MODELS_DIR=/opt/models
+MAPS_DIR=/opt/maps
 LIBRARY_DIR=/srv/library
 BOX_IP=${BOX_IP:-10.254.254.254}
 LOG=/var/log/kobo-box-install.log
@@ -75,6 +76,9 @@ cp -a "$PACK/kobo-docker" "$ROOT_DIR/kobo-docker"
 mkdir -p "$MODELS_DIR" "$LIBRARY_DIR" "$BOX_DIR/results"
 log "models ($(du -sh "$PACK/models" | cut -f1))"
 cp -a "$PACK/models/." "$MODELS_DIR/"
+if [[ -d "$PACK/maps" ]]; then
+    mkdir -p "$MAPS_DIR"; cp -a "$PACK/maps/." "$MAPS_DIR/"
+fi
 log "library ($(du -sh "$PACK/library" | cut -f1))"
 cp -a "$PACK/library/." "$LIBRARY_DIR/"
 cp "$PACK/pack.json" "$BOX_DIR/pack.json"   # which pack this box came from

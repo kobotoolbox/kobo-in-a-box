@@ -11,3 +11,5 @@ services:
       # replaced (an update), so nginx would go on serving the old config
       - ./nginx:/etc/nginx/conf.d:ro
       - ${LIBRARY_DIR}:/srv/library:ro
+      # Basemap tiles for the dashboards (content pack maps/tiles, dash.sh tiles)
+      - ${MAPS_DIR:-/opt/maps}:/srv/maps:ro

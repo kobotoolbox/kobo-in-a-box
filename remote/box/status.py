@@ -152,6 +152,7 @@ SETUP_STEPS = {  # firstboot.sh's steps, as the focal point sees them
     'kobo': 'setting up KoboToolbox (the longest step)',
     'secrets': 'making its passwords',
     'cases': 'setting up case management',
+    'dash': 'setting up dashboards',
     'ai': 'starting the AI models',
     'card': 'writing the label card',
 }
@@ -321,6 +322,28 @@ def cases():
     return check(name, 'bad', 'Not working.', 'Restart the box. ' + CALL_SUPPORT)
 
 
+def dashboards():
+    cs = containers('kobo-dash')
+    if not cs:
+        return None
+    name = 'Dashboards'
+    env = env_file(REMOTE / 'dash' / 'dash.env')
+    web = http(f"http://127.0.0.1:{env.get('DASH_PORT', '8086')}/healthz")
+    mcp = http(f"http://127.0.0.1:{env.get('MCP_PORT', '8085')}/healthz")
+    down = not_running(cs)
+    if web == 200 and mcp == 200 and not down:
+        return check(name, 'ok', 'Working.' + watchdog_note(cs))
+    if starting():
+        return check(name, 'busy', 'Starting up.')
+    if web == 200 and down == ['dash-worker']:
+        return check(name, 'warn', 'Working, but dashboards are not updating with new submissions.',
+                     'Restart the box. ' + CALL_SUPPORT)
+    if web == 200 and mcp != 200:
+        return check(name, 'warn', "Dashboards open, but their owners can't sign in, and the "
+                     "assistant can't reach KoboToolbox.", 'Restart the box. ' + CALL_SUPPORT)
+    return check(name, 'bad', 'Not working.', 'Restart the box. ' + CALL_SUPPORT)
+
+
 def library():
     cs = containers('kobo-library')
     if cs and not not_running(cs):
@@ -483,7 +506,7 @@ def update():
     return None, False
 
 
-CHECKS = (kobo, ai, assistant, cases, library, disk, backups, battery)
+CHECKS = (kobo, ai, assistant, cases, dashboards, library, disk, backups, battery)
 
 
 def run_checks():

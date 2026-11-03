@@ -38,6 +38,7 @@ PACK=$(cd "$PACK" && pwd)
 ROOT_DIR=/root
 BOX_DIR=$ROOT_DIR/kobo-box-ai
 MODELS_DIR=/opt/models
+MAPS_DIR=/opt/maps
 LIBRARY_DIR=/srv/library
 STATE=/var/lib/kobo-box/update.json
 LOG=/var/log/kobo-box-update.log
@@ -126,12 +127,13 @@ systemctl is-active -q docker || systemctl start docker
 step images
 pack_images
 
-step files "this repo's scripts, models, library"
+step files "this repo's scripts, models, maps, library"
 # Per-box and generated files stay (as pack.sh leaves them out of the pack)
 rsync -a --delete --exclude results --exclude __pycache__ --exclude '*.local.env' \
     --exclude ai.box.env --exclude 'agents/opencode/' --exclude pack.json \
     "$PACK/kobo-box-ai/" "$BOX_DIR/"
 rsync -a --delete --exclude '*.part' "$PACK/models/" "$MODELS_DIR/"
+if [[ -d "$PACK/maps" ]]; then mkdir -p "$MAPS_DIR"; rsync -a --delete "$PACK/maps/" "$MAPS_DIR/"; fi
 rsync -a --delete --exclude 'status/' --exclude 'card/' --exclude '.services/' \
     "$PACK/library/" "$LIBRARY_DIR/"
 LIBRARY_DIR=$LIBRARY_DIR python3 -I "$BOX_DIR/library/render.py" >/dev/null   # this box's name and links

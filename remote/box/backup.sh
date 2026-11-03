@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Encrypted backups of everything on the box that can't be rebuilt from the content pack:
-# Kobo's databases, media and settings, and EspoCRM's if it's installed. Run as root.
+# Kobo's databases, media and settings, and EspoCRM's and the dashboards' if they're installed.
+# Run as root.
 #
 #   ./backup.sh run <dest> [--no-media]   back up to <dest>/kobo-box-<box> (a restic repository)
 #   ./backup.sh drive                     mount the KOBOBACKUP drive, back up to it, unmount it
@@ -22,6 +23,7 @@ HERE=$(pwd)
 KOBO_INSTALL=${KOBO_INSTALL:-/root/kobo-install}
 ESPOCRM_SH=$HERE/../espocrm/espocrm.sh
 ESPO_SECRETS=$(sed -n 's/^ESPO_SECRETS=//p' "$HERE/../espocrm/espocrm.env")
+DASH_SH=$HERE/../dash/dash.sh
 DRIVE=/dev/disk/by-label/KOBOBACKUP
 DRIVE_MNT=/media/kobobackup
 STATE_DIR=/var/lib/kobo-box
@@ -123,6 +125,11 @@ dump_databases() {  # dump_databases <dir>
         log "espocrm"
         "$ESPOCRM_SH" backup "$out" >/dev/null
         mv "$out"/espocrm-* "$out/espocrm"
+    fi
+    if [[ -n "$(container kobo-dash db)" ]]; then
+        log "dashboards"
+        "$DASH_SH" backup "$out" >/dev/null
+        mv "$out"/dash-* "$out/dash"
     fi
 }
 
@@ -328,6 +335,16 @@ PY
     elif [[ -n "$bridge_user" && -n "$(container kobo-cases bridge)" ]]; then
         docker restart "$(container kobo-cases bridge)" >/dev/null   # it reads its token at start
     fi
+    if [[ -d "$stage/dash" ]]; then
+        if [[ -n "$(container kobo-dash db)" ]]; then
+            # From another box too: dash.sh takes over the backup's keys
+            log "dashboards"
+            "$DASH_SH" restore "$stage/dash" >/dev/null
+        else
+            log "The dashboards' backup is in $stage/dash, but dashboards aren't running on this" \
+                "box. To put them back: 'dash.sh up', then 'dash.sh restore $stage/dash'"
+        fi
+    fi
     # The label card: a backup from another box brings its Kobo and EspoCRM passwords
     [[ ! -f /etc/kobo-box/firstboot-done ]] || python3 -I "$HERE/card.py" >/dev/null || true
     log "restored snapshot $snap. The files restored are in $r (delete it when all is well);" \
@@ -340,5 +357,5 @@ case "${1:-}" in
     list) REPO=$(repo_for "${2:?usage: $0 list <dest|repo>}"); open_repo; restic_ snapshots ;;
     restore) shift; restore "$@" ;;
     status) cat "$STATUS_FILE" 2>/dev/null || echo '{}' ;;
-    *) sed -n '2,17p' "$0" | sed 's/^# \{0,1\}//' >&2; exit 1 ;;
+    *) sed -n '2,18p' "$0" | sed 's/^# \{0,1\}//' >&2; exit 1 ;;
 esac

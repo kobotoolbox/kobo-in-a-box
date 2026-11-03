@@ -1,0 +1,121 @@
+# Dashboards on the box (W9, PLAN 3h): kobo-dash, its database and poller, and the box's
+# kobo-mcp, which builds dashboards for the agent and signs their owners in. Started by
+# dash.sh, which sets the env.
+#
+#   db          Postgres 17 for kobo-dash, only on this project's network (separate from
+#               Kobo's own, so Kobo upgrades never touch it)
+#   dash        kobo-dash's web app on 127.0.0.1:${DASH_PORT} (edge: dash.kobo.local);
+#               applies its migrations, then serves
+#   dash-worker the poller: fetches new submissions for each dashboard's projects
+#   kobo-mcp    HTTP on 127.0.0.1:${MCP_PORT} (edge: mcp.kobo.local): the agent's tools in
+#               header mode, and the sign-in page (OAUTH_KEYS, MCP_OAUTH off on http)
+#
+# They reach Kobo, each other and the sign-in page by the box's names through the edge
+# nginx (host network, port 80), as a browser on the Wi-Fi does: the assertions they
+# exchange name those URLs. host-gateway is the host itself, so a new box IP changes nothing
+
+x-box-hosts: &box-hosts
+  - "kf.kobo.local:host-gateway"
+  - "dash.kobo.local:host-gateway"
+  - "mcp.kobo.local:host-gateway"
+
+x-dash-env: &dash-env
+  DATABASE_URL: postgresql+asyncpg://kobo_dash:${DASH_DB_PASSWORD}@db:5432/kobo_dash
+  PUBLIC_URL: http://dash.kobo.local
+  MCP_URL: http://mcp.kobo.local
+  DASH_PUBLIC_KEY: ${DASH_PUBLIC_KEY}
+  SECRET_KEY: ${DASH_SECRET_KEY}
+  CRED_KEYS: ${DASH_CRED_KEYS}
+  ALLOWED_SERVERS: http://kf.kobo.local
+  TILE_URL: ${TILE_URL:-}
+  TILE_ATTRIBUTION: ${TILE_ATTRIBUTION:-© OpenStreetMap contributors}
+  TILE_MAX_ZOOM: ${TILE_MAX_ZOOM:-14}
+  BOUNDARIES_DIR: /data/boundaries
+  # Documents in the box's library may be cited as evidence
+  LOCAL_EVIDENCE_ORIGINS: http://kobo.local
+  CLIENT_IP_HEADER: x-real-ip
+
+services:
+  db:
+    image: ${DASH_DB_IMAGE}
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: kobo_dash
+      POSTGRES_PASSWORD: ${DASH_DB_PASSWORD}
+      POSTGRES_DB: kobo_dash
+    volumes:
+      - db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "kobo_dash", "-d", "kobo_dash"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  dash:
+    image: ${DASH_IMAGE}
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    extra_hosts: *box-hosts
+    environment:
+      <<: *dash-env
+      HOST: 0.0.0.0
+      PORT: "8080"
+    command: ["sh", "-c", "alembic upgrade head && exec python -m kobo_dash"]
+    volumes:
+      - ${BOUNDARIES_DIR}:/data/boundaries:ro
+    ports: ["127.0.0.1:${DASH_PORT}:8080"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/healthz', timeout=5)"]
+      interval: 10s
+      timeout: 10s
+      retries: 30
+      start_period: 1m
+    labels:
+      kobo-box.watchdog: restart
+
+  dash-worker:
+    image: ${DASH_IMAGE}
+    restart: unless-stopped
+    depends_on:
+      dash:
+        condition: service_healthy  # its migrations have run
+    extra_hosts: *box-hosts
+    environment:
+      <<: *dash-env
+    command: ["python", "-m", "kobo_dash.worker"]
+
+  kobo-mcp:
+    image: ${KOBO_MCP_IMAGE}
+    restart: unless-stopped
+    extra_hosts: *box-hosts
+    environment:
+      HOST: 0.0.0.0
+      PORT: "8080"
+      PUBLIC_URL: http://mcp.kobo.local
+      EXTRA_KOBO_HOSTS: kf.kobo.local
+      HTTP_KOBO_HOSTS: kf.kobo.local
+      # Only the box's own Kobo: not Global or EU, nor any other server
+      CUSTOM_KOBO_SERVERS: "false"
+      PUBLIC_KOBO_SERVERS: "false"
+      TOOL_PROFILES: ${TOOL_PROFILES}
+      # The sign-in page for dashboard owners; OAuth for MCP clients needs https, so the
+      # agent (OpenCode) uses header mode
+      OAUTH_KEYS: ${MCP_OAUTH_KEYS}
+      MCP_OAUTH: "false"
+      DASH_URL: http://dash.kobo.local
+      DASH_SIGNING_KEY: ${DASH_SIGNING_KEY}
+      DASH_KOBO_HOSTS: kf.kobo.local
+      CLIENT_IP_HEADER: x-real-ip
+    ports: ["127.0.0.1:${MCP_PORT}:8080"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/healthz', timeout=5)"]
+      interval: 5s
+      timeout: 10s
+      retries: 30
+    labels:
+      kobo-box.watchdog: restart
+
+volumes:
+  db:
