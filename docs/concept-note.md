@@ -56,9 +56,9 @@ The new generation of the kit adds five things:
    outcome on the box, still with no internet.
 
 The basic kit has already been used in the field, most recently in Kobo's response to
-Hurricane Melissa in Jamaica. The AI processing, the AI assistant, the library and case
-management are working in a simulated offline test environment, as described below;
-dashboards and the knowledge base are built for KoboToolbox's online services and are
+Hurricane Melissa in Jamaica. The AI processing, the AI assistant, the library, case
+management and dashboards are working in a simulated offline test environment, as
+described below; the knowledge base is built for KoboToolbox's online services and is
 being adapted to run on the box. The next step is a **field pilot with one partner
 organisation**, followed by kits that arrive ready to switch on: installed from a single
 USB stick before they ship, and set up by themselves the first time they start.
@@ -180,7 +180,9 @@ which its assistant tools drive, and the support chatbot on Kobo's help centre, 
 answers from the user guides. On the kit they run with the same local AI model as the
 assistant:
 
-- **Dashboards** read data from the kit's own KoboToolbox. Map backgrounds and
+- **Dashboards** (working in testing with no internet) read data from the kit's own
+  KoboToolbox, through a separate view-only account for each owner, and anyone on the
+  kit's Wi-Fi can open the ones that are shared. Map backgrounds and
   administrative boundaries for the deployment's regions are loaded before the mission
   (maps still show points and shaded areas without a background). Desk research, which
   online uses the web, uses the documents in the knowledge base instead.
@@ -637,9 +639,9 @@ confirm speed, power draw and heat before buying pilot kits.
 | **Offline library** | Local landing page, app installers and guides; checked to work with no internet. Humanitarian standards added (Sphere, child protection, education). Next: confirm with the standards bodies that serving their publications on a kit is within their terms, and add sector standards for the pilot | ✅ Working in testing |
 | **AI processing in KoboToolbox** | Qualitative analysis, translation and transcription on local AI: working end to end and offline in testing. Next: languages for the pilot, and proposing the changes to the main KoboToolbox product | ✅ Working in testing |
 | **AI assistant** | Assistant connected to KoboToolbox data, with safety limits on what it can change: working offline in testing, with a 30-task test set comparing models. Next: sign-in for several users, guidance about each form, shorter instructions for speed | ✅ Working in testing; 1–2 weeks more |
-| **Dashboards** | Kobo's dashboard service running on the kit, built by the assistant; offline maps and boundaries for the deployment's regions | About 2 weeks, after the assistant connection |
+| **Dashboards** | Kobo's dashboard service running on the kit, built by the assistant: working offline in testing, with live updates, sharing on the Wi-Fi and maps of administrative areas. Next: a map background for the pilot region, and measuring the assistant on dashboard requests | ✅ Working in testing |
 | **Knowledge base** | Guides indexed on the box and searchable by the assistant, across languages; the deployment's own documents added before or during a mission; tested with the support chatbot's question set | 2–3 weeks; can start now |
-| **Case management (optional)** | EspoCRM on the kit with a bridge that opens cases from KoboToolbox submissions, routed by rules per form: working online and offline in testing, with a health referral scenario. Next: open cases as a choice list in follow-up forms, with the outcome written back to the case; case outcomes back to KoboToolbox, the assistant reading cases, interface languages for the pilot, encrypted logins | ✅ Working in testing |
+| **Case management (optional)** | EspoCRM on the kit with a bridge that opens cases from KoboToolbox submissions, routed by rules per form: working online and offline in testing, with a health referral scenario: follow-up visits that pick the case from a list and update it, edits and case status both ways with KoboToolbox, the assistant reading cases. Next: follow-ups on a phone with the kit's Wi-Fi, interface languages for the pilot, encrypted logins | ✅ Working in testing |
 | **Hardware** | Buy and test one recommended unit; measure speed, power and heat, re-running the same AI and assistant tests; test how many phones and users one kit supports at once; time a full restore from a backup drive | Next |
 | **Multi-site sync** | Kit-to-hub and hub-to-cloud syncing with kobo-transfer, automated and shown on the kit's status page; identical forms on every kit | Sync to a cloud server tested on the prototype; hub workflow to build and test |
 | **Packaging** | Kits that arrive ready to switch on: one-USB installation before shipping; per-kit passwords and keys made on first start; AI settings chosen from the hardware; backups by plugging in a drive; status page; quick-start guide. Backups, restore onto a replacement kit, the self-adjusting AI and network settings, the status page, installing a kit from its content with no internet, and the first start that makes each kit's own passwords and label card are working in testing (11 minutes at the factory and 6 at first start on a fresh computer). Next: the kit's own Wi-Fi and the bootable USB stick, on the recommended computer | Started; 3–5 weeks, partly on the recommended hardware |

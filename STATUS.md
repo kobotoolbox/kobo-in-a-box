@@ -207,7 +207,8 @@ without the build, `test_indexing_and_embedding` fails and 4 tests skip, on `mai
       content pack's new `maps/` folder; `firstboot.sh` step `dash`, status page row,
       backups. OpenCode now reaches kobo-mcp as `mcp.kobo.local` through the edge and
       waits for its health check (kobo-mcp moved out of `agents/`).
-- [x] kobo-mcp branch `w9-box` (`c11c4e9`, `3fe5b14`; 968 unit tests pass): `MCP_OAUTH=false`
+- [x] kobo-mcp branch `w9-box` in the worktree `~/Desktop/work/repos/kobo-mcp-w9`, not merged or
+      pushed (`c11c4e9`, `3fe5b14`; 968 unit tests pass): `MCP_OAUTH=false`
       (the MCP SDK refuses an http OAuth issuer, so `OAUTH_KEYS` crashed kobo-mcp on
       `http://mcp.kobo.local`; the sign-in page for kobo-dash doesn't need it, and the agent
       uses header mode) and `PUBLIC_KOBO_SERVERS=false` (the sign-in page offered Global and
