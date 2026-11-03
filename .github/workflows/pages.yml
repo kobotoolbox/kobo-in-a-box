@@ -25,10 +25,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      # Only the page and its assets: not the scripts beside them
+      # Only the pages and their assets: not the scripts beside them
       - run: |
           mkdir _site
-          cp -R site/index.html site/static _site/
+          cp -R site/*.html site/static _site/
           touch _site/.nojekyll
       - uses: actions/upload-pages-artifact@v3
         with:
