@@ -134,9 +134,12 @@ rsync -a --delete --exclude results --exclude __pycache__ --exclude '*.local.env
     "$PACK/kobo-box-ai/" "$BOX_DIR/"
 rsync -a --delete --exclude '*.part' "$PACK/models/" "$MODELS_DIR/"
 if [[ -d "$PACK/maps" ]]; then mkdir -p "$MAPS_DIR"; rsync -a --delete "$PACK/maps/" "$MAPS_DIR/"; fi
-rsync -a --delete --exclude 'status/' --exclude 'card/' --exclude '.services/' \
+rsync -a --delete --exclude 'status/' --exclude 'card/' --exclude '.services/' --exclude box.json \
     "$PACK/library/" "$LIBRARY_DIR/"
 LIBRARY_DIR=$LIBRARY_DIR python3 -I "$BOX_DIR/library/render.py" >/dev/null   # this box's name and links
+if [[ -d "$PACK/kobo-transfer" ]]; then   # sync.py; per-project settings live elsewhere
+    rsync -a --delete --exclude __pycache__ "$PACK/kobo-transfer/" "$ROOT_DIR/kobo-transfer/"
+fi
 kobo_changed=false
 if [[ -d "$PACK/kpi-e2e" ]]; then
     diff -rq "$PACK/kpi-e2e" "$ROOT_DIR/kpi-e2e" >/dev/null 2>&1 || kobo_changed=true
@@ -169,6 +172,11 @@ fi
 
 step units "the box's systemd units"
 BOX_IP=$BOX_IP "$BOX_DIR/box/box.sh" install
+# Boxes set up before syncing existed get its account (firstboot.sh's sync step)
+if [[ ! -s /etc/kobo-box/sync.token ]]; then
+    python3 -I "$BOX_DIR/box/kobo-account.py" sync /etc/kobo-box/sync.token
+    python3 -I "$BOX_DIR/box/card.py" >/dev/null || true
+fi
 
 step services "starting each part on the new files"
 LIBRARY_DIR=$LIBRARY_DIR "$BOX_DIR/library/library.sh" up

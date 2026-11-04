@@ -8,7 +8,7 @@
 # a three-way merge: the file in the release the backport was made for (KPI_IMAGE), the
 # backport's version, and the new release's. A clean merge is written in place and
 # KPI_IMAGE moves to the new image; a conflict stops with the file left for a person
-# (`git merge-file` markers in <file>.merge). Files the backport adds (local/) aren't KPI's
+# (`git merge-file` markers in <file>.merge). Files the backport adds (local/, supplement_import.py) aren't KPI's
 # and stay as they are. The old version is kept in /root/kpi-e2e.before-<tag>.
 set -euo pipefail
 NEW=${1:?usage: $0 kobotoolbox/kpi:<tag>}
@@ -21,6 +21,7 @@ FILES=(
     "automatic_bedrock_qual.py:$SUB/actions/automatic_bedrock_qual.py"
     "automatic_google_translation.py:$SUB/actions/automatic_google_translation.py"
     "automatic_google_transcription.py:$SUB/actions/automatic_google_transcription.py"
+    "router_api_v2.py:/srv/src/kpi/kpi/urls/router_api_v2.py"
     "base.py:/srv/src/kpi/kobo/settings/base.py"
 )
 

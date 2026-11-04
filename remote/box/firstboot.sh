@@ -20,6 +20,8 @@
 #   paper     paper forms, when the pack has kobo-field-forms' image: a Kobo account
 #             (paper-forms, sees only the forms shared with it) and the app's own
 #             password (paper.sh up)
+#   sync      a Kobo account for syncing between kits (sync, sees only the projects
+#             shared with it), its key on the card (sync.py)
 #   ai        detect-tier.py and ./ai.sh up auto, for this machine
 #   card      the label card (card.py): Wi-Fi with a QR code, the admin password, the backup
 #             passphrase, the disk's recovery key when there is one
@@ -34,7 +36,7 @@ ETC=/etc/kobo-box
 STATE=/var/lib/kobo-box/firstboot.json
 DONE=$ETC/firstboot-done
 LIBRARY_DIR=${LIBRARY_DIR:-/srv/library}
-STEPS=(name kobo secrets cases dash paper ai card)
+STEPS=(name kobo secrets cases dash paper sync ai card)
 
 log() { echo "[$(date +%H:%M:%S)] $*"; }
 
@@ -71,6 +73,7 @@ step_name() {
     if [[ -d /etc/cloud/cloud.cfg.d ]]; then
         printf 'preserve_hostname: true\nmanage_etc_hosts: false\n' > /etc/cloud/cloud.cfg.d/99-kobo-box.cfg
     fi
+    BOX_IP=$BOX_IP "$HERE/box.sh" ip up   # its names in /etc/hosts, kf.<name>.local included
     log "box name: $name"
 }
 
@@ -128,6 +131,11 @@ step_paper() {
           'PAPER_KOBO_USER=paper-forms' "KOBO_TOKEN_FILE=$ETC/paper-forms.token" > "$ETC/paper.env" )
     python3 -I "$HERE/kobo-account.py" paper-forms "$ETC/paper-forms.token"
     "$REMOTE/paper/paper.sh" up
+}
+
+step_sync() {
+    # Every kit has it: a field kit sends with it, a hub receives with it (sync.py)
+    python3 -I "$HERE/kobo-account.py" sync "$ETC/sync.token"
 }
 
 step_ai() {

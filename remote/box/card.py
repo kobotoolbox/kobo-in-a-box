@@ -106,6 +106,8 @@ def main():
     paper_env = {**env_file(PAPER / 'paper.env'), **env_file(ETC / 'paper.env')}
     paper_pw = env_file(Path(paper_env.get('PAPER_SECRETS', '/root/paper.secrets'))).get('PAPER_PASSWORD', '')
     paper_user = paper_env.get('PAPER_KOBO_USER', '')
+    # Syncing between kits (sync.py), when firstboot.sh made its account
+    sync_key = read(ETC / 'sync.token')
 
     def rows(pairs):
         return '<dl>' + ''.join(f'<dt>{e(k)}</dt><dd>{e(v)}</dd>' for k, v in pairs if v) + '</dl>'
@@ -137,6 +139,15 @@ def main():
             + rows([('Address', f'http://paper.{DOMAIN}'), ('Username', 'paper'), ('Password', paper_pw)])
             + '<p>For staff who print sheets and scan them back. A form can be printed once it is shared, '
             + f'in Kobo, with the user <strong>{e(paper_user)}</strong> ("Add submissions").</p></section>')
+    if sync_key:
+        sections.append(
+            '<section><h2>Syncing between kits</h2>'
+            + rows([('Kit name', name), ('Sync key', sync_key)])
+            + '<p>Field kits send their projects to a hub kit at base. To sync a project, share it in '
+              'Kobo with the user <strong>sync</strong>: on a field kit with "View submissions"; on the '
+              'hub with "View submissions", "Add submissions", "Edit submissions" and "Validate '
+              'submissions". Support pairs each field kit with its hub once, with the hub\'s address '
+              'and the hub\'s sync key.</p></section>')
     sections += [
         '<section><h2>Backups</h2>'
         + rows([('Backup passphrase', backup_pw)])

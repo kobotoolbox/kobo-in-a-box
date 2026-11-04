@@ -353,6 +353,18 @@ PY
                 "box. To put them back: 'dash.sh up', then 'dash.sh restore $stage/dash'"
         fi
     fi
+    # Syncing: this kit's sync account's token is the restored database's too. A replacement
+    # kit that isn't paired yet takes the old one's hub (sync.py puts the hub's name back in
+    # /etc/hosts on its next run)
+    if [[ -s /etc/kobo-box/sync.token ]]; then
+        log "the sync account's key"
+        python3 -I "$HERE/kobo-account.py" sync /etc/kobo-box/sync.token >/dev/null
+    fi
+    if [[ ! -s /etc/kobo-box/sync.env && -s "$r/etc/kobo-box/sync.env" && -s "$r/etc/kobo-box/sync-hub.token" ]]; then
+        log "paired with the backup's hub ($(sed -n 's/^HUB_NAME=//p' "$r/etc/kobo-box/sync.env"))"
+        install -m 600 "$r/etc/kobo-box/sync-hub.token" /etc/kobo-box/sync-hub.token
+        install -m 600 "$r/etc/kobo-box/sync.env" /etc/kobo-box/sync.env
+    fi
     # Paper forms: their Kobo account's token follows the restored database, then their
     # store and scans
     local paper_user paper_token

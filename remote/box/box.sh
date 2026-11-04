@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
 # Box-level setup that makes the kit run without anyone configuring it. Run as root.
 #
-#   ./box.sh ip up|down|status   the fixed internal address (below)
+#   ./box.sh ip up|down|status   the fixed internal address (below), and the box's own
+#                                names in /etc/hosts
 #   ./box.sh install             systemd units: the address at boot, nightly backup,
 #                                a backup whenever the KOBOBACKUP drive is plugged in,
-#                                and the status page (kobo.local/status) every minute,
-#                                after watchdog.sh has restarted any hung model server
+#                                the status page (kobo.local/status) every minute,
+#                                after watchdog.sh has restarted any hung model server,
+#                                and syncing to the hub every 5 minutes (sync.py)
 #   ./box.sh update-drive        update from the KOBOPACK stick just plugged in, if its
 #                                signature checks out (the udev rule runs this)
 #   ./box.sh uninstall
@@ -31,6 +33,27 @@ ip_up() {
     ip link show "$BOX_IF" >/dev/null 2>&1 || ip link add "$BOX_IF" type dummy
     ip addr show dev "$BOX_IF" | grep -q " $BOX_IP/" || ip addr add "$BOX_IP/32" dev "$BOX_IF"
     ip link set "$BOX_IF" up
+    hosts_up
+}
+
+hosts_block() {  # hosts_block <tag> [line]: replace (or with no line, remove) a block of /etc/hosts
+    local tag=$1 line=${2:-} tmp
+    tmp=$(mktemp)
+    awk -v b="# BEGIN $tag" -v e="# END $tag" '$0 == b {skip = 1; next} $0 == e {skip = 0; next} !skip' \
+        /etc/hosts > "$tmp"
+    [[ -z "$line" ]] || printf '# BEGIN %s\n%s\n# END %s\n' "$tag" "$line" "$tag" >> "$tmp"
+    cat "$tmp" > /etc/hosts   # in place: keep the file (and its inode) as it is
+    rm -f "$tmp"
+}
+
+hosts_up() {
+    # The box's own names, for its own tools (sync, status checks): on the box they mean
+    # BOX_IP, where the edge answers. Phones get the Wi-Fi address from the hotspot's DNS.
+    # kf.<box name>.local is how other kits reach this one (box/sync.py); here it's the same
+    # Kobo, so a kit can use either name for itself
+    local name
+    name=$(hostname -s)
+    hosts_block kobo-box "$BOX_IP kobo.local kf.kobo.local kc.kobo.local ee.kobo.local kf.$name.local kc.$name.local ee.$name.local"
 }
 
 install_units() {
@@ -112,6 +135,32 @@ OnUnitActiveSec=10min
 WantedBy=timers.target
 EOF
 
+    # Sync to the hub (box/sync.py): only on a kit paired with one, and only when the hub
+    # answers, so connecting the cable is all it takes. On the clock rather than after the
+    # last run: a skipped start (not paired) would stop an interval timer
+    cat > "$UNIT_DIR/kobo-box-sync.service" <<EOF
+[Unit]
+Description=Kobo in a box: sync to the hub kit, if it answers
+After=docker.service
+ConditionPathExists=/etc/kobo-box/sync.env
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 -I $HERE/sync.py run --if-connected
+TimeoutStartSec=0
+EOF
+    cat > "$UNIT_DIR/kobo-box-sync.timer" <<EOF
+[Unit]
+Description=Kobo in a box: sync to the hub every 5 minutes, when it's connected
+
+[Timer]
+OnCalendar=*:0/5
+AccuracySec=30s
+
+[Install]
+WantedBy=timers.target
+EOF
+
     # Nightly, to the box's own disk: databases and settings only (media would double the
     # disk use). Protects against mistakes and corruption, not against losing the box.
     cat > "$UNIT_DIR/kobo-box-backup.service" <<EOF
@@ -159,8 +208,9 @@ WantedBy=timers.target
 EOF
     systemctl daemon-reload
     udevadm control --reload
-    systemctl enable --now kobo-box-ip.service kobo-box-backup.timer kobo-box-status.timer kobo-box-cases-setup.timer
-    echo "Installed: kobo-box-ip ($BOX_IP), nightly backup timer, KOBOBACKUP drive rule, KOBOPACK update rule, status page timer"
+    systemctl enable --now kobo-box-ip.service kobo-box-backup.timer kobo-box-status.timer kobo-box-cases-setup.timer \
+        kobo-box-sync.timer
+    echo "Installed: kobo-box-ip ($BOX_IP), nightly backup timer, KOBOBACKUP drive rule, KOBOPACK update rule, status page timer, sync timer"
 }
 
 update_drive() {
@@ -205,8 +255,10 @@ case "${1:-}" in
         ;;
     install) install_units ;;
     uninstall)
-        systemctl disable --now kobo-box-ip.service kobo-box-backup.timer kobo-box-status.timer kobo-box-cases-setup.timer 2>/dev/null || true
-        rm -f "$UNIT_DIR"/kobo-box-{ip,backup,backup-drive,update-drive,status,cases-setup}.service "$UNIT_DIR"/kobo-box-{backup,status,cases-setup}.timer \
+        systemctl disable --now kobo-box-ip.service kobo-box-backup.timer kobo-box-status.timer kobo-box-cases-setup.timer \
+            kobo-box-sync.timer 2>/dev/null || true
+        rm -f "$UNIT_DIR"/kobo-box-{ip,backup,backup-drive,update-drive,status,cases-setup,sync}.service \
+            "$UNIT_DIR"/kobo-box-{backup,status,cases-setup,sync}.timer \
             "$UNIT_DIR/media-kobobackup.mount" /etc/udev/rules.d/99-kobo-box-{backup,update}.rules
         systemctl daemon-reload
         udevadm control --reload
