@@ -109,3 +109,110 @@ Bring-up runs from before these fixes, kept for the record, not results:
 | 111817 | online | 27/27 | 9 cases after 16 s, the later visit after 27 s |
 | 112125 | offline | 27/27 | after `espocrm.sh down` + `up` with outbound blocked (cold start) |
 | 112351 | offline | 27/27 | with a packet capture on the stack's Docker network: 0 outbound packets over the run and ~2 min of EspoCRM's scheduler; a control connection to 1.1.1.1 was captured |
+
+## 2026-11-04: kobo-transfer sync, field kits → hub, three CPU rigs (`s-8vcpu-32gb-amd`)
+
+`site-a`, `site-b` and `hub`, all restored from `kobo-box-ai-snapshot` (Kobo 2.026.37d + the
+backport), on one DO VPC. kobo-transfer at `1ae7a04` (2026-07-06) on each kit, pushing to
+one hub project with `sync/push.sh` (`--sync --validation-statuses --analysis-data`);
+`sync/e2e-sync.py check` from each kit against the hub. The `sync-*.json` files stayed on the
+kit droplets (copying them off was blocked).
+
+| Step | Egress | Submissions, attachments, validation statuses | AI results |
+|---|---|---|---|
+| site-a: 5 (AI on 1: transcript, translation, qual, 69 s on CPU) | online | 5/5, byte for byte | **not copied** |
+| site-b: 4 | online | 4/4 | none to copy |
+| site-a re-run, nothing new | online | "in-sync", nothing sent | |
+| site-a: 2 more, 1 synced status changed | online | only the 2 sent; the status change followed | **not copied** |
+| site-b: 3 more | offline (VPC only) | only the 3 sent | none to copy |
+
+Hub at the end: 14 rows, 14 unique uuids (7 per site), 2 attachments each (28 in the
+database, so `--sync` sent no media twice), one `__version__` (the hub form's).
+
+Found:
+- **Analysis data doesn't sync.** kobo-transfer posts to `advanced_submission_post/<uid>`
+  (404 on this KPI) and copies the old `advanced_features` format; KPI now keeps them in
+  `/api/v2/assets/<uid>/advanced-features/` and `/data/<uuid>/supplement/` (`_version
+  20250820`). The run prints "Something went wrong with <uuid>" and still ends "✨ Done".
+- Its "Creating analysis form in dest project" step PATCHes the hub's `advanced_features`
+  with each kit's own, so with several kits the last one to sync would win once it works.
+- `_supplementalDetails` in the data list shows transcripts and translations as `""` until
+  a person reviews them; checks have to read `/supplement/`.
+- Every box is `kf.kobo.local`, so a kit can't reach the hub by name. The rig used a port
+  forward (`kf.kobo.local:8090`); it works because kobo-transfer only follows the hub's
+  `next` links past 1000 submissions. The host itself doesn't resolve `*.kobo.local` either
+  (only the containers do) until the hotspot's dnsmasq: `/etc/hosts` on the rigs.
+- Site comes from a `site` question in the form; nothing marks a kit's submissions by itself.
+- Not tested: hub → a cloud server (needs an account), and the push the other way (the hub
+  pulling from kits would break attachments: their download URLs carry the kit's own name).
+
+### Same day, after the fixes (same three rigs, offline but for the VPC)
+
+kobo-transfer branch `supplement-api` (`~/code/kobo-transfer`) and KPI's supplement import
+(`local-nlp-backend`, in the backport; the hub restarted with it by `kobo-setup.py
+--reconfigure`, offline). The check now also compares each kit's whole supplement with the
+hub's (every version, uuid, date and review state).
+
+| Step | Result |
+|---|---|
+| site-a → hub, no new submissions (the first fix to `run.py`: it used to stop at "in-sync") | 5 AI versions imported, still pending review; whole supplement identical |
+| `review` on site-a (accept transcript and translation, verify the qual answer), sync again | 3 updated; identical again (first try missed `_dateVerified`: fixed) |
+| re-run, nothing changed | 0 added, 0 updated |
+| site-b: 1 more with AI and its own qual question, sync | 5 versions imported; the hub has both sites' qual questions, neither hidden; both kits' checks pass |
+| site-a (reviewed) → site-b's form, stock KPI routes (no import: like KoboToolbox's servers today) | the 3 reviewed results as manual entries; re-run adds nothing |
+| site-b (unreviewed) → site-a's form, stock routes | nothing copied, "3 unreviewed left at src" reported |
+
+A failure now prints `❌ <uuid> (Analysis data): <status> <body>` and the run exits 1.
+
+KPI tests (`kpi-test.sh kobo/apps/subsequences/`, hub online for pip only): 433 and 422
+passed, but 1 of the 10 new import tests failed: a `complete` transcript with no value was
+imported. KPI's own `validate_submission_supplement()` checks nothing below the question
+(each question's schema is a dict of action schemas, not a schema), so it accepts any
+action data; real writes are safe because each action calls `validate_result()`. The import
+now does too: 10/10 in both settings. Last run with it, offline: one more AI submission on
+site-a imported exactly, site-b in-sync; hub at the end 16 rows, 16 uuids, 8 per site, 32
+attachments. (site-a's check then differs on one submission whose results went to site-b
+as manual entries during the stock-route test and came back: the hub holds the union of
+both copies, which is right; kits syncing into each other isn't a real flow.)
+Still open: hub → a KoboToolbox server (an account), proposing both changes upstream, how
+kits and the hub address each other (all `kf.kobo.local`), and a site id kits stamp on
+their own submissions.
+
+## 2026-11-04 (later): syncing built into the box, on kits installed from a pack
+
+The rig (`kobo-box-ai`, restored) built a pack with the sync pieces (`box/sync.py`, the
+edge's per-box names, the `sync` account in first boot, kobo-transfer `supplement-api` in
+`kobo-transfer/`, the KPI import in the backport); three fresh Ubuntu 24.04 droplets
+(`s-8vcpu-32gb-amd`), offline from the start but for the VPC, took it with
+`install.sh --pack … --first-boot-now`: 11–15 min each, all green but "no backup to a drive
+yet". Names: hub `kobo-frmw`, site-a `kobo-chxq`, site-b `kobo-29p4`. Each with an `e2e`
+account (`kobo-account.py`, not a superuser) owning the test form; the form shared with
+`sync` (kit: view submissions; hub: view, add, change, validate submissions). Each kit paired
+once with `ssh <hub> cat /etc/kobo-box/sync.token | sync.py hub 10.110.0.9 -` (the key went
+hub → kit over the VPC, not through the laptop). After that only the timer ran syncs, except
+where noted. Checks: `e2e-sync.py check` on each kit against `kf.kobo-frmw.local`, with the
+hub key the kit holds (fresh boxes don't share tokens).
+
+| Step | Result |
+|---|---|
+| First timer run after pairing (12:00) | site-a 5 sent + 5 AI versions in 7 s, site-b 4 in 6 s; both checks PASS (now also comparing answers); status rows "Synced to the hub kobo-frmw just now" |
+| Edits: site-a edits 2 (one with AI results, one twice), the hub edits a site-b submission, both edit one of site-a's | site-a: 2 sent as edits, 1 conflict; site-b: 1 kept at the hub. Hub: 9 rows for 9 roots, edited answers and attachments there, AI versions unchanged; the hub's correction and its side of the conflict untouched; checks PASS but for the two expected to differ |
+| 1,100 more on the hub (third site, no media), then 2 new + 1 edit on site-b | sent in 5 s; hub 1,111 rows over 2 pages, 1,111 roots: the second page of the hub's list was followed through `kf.kobo-frmw.local` |
+| site-a cut off from the hub (iptables); the hub's `sync` loses add_submissions, site-b adds one | site-a: "Last synced … The hub isn't connected now" (green); site-b: "1 submission … couldn't be sent: the hub's sync account isn't allowed to add them: … share … with …" (amber, from the 403). Both fixed: the next timer run sent the waiting submission, all green |
+| `sync.py resolve <uuid> --keep here` (site-a) and `--keep hub` (site-b, after a fresh conflict) | here: sent as an edit straight away, check PASS with nothing skipped; hub: left as it was, conflict gone, green |
+| site-b: backup (no media), pairing and the hub's hosts entry removed, restore | 57 s; "paired with the backup's hub"; the next sync put the hub's name back in /etc/hosts and sent a new submission; check PASS |
+
+Found and fixed on the way:
+- The edge's `proxy_redirect` with numbered captures failed every `kc.kobo.local/` request
+  ("no buffer space in script copy": the map's regex reset `$1`): named captures.
+- `sync.py` built the kit's own address as `kf.kobo.local.local`. The pack carries that
+  bug; the kits were fixed by hand and the code is right now.
+- Resolving a conflict had no way out ("edit one to match" leaves it a conflict forever):
+  `sync.py resolve`.
+- The status row counted edits as new submissions, and didn't say which conflicted:
+  kobo-transfer's summary now has `edits_sent` and `conflict_uuids`.
+- `kobo-transfer` stopped without a summary on a 403 from validation statuses or analysis
+  features: it now writes one with the error.
+
+Not tested: `update.sh` giving an older box its `sync` account; pairing over a bare cable
+(no DHCP: mDNS or link-local, W5 box); syncing to a KoboToolbox server online.
