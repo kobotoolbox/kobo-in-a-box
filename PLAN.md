@@ -848,7 +848,10 @@ Started 2026-10-30; scripts in `remote/box/`, details in [STATUS.md](STATUS.md).
 - [ ] Autoinstall USB with LUKS + TPM (W5 box)
 - [ ] Clean shutdown on low battery; OpenCode session history in backups (once W4 settles where it lives)
 - [x] In-place update from a newer content pack: signed packs, `update.sh`, by itself from a plugged-in stick (tested 37c → 37d)
-- [ ] Later: kobo-transfer sync when online
+- [x] kobo-transfer sync, kit → hub, tested on three rigs offline (2026-11-04, `remote/sync/`, `site/sync.html`): kobo-transfer branch `supplement-api` (AI results through the advanced-features API, features merged across kits, statuses and analysis synced with no new submissions, error exit) and KPI's supplement import in the backport (`supplement_import.py`, 10 tests; the whole subsequences suite passes)
+- [x] Sync built into the box (2026-11-04): kobo-transfer in the content pack, `box/sync.py` (pairing, timer every 5 min when the hub answers, `resolve`), the status-page row, per-box names (`kf.<name>.local` through the edge), the `sync` account at first boot with its key on the card, pairing in backups; edits sent as edits; tested on three kits installed from a pack, offline
+- [ ] Sync to a KoboToolbox server online by itself (by hand works; needs an account); pairing on a bare cable (mDNS / link-local, W5 box); `update.sh` giving an older box its `sync` account
+- [ ] Propose both changes upstream (kobo-transfer; KPI's import, with the `validate_submission_supplement` bug: it checks nothing below the question)
 
 ### W13. Paper forms on the box (~1–2 weeks; see 3l)
 Scheduled 2026-11-03; kff's own milestone 10. Built and tested on a second CPU rig the same day (`remote/paper/`, kff branch `milestone-10`).

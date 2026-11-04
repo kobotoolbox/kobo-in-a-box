@@ -3,10 +3,12 @@
 Living reference for where the work stands. The overall plan and workstreams (W1–W7)
 are in [PLAN.md](PLAN.md); per-run results are in [remote/results/NOTES.md](remote/results/NOTES.md).
 
-## Where we are (2026-11-03)
+## Where we are (2026-11-04)
 
 - **Rigs:** the CPU rig (`s-8vcpu-32gb-amd`: Kobo, the KPI backport, kobo-mcp, OpenCode, test
-  data) is parked as `kobo-box-ai-snapshot` in ams3. Its Kobo is 2.026.37d (since
+  data) is parked as `kobo-box-ai-snapshot` in ams3 (2026-11-04, with box sync: `box/sync.py`,
+  kobo-transfer `supplement-api` in `/root/kobo-transfer`, the KPI supplement import in the
+  backport). Its Kobo is 2.026.37d (since
   2026-11-02, with the backport rebased onto it) on the fixed address
   (`BOX_IP=10.254.254.254`) with W12's units installed, so a restore needs no `run.py`; it
   holds the test pack signing key (`/root/kobo-pack-signing.key`); `/root/fake-usb.img` is an exFAT `KOBOBACKUP` drive for tests
@@ -56,6 +58,17 @@ are in [PLAN.md](PLAN.md); per-run results are in [remote/results/NOTES.md](remo
 3. **W9:** done on the rig (2026-11-03, `remote/dash/`); left: a real basemap once the
    pilot countries are chosen, scoring the 11 dashboard tasks on the GPU rig, offline
    `desk_review` (W10), proposing kobo-mcp's `w9-box` settings upstream.
+3a. **Sync (kobo-transfer):** built into the box and working on kits installed from a pack,
+   offline (2026-11-04): every box has a `sync` account (key on the card) and answers to
+   `kf.<name>.local`; a field kit paired once with `box/sync.py hub <address> -` syncs to
+   its hub by itself every 5 minutes when connected, with attachments, statuses, AI results
+   (as they are) and edits (both-sides edits flagged, `sync.py resolve`), and a status-page
+   row. kobo-transfer branch `supplement-api` (`~/code/kobo-transfer`) and KPI's supplement
+   import (`local-nlp-backend`, in the backport). Found on the way: KPI's
+   `validate_submission_supplement` checks nothing below the question (upstream bug). Left:
+   hub → KoboToolbox online by itself (by hand works; needs an account to test), pairing on
+   a bare cable (W5), `update.sh` on an older box, proposing both changes upstream. User
+   guide: `site/sync.html`; box: `remote/box/README.md`; rigs: `remote/sync/README.md`.
 3b. **W13 paper forms:** running on the rig and its e2e passing offline (2026-11-03); left:
    firstboot, backup/restore and the pack on a fresh box, then real paper on the W5 unit.
 4. **W2 to finish:** a KPI image from the branch, the pilot languages' tables, and

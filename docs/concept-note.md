@@ -299,20 +299,34 @@ Organisations can mix these: for example, keep a protection project standalone w
 needs assessment syncs to the cloud every time the hub gets a connection.
 
 **How syncing works.** Syncing uses **kobo-transfer**, Kobo's open-source tool for copying
-projects and submissions between KoboToolbox servers. It already handles what field
-syncing needs:
+projects and submissions between KoboToolbox servers, with two changes made and tested for
+the kits (to be proposed to the main products):
 - **Safe to repeat.** Every submission keeps its original unique ID, so syncing again
-  only sends new submissions. Nothing is duplicated, even when data from many kits ends
-  up in one project.
+  only sends new submissions, and status changes and reviews made since. Nothing is
+  duplicated, even when data from many kits ends up in one project.
 - **Complete.** Photos, audio and other attachments, validation statuses, and the
   results of analysis (transcripts, translations, qualitative coding) travel with the
-  data, so AI processing done offline is not lost.
-- **Robust on poor links.** Large projects are sent in batches, and failed submissions
-  can be retried on their own.
+  data, so AI processing done offline is not lost. Between kits, AI suggestions nobody
+  has reviewed yet arrive still marked for review, so the review can happen at the hub.
+  KoboToolbox's servers online can't take an AI suggestion as a suggestion yet, so only
+  reviewed results go there, and the sync reports what it left behind.
+- **Several kits, one project.** Each kit's AI settings (languages, analysis questions)
+  are added to the hub's, never replacing another site's.
+- **Robust on poor links.** Submissions are sent in small batches; a sync that stops
+  half-way loses nothing, and the next run sends what's still missing.
 - **One direction.** Data flows from field kits to the hub to the cloud. Forms are
-  deployed identically on every kit before the mission, and each kit marks its
-  submissions with its own site identifier, so the combined data shows where each
-  record came from.
+  deployed identically on every kit before the mission, with a question for the site,
+  so the combined data shows where each record came from.
+- **By itself.** A field kit is paired with its hub once; after that, plugging it into
+  the hub (or the base's network) is all it takes: it syncs within minutes, and its
+  status page says when it last did and what, if anything, needs a person. Each kit and
+  the hub choose what syncs by sharing a project with the kit's sync account.
+- **Corrections are safe.** An edit made on a field kit reaches the hub as an edit; a
+  correction made at the hub is never overwritten; a submission changed on both is left
+  alone until someone chooses which copy to keep.
+
+The user guide's [Syncing kits](https://kobotoolbox.github.io/kobo-in-a-box/sync.html)
+page has the step-by-step procedure.
 
 ### Design principles
 
@@ -372,6 +386,7 @@ a data-centre graphics card standing in for the recommended tier while it is out
 | Case management (optional) | All 27 checks of the health referral scenario passed online and offline, including a start with the internet already cut. Every expected case opened within 16–32 seconds, routed to the right team, with no duplicates; each role saw only what it should. A capture of the network traffic saw nothing leave the box. Follow-up visits, edits and statuses both ways, and a submission case management refused (kept and retried without holding up the others) were tested end to end on the test environment. About 1.6 GB of software and 200 MB of memory |
 | Paper forms (optional) | With internet blocked, synthetic filled-in sheets in four print layouts (A4 and A5, Letter double-sided, English and Arabic) were scanned, read with the kit's AI model and submitted to its KoboToolbox: **93.7–95.2%** of answers read with no one typing, every stored value matched what was sent, and no wrong reading went unflagged in that test. Handwritten words are the weak point (73–87% read right), and a demonstration sheet showed a confident misread (a surname with one letter wrong, not flagged), so reviewers check every answer. Real handwriting still needs testing |
 | Backups and recovery | Plugging in a backup drive backs up the data, recordings, settings and case records by itself, in seconds for the test data, also with internet blocked. Two deleted projects (63 submissions and an audio recording) were restored on the same kit in under a minute. A freshly installed replacement kit restored from the drive in under two minutes, with the original kit's passwords, all projects, the recording byte for byte, and new submissions from a phone working afterwards |
+| Syncing kits | Two field kits and a hub installed from the kit's content on new machines with internet blocked, as they would be delivered. Once paired, the field kits synced by themselves: every submission on the hub exactly once, photos and recordings byte for byte, validation statuses, and AI results identical down to their review state. Edits made on a field kit arrived as edits, a correction made at the hub was kept, a submission edited on both was flagged for a person, and a hub with over 1,100 submissions worked the same. The status page said what to do when the hub was unplugged or missing a permission, and syncing carried on by itself once fixed. An earlier round found that AI results didn't sync at all (the tool reported success); the fix passes KoboToolbox's own test suite. Syncing to KoboToolbox's servers online is the next test |
 | Offline library | 13 installers and documents (about 5 GB), each checked against a published or recorded fingerprint; guides load with no internet; large uploads (a 40 MB audio interview) and downloads work through the box. Nine humanitarian standards (Sphere, child protection, education; 44 MB) have since been added from their publisher's open-access editions, with their fingerprints recorded |
 
 Performance on the recommended field hardware still needs to be confirmed on a real
@@ -709,7 +724,7 @@ confirm speed, power draw and heat before buying pilot kits.
 | **Case management (optional)** | EspoCRM on the kit with a bridge that opens cases from KoboToolbox submissions, routed by rules per form: working online and offline in testing, with a health referral scenario: follow-up visits that pick the case from a list and update it, edits and case status both ways with KoboToolbox, the assistant reading cases. Next: follow-ups on a phone with the kit's Wi-Fi, interface languages for the pilot, encrypted logins | ✅ Working in testing |
 | **Paper forms (optional)** | KoboToolbox Paper Forms on the kit: sheets printed from any shared form, scanned or photographed, read on the kit with its AI model, checked and submitted to its KoboToolbox: working offline in testing on synthetic sheets. Next: real handwriting and phone photos over the kit's Wi-Fi on the recommended computer, then signing in with each user's own KoboToolbox account | ✅ Working in testing |
 | **Hardware** | Buy and test one recommended unit; measure speed, power and heat, re-running the same AI and assistant tests; test how many phones and users one kit supports at once; time a full restore from a backup drive | Next |
-| **Multi-site sync** | Kit-to-hub and hub-to-cloud syncing with kobo-transfer, automated and shown on the kit's status page; identical forms on every kit | Sync to a cloud server tested on the prototype; hub workflow to build and test |
+| **Multi-site sync** | Kit-to-hub and hub-to-cloud syncing with kobo-transfer, automated and shown on the kit's status page; identical forms on every kit | Kit to hub working in testing: automatic, on the status page, with AI results and edits. Next: hub to KoboToolbox's servers online (by hand so far), and finding the hub on a bare cable on the recommended computer |
 | **Packaging** | Kits that arrive ready to switch on: one-USB installation before shipping; per-kit passwords and keys made on first start; AI settings chosen from the hardware; backups by plugging in a drive; status page; quick-start guide. Backups, restore onto a replacement kit, the self-adjusting AI and network settings, the status page, installing a kit from its content with no internet, the first start that makes each kit's own passwords and label card, and updates from a signed stick are working in testing (11 minutes at the factory and 6 at first start on a fresh computer). Next: the kit's own Wi-Fi and the bootable USB stick, on the recommended computer | Started; 3–5 weeks, partly on the recommended hardware |
 | **Field pilot** | One partner organisation, 3–6 languages, real conditions | After the above |
 | **Scale-up** | Kits available to partners; changes merged into the main KoboToolbox product | After the pilot |
@@ -859,10 +874,14 @@ with the internet cut off.
   submits checked sheets through KoboToolbox's API as its own account, with a unique ID per
   sheet so a resubmission is a duplicate. The kit's first start makes its account and
   password, and its store is in the kit's backups.
-- **Sync:** kobo-transfer (open source, by Kobo), preinstalled on every kit. It copies new
-  submissions, attachments, validation statuses and analysis results between KoboToolbox
+- **Sync:** kobo-transfer (open source, by Kobo), preinstalled on every kit, run by the
+  kit itself every few minutes while its hub is reachable. It copies new submissions,
+  edits, attachments, validation statuses and analysis results between KoboToolbox
   servers, one project at a time, keeping each submission's unique ID so repeat runs
-  don't create duplicates.
+  don't create duplicates. Every kit has a sync account that sees only the projects
+  shared with it, and answers to its own name on the network, so kits can tell each
+  other apart. A small addition to the kits' KoboToolbox lets a hub take analysis results
+  exactly as the kit had them, including AI suggestions still waiting for review.
 - **Offline library:** a list of each app, guide and standard, its exact version and its
   digital fingerprint, used to download and check everything before deployment. The
   humanitarian standards are the open-access PDFs from Practical Action Publishing, the

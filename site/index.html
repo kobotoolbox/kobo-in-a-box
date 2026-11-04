@@ -80,7 +80,7 @@
   <li><strong>An AI assistant</strong>Ask about the data in plain language: counts, breakdowns, duplicates, missing answers, a weekly digest. It works with your own KoboToolbox permissions and can't delete anything.</li>
   <li><strong>An offline library</strong>App installers for Android, Windows and Mac, the KoboToolbox and QGIS guides, and core humanitarian standards such as Sphere, each checked against a fingerprint.</li>
 </ul>
-<p>A kit can run a project on its own and never connect to anything. Several kits can feed a <strong>hub kit</strong> at a base when they come back in range. Whenever a connection is available, a kit or the hub can sync to a KoboToolbox server online with <a href="https://github.com/kobotoolbox/kobo-transfer">kobo-transfer</a>, which keeps each submission's ID, so syncing twice never duplicates data.</p>
+<p>A kit can run a project on its own and never connect to anything. Several kits can feed a <strong>hub kit</strong> at a base when they come back in range. Whenever a connection is available, a kit or the hub can sync to a KoboToolbox server online with <a href="https://github.com/kobotoolbox/kobo-transfer">kobo-transfer</a>, which keeps each submission's ID, so syncing twice never duplicates data (<a href="#sync">see Syncing kits</a>).</p>
 <pre>  Phones, tablets and laptops on the kit's Wi-Fi
                  │
    ┌─────────────┴──────────────────────────────────────────┐
@@ -109,7 +109,7 @@
 </ol>
 <p><strong>The label card</strong> holds what a team needs to use the kit and to recover from losing it: the Wi-Fi name and password with a QR code that phones join from, the administrator accounts, and the backup passphrase. It opens only in a browser on the kit itself, never for devices on its Wi-Fi. Print it, then keep it somewhere other than the kit and its backup drive.</p>
 <div class="figures figures--half">
-<figure><a href="static/home/card.jpg"><img src="static/home/card.jpg" width="1520" height="2520" alt="A kit's label card, Kobo in a box: kobo-r9v6, made when it was first switched on. Join the Wi-Fi: a QR code, network Kobo-r9v6 and a password in four groups of four, then open http://kobo.local. KoboToolbox administrator: address, username and password, for making staff accounts. Case management: address, username admin and its password, and a note that cases open from the Kobo form Community health referral once it is shared with the user cases-bridge. Paper forms: address, username paper and its password, and a note that a form can be printed once it is shared with the user paper-forms. Backups: the backup passphrase, needed to restore onto a replacement kit. Keep this card somewhere other than the kit and the backup drive."></a><figcaption>A label card, with made-up passwords.</figcaption></figure>
+<figure><a href="static/home/card.jpg"><img src="static/home/card.jpg" width="1520" height="2960" alt="A kit's label card, Kobo in a box: kobo-r9v6, made when it was first switched on. Join the Wi-Fi: a QR code, network Kobo-r9v6 and a password in four groups of four, then open http://kobo.local. KoboToolbox administrator: address, username and password, for making staff accounts. Case management: address, username admin and its password, and a note that cases open from the Kobo form Community health referral once it is shared with the user cases-bridge. Paper forms: address, username paper and its password, and a note that a form can be printed once it is shared with the user paper-forms. Syncing between kits: the kit's name and its sync key, and which permissions to give the user sync on a field kit and on the hub. Backups: the backup passphrase, needed to restore onto a replacement kit. Keep this card somewhere other than the kit and the backup drive."></a><figcaption>A label card, with made-up passwords.</figcaption></figure>
 <figure><a href="static/home/status-update.jpg"><img src="static/home/status-update.jpg" width="1280" height="1020" alt="The status page during an update: Updating this kit. Leave it switched on. Update: updating this kit to the version of 2 November 2026, now updating KoboToolbox, the longest step; leave it switched on and the update stick plugged in. Library and disk space are green."></a><figcaption>The status page while a kit updates itself from a stick.</figcaption></figure>
 </div>
 <p>In testing, a freshly installed computer with all internet traffic blocked took 11 minutes to install from the bundle and 6 more to set itself up on its first start, with nothing typed by hand. It then passed the same AI tests as the test environment, backed up to a drive, and came back by itself after a restart. A newer stick updates a kit in use: plugged in, the kit checks that the stick was signed by whoever prepared it, backs up its data, updates itself in a few minutes and says on its status page when the stick can be removed. Its forms, submissions, cases and passwords stay as they were. The same stick reinstalls a kit that breaks: another kit's backup drive then brings back its forms, submissions and cases, with nothing typed but the backup passphrase (2 minutes 19 seconds in testing).</p>
@@ -154,6 +154,80 @@
 <h3>Back up</h3>
 <p>Plug a USB drive labelled <code>KOBOBACKUP</code> into the kit. It backs up the data, recordings, settings and case records by itself, encrypted, copying only what changed since the last time, then releases the drive. The status page says "don't unplug it" while it works and "you can unplug the drive" when it's done; a drive that's too small fails at once and says so. Keep the drive somewhere other than the kit. Do it weekly, or after a big collection day. The kit also keeps a nightly copy of its databases on its own disk, to undo mistakes.</p>
 <p>If a kit is lost or breaks, a replacement installed from the kit's USB stick can be restored from the drive with the backup passphrase on the original kit's label card. Keep the card apart from both the kit and the drive. In testing, two deleted projects (63 submissions, and an audio recording that came back byte for byte) were restored in under a minute, and a freshly installed replacement kit took the whole backup in under two, with phones able to submit to it straight after.</p>
+</section>
+
+<section id="sync">
+<h2>Syncing kits</h2>
+<p>A kit can keep a project to itself for good. When a mission runs several kits, each site collects on its own, and back at base each kit is plugged into a <strong>hub kit</strong>, by cable or the base's network, and syncs to it by itself, still with no internet. The hub holds one project with every site's data, for review, AI and reports across sites. When there's a connection, the hub, or any kit, syncs on to the organisation's KoboToolbox server. Syncing uses <a href="https://github.com/kobotoolbox/kobo-transfer">kobo-transfer</a>, Kobo's open-source tool for copying projects between KoboToolbox servers.</p>
+<figure>
+<svg class="chart" viewBox="0 0 720 400" role="img" aria-labelledby="home-fed-title home-fed-desc" font-family="Inter, system-ui, sans-serif">
+<title id="home-fed-title">Field kits sync to a hub kit at base, and the hub syncs to KoboToolbox online when connected</title>
+<desc id="home-fed-desc">Three field kits, at sites A, B and C, each with its own Wi-Fi where phones collect, work offline. Arrows labelled kobo-transfer, over a cable or the base network, go from each kit to a hub kit at base, which holds one project with every site's data, for review, AI and reports, still offline. A dashed arrow labelled when online, over HTTPS, goes from the hub to KoboToolbox online, the Global, EU or the organisation's own server, which is optional. Data goes one way: kits to hub to online, and every kit keeps its own copy.</desc>
+<defs>
+  <marker id="home-arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2095f3"/></marker>
+  <marker id="home-arrow-teal" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#52c5d0"/></marker>
+</defs>
+<text x="100" y="22" font-size="12" font-weight="600" fill="#565e76" text-anchor="middle">AT EACH SITE</text>
+<text x="390" y="22" font-size="12" font-weight="600" fill="#565e76" text-anchor="middle">AT BASE</text>
+<text x="640" y="22" font-size="12" font-weight="600" fill="#565e76" text-anchor="middle">WHEN CONNECTED</text>
+<g>
+  <rect x="10" y="40" width="180" height="80" rx="10" fill="#f9f9fb" stroke="#d3d6df"/>
+  <text x="24" y="66" font-size="14" font-weight="600" fill="#1e2129">Field kit · Site A</text>
+  <text x="24" y="86" font-size="12" fill="#565e76">phones collect on its Wi-Fi</text>
+  <text x="24" y="104" font-size="12" fill="#565e76">works alone, offline</text>
+</g>
+<g>
+  <rect x="10" y="150" width="180" height="80" rx="10" fill="#f9f9fb" stroke="#d3d6df"/>
+  <text x="24" y="176" font-size="14" font-weight="600" fill="#1e2129">Field kit · Site B</text>
+  <text x="24" y="196" font-size="12" fill="#565e76">phones collect on its Wi-Fi</text>
+  <text x="24" y="214" font-size="12" fill="#565e76">works alone, offline</text>
+</g>
+<g>
+  <rect x="10" y="260" width="180" height="80" rx="10" fill="#f9f9fb" stroke="#d3d6df"/>
+  <text x="24" y="286" font-size="14" font-weight="600" fill="#1e2129">Field kit · Site C</text>
+  <text x="24" y="306" font-size="12" fill="#565e76">phones collect on its Wi-Fi</text>
+  <text x="24" y="324" font-size="12" fill="#565e76">works alone, offline</text>
+</g>
+<line x1="190" y1="80" x2="298" y2="150" stroke="#2095f3" stroke-width="2" marker-end="url(#home-arrow-blue)"/>
+<line x1="190" y1="190" x2="298" y2="190" stroke="#2095f3" stroke-width="2" marker-end="url(#home-arrow-blue)"/>
+<line x1="190" y1="300" x2="298" y2="230" stroke="#2095f3" stroke-width="2" marker-end="url(#home-arrow-blue)"/>
+<text x="245" y="218" font-size="11" font-weight="600" fill="#00599d" text-anchor="middle">kobo-transfer</text>
+<text x="245" y="232" font-size="11" fill="#565e76" text-anchor="middle">cable or base</text>
+<text x="245" y="245" font-size="11" fill="#565e76" text-anchor="middle">network</text>
+<g>
+  <rect x="300" y="110" width="180" height="160" rx="10" fill="#e8f4ff" stroke="#2095f3" stroke-width="1.5"/>
+  <text x="314" y="140" font-size="15" font-weight="600" fill="#1e2129">Hub kit</text>
+  <text x="314" y="164" font-size="12" fill="#333847">one project, every site</text>
+  <text x="314" y="184" font-size="12" fill="#333847">review and clean</text>
+  <text x="314" y="204" font-size="12" fill="#333847">AI and reports across sites</text>
+  <text x="314" y="224" font-size="12" fill="#333847">dashboards, assistant</text>
+  <text x="314" y="252" font-size="12" font-weight="600" fill="#00599d">still offline</text>
+</g>
+<line x1="480" y1="190" x2="568" y2="190" stroke="#52c5d0" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#home-arrow-teal)"/>
+<text x="524" y="178" font-size="11" font-weight="600" fill="#00599d" text-anchor="middle">when online</text>
+<text x="524" y="208" font-size="11" fill="#565e76" text-anchor="middle">over HTTPS</text>
+<g>
+  <rect x="570" y="130" width="140" height="120" rx="10" fill="#ffffff" stroke="#7a839f" stroke-dasharray="5 4"/>
+  <text x="584" y="158" font-size="14" font-weight="600" fill="#1e2129">KoboToolbox</text>
+  <text x="584" y="176" font-size="14" font-weight="600" fill="#1e2129">online</text>
+  <text x="584" y="200" font-size="12" fill="#565e76">Global, EU, or the</text>
+  <text x="584" y="216" font-size="12" fill="#565e76">organisation's own</text>
+  <text x="584" y="236" font-size="12" font-style="italic" fill="#565e76">optional</text>
+</g>
+<line x1="20" y1="368" x2="700" y2="368" stroke="#e7e9ee"/>
+<text x="360" y="390" font-size="12" fill="#565e76" text-anchor="middle">One direction: kits → hub → online. Nothing is deleted on the way, and each kit keeps its own full copy.</text>
+</svg>
+<figcaption>Data goes one way, and every kit keeps its own copy. Any kit can also sync straight to KoboToolbox online.</figcaption>
+</figure>
+<ul>
+  <li><strong>Everything travels to the hub:</strong> submissions with their IDs, photos and audio byte for byte, validation statuses, and the AI's transcripts, translations and analysis answers, still marked for review where nobody has reviewed them yet.</li>
+  <li><strong>Safe to repeat:</strong> a sync sends only what the other side doesn't have, so running it every evening never duplicates anything, and status changes and reviews made since are passed on.</li>
+  <li><strong>Several kits, one project:</strong> each kit's submissions and AI settings are added to the hub's, never replacing another site's.</li>
+  <li><strong>Edits follow:</strong> a correction made on a field kit reaches the hub as an edit; one made on the hub is never overwritten; one made on both is left for a person to decide.</li>
+</ul>
+<p>Tested on two field kits and a hub installed from the kit's content with no internet: once paired, the kits synced by themselves every time they could reach the hub, with every submission on the hub once, attachments identical, AI results identical down to their review state, edits and corrections handled, and the status page saying what to do when something needed attention. Support pairs each field kit with its hub once. Syncing to KoboToolbox's servers online is done by hand for now, and only reviewed AI results go there.</p>
+<p><a class="button button--filled" href="sync.html">Syncing in detail</a></p>
+<p>The three ways to run, what travels, step-by-step commands, syncing to KoboToolbox online, what to do when something goes wrong, and what was tested.</p>
 </section>
 
 <section id="ai">
@@ -484,6 +558,7 @@
     <tr><td>Offline library</td><td>Working in testing, with humanitarian standards added</td></tr>
     <tr><td>AI in KoboToolbox</td><td>Working end to end in testing; the changes pass KoboToolbox's own test suite and are meant for the main product</td></tr>
     <tr><td>The assistant</td><td>Working in testing on the 30 tasks; next, several users and shorter instructions for speed</td></tr>
+    <tr><td>Syncing kits</td><td>Working in testing with internet cut off, on kits installed from the kit's content: field kits sync to their hub by themselves whenever connected, with photos, audio, edits, statuses and AI results, shown on the status page; next, syncing to a KoboToolbox server online by itself, and finding the hub on a bare cable on the recommended computer (<a href="sync.html">details</a>)</td></tr>
     <tr><td>Case management (optional)</td><td>Working in testing with a health referral scenario: cases from submissions, follow-up visits, edits and statuses both ways, the assistant reading cases; next, follow-ups on a phone with the kit's Wi-Fi (<a href="cases.html">details</a>)</td></tr>
     <tr><td>Dashboards</td><td>Working in testing with no internet: made through the assistant's tools, live updates, sharing on the Wi-Fi, maps of administrative areas; next, a basemap for the pilot region and measuring the assistant on dashboard requests (<a href="dashboards.html">details</a>)</td></tr>
     <tr><td>Paper forms (optional)</td><td>Working in testing with internet cut off: sheets printed, scanned, read with the kit's AI model and submitted to the kit's KoboToolbox; next, real handwriting on paper and phone photos over the kit's Wi-Fi</td></tr>
@@ -512,7 +587,7 @@
 </details>
 <details>
   <summary>What happens to data when a connection comes back?</summary>
-  <div><p>Nothing, unless you choose to sync. A project can stay on the kit for good, or be copied to a hub kit or to a KoboToolbox server, with its photos, audio, validation statuses and AI results.</p></div>
+  <div><p>Nothing, unless you choose to sync. A project can stay on the kit for good, or be copied to a hub kit or to a KoboToolbox server, with its photos, audio, validation statuses and AI results (<a href="sync.html">how syncing works</a>).</p></div>
 </details>
 <details>
   <summary>Where do I get help with KoboToolbox itself?</summary>

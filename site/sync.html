@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Syncing kits: Kobo in a box</title>
+<meta name="description" content="How Kobo in a box kits share data: several field kits sync to a hub kit at a base, and the hub (or any kit) syncs to a KoboToolbox server when there's a connection, with kobo-transfer. What travels, how to run it step by step, what to do when something goes wrong, and what was tested.">
+<link rel="icon" href="static/site/icon.png" type="image/png">
+<link rel="stylesheet" href="static/site/home.css">
+</head>
+<body>
+<header class="header">
+  <div class="wrap">
+    <a class="header__brand" href="./"><img src="static/site/logo.svg" alt="KoboToolbox"><span class="header__product">In a box</span></a>
+    <ul class="header__nav">
+      <li><a href="./#how">How it works</a></li>
+      <li><a href="./#field">In the field</a></li>
+      <li><a href="./#ai">AI</a></li>
+      <li><a href="./#sync">Syncing</a></li>
+      <li><a href="./#cases">Case management</a></li>
+      <li><a href="./#results">Results</a></li>
+    </ul>
+    <a class="button button--filled button--m" href="./">Back to the overview</a>
+  </div>
+</header>
+
+<main>
+<section class="banner">
+  <div class="wrap">
+    <h1>Syncing kits</h1>
+    <p class="banner__lead">A kit can keep a project to itself for good. When a mission runs several kits, each site collects on its own kit, and back at base the kits' data comes together on a <strong>hub kit</strong>, still with no internet: connect a field kit to the hub and it syncs by itself. When there is a connection, the hub (or any kit) can send it on to a KoboToolbox server online. Photos, audio, edits, validation statuses and AI results travel with the data, and syncing again only sends what's new.</p>
+    <div class="banner__buttons">
+      <a class="button button--filled" href="#before">Set it up</a>
+      <a class="button button--light" href="#travels">What travels</a>
+    </div>
+  </div>
+</section>
+
+<section class="steps" aria-label="The flow">
+  <div class="wrap">
+    <ol>
+      <li><h3>Each site collects</h3><p>Enumerators submit to their site's kit over its Wi-Fi, as with KoboToolbox online. The kit works alone: it needs neither the hub nor the internet.</p></li>
+      <li><h3>Back at base, connect the kit</h3><p>Plug it into the hub, or the base's network. Within 5 minutes it sends the hub what it doesn't have yet, by itself. The hub holds one project with every site's data.</p></li>
+      <li><h3>When online, the hub syncs on</h3><p>Over any connection, even a short or slow one, the hub sends the combined data to the organisation's KoboToolbox server. That step is optional.</p></li>
+    </ol>
+  </div>
+</section>
+
+<div class="wrap docs">
+<nav class="docs__nav" aria-label="On this page">
+  <ul>
+    <li><a href="#what">What it is</a></li>
+    <li><a href="#ways">Three ways to run</a></li>
+    <li><a href="#travels">What travels</a></li>
+    <li><a href="#review">AI results and review</a></li>
+    <li><a href="#before">Before the mission</a></li>
+    <li><a href="#pair">Pairing a kit with its hub</a></li>
+    <li><a href="#run">Day to day</a></li>
+    <li><a href="#edits">Edits and corrections</a></li>
+    <li><a href="#online">Syncing to KoboToolbox online</a></li>
+    <li><a href="#trouble">When something goes wrong</a></li>
+    <li><a href="#tested">What was tested</a></li>
+    <li><a href="#limits">Limits</a></li>
+    <li><a href="#technical">Technical details</a></li>
+  </ul>
+</nav>
+
+<article class="prose">
+
+<section id="what">
+<h2>What it is</h2>
+<p>Syncing uses <a href="https://github.com/kobotoolbox/kobo-transfer">kobo-transfer</a>, Kobo's open-source tool for copying a project's submissions from one KoboToolbox server to another. Every kit runs a full KoboToolbox server, so a field kit, a hub kit and a KoboToolbox server online are all the same kind of thing to it: a sync copies one project on one server into one project on another.</p>
+<ul>
+  <li><strong>One direction.</strong> Data goes from the field kits to the hub, and from the hub to a server online. Nothing comes back down, and nothing is deleted anywhere: each kit keeps its own full copy.</li>
+  <li><strong>Safe to repeat.</strong> Each submission keeps its ID, so a sync only sends what the other side doesn't have yet: new submissions, edits, status changes and AI results added since. Running it twice changes nothing.</li>
+  <li><strong>By itself.</strong> A field kit paired with its hub syncs whenever it can reach it, every 5 minutes, and its status page says when it last did.</li>
+  <li><strong>Several kits into one project.</strong> Each kit syncs into the same project on the hub; their submissions sit side by side, and their AI settings are combined, not replaced.</li>
+  <li><strong>No internet needed</strong> between kits and the hub: a cable, or the base's own network, is enough.</li>
+</ul>
+</section>
+
+<section id="ways">
+<h2>Three ways to run</h2>
+<figure>
+<svg class="chart" viewBox="0 0 720 400" role="img" aria-labelledby="fed-title fed-desc" font-family="Inter, system-ui, sans-serif">
+<title id="fed-title">Field kits sync to a hub kit at base, and the hub syncs to KoboToolbox online when connected</title>
+<desc id="fed-desc">Three field kits, at sites A, B and C, each with its own Wi-Fi where phones collect, work offline. Arrows labelled kobo-transfer, over a cable or the base network, go from each kit to a hub kit at base, which holds one project with every site's data, for review, AI and reports, still offline. A dashed arrow labelled when online, over HTTPS, goes from the hub to KoboToolbox online, the Global, EU or the organisation's own server, which is optional. Data goes one way: kits to hub to online, and every kit keeps its own copy.</desc>
+<defs>
+  <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2095f3"/></marker>
+  <marker id="arrow-teal" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#52c5d0"/></marker>
+</defs>
+<text x="100" y="22" font-size="12" font-weight="600" fill="#565e76" text-anchor="middle">AT EACH SITE</text>
+<text x="390" y="22" font-size="12" font-weight="600" fill="#565e76" text-anchor="middle">AT BASE</text>
+<text x="640" y="22" font-size="12" font-weight="600" fill="#565e76" text-anchor="middle">WHEN CONNECTED</text>
+<g>
+  <rect x="10" y="40" width="180" height="80" rx="10" fill="#f9f9fb" stroke="#d3d6df"/>
+  <text x="24" y="66" font-size="14" font-weight="600" fill="#1e2129">Field kit · Site A</text>
+  <text x="24" y="86" font-size="12" fill="#565e76">phones collect on its Wi-Fi</text>
+  <text x="24" y="104" font-size="12" fill="#565e76">works alone, offline</text>
+</g>
+<g>
+  <rect x="10" y="150" width="180" height="80" rx="10" fill="#f9f9fb" stroke="#d3d6df"/>
+  <text x="24" y="176" font-size="14" font-weight="600" fill="#1e2129">Field kit · Site B</text>
+  <text x="24" y="196" font-size="12" fill="#565e76">phones collect on its Wi-Fi</text>
+  <text x="24" y="214" font-size="12" fill="#565e76">works alone, offline</text>
+</g>
+<g>
+  <rect x="10" y="260" width="180" height="80" rx="10" fill="#f9f9fb" stroke="#d3d6df"/>
+  <text x="24" y="286" font-size="14" font-weight="600" fill="#1e2129">Field kit · Site C</text>
+  <text x="24" y="306" font-size="12" fill="#565e76">phones collect on its Wi-Fi</text>
+  <text x="24" y="324" font-size="12" fill="#565e76">works alone, offline</text>
+</g>
+<line x1="190" y1="80" x2="298" y2="150" stroke="#2095f3" stroke-width="2" marker-end="url(#arrow-blue)"/>
+<line x1="190" y1="190" x2="298" y2="190" stroke="#2095f3" stroke-width="2" marker-end="url(#arrow-blue)"/>
+<line x1="190" y1="300" x2="298" y2="230" stroke="#2095f3" stroke-width="2" marker-end="url(#arrow-blue)"/>
+<text x="245" y="218" font-size="11" font-weight="600" fill="#00599d" text-anchor="middle">kobo-transfer</text>
+<text x="245" y="232" font-size="11" fill="#565e76" text-anchor="middle">cable or base</text>
+<text x="245" y="245" font-size="11" fill="#565e76" text-anchor="middle">network</text>
+<g>
+  <rect x="300" y="110" width="180" height="160" rx="10" fill="#e8f4ff" stroke="#2095f3" stroke-width="1.5"/>
+  <text x="314" y="140" font-size="15" font-weight="600" fill="#1e2129">Hub kit</text>
+  <text x="314" y="164" font-size="12" fill="#333847">one project, every site</text>
+  <text x="314" y="184" font-size="12" fill="#333847">review and clean</text>
+  <text x="314" y="204" font-size="12" fill="#333847">AI and reports across sites</text>
+  <text x="314" y="224" font-size="12" fill="#333847">dashboards, assistant</text>
+  <text x="314" y="252" font-size="12" font-weight="600" fill="#00599d">still offline</text>
+</g>
+<line x1="480" y1="190" x2="568" y2="190" stroke="#52c5d0" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#arrow-teal)"/>
+<text x="524" y="178" font-size="11" font-weight="600" fill="#00599d" text-anchor="middle">when online</text>
+<text x="524" y="208" font-size="11" fill="#565e76" text-anchor="middle">over HTTPS</text>
+<g>
+  <rect x="570" y="130" width="140" height="120" rx="10" fill="#ffffff" stroke="#7a839f" stroke-dasharray="5 4"/>
+  <text x="584" y="158" font-size="14" font-weight="600" fill="#1e2129">KoboToolbox</text>
+  <text x="584" y="176" font-size="14" font-weight="600" fill="#1e2129">online</text>
+  <text x="584" y="200" font-size="12" fill="#565e76">Global, EU, or the</text>
+  <text x="584" y="216" font-size="12" fill="#565e76">organisation's own</text>
+  <text x="584" y="236" font-size="12" font-style="italic" fill="#565e76">optional</text>
+</g>
+<line x1="20" y1="368" x2="700" y2="368" stroke="#e7e9ee"/>
+<text x="360" y="390" font-size="12" fill="#565e76" text-anchor="middle">One direction: kits → hub → online. Nothing is deleted on the way, and each kit keeps its own full copy.</text>
+</svg>
+<figcaption>A networked mission with a connected hub. Any kit can also sync straight to KoboToolbox online, without a hub.</figcaption>
+</figure>
+<p>Deployments mix these, project by project:</p>
+<div class="table-scroll"><table>
+  <thead><tr><th>Way</th><th>What happens</th><th>Suits</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Standalone</strong></td><td>One kit, start to finish. Nothing ever leaves it.</td><td>Short assessments, the most sensitive data</td></tr>
+    <tr><td><strong>Networked</strong></td><td>A kit per site, the same forms on each. Back at base, each kit syncs to the hub, which holds the combined dataset and analyses it, offline.</td><td>Several sites or teams, one analysis. Field kits can be the budget tier; only the hub needs the recommended computer.</td></tr>
+    <tr><td><strong>Connected</strong></td><td>When any connection appears, the hub or a kit syncs to the organisation's KoboToolbox server, and the data joins its normal data management.</td><td>Projects the organisation runs online as well</td></tr>
+  </tbody>
+</table></div>
+<p>For example: a protection project stays standalone on one kit, while a needs assessment runs on four kits, comes together on the hub every evening, and goes to the organisation's server whenever the base's satellite link is up.</p>
+</section>
+
+<section id="travels">
+<h2>What travels</h2>
+<div class="table-scroll"><table>
+  <thead><tr><th>Part</th><th>Kit → hub</th><th>Hub → KoboToolbox online</th></tr></thead>
+  <tbody>
+    <tr><td>Submissions</td><td>Yes, with their IDs</td><td>Yes</td></tr>
+    <tr><td>Photos, audio, files</td><td>Yes, byte for byte</td><td>Yes</td></tr>
+    <tr><td>Edits</td><td>Yes, as edits (<a href="#edits">see below</a>)</td><td>Yes</td></tr>
+    <tr><td>Validation statuses</td><td>Yes, and later changes</td><td>Yes</td></tr>
+    <tr><td>Reviewed AI results</td><td>Yes, as they are</td><td>Yes, as manual entries</td></tr>
+    <tr><td>AI results not yet reviewed</td><td>Yes, still for review</td><td>Not yet: counted, left on the hub</td></tr>
+    <tr><td>AI settings</td><td>Added to the hub's</td><td>Added to the server's</td></tr>
+    <tr><td>The form</td><td>No: deployed beforehand</td><td>Only the first time, if asked</td></tr>
+    <tr><td>Deletions</td><td>No</td><td>No</td></tr>
+  </tbody>
+</table></div>
+<p><strong>AI results</strong> are the transcripts, translations and analysis answers on a submission, whether the kit's AI made them or a person typed them; <strong>AI settings</strong> are the project's transcription and translation languages and its analysis questions. Why unreviewed results don't go online yet is <a href="#review">below</a>.</p>
+<p>Each kit's submissions say which site they came from because the form asks: a <strong>Site</strong> question, answered by the enumerator. The hub then shows, filters and exports by site.</p>
+</section>
+
+<section id="review">
+<h2>AI results and review</h2>
+<p>The kit's AI suggests and people decide: a transcript, translation or analysis answer made by the AI is marked as a suggestion until someone accepts or verifies it in KoboToolbox. Syncing keeps that true.</p>
+<ul>
+  <li><strong>Kit to hub,</strong> every version arrives as it was: the AI's suggestions still marked for review, with their dates and when each was accepted, so the reviewing can happen at the hub, across all sites. If someone accepts a suggestion on the kit later, the next sync passes that on. A review is never undone by a sync.</li>
+  <li><strong>To a KoboToolbox server online,</strong> only reviewed results are sent, and they arrive as if typed in by hand. KoboToolbox's servers can't yet take an AI suggestion as a suggestion, and sending it as an accepted entry would make the AI's work look like a person's. The sync lists how many unreviewed results it left behind. Review them on the hub first, or keep that analysis on the hub.</li>
+</ul>
+<div class="note"><p>The kits can take AI results as they are because of a small addition to the kits' KoboToolbox (an import for the analysis data). It is meant for the main KoboToolbox product too; once a server online has it, AI suggestions will reach it as suggestions, with nothing to change on the kits.</p></div>
+</section>
+
+<section id="before">
+<h2>Before the mission</h2>
+<p>Whoever prepares the kits, and support at the base, set syncing up once. Every kit already has what it needs: kobo-transfer, and a KoboToolbox account called <strong>sync</strong> made when the kit was first switched on, with its <strong>sync key</strong> on the kit's label card. That account isn't an administrator and sees only the projects shared with it.</p>
+<ol>
+  <li><strong>One form, deployed everywhere.</strong> Deploy the same XLSForm on every field kit and on the hub, with the same project name, before data collection starts. Include a <strong>Site</strong> question. Projects are matched by name, so don't rename one on one kit only, and don't redeploy the hub's form mid-mission (<a href="#limits">see Limits</a>).</li>
+  <li><strong>Share it with the user <code>sync</code></strong>, in KoboToolbox under <strong>Settings → Sharing</strong>:
+    <ul>
+      <li>on each <strong>field kit</strong>, with <strong>View submissions</strong>;</li>
+      <li>on the <strong>hub</strong>, with <strong>View submissions</strong>, <strong>Add submissions</strong>, <strong>Edit submissions</strong> and <strong>Validate submissions</strong>.</li>
+    </ul>
+    A project that isn't shared on both sides isn't synced: that is how a deployment chooses, project by project, what goes to the hub.</li>
+  <li><strong>A cable, or a network at base.</strong> An Ethernet cable from a field kit to the hub, or a switch or router the kits and the hub plug into. The hub needs an address on it, for example <code>192.168.8.20</code>.</li>
+</ol>
+</section>
+
+<section id="pair">
+<h2>Pairing a field kit with its hub</h2>
+<p>Once per field kit, by support, signed in to the field kit over SSH while it is connected to the hub. Give the hub's address, then paste the hub's sync key from the hub's label card (it isn't shown or kept in the shell's history):</p>
+<pre>/root/kobo-box-ai/box/sync.py hub 192.168.8.20 -
+Paired with the hub kobo-frmw at 192.168.8.20 (its account sync).
+syncs:     Household water survey  (aHagUEc… -> kobo-frmw aRD5brE…)</pre>
+<p>The field kit asks that address which kit it is, checks that the key works there, and lists the projects that will sync. From then on it reaches the hub by name, <code>kf.kobo-frmw.local</code>, whatever its address. A project that won't sync is listed with the reason: not on the hub, or not shared there.</p>
+<div class="note"><p>Every kit calls its own KoboToolbox <code>kf.kobo.local</code>, as phones know it, and also answers to its own name, <code>kf.<em>its-name</em>.local</code>. That's how kits tell each other apart.</p></div>
+</section>
+
+<section id="run">
+<h2>Day to day: connect the kit</h2>
+<p>Back at base, plug the field kit's cable into the hub, or into the base network. <strong>That's all.</strong> Every 5 minutes the kit checks whether the hub answers, and when it does, it sends what the hub doesn't have yet: new submissions with their photos and recordings, edits, validation statuses, AI results. A day's collection takes seconds to a few minutes, more with many recordings. Unplug it when the status page says it's done.</p>
+<p>The kit's <a href="./#field">status page</a> (<code>kobo.local/status</code>) has a row for it:</p>
+<ul>
+  <li><q>Syncing to the hub kobo-frmw now. Leave the kit connected to it.</q> It's sending: don't unplug the cable.</li>
+  <li><q>Synced to the hub kobo-frmw just now: 12 new submissions and 1 edit.</q> Done. It syncs again by itself while connected.</li>
+  <li><q>Last synced to the hub kobo-frmw 3 hours ago. The hub isn't connected now; the kit syncs by itself when it is.</q> Normal in the field. After 3 days without a sync it turns amber, as a reminder.</li>
+</ul>
+<div class="figures figures--half">
+<figure><a href="static/sync/status-synced.jpg"><img src="static/sync/status-synced.jpg" width="1280" height="1280" alt="A field kit's status page: Everything is working. Green rows for KoboToolbox, AI, the library and disk space, and Sync to the hub: Synced to the hub kobo-frmw just now: 12 new submissions and 1 edit."></a><figcaption>A field kit's status page just after it synced. Made-up values, in the page's own words.</figcaption></figure>
+<div><p>Nothing else to do: unplug the cable once it says synced, or leave the kit connected and it keeps the hub up to date every 5 minutes.</p><p>The hub's own status page has no sync row: it only receives.</p></div>
+</div>
+<p>Support can also sync at once, or see what happened, on the field kit:</p>
+<pre>/root/kobo-box-ai/box/sync.py run        # now, instead of waiting up to 5 minutes
+/root/kobo-box-ai/box/sync.py projects   # which projects sync, and why others don't
+/root/kobo-box-ai/box/sync.py status     # the last run in detail</pre>
+</section>
+
+<section id="edits">
+<h2>Edits and corrections</h2>
+<p>Submissions get corrected, on the field kit or on the hub. Each sync compares the two copies:</p>
+<div class="table-scroll"><table>
+  <thead><tr><th>Edited</th><th>What the sync does</th></tr></thead>
+  <tbody>
+    <tr><td>On the field kit</td><td>After it was sent: sends the edit, and the hub's copy becomes the edited one, still one submission, its photos, recordings and AI results kept. Several edits in a row arrive as the last one.</td></tr>
+    <tr><td>On the hub</td><td>Keeps the hub's version. A correction made at the hub is never overwritten by the kit's older copy.</td></tr>
+    <tr><td>On both</td><td>Since the last sync: changes neither copy, and the status page says so ("changed both here and on the hub"). Support decides which one to keep (<a href="#trouble">see below</a>); the next sync does the rest.</td></tr>
+  </tbody>
+</table></div>
+<p>Deleting a submission on one kit doesn't delete it anywhere else.</p>
+</section>
+
+<section id="online">
+<h2>Syncing to KoboToolbox online</h2>
+<p>From the hub (or a field kit, without a hub) to the organisation's KoboToolbox server, over whatever connection there is. This isn't automatic yet: support runs kobo-transfer on the hub, with a settings file per project naming the hub's project (<code>src</code>) and the server's (<code>dest</code>):</p>
+<pre>{
+  "src":  {"kf_url": "http://kf.kobo.local", "kc_url": "http://kc.kobo.local",
+           "token": "<em>a hub account's API key</em>", "asset_uid": "<em>the hub's project ID</em>"},
+  "dest": {"kf_url": "https://kf.kobotoolbox.org", "kc_url": "https://kc.kobotoolbox.org",
+           "token": "<em>the server account's API key</em>", "asset_uid": "<em>the server's project ID</em>"}
+}</pre>
+<pre>cd /root/kobo-transfer
+python3 run.py -c config-online.json --sync --validation-statuses --analysis-data</pre>
+<div class="table-scroll"><table>
+  <thead><tr><th>Server</th><th><code>kf_url</code></th><th><code>kc_url</code></th></tr></thead>
+  <tbody>
+    <tr><td>Global</td><td><code>https://kf.kobotoolbox.org</code></td><td><code>https://kc.kobotoolbox.org</code></td></tr>
+    <tr><td>EU</td><td><code>https://eu.kobotoolbox.org</code></td><td><code>https://kc-eu.kobotoolbox.org</code></td></tr>
+    <tr><td>The organisation's own</td><td>its KoboToolbox address</td><td>its KoboCollect address</td></tr>
+  </tbody>
+</table></div>
+<ul>
+  <li><strong>The first time,</strong> deploy the same form on the server and use its ID, or leave <code>dest</code>'s <code>asset_uid</code> empty and add <code>--asset</code> once to create the project there (it prints the new ID: put it in the file, and never use <code>--asset</code> again for it). API keys are under <strong>Account settings → Security</strong>; keep the file readable by the administrator only (<code>chmod 600</code>).</li>
+  <li><strong>A poor link is fine.</strong> Submissions go one by one, in small batches; a run that stops half-way loses nothing, and the next one sends only what's still missing. Edits and validation statuses follow as between kits.</li>
+  <li><strong>AI results:</strong> only the reviewed ones (<a href="#review">see above</a>); the run says how many unreviewed ones it left on the hub.</li>
+</ul>
+</section>
+
+<section id="trouble">
+<h2>When something goes wrong</h2>
+<div class="figures figures--half">
+<figure><a href="static/sync/status-attention.jpg"><img src="static/sync/status-attention.jpg" width="1280" height="1640" alt="The status page: Working, but something needs attention. Sync to the hub in amber: Synced to the hub kobo-frmw just now: 3 new submissions. 1 submission of Household water survey was changed both here and on the hub since the last sync: neither copy was changed. Shelter assessment isn't synced: the hub has no project with that name shared with its sync account. Then what to do: support decides which copy to keep with sync.py resolve, and on the hub, deploy the same form with the same name and share it with the user sync."></a><figcaption>Two things to sort out: a submission edited on both kits, and a project the hub doesn't have.</figcaption></figure>
+<div><p>The status page says what to do. Nothing is lost while a row is amber or red, and the kit tries again every 5 minutes: once the cause is fixed, the next sync carries on by itself.</p></div>
+</div>
+<ul>
+  <li><q>The hub isn't connected</q> (amber after 3 days). The kit hasn't reached the hub for that long. <strong>Connect it to the hub</strong>: it syncs by itself within 5 minutes.</li>
+  <li><q>‘<em>Project</em>’ isn't synced: the hub has no project with that name shared with its sync account.</q> The project is shared with sync on the kit, but not on the hub, or the hub's has another name. <strong>On the hub, deploy the same form with the same name and share it with sync.</strong></li>
+  <li><q><em>N</em> submissions couldn't be sent: the hub's sync account isn't allowed to add them.</q> The hub's project is shared with sync, but without every permission it needs. <strong>On the hub, share it with View, Add, Edit and Validate submissions.</strong></li>
+  <li><q><em>N</em> submissions were changed both here and on the hub.</q> Edited on both sides since the last sync (<a href="#edits">see above</a>). <strong>Support compares the two copies</strong> (<code>sync.py status</code> lists them) <strong>and chooses one:</strong> <code>sync.py resolve <em>uuid</em> --keep here</code> sends the field kit's at the next sync, <code>--keep hub</code> leaves the hub's.</li>
+  <li><q>Syncing failed: the hub doesn't accept this kit's key any more.</q> The hub's sync key changed (for example, the hub was replaced). <strong>Support pairs the kit again</strong>, with the key on the hub's label card.</li>
+</ul>
+<p>The details of each project's last run, including kobo-transfer's own log, are in <code>/var/lib/kobo-box/sync/</code> on the field kit, readable by its administrator only: they hold both keys.</p>
+</section>
+
+<section id="tested">
+<h2>What was tested</h2>
+<p>On the test environment that simulates the kits, in two rounds, with all internet traffic cut off: the machines reached only each other, over a private network.</p>
+<p><strong>Kits as they are delivered.</strong> A content pack built with the sync software, installed on three newly made machines with no internet from the start, then switched on for the first time: a hub and two field kits, each with its own name, sync account and key (11 to 15 minutes each). The same form on all three, shared with sync; photo and audio questions; the AI transcribed, translated and answered an analysis question on one submission. Each field kit paired with the hub once, then everything ran from the timer:</p>
+<ul>
+  <li><strong>Both kits synced by themselves</strong> within 5 minutes of pairing: 9 submissions on the hub, each once, with photos and recordings byte for byte, validation statuses, and AI results identical down to their review state. The status pages said "Synced to the hub just now".</li>
+  <li><strong>Edits:</strong> two submissions edited on a field kit (one of them twice, one with AI results) arrived as edits: still 9 submissions on the hub, the edited answers, attachments and AI results kept. A correction made on the hub was kept. A submission edited on both sides was left alone on both, and the status page said so.</li>
+  <li><strong>Edited on both sides:</strong> support chose one copy with <code>sync.py resolve</code>, once each way: keeping the field kit's sent it as an edit at once, keeping the hub's left it; the status page was green again.</li>
+  <li><strong>A large hub:</strong> with 1,100 more submissions from a third site on the hub, a field kit's next sync sent its 2 new submissions and 1 edit in 5 seconds; the hub had 1,111 submissions, each once.</li>
+  <li><strong>When things go wrong:</strong> a field kit cut off from the hub said when it last synced and that the hub wasn't connected; with a permission taken away from the hub's sync account, the status page said which one to give back. Both carried on by themselves at the next sync once fixed.</li>
+  <li><strong>Restoring a backup</strong> onto a kit that had lost its pairing brought the pairing back, and the next sync worked.</li>
+</ul>
+<p><strong>Earlier, with the sync tool alone</strong> (copies of one test machine): two kits into one hub, repeat runs sending nothing, status changes passed on, AI results kept as they are, and reviewed-only copying to a standard KoboToolbox server. The addition to KoboToolbox that takes AI results as they are passes KoboToolbox's own test suite, with ten new tests for it.</p>
+</section>
+
+<section id="limits">
+<h2>Limits</h2>
+<ul>
+  <li><strong>Not yet tested against KoboToolbox's servers online</strong>, nor on the field hardware: the tests above ran on the test environment.</li>
+  <li><strong>To KoboToolbox online, by hand</strong> for now (<a href="#online">see above</a>); between kits it's automatic.</li>
+  <li><strong>The hub needs an address the field kit can reach</strong>, so the base network (or the cable) has to give both an address. Finding the hub on a bare cable by itself is to be tested on the field hardware.</li>
+  <li><strong>Pairing is done by support</strong>, over SSH, once per field kit.</li>
+  <li><strong>Don't redeploy the hub's form mid-mission.</strong> Submissions take the version of the form on the receiving side; after a redeployment, a later sync can bring duplicates (a known kobo-transfer limit).</li>
+  <li><strong>Unreviewed AI results don't reach KoboToolbox's servers</strong> until they have the import (<a href="#review">see above</a>).</li>
+  <li><strong>The site comes from the form.</strong> Nothing marks a kit's submissions by itself.</li>
+  <li><strong>Between kits it's plain HTTP</strong> on the cable or base network, as on the kit's Wi-Fi: use a network only staff are on. To KoboToolbox online it's HTTPS.</li>
+</ul>
+</section>
+
+<section id="technical">
+<h2>Technical details</h2>
+<ul>
+  <li><strong>On the kit:</strong> <code>box/sync.py</code> (pairing, matching projects, running kobo-transfer for each, the status file), a systemd timer every 5 minutes on paired kits only, and the status page row. Every kit's edge answers to <code>kf.<em>name</em>.local</code> as well as <code>kf.kobo.local</code>, and pairing puts the hub's name in <code>/etc/hosts</code>. The box's README (<code>remote/box/</code>) has the details.</li>
+  <li><strong>kobo-transfer</strong>, branch <code>supplement-api</code> (from kobotoolbox/kobo-transfer <code>1ae7a04</code>): AI results through KoboToolbox's current analysis API, each source's analysis settings added to the destination's, edits sent as edits (and edits on both sides left for a person), the server's links followed through the configured address, a summary file for unattended runs, an error exit when anything failed. To be proposed upstream.</li>
+  <li><strong>KoboToolbox</strong>: <code>POST /api/v2/assets/&lt;project&gt;/data/&lt;submission&gt;/supplement/import/</code> stores another server's analysis versions as they are, merged by version ID, review state only ever moving forward, each version checked against the action's own rules. kobo-transfer uses it where it exists and falls back to reviewed results otherwise. On the kits it is part of the local-AI addition to KoboToolbox (branch <code>local-nlp-backend</code>).</li>
+  <li>The test harness and how the test machines were set up are in <code>remote/sync/</code> and its README; the results in <code>remote/results/NOTES.md</code>.</li>
+</ul>
+</section>
+
+</article>
+</div>
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <div>
+      <img src="static/site/logo-white.svg" alt="KoboToolbox">
+      <p>Kobo in a box: KoboToolbox, local AI and an offline library for teams working without reliable internet. A prototype in testing.</p>
+    </div>
+    <div>
+      <span class="footer__label">KoboToolbox</span>
+      <ul>
+        <li><a href="https://www.kobotoolbox.org">kobotoolbox.org</a></li>
+        <li><a href="https://support.kobotoolbox.org">Help Center</a></li>
+        <li><a href="https://community.kobotoolbox.org">Community forum</a></li>
+      </ul>
+    </div>
+    <div>
+      <span class="footer__label">On this site</span>
+      <ul>
+        <li><a href="./">Overview</a></li>
+        <li><a href="#before">Syncing: setting it up</a></li>
+        <li><a href="#trouble">Syncing: when something goes wrong</a></li>
+        <li><a href="cases.html">Case management</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>
+</body>
+</html>
