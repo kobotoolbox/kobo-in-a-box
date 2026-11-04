@@ -1,0 +1,169 @@
+{
+ "site": "A",
+ "asset_uid": "a2oDPEpTjYyCcLaWryqnWF",
+ "submissions": {
+  "65eb02aa-4a4a-4da9-8887-3e14c2bab648": {
+   "site": "A",
+   "root": "fae9f3ad-6ec3-42e5-86a2-6f1cf818747a",
+   "answers": {
+    "q1": "We used to get water from the borehole near the school, but it broke in March and nobody has come to fix it. Now my daughters walk about two hours each day to the river. We have five children in total. We would like the borehole repaired, and some help with school fees. [edited on kobo-box-ai]",
+    "hh_size": "2"
+   },
+   "attachments": {
+    "photo-fae9f3ad.png": "4e298a52c95dc2773a7e0cda1af9d7bfc62af32325563a18d0453b02ed7b4035",
+    "17795496440729368205.wav": "c7a871d0bc97fd6fe5e91319726a351fb6501f58c1fe60acd0a21a631f7c894a"
+   },
+   "validation_status": "validation_status_approved",
+   "supplement": {
+    "a1": {
+     "automatic_google_transcription": {
+      "_versions": [
+       {
+        "_data": {
+         "value": "Al d\u00eda de hoy no se ha demostrado a ciencia cierta que alg\u00fan f\u00e1rmaco sea adecuado para tratar la infecci\u00f3n existente causada por \u00e9bola, aun cuando existe una vacuna experimental que pareciera ser capaz de disminuir la mortalidad causada por esa enfermedad.",
+         "status": "complete",
+         "language": "es"
+        },
+        "_uuid": "6dc32f49-5d8b-4b45-8a23-743f1afea62d",
+        "_dateCreated": "2026-11-04T13:37:39.984553Z"
+       },
+       {
+        "_data": {
+         "status": "in_progress",
+         "language": "es"
+        },
+        "_uuid": "57194179-eb61-4e94-896d-a9255fb2c4a7",
+        "_dateCreated": "2026-11-04T13:37:16.544513Z"
+       }
+      ],
+      "_dateCreated": "2026-11-04T13:37:16.544513Z",
+      "_dateModified": "2026-11-04T13:37:39.984553Z"
+     }
+    },
+    "q1": {
+     "automatic_bedrock_qual": {
+      "48f13adf-108a-4ea4-9508-521097961ee8": {
+       "_versions": [
+        {
+         "_data": {
+          "uuid": "48f13adf-108a-4ea4-9508-521097961ee8",
+          "value": "e1b473d8-f4f3-4576-9ef6-d3463c7f9251",
+          "status": "complete"
+         },
+         "_uuid": "567b9c6d-b10e-4420-9e19-6dd0d7f7f3e4",
+         "verified": false,
+         "_dependency": {
+          "_uuid": "fae9f3ad-6ec3-42e5-86a2-6f1cf818747a",
+          "_actionId": "submission"
+         },
+         "_dateCreated": "2026-11-04T13:36:55.449477Z"
+        }
+       ],
+       "_dateCreated": "2026-11-04T13:36:55.449477Z",
+       "_dateModified": "2026-11-04T13:36:55.449477Z"
+      }
+     },
+     "automatic_google_translation": {
+      "es": {
+       "_versions": [
+        {
+         "_data": {
+          "value": "Sol\u00edamos sacar agua del pozo cerca de la escuela, pero se rompi\u00f3 en marzo y nadie ha venido a arreglarlo. Ahora mis hijas caminan unas dos horas cada d\u00eda hasta el r\u00edo. Tenemos cinco hijos en total. Nos gustar\u00eda que repararan el pozo y algo de ayuda con las cuotas escolares.",
+          "status": "complete",
+          "language": "es"
+         },
+         "_uuid": "ce9174d8-ffd5-4189-abd7-381f68de674e",
+         "_dependency": {
+          "_uuid": "fae9f3ad-6ec3-42e5-86a2-6f1cf818747a",
+          "_actionId": "submission"
+         },
+         "_dateCreated": "2026-11-04T13:37:15.708015Z"
+        },
+        {
+         "_data": {
+          "status": "in_progress",
+          "language": "es"
+         },
+         "_uuid": "a92bfc1b-ca72-42a1-82a8-69c8ed18f986",
+         "_dependency": {
+          "_uuid": "fae9f3ad-6ec3-42e5-86a2-6f1cf818747a",
+          "_actionId": "submission"
+         },
+         "_dateCreated": "2026-11-04T13:36:55.662475Z"
+        }
+       ],
+       "_dateCreated": "2026-11-04T13:36:55.662475Z",
+       "_dateModified": "2026-11-04T13:37:15.708015Z"
+      }
+     }
+    },
+    "_version": "20250820"
+   },
+   "ai": {
+    "a1/automatic_google_transcription": "Al d\u00eda de hoy no se ha demostrado a ciencia cierta que alg\u00fan f\u00e1rmaco sea adecuado para tratar la infecci\u00f3n existente causada por \u00e9bola, aun cuando existe una vacuna experimental que pareciera ser capaz de disminuir la mortalidad causada por esa enfermedad.",
+    "q1/automatic_bedrock_qual/48f13adf-108a-4ea4-9508-521097961ee8": "e1b473d8-f4f3-4576-9ef6-d3463c7f9251",
+    "q1/automatic_google_translation/es": "Sol\u00edamos sacar agua del pozo cerca de la escuela, pero se rompi\u00f3 en marzo y nadie ha venido a arreglarlo. Ahora mis hijas caminan unas dos horas cada d\u00eda hasta el r\u00edo. Tenemos cinco hijos en total. Nos gustar\u00eda que repararan el pozo y algo de ayuda con las cuotas escolares."
+   }
+  },
+  "8f34476d-80c1-42a3-85db-57ddb28ecea7": {
+   "site": "A",
+   "root": "8f34476d-80c1-42a3-85db-57ddb28ecea7",
+   "answers": {
+    "q1": "Site A, response 8f34476d",
+    "hh_size": "3"
+   },
+   "attachments": {
+    "photo-8f34476d.png": "93ac43537737189e2e535864345d542bbd593fcc5089d841fd570848c04c4e03",
+    "416124317841544182.wav": "26fc2d5ff0afabd360cfa07c1720f39a06273c437ae54b080468fa8b03361245"
+   },
+   "validation_status": "validation_status_not_approved",
+   "supplement": {},
+   "ai": {}
+  },
+  "844bbb71-752d-4ee0-b728-9722b7485833": {
+   "site": "A",
+   "root": "844bbb71-752d-4ee0-b728-9722b7485833",
+   "answers": {
+    "q1": "Site A, response 844bbb71",
+    "hh_size": "4"
+   },
+   "attachments": {
+    "photo-844bbb71.png": "dce3de7244d1c8af0809396bbee0121de490250622dd0a3e0e1a855d6ed281ba",
+    "705534160794720130.wav": "904eeadbc87dc1024f3fafe0aac9f3fcc3b80a8dbe01a423575e437310e2a39b"
+   },
+   "validation_status": null,
+   "supplement": {},
+   "ai": {}
+  },
+  "6fa1c38b-ca18-4e83-8793-a3ab13115e7c": {
+   "site": "A",
+   "root": "6fa1c38b-ca18-4e83-8793-a3ab13115e7c",
+   "answers": {
+    "q1": "Site A, response 6fa1c38b",
+    "hh_size": "5"
+   },
+   "attachments": {
+    "photo-6fa1c38b.png": "5f235ff28de05fb1ced87a8f2622d0dff75ce4bcf393b9bcf4596bccbc6965ad",
+    "17957000333653026721.wav": "6e38d70bd53f821a468bc5943e3d858292de7b369f73470ac654d927fd9212fd"
+   },
+   "validation_status": null,
+   "supplement": {},
+   "ai": {}
+  },
+  "fcd85f44-d0e8-48c0-b129-c7816bdb23f3": {
+   "site": "A",
+   "root": "fcd85f44-d0e8-48c0-b129-c7816bdb23f3",
+   "answers": {
+    "q1": "We used to get water from the borehole near the school, but it broke in March and nobody has come to fix it. Now my daughters walk about two hours each day to the river. We have five children in total. We would like the borehole repaired, and some help with school fees.",
+    "hh_size": "2"
+   },
+   "attachments": {
+    "photo-fcd85f44.png": "45ab9410f58a0f2a84e028da84a25bf70e453e63d70d216ec19920259dce8678",
+    "17795496440729368205.wav": "c7a871d0bc97fd6fe5e91319726a351fb6501f58c1fe60acd0a21a631f7c894a"
+   },
+   "validation_status": "validation_status_approved",
+   "supplement": {},
+   "ai": {}
+  }
+ }
+}

@@ -230,4 +230,6 @@ pages of its list), the kit 4 with photo and audio, AI on one.
 - Next timer run (13:45): 1 new submission and the AI one edited went across, 1 + 1 edit;
   check PASS; status "Synced to the hub kobo-box-hub just now: 1 new submission and 1 edit".
 The rig was unpaired (`sync.py hub --forget`) and parked with this kobo-transfer and its
-`sync` account; the hub deleted.
+`sync` account; the hub deleted. `park.sh` brought this run's files back:
+`sync-check-20261104-134037.json` (the pairing sync), `-134517.json` (the timer sync) and
+the kit's `sync-manifest-A.json`.

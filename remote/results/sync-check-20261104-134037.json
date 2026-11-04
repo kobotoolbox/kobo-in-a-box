@@ -1,0 +1,17 @@
+{
+ "kf": "http://kf.kobo-box-hub.local",
+ "asset_uid": "a4oezaZ5tfy3htSM9uqSPZ",
+ "rows": 4,
+ "pass": true,
+ "checks": {
+  "all submissions there": [],
+  "no duplicates": [],
+  "nothing extra": [],
+  "site kept": [],
+  "answers as here (edits included)": [],
+  "attachments byte for byte": [],
+  "validation statuses": [],
+  "AI results": [],
+  "AI versions as they are (review state, dates, uuids)": []
+ }
+}
