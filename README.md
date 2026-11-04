@@ -15,7 +15,7 @@ made from a signed content pack, set themselves up at first power-on, back up, r
 a replacement and update themselves from a newer pack, all tested on DigitalOcean. What's
 left for a pilot mostly needs the recommended computer (W5): its Wi-Fi hotspot, the
 encrypted autoinstall USB, power measurements. The site's user guides: `site/index.html` (the overview),
-`site/cases.html` (case management in detail) and `site/dashboards.html` (dashboards). [docs/concept-note.md](docs/concept-note.md) is the
+`site/cases.html` (case management in detail), `site/dashboards.html` (dashboards) and `site/sync.html` (syncing kits to a hub and to KoboToolbox online). [docs/concept-note.md](docs/concept-note.md) is the
 non-technical overview for partners and donors.
 
 ## Layout

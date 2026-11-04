@@ -30,7 +30,8 @@ extra compose settings) and turns it on:
   matches its requirements (checked: `uv pip freeze` identical before and after a sync), so
   the image's own requirements.txt is mounted as the marker. Without it a box installed
   offline never starts KPI.
-- With `/root/kpi-e2e` present, the KPI local-AI backport (STATUS W2) is mounted in, until a
+- With `/root/kpi-e2e` present, the KPI local-AI backport (STATUS W2) is mounted in, with the
+  supplement import endpoint that sync uses (`sync/README.md`), until a
   KPI image built from the branch replaces it. Its `KPI_IMAGE` file names the KPI image its
   files were taken from; any other image is refused (its files would replace newer ones).
 
@@ -177,6 +178,8 @@ def custom_yml():
                           ('automatic_google_translation.py', f'{sub}/actions/automatic_google_translation.py'),
                           ('automatic_google_transcription.py', f'{sub}/actions/automatic_google_transcription.py'),
                           ('local', f'{sub}/integrations/local'),
+                          ('supplement_import.py', f'{sub}/supplement_import.py'),
+                          ('router_api_v2.py', '/srv/src/kpi/kpi/urls/router_api_v2.py'),
                           ('base.py', '/srv/src/kpi/kobo/settings/base.py')):
             lines.append(f'    - {KPI_E2E}/{src}:{dest}:ro')
     lines += ['', 'services:', '  kpi:']

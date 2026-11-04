@@ -18,7 +18,7 @@ import socket
 import subprocess
 import sys
 import tempfile
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -83,12 +83,33 @@ def status_pages(tmp):
           'It is kept and tried again by itself.',
           'Call support: they can see which ones and why (espocrm.sh failed).'),
         library, disk]
+    # For site/sync.html: the sync row as status.py words it, from made-up sync.py results
+    (tmp / 'sync.env').write_text('HUB_NAME=kobo-frmw\nHUB_ADDRESS=192.168.8.20\n')
+    st.SYNC_ENV, st.SYNC_STATUS = tmp / 'sync.env', tmp / 'sync-status.json'
+    now = datetime.now().astimezone().replace(microsecond=0)
+    stamp = lambda minutes: (now - timedelta(minutes=minutes)).strftime('%Y-%m-%dT%H:%M:%S%z')
+    project = {'name': 'Household water survey', 'failed': 0, 'conflicts': 0}
+
+    def sync_row(**status):
+        st.SYNC_STATUS.write_text(json.dumps(status))
+        return st.sync()
+    states['../sync/status-synced'] = [
+        kobo, ai, library, disk,
+        sync_row(connected=True, finished=stamp(1), last_ok=stamp(1),
+                 projects=[{**project, 'sent': 12, 'edits': 1}], problems=[])]
+    states['../sync/status-attention'] = [
+        kobo, ai, library, disk,
+        sync_row(connected=True, finished=stamp(1),
+                 projects=[{**project, 'sent': 3, 'edits': 0, 'conflicts': 1}],
+                 problems=[{'project': 'Shelter assessment', 'problem': 'not_on_hub'}])]
     checked = datetime.now().astimezone().replace(microsecond=0)
     for name, results in states.items():
         page = tmp / f'{name.replace("/", "_")}.html'
         page.write_text(st.render(results, checked))
+        (OUT / name).parent.mkdir(parents=True, exist_ok=True)
         shoot(page, OUT / f'{name}.jpg', 640, {'status-ok': 950, 'status-update': 510, 'status-backup': 710,
-                                                '../cases/status-cases': 640}[name])
+                                                '../cases/status-cases': 640, '../sync/status-synced': 640,
+                                                '../sync/status-attention': 820}[name])
 
 
 def card_page(tmp):
@@ -101,13 +122,14 @@ def card_page(tmp):
     (etc / 'espocrm.secrets').write_text('ESPO_ADMIN_PASSWORD=t6wn-r3qe-8hkz-j5mv\n')
     (etc / 'paper.env').write_text(f'PAPER_KOBO_USER=paper-forms\nPAPER_SECRETS={etc}/paper.secrets\n')
     (etc / 'paper.secrets').write_text('PAPER_PASSWORD=w8cf-n2ph-k6ty-r3bd\n')
+    (etc / 'sync.token').write_text('3f9c1a7e5b2d8046c9e1f3a7b5d2e8c4a6f0b9d1\n')
     kobo = tmp / 'kobo-install'
     kobo.mkdir()
     (kobo / '.run.conf').write_text(json.dumps(
         {'super_user_username': 'super_admin', 'super_user_password': 'Hb3nWq8rTz5kPe2m'}))
     card.ETC, card.KOBO_INSTALL, card.LIBRARY_DIR = etc, kobo, tmp / 'library'
     card.main()
-    shoot(tmp / 'library' / 'card' / 'index.html', OUT / 'card.jpg', 760, 1260)
+    shoot(tmp / 'library' / 'card' / 'index.html', OUT / 'card.jpg', 760, 1480)
 
 
 def main():

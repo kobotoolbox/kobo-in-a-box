@@ -7,6 +7,7 @@ page loads nothing from the internet.
 """
 import csv
 import html
+import json
 import os
 import socket
 import sys
@@ -189,7 +190,10 @@ def main():
     )
     LIBRARY_DIR.mkdir(parents=True, exist_ok=True)
     (LIBRARY_DIR / 'index.html').write_text(page)
-    print(f'wrote {LIBRARY_DIR / "index.html"}')
+    # Which box this is, for a kit being paired with it (box/sync.py hub <address>)
+    name = socket.gethostname().split('.')[0]
+    (LIBRARY_DIR / 'box.json').write_text(json.dumps({'name': name, 'kobo': f'kf.{name}.local'}) + '\n')
+    print(f'wrote {LIBRARY_DIR / "index.html"} and box.json')
 
 
 if __name__ == '__main__':

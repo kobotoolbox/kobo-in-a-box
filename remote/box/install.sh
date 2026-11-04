@@ -73,6 +73,7 @@ cp -a "$PACK/kobo-box-ai" "$BOX_DIR"
 cp -a "$PACK/kobo-install" "$ROOT_DIR/kobo-install"
 cp -a "$PACK/kobo-docker" "$ROOT_DIR/kobo-docker"
 [[ -d "$PACK/kpi-e2e" ]] && cp -a "$PACK/kpi-e2e" "$ROOT_DIR/kpi-e2e"
+[[ -d "$PACK/kobo-transfer" ]] && cp -a "$PACK/kobo-transfer" "$ROOT_DIR/kobo-transfer"   # sync.py
 mkdir -p "$MODELS_DIR" "$LIBRARY_DIR" "$BOX_DIR/results"
 log "models ($(du -sh "$PACK/models" | cut -f1))"
 cp -a "$PACK/models/." "$MODELS_DIR/"

@@ -25,6 +25,7 @@
 #   kobo-install/      kobo-install and kobo-docker as git checkouts at the running commits
 #   kobo-docker/
 #   kpi-e2e/           the KPI local-AI backport (STATUS W2), mounted by kobo-setup.py
+#   kobo-transfer/     kobo-transfer for syncing between kits (sync.py), with VERSION
 #
 # Never in the pack: kobo-install's .run.conf and kobo-env (passwords), backups, Kobo's
 # data, the backup passphrase, the label card, EspoCRM's secrets, OpenCode's generated
@@ -37,13 +38,15 @@ REMOTE=$(dirname "$HERE")
 KOBO_INSTALL=${KOBO_INSTALL:-/root/kobo-install}
 KOBO_DOCKER=${KOBO_DOCKER:-/root/kobo-docker}
 KPI_E2E=${KPI_E2E:-/root/kpi-e2e}
+KOBO_TRANSFER=${KOBO_TRANSFER:-/root/kobo-transfer}
 MODELS_DIR=${MODELS_DIR:-/opt/models}
 MAPS_DIR=${MAPS_DIR:-/opt/maps}
 LIBRARY_DIR=${LIBRARY_DIR:-/srv/library}
 PACK_OS=${PACK_OS:-ubuntu:24.04}   # the box's Ubuntu; debs are resolved in this image
 # Installed on the box from debs/. Docker's own packages come from Docker's apt repository.
 DEBS="docker-ce docker-ce-cli containerd.io docker-compose-plugin docker-buildx-plugin
-      git jq restic zstd exfatprogs rsync qrencode curl ca-certificates openssl python3"
+      git jq restic zstd exfatprogs rsync qrencode curl ca-certificates openssl python3
+      python3-requests"
 # Images the box's containers don't run on the build machine but a box may need, e.g.
 # ghcr.io/ggml-org/llama.cpp:server-cuda ghcr.io/ggml-org/whisper.cpp:main-cuda for GPU boxes
 EXTRA_IMAGES=${EXTRA_IMAGES:-}
@@ -51,7 +54,7 @@ EXTRA_IMAGES=${EXTRA_IMAGES:-}
 # and only update from a plugged-in stick whose signature they check (box.sh update-drive)
 PACK_SIGNING_KEY=${PACK_SIGNING_KEY:-/root/kobo-pack-signing.key}
 # The folders install.sh and update.sh copy from: no file in them may be missing from SHA256SUMS
-PACK_DIRS='debs images models maps library kobo-box-ai kobo-install kobo-docker kpi-e2e'
+PACK_DIRS='debs images models maps library kobo-box-ai kobo-install kobo-docker kpi-e2e kobo-transfer'
 # Images on the build machine that aren't part of a box (test tooling)
 SKIP_IMAGES='^mcr\.microsoft\.com/playwright/'
 
@@ -131,7 +134,8 @@ build_files() {
     log "library from $LIBRARY_DIR"
     [[ -f "$LIBRARY_DIR/index.html" ]] || die "no library in $LIBRARY_DIR (library.sh build first)"
     # Never a box's status page or label card (its passwords), nor its services' links
-    rsync -a --delete --exclude 'status/' --exclude 'card/' --exclude '.services/' "$LIBRARY_DIR/" "$pack/library/"
+    rsync -a --delete --exclude 'status/' --exclude 'card/' --exclude '.services/' --exclude box.json \
+        "$LIBRARY_DIR/" "$pack/library/"
     log "kobo-box-ai from $REMOTE"
     # Per-box and generated files stay behind; install.sh and the box make their own
     rsync -a --delete --exclude results --exclude __pycache__ --exclude '*.local.env' \
@@ -159,6 +163,15 @@ build_files() {
         made_for=$(cat "$KPI_E2E/KPI_IMAGE" 2>/dev/null || echo unknown)
         [[ "$made_for" == "$kpi" ]] || die "the backport in $KPI_E2E is for $made_for (KPI_IMAGE); kobo-docker runs $kpi"
         rsync -a --delete --exclude __pycache__ "$KPI_E2E/" "$pack/kpi-e2e/"
+    fi
+    # sync.py runs it; never its settings (keys), logs or downloaded attachments
+    if [[ -f "$KOBO_TRANSFER/run.py" ]]; then
+        log "kobo-transfer ($KOBO_TRANSFER)"
+        rsync -a --delete --exclude .git --exclude .log --exclude attachments --exclude 'config*.json' \
+            --exclude __pycache__ --exclude venv "$KOBO_TRANSFER/" "$pack/kobo-transfer/"
+        if [[ -d "$KOBO_TRANSFER/.git" ]]; then
+            git -C "$KOBO_TRANSFER" describe --tags --always --dirty > "$pack/kobo-transfer/VERSION"
+        fi
     fi
 }
 
@@ -190,6 +203,9 @@ info = {
     'kobo_install': git('kobo-install', 'describe', '--tags', '--always'),
     'kobo_docker': git('kobo-docker', 'describe', '--tags', '--always'),
     'kpi_backport': os.path.isdir(os.path.join(pack, 'kpi-e2e')),
+    'kobo_transfer': (open(os.path.join(pack, 'kobo-transfer', 'VERSION')).read().strip()
+                      if os.path.exists(os.path.join(pack, 'kobo-transfer', 'VERSION')) else
+                      os.path.isdir(os.path.join(pack, 'kobo-transfer'))),
     'images': images,
     'models': sorted(f for f in os.listdir(os.path.join(pack, 'models')) if not f.startswith('.')),
     'size_gb': {d: size(d) for d in ('debs', 'images', 'models', 'maps', 'library', 'kobo-box-ai')},

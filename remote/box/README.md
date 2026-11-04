@@ -44,6 +44,7 @@ are built.
 | `update.sh --pack <dir>`, `box.sh update-drive` | Update a box in use from a newer pack, keeping its data and passwords; by itself when a signed `KOBOPACK` stick is plugged in | Built; tested 37c → 37d offline |
 | `watchdog.sh` | Restarts a model server that stops answering its healthcheck (every minute, before the status page) | Built; tested on the rig |
 | `status.py` | Status page at `kobo.local/status`: Kobo, AI, disk, backups, battery in plain words; every minute | Built |
+| `sync.py` | A field kit syncs its projects to its hub by itself (kobo-transfer), every 5 minutes when connected; pairing, status page row | Built; tested on fresh boxes from a pack (below) |
 | Autoinstall USB | Ubuntu 26.04 ISO + `CIDATA` + `KOBOPACK` partitions, LUKS + TPM | Needs the W5 box |
 
 ## Backups
@@ -123,6 +124,56 @@ python3 -I box/status.py --print   # the same checks in the terminal (support ov
   status run after Docker marked it unhealthy, then green.
 - **Not yet:** temperature (needs the W5 box's sensors), translations of the page.
 
+## Syncing to a hub
+
+A field kit sends its projects to a hub kit at base, by itself, whenever it can reach it
+(`sync.py`, with kobo-transfer; the user guide is `site/sync.html`, the rig test
+`../sync/README.md`).
+
+```bash
+box/sync.py hub 192.168.8.20 -      # once, on the field kit: the hub's address, and its sync
+                                    # key (on the hub's label card) on stdin
+box/sync.py projects                # which projects sync where, and why others don't
+box/sync.py run                     # now; the timer runs `run --if-connected` every 5 minutes
+box/sync.py status                  # the last run, as JSON (the status page reads it)
+box/sync.py resolve <uuid> --keep here|hub   # a submission edited on both kits: which wins
+box/sync.py hub --forget
+```
+
+- **Every box has a Kobo account `sync`** (first boot, `kobo-account.py`), not a superuser,
+  no password; its key is on the label card. It sees only the projects shared with it, so
+  a project syncs only when staff share it, on both kits: on the field kit with "View
+  submissions", on the hub with "View", "Add", "Edit" and "Validate submissions". Projects
+  are matched by name, so the hub's copy of a form is deployed from the same XLSForm.
+- **Kits address each other by name.** Every box's Kobo also answers to `kf.<box name>.local`
+  and `kc.<box name>.local`: the edge maps any `kf.*`/`kc.*`/`ee.*` host to Kobo's own names,
+  and rewrites redirects back to the name used (`library/nginx/edge.conf`). `box.sh ip up`
+  puts the box's own names in `/etc/hosts` (at every boot); pairing asks the hub's address
+  which box it is (`/box.json`, written by `library/render.py`) and adds `kf/kc.<hub>.local`
+  for that address. The hub's `kobo.local` names are never used: on a kit they mean that kit.
+- **The timer** (`kobo-box-sync.timer`, every 5 minutes on the clock, only with
+  `/etc/kobo-box/sync.env`) does nothing when the hub doesn't answer on port 80, so plugging
+  the cable in is all it takes. Each matched project runs kobo-transfer with
+  `--sync --validation-statuses --analysis-data --summary-file`, in
+  `/var/lib/kobo-box/sync/<project>/` (its settings with both keys, owner-only; the last
+  run's log; what it last sent, for edits).
+- **Edits.** A submission edited on the kit after it was sent goes to the hub as an edit of
+  the hub's copy (kobo-transfer sets `deprecatedID` to the hub's version), instead of being
+  refused there as a duplicate root UUID. A copy changed on the hub (a correction there) is
+  kept; one changed on both sides isn't sent, and the status page says so until support
+  chooses (`resolve`: `--keep here` records the hub's version as the one last sent, so the
+  next sync sends ours as its edit; `--keep hub` records ours, so it's left).
+- **Status page:** nothing on a box that isn't paired (a hub); "Syncing to the hub … now";
+  "Synced to the hub … 3 minutes ago: 12 new submissions"; when the hub isn't connected,
+  when it was last synced (a warning after 3 days); what's wrong in plain words: a project
+  the hub doesn't have, the hub's `sync` account missing a permission (403s), edits on both
+  sides, a key the hub no longer accepts.
+- **Backups and updates:** `/etc/kobo-box` is in the backups, so the pairing is too; a
+  restore onto a kit that isn't paired takes it (tested: 57 s, then syncing on), the next
+  run puts the hub's name back in `/etc/hosts`, and the `sync` account's token file follows
+  the restored database. `update.sh` copies the pack's kobo-transfer and gives
+  boxes set up before syncing existed their `sync` account.
+
 ## Next steps (in order)
 
 1. ~~Status page~~: built (above).
@@ -137,8 +188,9 @@ python3 -I box/status.py --print   # the same checks in the terminal (support ov
 6. **Power:** shut down cleanly when the battery is low (laptop form factor), so the
    databases are never cut off mid-write.
 7. ~~Updating a kit from a newer content pack without losing data~~: built (below).
-   **Later:** sync to a cloud Kobo with kobo-transfer whenever the box is online (concept
-   note, "Connected").
+   ~~Sync to a hub~~: built (above). **Later:** to a cloud Kobo (concept note, "Connected"):
+   the same kobo-transfer run with the server's addresses; and finding the hub on a cable
+   with no DHCP (mDNS, on the W5 box).
 
 ## Content pack
 
@@ -167,6 +219,7 @@ KOBOPACK/
   kobo-docker/
   kpi-e2e/         the KPI local-AI backport (STATUS W2), mounted by kobo-setup.py; KPI_IMAGE
                    names the KPI release its files are from, and pack.sh refuses any other
+  kobo-transfer/   for syncing (sync.py), with VERSION; never its settings, logs or downloads
 ```
 
 - **Never in the pack:** kobo-install's `.run.conf` and `kobo-env` (passwords), Kobo's data,
@@ -247,6 +300,7 @@ from the next step at the next boot; `/etc/kobo-box/firstboot-done` ends it.
 | secrets | backup passphrase; Wi-Fi name `Kobo-<4 letters>` and a passphrase in four groups of four, for the hotspot |
 | cases | when the pack has EspoCRM's images: the Kobo account `cases-bridge` (not a superuser, no password, sees only forms shared with it) and its token (`kobo-account.py`), `/etc/kobo-box/espocrm.env` pointing the bridge at it, then `espocrm.sh up` (EspoCRM's own passwords) |
 | paper | when the pack has kobo-field-forms' image: the Kobo account `paper-forms` (as `cases-bridge`) and its token, `/etc/kobo-box/paper.env` pointing paper forms at it, then `paper.sh up` (the app's own password, on the card) |
+| sync | the Kobo account `sync` (as `cases-bridge`) and its token, `/etc/kobo-box/sync.token`: the key on the card that field kits pair with (`sync.py`) |
 | ai | `detect-tier.py`, `./ai.sh up auto` |
 | card | `card.py`: the label card |
 

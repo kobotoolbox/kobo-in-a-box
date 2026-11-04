@@ -36,6 +36,8 @@ FIRSTBOOT_STATE = Path('/var/lib/kobo-box/firstboot.json')
 FIRSTBOOT_DONE = Path('/etc/kobo-box/firstboot-done')
 FIRSTBOOT_UNIT = 'kobo-box-firstboot.service'
 UPDATE_STATE = Path('/var/lib/kobo-box/update.json')  # update.sh, box.sh update-drive
+SYNC_ENV = Path('/etc/kobo-box/sync.env')                  # sync.py hub: this kit's hub
+SYNC_STATUS = Path('/var/lib/kobo-box/sync/status.json')   # sync.py run
 DRIVE_UNIT = 'kobo-box-backup-drive.service'
 
 BOOT_GRACE_MIN = 15       # Kobo and the models take minutes to come up after a power-on
@@ -43,6 +45,7 @@ DRIVE_BACKUP_DUE_DAYS = 7
 NIGHTLY_DUE_HOURS = 36
 JUST_FINISHED_MIN = 60    # "you can unplug the drive" for this long after a backup
 DISK_BAD_GB, DISK_WARN_GB = 5, 20
+SYNC_DUE_DAYS = 3         # a field kit not synced to its hub for this long: say so
 BATTERY_BAD, BATTERY_WARN = 15, 30
 
 LEVELS = ('off', 'ok', 'busy', 'warn', 'bad')  # worst last; 'off' never counts
@@ -448,6 +451,84 @@ def backups():
                      'If this lasts more than a day, call support.')
     return check(name, 'ok', f'Last backup to a drive: {ago(full_t, now)} ({when(full_t)}).' + nightly_text)
 
+def sync_explain(p):
+    """What a project's failed sync needs, in plain words."""
+    codes = ' '.join([p.get('error', ''), *p.get('failed_codes', {}).keys()])
+    if '403' in codes:
+        return ("the hub's sync account isn't allowed to add them: on the hub, share the project "
+                'with the user sync with "View submissions", "Add submissions", "Edit submissions" '
+                'and "Validate submissions"')
+    if '401' in codes:
+        return "the hub doesn't accept this kit's key any more: support pairs the kit again"
+    return p.get('error') or 'they are tried again every 5 minutes'
+
+
+def sync():
+    hub = env_file(SYNC_ENV).get('HUB_NAME')
+    if not hub:
+        return None  # not a field kit, or not paired with a hub yet
+    name = 'Sync to the hub'
+    now = datetime.now().astimezone()
+    try:
+        s = json.loads(SYNC_STATUS.read_text())
+    except (OSError, ValueError):
+        s = {}
+    last_ok = parse_time(s.get('last_ok'))
+    since = f'Last synced to the hub {hub} {ago(last_ok, now)} ({when(last_ok)}).' if last_ok else \
+        f'Not synced to the hub {hub} yet.'
+    connect = f'Connect the kit to the hub {hub} (a cable, or the base\'s network): it syncs by itself within 5 minutes.'
+    if s.get('running'):
+        return check(name, 'busy', f'Syncing to the hub {hub} now. Leave the kit connected to it.')
+    if not s.get('connected'):
+        if last_ok and (now - last_ok).days < SYNC_DUE_DAYS:
+            return check(name, 'ok', f'{since} The hub isn\'t connected now; the kit syncs by itself when it is.')
+        return check(name, 'warn', f'{since} The hub isn\'t connected.', connect)
+    if s.get('error'):
+        return check(name, 'bad', f'Syncing to the hub {hub} failed: {s["error"]}. Nothing is lost.',
+                     "The hub doesn't accept this kit's key any more: support pairs the kit again with the "
+                     "sync key on the hub's label card." if '401' in s['error'] else CALL_SUPPORT)
+    projects, problems = s.get('projects', []), s.get('problems', [])
+    texts, actions, level = [], [], 'ok'
+    sent = sum(p.get('sent', 0) for p in projects)
+    edits = sum(p.get('edits', 0) for p in projects)
+    done = [f'{sent} new submission{"s" if sent != 1 else ""}'] if sent else []
+    done += [f'{edits} edit{"s" if edits != 1 else ""}'] if edits else []
+    if projects:
+        texts.append(f'Synced to the hub {hub} {ago(parse_time(s.get("finished")) or now, now)}: '
+                     + (' and '.join(done) + '.' if done else 'nothing new.'))
+    elif not problems:
+        texts.append(f'Paired with the hub {hub}, but no project is shared for syncing yet.')
+        actions.append('Share the projects to sync with the user sync, here and on the hub (see the label card).')
+    for p in projects:
+        failed = p.get('failed', 0)
+        if p.get('error') or failed:
+            level = 'warn'
+            what = (f'{failed} submission{"s" if failed != 1 else ""} of "{p["name"]}" couldn\'t be sent'
+                    if failed else f'"{p["name"]}" didn\'t sync')
+            texts.append(f'{what}: {sync_explain(p)}.')
+        if p.get('conflicts'):
+            level = 'warn'
+            n = p['conflicts']
+            texts.append(f'{n} submission{"s" if n != 1 else ""} of "{p["name"]}" {"were" if n != 1 else "was"} '
+                         'changed both here and on the hub since the last sync: neither copy was changed.')
+            actions.append('Support decides which copy to keep (sync.py status lists them; '
+                           'sync.py resolve <uuid> --keep here or hub).')
+        if p.get('unreviewed_left'):
+            texts.append(f'{p["unreviewed_left"]} AI results nobody has reviewed yet stayed here: '
+                         'the hub only takes reviewed ones.')
+    for p in problems:
+        level = 'warn'
+        texts.append(f'"{p["project"]}" isn\'t synced: '
+                     + {'not_on_hub': 'the hub has no project with that name shared with its sync account.',
+                        'two_here': 'two projects here have that name.',
+                        'two_on_hub': 'two projects on the hub have that name.'}.get(p['problem'], p['problem']))
+        actions.append({'not_on_hub': 'On the hub, deploy the same form with the same name and share it with '
+                                      'the user sync.',
+                        'two_here': 'Rename one of them, or stop sharing one with sync.',
+                        'two_on_hub': 'On the hub, rename one of them, or stop sharing one with sync.'}
+                       .get(p['problem'], CALL_SUPPORT))
+    return check(name, level, ' '.join(texts), ' '.join(dict.fromkeys(actions)))
+
 
 def battery():
     supplies = Path('/sys/class/power_supply')
@@ -528,7 +609,7 @@ def update():
     return None, False
 
 
-CHECKS = (kobo, ai, assistant, cases, dashboards, paper, library, disk, backups, battery)
+CHECKS = (kobo, ai, assistant, cases, dashboards, paper, library, disk, backups, sync, battery)
 
 
 def run_checks():
