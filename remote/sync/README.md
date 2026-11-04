@@ -10,14 +10,15 @@ Results: `../results/NOTES.md` (2026-11-04).
 | `e2e-sync.py` | on a box: `seed` the test form and submissions (`--ai`: transcript, translation, qual; `--no-media` to fill a hub fast), `share` it with the box's `sync` account (`--role kit` or `hub`), `edit` submissions as Enketo does, `review` the AI results; `check` a kit's manifest against the hub's copy |
 | `push.sh` | the first round: a rig pushes straight with kobo-transfer through a port forward (before boxes had names and `sync.py`) |
 
-Two changes make syncing work; neither is upstream yet:
+Two changes make syncing work; neither is merged upstream yet:
 
-- **kobo-transfer**, branch `supplement-api` (`~/code/kobo-transfer`, from `1ae7a04`): AI
-  results through KPI's advanced-features and supplement API instead of the removed
+- **kobo-transfer**, branch `supplement-api` (`~/code/kobo-transfer`, from `1ae7a04`; PR
+  kobotoolbox/kobo-transfer#60, open): AI results through KPI's advanced-features and supplement API instead of the removed
   `advanced_submission_post`; each source's features merged into the destination's;
   statuses and analysis synced even with no new submissions; edits sent as edits
   (`deprecatedID` set to the destination's version; changed on both sides: not sent,
-  counted); absolute URLs from the server followed through the configured address;
+  counted); absolute URLs from the server followed through the configured address
+  (only when the host is another name for a configured one: same kf./kc. label);
   `--summary-file`; an error exit when anything failed.
 - **KPI**, `POST /api/v2/assets/<uid>/data/<uuid>/supplement/import/`
   (`kobo/apps/subsequences/supplement_import.py`, branch `local-nlp-backend`; in the box

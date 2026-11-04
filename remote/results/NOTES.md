@@ -216,3 +216,18 @@ Found and fixed on the way:
 
 Not tested: `update.sh` giving an older box its `sync` account; pairing over a bare cable
 (no DHCP: mDNS or link-local, W5 box); syncing to a KoboToolbox server online.
+
+### Same day, last: kobo-transfer PR #60 on two rigs
+
+kobo-transfer `supplement-api` at `4e024cf` (with the host-aware URL rule; PR
+kobotoolbox/kobo-transfer#60) on the rig (`kobo-box-ai`, as a field kit) and a hub restored
+from the same snapshot (`kobo-box-hub`); each given its own `sync` account
+(`kobo-account.py`), its names (`box.sh ip up`, `render.py`), offline but for the VPC. The
+hub's key went hub → kit over SSH on the VPC. The hub held 1,100 other submissions (two
+pages of its list), the kit 4 with photo and audio, AI on one.
+- Pairing started a sync: 4 sent, 5 AI versions, 6 s; check PASS (answers, attachments,
+  statuses, AI versions as they are).
+- Next timer run (13:45): 1 new submission and the AI one edited went across, 1 + 1 edit;
+  check PASS; status "Synced to the hub kobo-box-hub just now: 1 new submission and 1 edit".
+The rig was unpaired (`sync.py hub --forget`) and parked with this kobo-transfer and its
+`sync` account; the hub deleted.

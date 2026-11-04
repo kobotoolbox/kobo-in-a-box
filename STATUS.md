@@ -7,8 +7,8 @@ are in [PLAN.md](PLAN.md); per-run results are in [remote/results/NOTES.md](remo
 
 - **Rigs:** the CPU rig (`s-8vcpu-32gb-amd`: Kobo, the KPI backport, kobo-mcp, OpenCode, test
   data) is parked as `kobo-box-ai-snapshot` in ams3 (2026-11-04, with box sync: `box/sync.py`,
-  kobo-transfer `supplement-api` in `/root/kobo-transfer`, the KPI supplement import in the
-  backport). Its Kobo is 2.026.37d (since
+  kobo-transfer `supplement-api` at `4e024cf` in `/root/kobo-transfer`, its own `sync` account,
+  not paired with a hub; the KPI supplement import in the backport). Its Kobo is 2.026.37d (since
   2026-11-02, with the backport rebased onto it) on the fixed address
   (`BOX_IP=10.254.254.254`) with W12's units installed, so a restore needs no `run.py`; it
   holds the test pack signing key (`/root/kobo-pack-signing.key`); `/root/fake-usb.img` is an exFAT `KOBOBACKUP` drive for tests
@@ -67,7 +67,8 @@ are in [PLAN.md](PLAN.md); per-run results are in [remote/results/NOTES.md](remo
    import (`local-nlp-backend`, in the backport). Found on the way: KPI's
    `validate_submission_supplement` checks nothing below the question (upstream bug). Left:
    hub → KoboToolbox online by itself (by hand works; needs an account to test), pairing on
-   a bare cable (W5), `update.sh` on an older box, proposing both changes upstream. User
+   a bare cable (W5), `update.sh` on an older box; upstream: kobo-transfer PR
+   kobotoolbox/kobo-transfer#60 (open), the KPI import still to propose. User
    guide: `site/sync.html`; box: `remote/box/README.md`; rigs: `remote/sync/README.md`.
 3b. **W13 paper forms:** running on the rig and its e2e passing offline (2026-11-03); left:
    firstboot, backup/restore and the pack on a fresh box, then real paper on the W5 unit.
