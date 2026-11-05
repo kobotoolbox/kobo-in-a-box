@@ -32,6 +32,18 @@ MAX_CHUNK_CHARS = 600 * 4   # the bot's sizes (1 token ~ 4 characters)
 TARGET_CHUNK_CHARS = 400 * 4
 RRF_K = 60                  # reciprocal rank fusion's usual constant
 CANDIDATES = 50             # from each ranking, before fusing
+PER_ARTICLE = 2             # sections from one page at most, so others get a place
+FTS_WEIGHT = float(os.environ.get('FTS_WEIGHT', '0.5'))  # the word ranking's share in the fusion
+OTHER_LANGUAGE = 0.8        # weight of a page in another language than the question's
+
+# Common words of the guide's languages, to tell which one a question is in (the rest: any
+# other language, which gets English pages first: the guide's own)
+_COMMON = {
+    'en': 'the a an to of and is in how do i my can what does it for on with be are this you not when why',
+    'es': 'el la los las de que y en un una cómo como mi puedo qué por para con no se es del al lo me',
+    'fr': 'le la les de des du et en un une comment je mon ma mes est pour que qui dans pas avec sur ne au',
+}
+_COMMON = {lang: set(words.split()) for lang, words in _COMMON.items()}
 
 
 # --- Pages to text --------------------------------------------------------------------
@@ -269,6 +281,15 @@ def drop_page(db, url):
 
 # --- Search -----------------------------------------------------------------------------
 
+def question_language(text):
+    """en, es or fr when the question's common words say so, else None."""
+    words = re.findall(r"\w+", text.lower())
+    counts = {lang: sum(w in common for w in words) for lang, common in _COMMON.items()}
+    best = max(counts, key=counts.get)
+    ranked = sorted(counts.values(), reverse=True)
+    return best if ranked[0] >= 2 and ranked[0] > ranked[1] else None
+
+
 class Index:
     """The chunks in memory for searching; reload() after the file changes."""
 
@@ -294,8 +315,10 @@ class Index:
         self.pages = {r[1] for r in rows}
 
     def _fts(self, query, n):
-        # Every word as a quoted term, OR'd: bm25 weighs rare words (`pulldata`) up
-        words = re.findall(r'\w+', query.lower())
+        # The question's words but common ones, quoted and OR'd: bm25 weighs rare words
+        # (`pulldata`) up
+        common = set().union(*_COMMON.values())
+        words = [w for w in re.findall(r'\w+', query.lower()) if w not in common and len(w) > 1]
         if not words:
             return []
         q = ' OR '.join('"%s"' % w for w in dict.fromkeys(words))
@@ -317,8 +340,9 @@ class Index:
             for rank, i in enumerate(np.argsort(-sims)[:CANDIDATES]):
                 fused[int(self.ids[i])] = fused.get(int(self.ids[i]), 0) + 1 / (RRF_K + rank)
         if mode in ('hybrid', 'fts'):
+            weight = 1 if mode == 'fts' else FTS_WEIGHT
             for rank, cid in enumerate(self._fts(query, CANDIDATES)):
-                fused[cid] = fused.get(cid, 0) + 1 / (RRF_K + rank)
+                fused[cid] = fused.get(cid, 0) + weight / (RRF_K + rank)
         pos = {int(c): i for i, c in enumerate(self.ids)}
         hits = []
         for cid, score in fused.items():
@@ -330,10 +354,17 @@ class Index:
             hits.append({'score': score * r[10], 'similarity': float(sims[pos[cid]]) if sims is not None else None,
                          'url': r[1] + (f'#{r[2]}' if r[2] else ''), 'page': r[1], 'title': r[9],
                          'section': r[3], 'collection': r[6], 'lang': r[7], 'article': r[8], 'text': r[4]})
-        hits.sort(key=lambda h: -h['score'])
-        # One language per article: that of its best chunk
-        chosen, out = {}, []
+        # The question's language first, or English for a language the guide doesn't have
+        want = question_language(query) or 'en'
         for h in hits:
-            if chosen.setdefault((h['collection'], h['article']), h['lang']) == h['lang']:
+            if h['lang'] != want:
+                h['score'] *= OTHER_LANGUAGE
+        hits.sort(key=lambda h: -h['score'])
+        # One language per article (that of its best chunk), and a few sections from each
+        chosen, taken, out = {}, {}, []
+        for h in hits:
+            art = (h['collection'], h['article'])
+            if chosen.setdefault(art, h['lang']) == h['lang'] and taken.get(art, 0) < PER_ARTICLE:
+                taken[art] = taken.get(art, 0) + 1
                 out.append(h)
         return out[:k]

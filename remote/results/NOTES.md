@@ -349,3 +349,24 @@ Later the same day, with the fixed pack (`20261105-1007`, built without the half
   one (as its hub) with its catch-up `sync` account: `sync.py hub 10.110.0.4 -` with the
   hub's key read over the VPC; 2 new submissions seeded, one sync, `e2e-sync.py check`
   against the hub: 7 of 7, PASS.
+
+The knowledge base, once indexed (426 pages, 2,696 sections, 52 min, 12.8 MB):
+
+- `knowledge.sh eval` (33 answerable questions, 11 with no answer), three rounds:
+  `knowledge-eval-1.json` first (hybrid hit@1 0.58, hit@8 0.88; the first result in the
+  question's language for half the es/fr questions); `-2` with the question's language
+  first (English for others) and two sections a page at most (same language 1.0; meaning
+  hit@1 0.55 → 0.61); then common words out of the word search and the word ranking at
+  half weight (0.25 / 0.5 / 1 compared): hybrid hit@3 0.79, hit@8 0.94 (meaning alone
+  0.76, 0.88). No similarity line separates the unanswerable questions (max 0.77 against
+  an answerable minimum of 0.52).
+- MCP through the edge: three read-only tools; a wrong Host header gets 421.
+- OpenCode: the first permissions run offered no knowledge tools: `agents.sh` writes
+  OpenCode's `mcp` section itself, so the entry in `opencode.json` was dropped. Now
+  `agents.sh` adds it when the knowledge base answers. `w4-permissions.py` (now with the
+  knowledge tools): offered, run without asking, search returns `http://kobo.local/docs/`
+  URLs; PASS throughout (`w4-permissions-20261105-105628.json`).
+- A pack with it (`20261105-1058`: the image and `knowledge/`), and the old box updated
+  again from `-0946`: 3 min 22 s, catch-up added the knowledge base, the status page fixed
+  and all green ("Documentation search: Working", the sync row "Synced to the hub kobo-6tmb
+  3 minutes ago"), `knowledge.sh search` on the box answered from its own index.

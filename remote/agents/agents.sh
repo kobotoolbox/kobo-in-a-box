@@ -23,7 +23,7 @@ compose() { docker compose -p kobo-agents -f docker-compose.agents.yml "$@"; }
 write_config() {
     mkdir -p opencode
     python3 - <<'PY'
-import json, os
+import json, os, urllib.request
 cfg = json.load(open('opencode.json'))
 ctx = int(os.environ['AGENT_CTX']) // int(os.environ['AGENT_SLOTS'])
 cfg['provider'] = {'box': {
@@ -56,6 +56,13 @@ if secrets.get('CASES_MCP_TOKEN'):
     cfg['mcp']['cases'] = {'type': 'remote', 'url': 'http://cases-mcp:8090/mcp', 'enabled': True,
                            'oauth': False, 'timeout': 30000,
                            'headers': {'Authorization': 'Bearer ' + secrets['CASES_MCP_TOKEN']}}
+# The knowledge base (knowledge/), when it answers on this box: read-only search of the guides
+try:
+    urllib.request.urlopen('http://127.0.0.1:8088/healthz', timeout=5)
+    cfg['mcp']['knowledge'] = {'type': 'remote', 'url': 'http://knowledge.kobo.local/mcp',
+                               'enabled': True, 'oauth': False, 'timeout': 30000}
+except OSError:
+    pass
 json.dump(cfg, open('opencode/opencode.json', 'w'), indent=2)
 print('wrote opencode/opencode.json for', os.environ['AGENT_MODEL'], 'at', os.environ['AGENT_LLM_URL'])
 PY

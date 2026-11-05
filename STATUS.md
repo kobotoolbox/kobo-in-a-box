@@ -68,14 +68,16 @@ are in [PLAN.md](PLAN.md); per-run results are in [remote/results/NOTES.md](remo
    import (`local-nlp-backend`, in the backport). Found on the way: KPI's
    `validate_submission_supplement` checks nothing below the question (upstream bug). Left:
    hub → KoboToolbox online by itself (by hand works; needs an account to test), pairing on
-   a bare cable (W5), `update.sh` on an older box; upstream: kobo-transfer PR
+   a bare cable (W5); `update.sh` on an older box done 2026-11-05 (its `sync` account from
+   `firstboot.sh catch-up`, then paired and synced); upstream: kobo-transfer PR
    kobotoolbox/kobo-transfer#60 (open), the KPI import still to propose. User
    guide: `site/sync.html`; box: `remote/box/README.md`; rigs: `remote/sync/README.md`.
 3b. **W13 paper forms:** on a box installed from a pack, offline (2026-11-05): first boot's
    `paper` step, access (password, only shared forms), kff e2e passing (92.9–97.6% read, 0.0%
    wrong unflagged), drive backup and restore of its store. Fixed on the way: the batch
    model's vision projector was off on first-boot boxes (and the status page didn't notice).
-   Left: restore onto a replacement box, `update.sh` with the image, real paper on the W5 unit.
+   Also 2026-11-05: an older box got paper forms from `update.sh` (catch-up), and a backup
+   restored onto a replacement box brought them back. Left: real paper on the W5 unit.
 4. **W2 to finish:** a KPI image from the branch, the pilot languages' tables, and
    proposing the change upstream (talk to the KPI team).
 5. **W10 knowledge base**, and the W12 steps that need the box: hotspot + local DNS,
@@ -255,7 +257,9 @@ Box settings for kobo-dash: `ALLOWED_SERVERS=http://kf.kobo.local`, `PUBLIC_URL=
 ### 3b. W10: local knowledge base (PLAN 3i), started 2026-11-05
 - [x] `remote/knowledge/` (README there): the library's Kobo guide pages (en, es, fr) cut with the support bot's chunker, bge-m3 on its own llama-server, one SQLite index (FTS5 + vectors, hybrid), MCP tools `search_knowledge` / `read_document` / `list_collections` at `knowledge.kobo.local`, registered in OpenCode; in packs, first boot, catch-up, updates and the status page
 - [x] Eval cases: the support bot's (howto, multilingual, unanswerable, hallucination bait) and 13 of the box's (Swahili, Arabic, Hindi, Portuguese, exact names)
-- [ ] Results: indexing the guide on the CPU rig takes ~1 h (~1 section/s); recall@k when it's done; then a box from a pack with it, and answer quality on the GPU rig
+- [x] Retrieval on the rig: 426 pages, 2,696 sections, 52 min to index on 8 vCPUs; hybrid search finds the right page in the first 3 for 79% of 33 questions, in the first 8 for 94%, in the question's language (or English) every time. No similarity line separates questions the guide can't answer (`remote/knowledge/README.md`)
+- [x] Through OpenCode: offered, allowed without asking, permissions test still PASS (`agents.sh` registers it when it answers)
+- [ ] A box from a pack with it; answer quality with the agent model on the GPU rig; the reranker; more collections
 
 ### 3c. W4: agents on the rig ✅ first runs 2026-10-29
 `remote/agents/`: agent model (own llama-server), kobo-mcp and OpenCode 1.19.5 as a compose

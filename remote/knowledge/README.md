@@ -56,6 +56,40 @@ catch-up`), and the status page has a "Documentation search" row.
   them. The documents are the guide for now; anything added later (W10's `add`) is
   untrusted, and the agent's write tools still ask first.
 
+## Results (2026-11-05, the CPU rig)
+
+The Kobo guide: 426 pages (en, es, fr), 2,696 sections, a 12.8 MB index; 52 min to embed
+on 8 vCPUs, 55 ms to embed a question. 33 questions with an answer in the guide (the
+support bot's 20 with `retrieve_any`, the box's 13) and 11 with none:
+
+| Search | hit@1 | hit@3 | hit@5 | hit@8 | MRR | right language first |
+|---|---|---|---|---|---|---|
+| meaning (bge-m3) | 0.61 | 0.76 | 0.85 | 0.88 | 0.70 | 1.0 |
+| words (FTS5 bm25) | 0.39 | 0.73 | 0.73 | 0.73 | 0.53 | 1.0 |
+| **both (used)** | 0.58 | **0.79** | 0.85 | **0.94** | 0.70 | 1.0 |
+
+- **Language:** at first an English question often got the Spanish or French copy of the
+  right page (bge-m3 matches across languages that well), and a Hindi or Swahili one a
+  random translation: "right language first" was 0.5. Now the question's language is
+  told from its common words, pages in it come first, and English for any language the
+  guide doesn't have (1.0).
+- **One page, many sections** crowded the results: at most two sections a page now.
+- **Words alone** missed every French question (its common words matched everything):
+  common words are left out of the word search, and it counts half in the fusion (0.25,
+  0.5 and 1 tried: 0.5 is as good as 0.25 and better than 1 at hit@3 and hit@8).
+- **No "not covered" line from similarity:** the best similarity of a question the guide
+  can't answer (median 0.62, up to 0.77) overlaps the answerable ones' (median 0.65, from
+  0.52). Search always returns sections; the model has to judge, as the server's
+  instructions tell it ("say the documentation here doesn't cover it").
+- Still missed in the first 8: an enumerator seeing only their own submissions (row-level
+  permissions), "stuck pending" (lands on the web forms troubleshooting page), and two
+  French questions. 33 cases is few: one case is 3 points.
+- Through OpenCode (`agents/w4-permissions.py`, the stand-in model): the three tools are
+  offered, run without asking, and a search returns the guide's sections with
+  `http://kobo.local/docs/` URLs; every permission check still passes.
+
+Reports: `../results/knowledge-eval-*.json`.
+
 ## Not yet
 
 - The other collections: QGIS is in `collections.json` but off (its user manual is large,

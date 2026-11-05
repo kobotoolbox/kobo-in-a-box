@@ -40,6 +40,8 @@ def load_cases():
     cases = []
     for f in sorted(glob.glob(os.path.join(HERE, 'cases', '**', '*.yaml'), recursive=True)):
         for c in yaml.safe_load(open(f)) or []:
+            if not isinstance(c.get('message'), str):
+                continue   # multi-turn cases: the follow-ups need the conversation
             c['file'] = os.path.basename(f)
             cases.append(c)
     return cases

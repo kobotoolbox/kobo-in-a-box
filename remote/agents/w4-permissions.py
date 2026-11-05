@@ -291,6 +291,7 @@ def main():
     offered = dict(STATE['offered'])
     hints = kobo_mcp_tools(token)
     kobo_offered = sorted(t for t in offered if t.startswith('kobo_'))
+    print(f"offered from the knowledge base: {sorted(t for t in offered if t.startswith('knowledge_')) or 'none'}")
     cases_offered = sorted(t for t in offered if t.startswith('cases_'))
     print(f'offered: {len(kobo_offered)} kobo tools, {len(cases_offered)} cases tools, '
           f'{len(offered) - len(kobo_offered) - len(cases_offered)} built-in')
@@ -350,6 +351,24 @@ def main():
         if a or status != 'completed':
             read_fail.append(t)
     checks['reads run without asking'] = read_fail
+
+    # The knowledge base (knowledge/), when it runs: all read-only, so offered and allowed;
+    # a search returns the guide's sections with local URLs
+    knowledge_fail = []
+    knowledge = sorted(t for t in offered if t.startswith('knowledge_'))
+    for t in knowledge:
+        args_ = {'query': 'how do I make a question required'} if t.endswith('search_knowledge') else \
+            placeholder(offered[t]) if not t.endswith('read_document') else \
+            {'url': 'http://kobo.local/docs/kobo/question_options.html'}
+        a, _, out = run_one(oc, t, args_, lambda r: 'reject')
+        status, text = out or ('timeout', '')
+        rows.append({'tool': t, 'expected': 'allow', 'asked': bool(a), 'status': status, 'result': text[:200]})
+        ok = not a and status == 'completed' and (not t.endswith('search_knowledge') or 'http://kobo.local/docs/' in text)
+        print(f"  {'ok  ' if ok else 'FAIL'} {t}: {'ASKED' if a else 'not asked'}, {status}: {text[:80]!r}")
+        if not ok:
+            knowledge_fail.append(t)
+    if knowledge:
+        checks['knowledge tools run without asking'] = knowledge_fail
 
     # One approval end to end, on a real submission
     approve = []
