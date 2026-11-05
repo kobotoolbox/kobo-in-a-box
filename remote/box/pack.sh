@@ -26,6 +26,7 @@
 #   kobo-docker/
 #   kpi-e2e/           the KPI local-AI backport (STATUS W2), mounted by kobo-setup.py
 #   kobo-transfer/     kobo-transfer for syncing between kits (sync.py), with VERSION
+#   knowledge/         /opt/knowledge: the knowledge base's index of the library (knowledge.sh index)
 #
 # Never in the pack: kobo-install's .run.conf and kobo-env (passwords), backups, Kobo's
 # data, the backup passphrase, the label card, EspoCRM's secrets, OpenCode's generated
@@ -41,6 +42,7 @@ KPI_E2E=${KPI_E2E:-/root/kpi-e2e}
 KOBO_TRANSFER=${KOBO_TRANSFER:-/root/kobo-transfer}
 MODELS_DIR=${MODELS_DIR:-/opt/models}
 MAPS_DIR=${MAPS_DIR:-/opt/maps}
+KNOWLEDGE_DIR=${KNOWLEDGE_DIR:-/opt/knowledge}
 LIBRARY_DIR=${LIBRARY_DIR:-/srv/library}
 PACK_OS=${PACK_OS:-ubuntu:24.04}   # the box's Ubuntu; debs are resolved in this image
 # Installed on the box from debs/. Docker's own packages come from Docker's apt repository.
@@ -54,7 +56,7 @@ EXTRA_IMAGES=${EXTRA_IMAGES:-}
 # and only update from a plugged-in stick whose signature they check (box.sh update-drive)
 PACK_SIGNING_KEY=${PACK_SIGNING_KEY:-/root/kobo-pack-signing.key}
 # The folders install.sh and update.sh copy from: no file in them may be missing from SHA256SUMS
-PACK_DIRS='debs images models maps library kobo-box-ai kobo-install kobo-docker kpi-e2e kobo-transfer'
+PACK_DIRS='debs images models maps library kobo-box-ai kobo-install kobo-docker kpi-e2e kobo-transfer knowledge'
 # Images on the build machine that aren't part of a box (test tooling)
 SKIP_IMAGES='^mcr\.microsoft\.com/playwright/'
 
@@ -124,6 +126,16 @@ build_images() {
     log "  ${#want[@]} images, $(du -sh "$out" | cut -f1)"
 }
 
+check_scripts() {  # a script that doesn't parse would break every box the pack reaches
+    local bad=0 f
+    log "checking the scripts parse"
+    while IFS= read -r f; do
+        python3 -I -c 'import ast, sys; ast.parse(open(sys.argv[1]).read(), sys.argv[1])' "$f" 2>&1 || bad=1
+    done < <(find "$REMOTE" -name '*.py' -not -path '*/results/*')
+    while IFS= read -r f; do bash -n "$f" || bad=1; done < <(find "$REMOTE" -name '*.sh' -not -path '*/results/*')
+    [[ $bad == 0 ]] || die "fix the scripts above first"
+}
+
 build_files() {
     local pack=$1
     log "models from $MODELS_DIR"
@@ -172,6 +184,11 @@ build_files() {
         if [[ -d "$KOBO_TRANSFER/.git" ]]; then
             git -C "$KOBO_TRANSFER" describe --tags --always --dirty > "$pack/kobo-transfer/VERSION"
         fi
+    fi
+    # Built from this library (knowledge.sh index), so its citations are the pack's pages
+    if [[ -s "$KNOWLEDGE_DIR/knowledge.db" ]]; then
+        log "knowledge index ($(du -sh "$KNOWLEDGE_DIR/knowledge.db" | cut -f1))"
+        rsync -a --delete "$KNOWLEDGE_DIR/" "$pack/knowledge/"
     fi
 }
 
@@ -263,6 +280,7 @@ case "${1:-}" in
         dest=${2:?usage: $0 build <dir>}
         [[ $EUID == 0 ]] || die "run as root"
         for t in docker rsync git zstd python3; do command -v $t >/dev/null || die "$t is missing"; done
+        check_scripts
         mkdir -p "$dest"
         dest=$(cd "$dest" && pwd)
         build_debs "$dest"

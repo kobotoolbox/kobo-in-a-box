@@ -13,7 +13,9 @@
 # library, the KPI backport); kobo-install and kobo-docker at the pack's commits, and
 # Kobo restarted on them if they changed (kobo-setup.py --reconfigure, which runs KPI's
 # migrations); the box's units; then each part that runs on this box started again
-# from the new files (edge, AI, case management). The status page shows each step.
+# from the new files (edge, AI, case management, dashboards, paper forms, knowledge base);
+# the parts a new
+# box gets at first power-on that this one doesn't have yet (firstboot.sh catch-up). The status page shows each step.
 #
 # Safe to run again: the box's pack.json only changes at the end, so after a failure or a
 # power cut, run it (or plug the stick in) again. What's kept: Kobo's .run.conf and
@@ -134,6 +136,7 @@ rsync -a --delete --exclude results --exclude __pycache__ --exclude '*.local.env
     "$PACK/kobo-box-ai/" "$BOX_DIR/"
 rsync -a --delete --exclude '*.part' "$PACK/models/" "$MODELS_DIR/"
 if [[ -d "$PACK/maps" ]]; then mkdir -p "$MAPS_DIR"; rsync -a --delete "$PACK/maps/" "$MAPS_DIR/"; fi
+if [[ -d "$PACK/knowledge" ]]; then mkdir -p /opt/knowledge; rsync -a --delete "$PACK/knowledge/" /opt/knowledge/; fi
 rsync -a --delete --exclude 'status/' --exclude 'card/' --exclude '.services/' --exclude box.json \
     "$PACK/library/" "$LIBRARY_DIR/"
 LIBRARY_DIR=$LIBRARY_DIR python3 -I "$BOX_DIR/library/render.py" >/dev/null   # this box's name and links
@@ -172,11 +175,6 @@ fi
 
 step units "the box's systemd units"
 BOX_IP=$BOX_IP "$BOX_DIR/box/box.sh" install
-# Boxes set up before syncing existed get its account (firstboot.sh's sync step)
-if [[ ! -s /etc/kobo-box/sync.token ]]; then
-    python3 -I "$BOX_DIR/box/kobo-account.py" sync /etc/kobo-box/sync.token
-    python3 -I "$BOX_DIR/box/card.py" >/dev/null || true
-fi
 
 step services "starting each part on the new files"
 LIBRARY_DIR=$LIBRARY_DIR "$BOX_DIR/library/library.sh" up
@@ -187,6 +185,20 @@ fi
 if running kobo-cases; then
     "$BOX_DIR/espocrm/espocrm.sh" up
 fi
+if running kobo-dash; then
+    "$BOX_DIR/dash/dash.sh" up
+fi
+if running kobo-paper; then
+    "$BOX_DIR/paper/paper.sh" up
+fi
+if running kobo-knowledge; then
+    "$BOX_DIR/knowledge/knowledge.sh" up   # on the pack's index
+fi
+
+step new "parts this box doesn't have yet"
+# A box from an older pack gets what a new box gets at first power-on (sync's account,
+# paper forms, ...), and its label card again
+BOX_IP=$BOX_IP "$BOX_DIR/box/firstboot.sh" catch-up
 if running kobo-agents; then
     log "the assistant isn't updated by packs yet: restart it with agents/agents.sh up"
 fi

@@ -4,6 +4,9 @@
 #
 #   ./firstboot.sh          set up whatever isn't done yet
 #   ./firstboot.sh status   what's done, as JSON
+#   ./firstboot.sh catch-up on a box set up by an older pack: the parts it doesn't have yet
+#                           (cases, dash, paper, sync, knowledge) when this pack has them, then the
+#                           label card again (update.sh)
 #
 # Nothing per-box is decided at the factory, so every box installed from the same pack is
 # identical until here. Each step is recorded when it completes, so a power cut mid-setup
@@ -22,6 +25,8 @@
 #             password (paper.sh up)
 #   sync      a Kobo account for syncing between kits (sync, sees only the projects
 #             shared with it), its key on the card (sync.py)
+#   knowledge the knowledge base, when the pack has its image and index: the assistant's
+#             search over the library's documentation (knowledge.sh up)
 #   ai        detect-tier.py and ./ai.sh up auto, for this machine
 #   card      the label card (card.py): Wi-Fi with a QR code, the admin password, the backup
 #             passphrase, the disk's recovery key when there is one
@@ -36,7 +41,7 @@ ETC=/etc/kobo-box
 STATE=/var/lib/kobo-box/firstboot.json
 DONE=$ETC/firstboot-done
 LIBRARY_DIR=${LIBRARY_DIR:-/srv/library}
-STEPS=(name kobo secrets cases dash paper sync ai card)
+STEPS=(name kobo secrets cases dash paper sync knowledge ai card)
 
 log() { echo "[$(date +%H:%M:%S)] $*"; }
 
@@ -138,6 +143,16 @@ step_sync() {
     python3 -I "$HERE/kobo-account.py" sync "$ETC/sync.token"
 }
 
+step_knowledge() {
+    local image
+    image=$(sed -n 's/^KNOWLEDGE_IMAGE=//p' "$REMOTE/knowledge/knowledge.env")
+    if ! docker image inspect "$image" >/dev/null 2>&1 || [[ ! -s /opt/knowledge/knowledge.db ]]; then
+        log "no knowledge base in this pack ($image)"; return
+    fi
+    echo '# This box (firstboot.sh): the knowledge base is on' > "$ETC/knowledge.env"
+    "$REMOTE/knowledge/knowledge.sh" up
+}
+
 step_ai() {
     python3 -I "$HERE/detect-tier.py"
     "$REMOTE/ai.sh" up auto
@@ -146,6 +161,30 @@ step_ai() {
 step_card() {
     python3 -I "$HERE/card.py"
     LIBRARY_DIR=$LIBRARY_DIR python3 -I "$REMOTE/library/render.py" >/dev/null   # this box's name
+}
+
+has() {  # has <step>: whether this box has that part already (made by firstboot or by hand)
+    case $1 in
+        cases) [[ -s $ETC/espocrm.env ]] ;;
+        dash) [[ -s $(sed -n 's/^DASH_SECRETS=//p' "$REMOTE/dash/dash.env") ]] ;;
+        paper) [[ -s $ETC/paper.env ]] ;;
+        sync) [[ -s $ETC/sync.token ]] ;;
+        knowledge) [[ -s $ETC/knowledge.env ]] ;;
+    esac
+}
+
+catch_up() {
+    # Not the done_ records: a box from a pack without a part's images recorded the step
+    # as done when it skipped it
+    [[ -f $DONE ]] || { echo "first-boot setup isn't done: ./firstboot.sh" >&2; exit 1; }
+    local s added=false
+    for s in cases dash paper sync knowledge; do
+        has "$s" && continue
+        log "== $s (new in this pack)"
+        "step_$s"
+        if has "$s"; then state "done_$s" "$(date +%Y-%m-%dT%H:%M:%S%z)"; added=true; fi
+    done
+    if $added; then log "== card"; step_card; fi
 }
 
 run() {
@@ -173,5 +212,6 @@ run() {
 case "${1:-run}" in
     run) run ;;
     status) cat "$STATE" 2>/dev/null || echo '{}' ;;
-    *) sed -n '2,21p' "$0" | sed 's/^# \{0,1\}//' >&2; exit 1 ;;
+    catch-up) catch_up ;;
+    *) sed -n '2,24p' "$0" | sed 's/^# \{0,1\}//' >&2; exit 1 ;;
 esac

@@ -1,0 +1,20 @@
+[
+  {
+    "id": "kobo-guide",
+    "title": "KoboToolbox user guide (support.kobotoolbox.org), English, Spanish and French",
+    "dirs": ["docs/kobo"],
+    "boost": 1.25,
+    "source": "kobotoolbox/docs, built by library.sh docs",
+    "licence": "Kobo's own documentation"
+  },
+  {
+    "id": "qgis",
+    "title": "QGIS documentation (user manual, training manual, GIS introduction), English, Spanish and French",
+    "dirs": ["docs/qgis-docs-en", "docs/qgis-docs-es", "docs/qgis-docs-fr"],
+    "exclude": ["*/docs/pyqgis_developer_cookbook/*", "*/docs/developers_guide/*", "*/docs/documentation_guidelines/*", "*/docs/server_manual/*"],
+    "boost": 0.8,
+    "source": "qgis/QGIS-Documentation, from the library (manifest.tsv)",
+    "licence": "CC BY-SA 3.0, QGIS project",
+    "enabled": false
+  }
+]

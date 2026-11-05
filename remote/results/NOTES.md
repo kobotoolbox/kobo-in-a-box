@@ -308,3 +308,29 @@ asking; no delete tool offered; `opencode.json`'s read-only list matches kobo-mc
 once, approved → on hold (set back afterwards). Not done: the same with a real agent model
 (the CPU rig's batch model has a 16k context, OpenCode's prompt with the tools is ~21k): on
 the GPU rig.
+
+## 2026-11-05: updating a box from an older pack; the knowledge base (W10) started
+
+The rig (`kobo-box-ai`, restored) built two packs: one from the code at `4445ebf`
+(3 November, before W9, W13 and W14: first boot had no dash, paper or sync step) and one
+from today's (`20261105-0946`). Fresh Ubuntu 24.04 droplets, offline but for the VPC.
+
+- **Old box** (`kobo-9dkr`, from the old pack, first boot done): a form and 5 submissions
+  (`e2e-sync.py seed --site A`), then `update.sh --pack` with today's pack over SSH: 3½ min,
+  exit 0. Catch-up (`firstboot.sh catch-up`, new) set up dashboards, paper forms (the
+  `paper-forms` account, `/root/paper.secrets` 600, the card's section) and the `sync`
+  account (token 600), and wrote the card again; `e2e-sync.py check` PASS on the 5
+  submissions. Images: "0 loaded, 17 already here" and Kobo "unchanged": the old pack was
+  built on today's rig, so it carried today's images and KPI backport.
+- **Failed:** `status.py` didn't parse (a quote in the new "setting up what this kit didn't
+  have yet" label), so the status page stayed on "Updating this kit. Leave it switched on."
+  Fixed; `pack.sh build` now checks every script parses first (it stopped on this one).
+- **Replacement box** from today's pack: the factory install **failed** at "library and
+  status page", the same bug. Droplet deleted; a fixed pack is building.
+- The old box's backup to a file-backed ext4 `KOBOBACKUP` drive: full, with EspoCRM,
+  dashboards and paper forms (the test form fetched into kff first), drive unmounted after.
+  For the restore onto the replacement box.
+
+Knowledge base: `knowledge.sh build` (image, bge-m3 Q8_0 0.6 GB), `index` of the Kobo guide
+(the library's HTML, en/es/fr, ~470 pages): ~8 s a page on the 8-vCPU rig (~1 section/s
+with 8 threads, while packs were building), so about an hour. Eval to follow.

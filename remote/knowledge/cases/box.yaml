@@ -1,0 +1,107 @@
+# Retrieval cases for the box (W10), in the support bot's case format (only the fields
+# eval.py reads). What the support bot's cases don't cover: questions in languages the
+# guide isn't written in (the field team's, not the guide's), and exact names and error
+# messages, where meaning-only search tends to miss.
+
+- id: box-sw-export-excel
+  category: multilingual
+  language: sw
+  message: Ninawezaje kupakua data yangu kama faili ya Excel?
+  expect:
+    retrieve_any: [https://support.kobotoolbox.org/export_download]
+
+- id: box-ar-gps-question
+  category: multilingual
+  language: ar
+  message: كيف أضيف سؤالاً لتسجيل موقع GPS في النموذج؟
+  expect:
+    retrieve_any:
+      - https://support.kobotoolbox.org/gps_questions
+      - https://support.kobotoolbox.org/collect_gps
+
+- id: box-pt-required
+  category: multilingual
+  language: pt
+  message: Como faço para que uma pergunta seja obrigatória no formulário?
+  expect:
+    retrieve_any:
+      - https://support.kobotoolbox.org/question_options
+      - https://support.kobotoolbox.org/required_logic_xls
+
+- id: box-hi-skip-logic
+  category: multilingual
+  language: hi
+  message: मैं कैसे करूँ कि कोई सवाल तभी दिखे जब पिछले सवाल का जवाब "हाँ" हो?
+  expect:
+    retrieve_any:
+      - https://support.kobotoolbox.org/skip_logic
+      - https://support.kobotoolbox.org/skip_logic_xls
+
+- id: box-es-two-factor
+  category: multilingual
+  language: es
+  message: ¿Cómo activo la verificación en dos pasos en mi cuenta?
+  expect:
+    retrieve_any: [https://support.kobotoolbox.org/two_factor_authentication]
+
+- id: box-term-pulldata
+  category: exact
+  language: en
+  message: pulldata
+  expect:
+    retrieve_any:
+      - https://support.kobotoolbox.org/pull_data_kobotoolbox
+      - https://support.kobotoolbox.org/dynamic_data_attachment
+
+- id: box-term-select-from-file
+  category: exact
+  language: en
+  message: how does select_one_from_file work with a csv?
+  expect:
+    retrieve_any: [https://support.kobotoolbox.org/select_from_file_xls]
+
+- id: box-term-value-not-allowed
+  category: exact
+  language: en
+  message: enumerators keep getting "Value not allowed" on the age question
+  expect:
+    retrieve_any:
+      - https://support.kobotoolbox.org/validation_criteria
+      - https://support.kobotoolbox.org/constraints_xls
+
+- id: box-stuck-pending
+  category: howto
+  language: en
+  message: the web form says my submissions are still pending and won't send
+  expect:
+    retrieve_any:
+      - https://support.kobotoolbox.org/stuck_in_pending
+      - https://support.kobotoolbox.org/troubleshooting_webforms
+
+- id: box-row-level
+  category: howto
+  language: en
+  message: can each enumerator only see the submissions they made themselves?
+  expect:
+    retrieve_any: [https://support.kobotoolbox.org/row_level_permissions]
+
+- id: box-spss
+  category: howto
+  language: en
+  message: I need the data in SPSS with the labels
+  expect:
+    retrieve_any: [https://support.kobotoolbox.org/converting_to_spss_and_stata]
+
+- id: box-fr-encrypt
+  category: multilingual
+  language: fr
+  message: Comment chiffrer les données de mon formulaire pour que personne d'autre ne puisse les lire ?
+  expect:
+    retrieve_any: [https://support.kobotoolbox.org/encrypting_forms]
+
+- id: box-term-powerbi
+  category: exact
+  language: en
+  message: connect to Power BI
+  expect:
+    retrieve_any: [https://support.kobotoolbox.org/pulling_data_into_powerbi]

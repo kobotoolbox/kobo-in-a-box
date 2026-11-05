@@ -7,9 +7,15 @@
       "url": "http://mcp.kobo.local/mcp",
       "enabled": true,
       "oauth": {}
+    },
+    "knowledge": {
+      "type": "remote",
+      "url": "http://knowledge.kobo.local/mcp",
+      "enabled": true
     }
   },
   "permission": {
+    "knowledge_*": "allow",
     "kobo_*": "ask",
     "kobo_compare_form_versions": "allow",
     "kobo_convert_xlsform": "allow",

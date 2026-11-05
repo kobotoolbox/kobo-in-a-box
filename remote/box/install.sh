@@ -80,6 +80,9 @@ cp -a "$PACK/models/." "$MODELS_DIR/"
 if [[ -d "$PACK/maps" ]]; then
     mkdir -p "$MAPS_DIR"; cp -a "$PACK/maps/." "$MAPS_DIR/"
 fi
+if [[ -d "$PACK/knowledge" ]]; then
+    mkdir -p /opt/knowledge; cp -a "$PACK/knowledge/." /opt/knowledge/
+fi
 log "library ($(du -sh "$PACK/library" | cut -f1))"
 cp -a "$PACK/library/." "$LIBRARY_DIR/"
 cp "$PACK/pack.json" "$BOX_DIR/pack.json"   # which pack this box came from

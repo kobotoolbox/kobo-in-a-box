@@ -252,8 +252,10 @@ Box settings for kobo-dash: `ALLOWED_SERVERS=http://kf.kobo.local`, `PUBLIC_URL=
 `BOUNDARIES_DIR=/data/boundaries`, `LOCAL_EVIDENCE_ORIGINS=http://kobo.local` (all in
 `remote/dash/docker-compose.dash.yml`).
 
-### 3b. W10: local knowledge base (PLAN 3i), can start now
-- [ ] `remote/knowledge/`: support-bot chunker, bge-m3 on llama-server, pgvector + FTS, MCP server; port its eval cases
+### 3b. W10: local knowledge base (PLAN 3i), started 2026-11-05
+- [x] `remote/knowledge/` (README there): the library's Kobo guide pages (en, es, fr) cut with the support bot's chunker, bge-m3 on its own llama-server, one SQLite index (FTS5 + vectors, hybrid), MCP tools `search_knowledge` / `read_document` / `list_collections` at `knowledge.kobo.local`, registered in OpenCode; in packs, first boot, catch-up, updates and the status page
+- [x] Eval cases: the support bot's (howto, multilingual, unanswerable, hallucination bait) and 13 of the box's (Swahili, Arabic, Hindi, Portuguese, exact names)
+- [ ] Results: indexing the guide on the CPU rig takes ~1 h (~1 section/s); recall@k when it's done; then a box from a pack with it, and answer quality on the GPU rig
 
 ### 3c. W4: agents on the rig ✅ first runs 2026-10-29
 `remote/agents/`: agent model (own llama-server), kobo-mcp and OpenCode 1.19.5 as a compose

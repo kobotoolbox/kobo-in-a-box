@@ -171,8 +171,8 @@ box/sync.py hub --forget
 - **Backups and updates:** `/etc/kobo-box` is in the backups, so the pairing is too; a
   restore onto a kit that isn't paired takes it (tested: 57 s, then syncing on), the next
   run puts the hub's name back in `/etc/hosts`, and the `sync` account's token file follows
-  the restored database. `update.sh` copies the pack's kobo-transfer and gives
-  boxes set up before syncing existed their `sync` account.
+  the restored database. `update.sh` copies the pack's kobo-transfer, and a box set up
+  before syncing existed gets its `sync` account from `firstboot.sh catch-up` (below).
 
 ## Next steps (in order)
 
@@ -271,7 +271,12 @@ box/pack.sh build /media/kobopack                       # signed
   card and service links), kobo-install and kobo-docker at the pack's commits and, if they
   or the backport changed, `kobo-setup.py --reconfigure` (passwords kept; KPI migrates its
   databases on start), `box.sh install`, then the edge, the AI and case management started
-  again on the new files. The assistant isn't updated yet.
+  again on the new files (dashboards, paper forms and the knowledge base too); last,
+  `firstboot.sh catch-up`: whatever a new box gets at first power-on that this one doesn't
+  have yet (case management, dashboards, paper forms, `sync`, the knowledge base, each when
+  the pack has it), then the label card again. A part counts as there by its per-box file
+  (`/etc/kobo-box/paper.env`, `sync.token`...), not by first boot's record, since a pack
+  without a part's images recorded its step as done. The assistant isn't updated yet.
 - **Status page:** "Updating this kit. Leave it switched on" with the step, then "Updated at
   19:28… You can remove the update stick" for a day, or what failed with "plug the update
   stick in again: the update carries on". The box's `pack.json` only changes at the end,
@@ -286,6 +291,15 @@ box/pack.sh build /media/kobopack                       # signed
   10 cases there, all green, `e2e-nlp.py` PASS through the rebased backport. Three tampered
   sticks (an added script, a changed `pack.json`, a changed listed file) were each refused
   before anything ran.
+- **Tested from an older pack** (2026-11-05, offline): a box installed from a pack of the
+  3 November code (before dashboards, paper forms and syncing), with a form and 5
+  submissions, took the current pack in 3½ min: catch-up set up dashboards, paper forms
+  (account, password 600, card section) and the `sync` account, and the card again; the
+  submissions checked out (`e2e-sync.py check`). Found: a quote in a new status-page label
+  broke `status.py`, so the page stayed on "Updating this kit" and a factory install from
+  that pack failed. `pack.sh build` now refuses a pack whose Python or shell scripts don't
+  parse. (The old pack was built on today's rig, so it already had the newer images and KPI
+  backport: this covered the new parts, not new images or a KPI change.)
 
 ## First power-on
 

@@ -348,6 +348,22 @@ def dashboards():
     return check(name, 'bad', 'Not working.', 'Restart the box. ' + CALL_SUPPORT)
 
 
+def knowledge():
+    cs = containers('kobo-knowledge')
+    if not cs:
+        return None
+    name = 'Documentation search'
+    env = env_file(REMOTE / 'knowledge' / 'knowledge.env')
+    status, body = fetch(f"http://127.0.0.1:{env.get('KNOWLEDGE_PORT', '8088')}/healthz")
+    if status == 200 and not not_running(cs):
+        return check(name, 'ok', "Working: the assistant answers how-to questions from the "
+                     "guides on this box." + watchdog_note(cs))
+    if starting():
+        return check(name, 'busy', 'Starting up.')
+    return check(name, 'warn', "Not working: the assistant can still use KoboToolbox, but "
+                 "can't look things up in the guides.", 'Restart the box. ' + CALL_SUPPORT)
+
+
 def paper():
     cs = containers('kobo-paper')
     if not cs:
@@ -574,6 +590,7 @@ UPDATE_STEPS = {  # update.sh's steps
     'kobo': 'updating KoboToolbox (the longest step)',
     'units': 'updating its settings',
     'services': 'restarting each part',
+    'new': "setting up what this kit didn't have yet",
 }
 
 
@@ -619,7 +636,7 @@ def update():
     return None, False
 
 
-CHECKS = (kobo, ai, assistant, cases, dashboards, paper, library, disk, backups, sync, battery)
+CHECKS = (kobo, ai, assistant, cases, dashboards, paper, knowledge, library, disk, backups, sync, battery)
 
 
 def run_checks():

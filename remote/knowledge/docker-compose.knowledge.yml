@@ -1,0 +1,62 @@
+# The knowledge base (W10, PLAN 3i). Started by knowledge.sh, which sets the env.
+#
+#   embed       llama-server with bge-m3, embeddings only, on this project's network (it
+#               embeds a question in ~50 ms on the CPU, so it never needs the GPU)
+#   knowledge   the search and the agent's MCP tools on 127.0.0.1:${KNOWLEDGE_PORT} (edge:
+#               knowledge.kobo.local); reads the index and the library's pages, read-only
+#   index       the indexer (knowledge.sh index), run on demand: writes the index
+
+x-knowledge: &knowledge
+  image: ${KNOWLEDGE_IMAGE}
+  environment:
+    EMBED_URL: http://embed:8080
+    KNOWLEDGE_DB: /data/knowledge.db
+    LIBRARY: /library
+    LIBRARY_URL: http://kobo.local
+  depends_on:
+    embed:
+      condition: service_healthy
+
+services:
+  embed:
+    image: ${EMBED_IMAGE}
+    restart: unless-stopped
+    mem_limit: 2g
+    volumes:
+      - ${MODELS_DIR}:/models:ro
+    # -ub = -b = -c: an embedding input must fit one batch; bge-m3 takes 8,192 tokens
+    command: >-
+      -m /models/${EMBED_MODEL} --embeddings --host 0.0.0.0 --port 8080
+      -c 8192 -b 8192 -ub 8192 -t ${EMBED_THREADS}
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-m", "5", "-o", "/dev/null", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 6s
+      retries: 30
+      start_period: 2m
+    labels:
+      kobo-box.watchdog: restart
+
+  knowledge:
+    <<: *knowledge
+    restart: unless-stopped
+    mem_limit: 1g
+    ports: ["127.0.0.1:${KNOWLEDGE_PORT}:8080"]
+    volumes:
+      - ${KNOWLEDGE_DIR}:/data:ro
+      - ${LIBRARY_DIR}:/library:ro
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8080/healthz', timeout=5)"]
+      interval: 30s
+      timeout: 10s
+      retries: 4
+      start_period: 1m
+
+  index:
+    <<: *knowledge
+    profiles: [index]
+    user: "0"
+    volumes:
+      - ${KNOWLEDGE_DIR}:/data
+      - ${LIBRARY_DIR}:/library:ro
+    command: ["python", "index.py"]

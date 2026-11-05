@@ -47,6 +47,7 @@ services:
     # kobo-mcp through the edge, as the box's own name (its Host check)
     extra_hosts:
       - "mcp.kobo.local:host-gateway"
+      - "knowledge.kobo.local:host-gateway"   # the knowledge base (knowledge/), when it runs
     # OpenCode connects to its MCP servers once, at start, and doesn't retry: wait for
     # kobo-mcp (another compose project), or a cold start leaves the Kobo tools "failed"
     command:

@@ -830,13 +830,13 @@ Done 2026-10-28 on kobo-mcp branch `w3-offline-box`; details in [STATUS.md](STAT
 - [x] `offline.sh on`: create, view, live-update and share a dashboard with no outbound traffic (28/28, packet capture clean, 2026-11-03)
 
 ### W10. Local knowledge base (~2–3 weeks; can start now, see 3i)
-- [ ] `remote/knowledge/`: indexer (support-bot chunker), pgvector + FTS schema, search API, MCP server
-- [ ] Embedding (bge-m3) and reranker llama-servers in `docker-compose.ai.yml`
+- [x] `remote/knowledge/` (2026-11-05): indexer (support-bot chunker, over the library's HTML with section anchors), one SQLite file (FTS5 + float16 vectors, hybrid search by rank fusion) instead of pgvector, search API, MCP server (`knowledge.kobo.local/mcp`)
+- [x] Embedding: bge-m3 Q8_0 on its own llama-server in `docker-compose.knowledge.yml` (CPU only); [ ] the reranker
 - [ ] Corpus build from the library's docs plus XLSForm, ODK docs and the XForms spec; licence check per source
 - [ ] Port the support bot's eval cases; measure retrieval recall@k (`retrieve_any`/`cite_any`) and answer quality with the local agent model; re-tune threshold and boosts; with and without the reranker
 - [ ] `knowledge.sh add` for PDF/DOCX/ODT/HTML/Markdown; originals served by the library
-- [ ] OpenCode registration and AGENTS.md instructions; injection cases pass
-- [ ] Ship the prebuilt index in the content pack
+- [x] OpenCode registration (`knowledge_*` allowed: read-only), the server's instructions; [ ] injection cases pass
+- [x] Ship the prebuilt index in the content pack (`knowledge/`), first boot's `knowledge` step, status row; [ ] tested on a box from a pack
 - [ ] Phase 2: upload page, local FAQ, chat widget on the landing page
 
 ### W11. Case management on the box (optional; see 3j)
