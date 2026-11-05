@@ -1,0 +1,2001 @@
+{
+  "built": "2026-11-05T14:07:32+0000",
+  "embed_model": "/models/bge-m3-Q8_0.gguf",
+  "chunks": 13043,
+  "pages": 1378,
+  "k": 8,
+  "embed_ms_per_query": 24,
+  "modes": {
+    "vector": {
+      "hit@1": 0.511,
+      "hit@3": 0.667,
+      "hit@5": 0.822,
+      "hit@8": 0.867,
+      "mrr": 0.624,
+      "same_language@1": 1.0,
+      "cases": 45
+    },
+    "fts": {
+      "hit@1": 0.356,
+      "hit@3": 0.6,
+      "hit@5": 0.667,
+      "hit@8": 0.733,
+      "mrr": 0.492,
+      "same_language@1": 1.0,
+      "cases": 45
+    },
+    "hybrid": {
+      "hit@1": 0.467,
+      "hit@3": 0.733,
+      "hit@5": 0.844,
+      "hit@8": 0.889,
+      "mrr": 0.609,
+      "same_language@1": 1.0,
+      "cases": 45
+    },
+    "rerank": {
+      "hit@1": 0.511,
+      "hit@3": 0.711,
+      "hit@5": 0.8,
+      "hit@8": 0.867,
+      "mrr": 0.63,
+      "same_language@1": 1.0,
+      "cases": 45
+    }
+  },
+  "by_file": {
+    "box.yaml": {
+      "vector": {
+        "hit@1": 0.462,
+        "hit@3": 0.692,
+        "hit@5": 0.769,
+        "hit@8": 0.769,
+        "mrr": 0.592,
+        "same_language@1": 1.0,
+        "cases": 13
+      },
+      "fts": {
+        "hit@1": 0.538,
+        "hit@3": 0.615,
+        "hit@5": 0.615,
+        "hit@8": 0.615,
+        "mrr": 0.577,
+        "same_language@1": 1.0,
+        "cases": 13
+      },
+      "hybrid": {
+        "hit@1": 0.462,
+        "hit@3": 0.769,
+        "hit@5": 0.769,
+        "hit@8": 0.846,
+        "mrr": 0.612,
+        "same_language@1": 1.0,
+        "cases": 13
+      },
+      "rerank": {
+        "hit@1": 0.538,
+        "hit@3": 0.615,
+        "hit@5": 0.692,
+        "hit@8": 0.846,
+        "mrr": 0.62,
+        "same_language@1": 1.0,
+        "cases": 13
+      }
+    },
+    "collections.yaml": {
+      "vector": {
+        "hit@1": 0.25,
+        "hit@3": 0.583,
+        "hit@5": 0.833,
+        "hit@8": 0.833,
+        "mrr": 0.447,
+        "same_language@1": 1.0,
+        "cases": 12
+      },
+      "fts": {
+        "hit@1": 0.083,
+        "hit@3": 0.333,
+        "hit@5": 0.5,
+        "hit@8": 0.75,
+        "mrr": 0.268,
+        "same_language@1": 1.0,
+        "cases": 12
+      },
+      "hybrid": {
+        "hit@1": 0.25,
+        "hit@3": 0.583,
+        "hit@5": 0.833,
+        "hit@8": 0.917,
+        "mrr": 0.448,
+        "same_language@1": 1.0,
+        "cases": 12
+      },
+      "rerank": {
+        "hit@1": 0.5,
+        "hit@3": 0.75,
+        "hit@5": 0.833,
+        "hit@8": 0.833,
+        "mrr": 0.618,
+        "same_language@1": 1.0,
+        "cases": 12
+      }
+    },
+    "howto.yaml": {
+      "vector": {
+        "hit@1": 0.786,
+        "hit@3": 0.786,
+        "hit@5": 0.857,
+        "hit@8": 0.929,
+        "mrr": 0.81,
+        "same_language@1": null,
+        "cases": 14
+      },
+      "fts": {
+        "hit@1": 0.571,
+        "hit@3": 0.857,
+        "hit@5": 0.857,
+        "hit@8": 0.857,
+        "mrr": 0.702,
+        "same_language@1": null,
+        "cases": 14
+      },
+      "hybrid": {
+        "hit@1": 0.643,
+        "hit@3": 0.857,
+        "hit@5": 0.857,
+        "hit@8": 0.857,
+        "mrr": 0.726,
+        "same_language@1": null,
+        "cases": 14
+      },
+      "rerank": {
+        "hit@1": 0.429,
+        "hit@3": 0.786,
+        "hit@5": 0.857,
+        "hit@8": 0.857,
+        "mrr": 0.61,
+        "same_language@1": null,
+        "cases": 14
+      }
+    },
+    "multilingual.yaml": {
+      "vector": {
+        "hit@1": 0.5,
+        "hit@3": 0.5,
+        "hit@5": 0.833,
+        "hit@8": 1.0,
+        "mrr": 0.611,
+        "same_language@1": 1.0,
+        "cases": 6
+      },
+      "fts": {
+        "hit@1": 0.0,
+        "hit@3": 0.5,
+        "hit@5": 0.667,
+        "hit@8": 0.667,
+        "mrr": 0.264,
+        "same_language@1": 1.0,
+        "cases": 6
+      },
+      "hybrid": {
+        "hit@1": 0.5,
+        "hit@3": 0.667,
+        "hit@5": 1.0,
+        "hit@8": 1.0,
+        "mrr": 0.65,
+        "same_language@1": 1.0,
+        "cases": 6
+      },
+      "rerank": {
+        "hit@1": 0.667,
+        "hit@3": 0.667,
+        "hit@5": 0.833,
+        "hit@8": 1.0,
+        "mrr": 0.724,
+        "same_language@1": 1.0,
+        "cases": 6
+      }
+    }
+  },
+  "similarity": {
+    "answerable": [
+      0.553,
+      0.56,
+      0.604,
+      0.607,
+      0.607,
+      0.608,
+      0.613,
+      0.616,
+      0.63,
+      0.63,
+      0.63,
+      0.631,
+      0.634,
+      0.637,
+      0.639,
+      0.642,
+      0.65,
+      0.652,
+      0.654,
+      0.656,
+      0.659,
+      0.662,
+      0.664,
+      0.667,
+      0.668,
+      0.671,
+      0.675,
+      0.68,
+      0.692,
+      0.692,
+      0.694,
+      0.696,
+      0.698,
+      0.711,
+      0.712,
+      0.717,
+      0.717,
+      0.721,
+      0.725,
+      0.731,
+      0.732,
+      0.733,
+      0.752,
+      0.755,
+      0.767
+    ],
+    "unanswerable": [
+      0.506,
+      0.574,
+      0.631,
+      0.632,
+      0.637,
+      0.663,
+      0.667,
+      0.689,
+      0.69,
+      0.705,
+      0.772
+    ]
+  },
+  "cases": [
+    {
+      "id": "box-sw-export-excel",
+      "file": "box.yaml",
+      "language": "sw",
+      "answerable": true,
+      "vector": {
+        "rank": null,
+        "top": "http://kobo.local/docs/kobo/converting_to_spss_and_stata.html",
+        "top_lang": "en",
+        "top_similarity": 0.6499464511871338
+      },
+      "fts": {
+        "rank": null,
+        "top": "http://kobo.local/docs/kobo/merging_dataset_excel_power_query.html#troubleshooting",
+        "top_lang": "en",
+        "top_similarity": null
+      },
+      "hybrid": {
+        "rank": 8,
+        "top": "http://kobo.local/docs/kobo/merging_dataset_excel_power_query.html#troubleshooting",
+        "top_lang": "en",
+        "top_similarity": 0.6351765394210815
+      },
+      "rerank": {
+        "rank": 6,
+        "top": "http://kobo.local/docs/kobo/managing_repeat_groups.html#exporting-repeat-group-data",
+        "top_lang": "en",
+        "top_similarity": 0.6299254298210144
+      },
+      "best_similarity": 0.6518262624740601
+    },
+    {
+      "id": "box-ar-gps-question",
+      "file": "box.yaml",
+      "language": "ar",
+      "answerable": true,
+      "vector": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/gps_questions.html#adding-a-gps-question-in-the-formbuilder",
+        "top_lang": "en",
+        "top_similarity": 0.6935582160949707
+      },
+      "fts": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/collect_gps.html",
+        "top_lang": "en",
+        "top_similarity": null
+      },
+      "hybrid": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/gps_questions.html#adding-a-gps-question-in-the-formbuilder",
+        "top_lang": "en",
+        "top_similarity": 0.6935582160949707
+      },
+      "rerank": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/gps_questions.html#adding-a-gps-question-in-the-formbuilder",
+        "top_lang": "en",
+        "top_similarity": 0.6935582160949707
+      },
+      "best_similarity": 0.6935582160949707
+    },
+    {
+      "id": "box-pt-required",
+      "file": "box.yaml",
+      "language": "pt",
+      "answerable": true,
+      "vector": {
+        "rank": 2,
+        "top": "http://kobo.local/docs/kobo/es/question_options_xls.html#preguntas-obligatorias",
+        "top_lang": "es",
+        "top_similarity": 0.7547341585159302
+      },
+      "fts": {
+        "rank": null,
+        "top": "http://kobo.local/docs/kobo/es/data_through_webforms.html#personalizar-los-enlaces-de-formularios-web",
+        "top_lang": "es",
+        "top_similarity": null
+      },
+      "hybrid": {
+        "rank": 3,
+        "top": "http://kobo.local/docs/kobo/es/question_options_xls.html#preguntas-obligatorias",
+        "top_lang": "es",
+        "top_similarity": 0.7547341585159302
+      },
+      "rerank": {
+        "rank": 2,
+        "top": "http://kobo.local/docs/kobo/es/question_options_xls.html#preguntas-obligatorias",
+        "top_lang": "es",
+        "top_similarity": 0.7547341585159302
+      },
+      "best_similarity": 0.7547341585159302
+    },
+    {
+      "id": "box-hi-skip-logic",
+      "file": "box.yaml",
+      "language": "hi",
+      "answerable": true,
+      "vector": {
+        "rank": 2,
+        "top": "http://kobo.local/docs/kobo/form_logic.html#question-referencing",
+        "top_lang": "en",
+        "top_similarity": 0.5725285410881042
+      },
+      "fts": {
+        "rank": null,
+        "top": null,
+        "top_lang": null,
+        "top_similarity": null
+      },
+      "hybrid": {
+        "rank": 2,
+        "top": "http://kobo.local/docs/kobo/form_logic.html#question-referencing",
+        "top_lang": "en",
+        "top_similarity": 0.5725285410881042
+      },
+      "rerank": {
+        "rank": 4,
+        "top": "http://kobo.local/docs/xlsform/index.html#relevant",
+        "top_lang": "en",
+        "top_similarity": 0.5762593746185303
+      },
+      "best_similarity": 0.6065205335617065
+    },
+    {
+      "id": "box-es-two-factor",
+      "file": "box.yaml",
+      "language": "es",
+      "answerable": true,
+      "vector": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/es/two_factor_authentication.html#usar-kobocollect-con-la-2fa",
+        "top_lang": "es",
+        "top_similarity": 0.6295596361160278
+      },
+      "fts": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/es/two_factor_authentication.html#configurar-la-2fa-en-kobotoolbox",
+        "top_lang": "es",
+        "top_similarity": null
+      },
+      "hybrid": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/es/two_factor_authentication.html",
+        "top_lang": "es",
+        "top_similarity": 0.6234359741210938
+      },
+      "rerank": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/es/two_factor_authentication.html#deshabilitar-la-2fa",
+        "top_lang": "es",
+        "top_similarity": 0.6109277009963989
+      },
+      "best_similarity": 0.6295596361160278
+    },
+    {
+      "id": "box-term-pulldata",
+      "file": "box.yaml",
+      "language": "en",
+      "answerable": true,
+      "vector": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/pull_data_kobotoolbox.html",
+        "top_lang": "en",
+        "top_similarity": 0.6831378936767578
+      },
+      "fts": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/pull_data_kobotoolbox.html",
+        "top_lang": "en",
+        "top_similarity": null
+      },
+      "hybrid": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/pull_data_kobotoolbox.html",
+        "top_lang": "en",
+        "top_similarity": 0.6831378936767578
+      },
+      "rerank": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/pull_data_kobotoolbox.html",
+        "top_lang": "en",
+        "top_similarity": 0.6831378936767578
+      },
+      "best_similarity": 0.6915634870529175
+    },
+    {
+      "id": "box-term-select-from-file",
+      "file": "box.yaml",
+      "language": "en",
+      "answerable": true,
+      "vector": {
+        "rank": 5,
+        "top": "http://kobo.local/docs/kobo/question_types.html#question-types-in-the-formbuilder",
+        "top_lang": "en",
+        "top_similarity": 0.6633965969085693
+      },
+      "fts": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/select_from_file_xls.html#setting-up-your-xlsform",
+        "top_lang": "en",
+        "top_similarity": null
+      },
+      "hybrid": {
+        "rank": 2,
+        "top": "http://kobo.local/docs/kobo/question_types.html#question-types-in-the-formbuilder",
+        "top_lang": "en",
+        "top_similarity": 0.6633965969085693
+      },
+      "rerank": {
+        "rank": 7,
+        "top": "http://kobo.local/docs/odk/form-datasets.html#building-selects-from-csv-files",
+        "top_lang": "en",
+        "top_similarity": 0.690229058265686
+      },
+      "best_similarity": 0.7124868631362915
+    },
+    {
+      "id": "box-term-value-not-allowed",
+      "file": "box.yaml",
+      "language": "en",
+      "answerable": true,
+      "vector": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/constraints_xls.html#customizing-constraint-error-messages",
+        "top_lang": "en",
+        "top_similarity": 0.6105778813362122
+      },
+      "fts": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/constraints_xls.html#customizing-constraint-error-messages",
+        "top_lang": "en",
+        "top_similarity": null
+      },
+      "hybrid": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/constraints_xls.html#customizing-constraint-error-messages",
+        "top_lang": "en",
+        "top_similarity": 0.6105778813362122
+      },
+      "rerank": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/constraints_xls.html#customizing-constraint-error-messages",
+        "top_lang": "en",
+        "top_similarity": 0.6105778813362122
+      },
+      "best_similarity": 0.615717887878418
+    },
+    {
+      "id": "box-stuck-pending",
+      "file": "box.yaml",
+      "language": "en",
+      "answerable": true,
+      "vector": {
+        "rank": null,
+        "top": "http://kobo.local/docs/kobo/data_through_webforms.html#troubleshooting",
+        "top_lang": "en",
+        "top_similarity": 0.6074402332305908
+      },
+      "fts": {
+        "rank": null,
+        "top": "http://kobo.local/docs/kobo/data-collection-tools.html#offline-data-collection",
+        "top_lang": "en",
+        "top_similarity": null
+      },
+      "hybrid": {
+        "rank": null,
+        "top": "http://kobo.local/docs/kobo/data_through_webforms.html#troubleshooting",
+        "top_lang": "en",
+        "top_similarity": 0.6074402332305908
+      },
+      "rerank": {
+        "rank": null,
+        "top": "http://kobo.local/docs/kobo/xlsform_with_kobotoolbox.html#troubleshooting",
+        "top_lang": "en",
+        "top_similarity": 0.5675499439239502
+      },
+      "best_similarity": 0.6074402332305908
+    },
+    {
+      "id": "box-row-level",
+      "file": "box.yaml",
+      "language": "en",
+      "answerable": true,
+      "vector": {
+        "rank": null,
+        "top": "http://kobo.local/docs/kobo/viewing_validating_data.html#viewing-individual-submissions",
+        "top_lang": "en",
+        "top_similarity": 0.553173840045929
+      },
+      "fts": {
+        "rank": null,
+        "top": "http://kobo.local/docs/kobo/editing_deleting_data.html",
+        "top_lang": "en",
+        "top_similarity": null
+      },
+      "hybrid": {
+        "rank": null,
+        "top": "http://kobo.local/docs/kobo/dynamic_data_attachment.html#counting-submissions-from-the-project-itself",
+        "top_lang": "en",
+        "top_similarity": 0.5190550088882446
+      },
+      "rerank": {
+        "rank": null,
+        "top": "http://kobo.local/docs/kobo/dynamic_data_attachment.html#counting-submissions-from-the-project-itself",
+        "top_lang": "en",
+        "top_similarity": 0.5190550088882446
+      },
+      "best_similarity": 0.553173840045929
+    },
+    {
+      "id": "box-spss",
+      "file": "box.yaml",
+      "language": "en",
+      "answerable": true,
+      "vector": {
+        "rank": 2,
+        "top": "http://kobo.local/docs/kobo/export_download.html#value-and-header-format",
+        "top_lang": "en",
+        "top_similarity": 0.6043506860733032
+      },
+      "fts": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/converting_to_spss_and_stata.html",
+        "top_lang": "en",
+        "top_similarity": null
+      },
+      "hybrid": {
+        "rank": 2,
+        "top": "http://kobo.local/docs/kobo/export_download.html#value-and-header-format",
+        "top_lang": "en",
+        "top_similarity": 0.6043506860733032
+      },
+      "rerank": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/converting_to_spss_and_stata.html",
+        "top_lang": "en",
+        "top_similarity": 0.5958786010742188
+      },
+      "best_similarity": 0.6043506860733032
+    },
+    {
+      "id": "box-fr-encrypt",
+      "file": "box.yaml",
+      "language": "fr",
+      "answerable": true,
+      "vector": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/fr/encrypting_forms.html#fonctionnement",
+        "top_lang": "fr",
+        "top_similarity": 0.6709203720092773
+      },
+      "fts": {
+        "rank": 2,
+        "top": "http://kobo.local/docs/kobo/fr/glossary.html#projets-en-brouillon",
+        "top_lang": "fr",
+        "top_similarity": null
+      },
+      "hybrid": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/fr/encrypting_forms.html#fonctionnement",
+        "top_lang": "fr",
+        "top_similarity": 0.6709203720092773
+      },
+      "rerank": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/fr/encrypting_forms.html#fonctionnement",
+        "top_lang": "fr",
+        "top_similarity": 0.6709203720092773
+      },
+      "best_similarity": 0.6709203720092773
+    },
+    {
+      "id": "box-term-powerbi",
+      "file": "box.yaml",
+      "language": "en",
+      "answerable": true,
+      "vector": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/pulling_data_into_powerbi.html",
+        "top_lang": "en",
+        "top_similarity": 0.7246313095092773
+      },
+      "fts": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/pulling_data_into_powerbi.html",
+        "top_lang": "en",
+        "top_similarity": null
+      },
+      "hybrid": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/pulling_data_into_powerbi.html",
+        "top_lang": "en",
+        "top_similarity": 0.7246313095092773
+      },
+      "rerank": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/pulling_data_into_powerbi.html",
+        "top_lang": "en",
+        "top_similarity": 0.7246313095092773
+      },
+      "best_similarity": 0.7325626611709595
+    },
+    {
+      "id": "odk-offline-maps",
+      "file": "collections.yaml",
+      "language": "en",
+      "answerable": true,
+      "vector": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/odk/collect-offline-maps.html#quick-start",
+        "top_lang": "en",
+        "top_similarity": 0.6921904683113098
+      },
+      "fts": {
+        "rank": 3,
+        "top": "http://kobo.local/docs/kobo/gps_questions.html",
+        "top_lang": "en",
+        "top_similarity": null
+      },
+      "hybrid": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/odk/collect-offline-maps.html#quick-start",
+        "top_lang": "en",
+        "top_similarity": 0.6921904683113098
+      },
+      "rerank": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/odk/collect-offline-maps.html#quick-start",
+        "top_lang": "en",
+        "top_similarity": 0.6921904683113098
+      },
+      "best_similarity": 0.6921904683113098
+    },
+    {
+      "id": "odk-regex-constraint",
+      "file": "collections.yaml",
+      "language": "en",
+      "answerable": true,
+      "vector": {
+        "rank": 4,
+        "top": "http://kobo.local/docs/kobo/restrict_responses.html#common-regex-expressions-with-numbers",
+        "top_lang": "en",
+        "top_similarity": 0.639498233795166
+      },
+      "fts": {
+        "rank": 6,
+        "top": "http://kobo.local/docs/kobo/restrict_responses.html#common-regex-expressions-with-numbers",
+        "top_lang": "en",
+        "top_similarity": null
+      },
+      "hybrid": {
+        "rank": 4,
+        "top": "http://kobo.local/docs/kobo/restrict_responses.html#common-regex-expressions-with-numbers",
+        "top_lang": "en",
+        "top_similarity": 0.639498233795166
+      },
+      "rerank": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/odk/form-regex.html#tips-on-using-regular-expressions",
+        "top_lang": "en",
+        "top_similarity": 0.6541510820388794
+      },
+      "best_similarity": 0.6541510820388794
+    },
+    {
+      "id": "odk-audit-log",
+      "file": "collections.yaml",
+      "language": "en",
+      "answerable": true,
+      "vector": {
+        "rank": 5,
+        "top": "http://kobo.local/docs/kobo/form_meta.html#audit-metadata-question",
+        "top_lang": "en",
+        "top_similarity": 0.6132327914237976
+      },
+      "fts": {
+        "rank": null,
+        "top": "http://kobo.local/docs/kobo/qualitative_data.html#question-types-for-qualitative-data-collection",
+        "top_lang": "en",
+        "top_similarity": null
+      },
+      "hybrid": {
+        "rank": 3,
+        "top": "http://kobo.local/docs/kobo/form_meta.html#audit-metadata-question",
+        "top_lang": "en",
+        "top_similarity": 0.6132327914237976
+      },
+      "rerank": {
+        "rank": 2,
+        "top": "http://kobo.local/docs/kobo/form_meta.html#audit-metadata-question",
+        "top_lang": "en",
+        "top_similarity": 0.6132327914237976
+      },
+      "best_similarity": 0.6748924851417542
+    },
+    {
+      "id": "odk-collect-settings-qr",
+      "file": "collections.yaml",
+      "language": "en",
+      "answerable": true,
+      "vector": {
+        "rank": 3,
+        "top": "http://kobo.local/docs/kobo/kobocollect_on_android_latest.html#setting-up-kobocollect-with-a-qr-code",
+        "top_lang": "en",
+        "top_similarity": 0.703881561756134
+      },
+      "fts": {
+        "rank": 8,
+        "top": "http://kobo.local/docs/kobo/kobocollect_on_android_latest.html#setting-up-kobocollect-with-a-qr-code",
+        "top_lang": "en",
+        "top_similarity": null
+      },
+      "hybrid": {
+        "rank": 3,
+        "top": "http://kobo.local/docs/kobo/kobocollect_on_android_latest.html#setting-up-kobocollect-with-a-qr-code",
+        "top_lang": "en",
+        "top_similarity": 0.703881561756134
+      },
+      "rerank": {
+        "rank": 3,
+        "top": "http://kobo.local/docs/kobo/kobocollect_on_android_latest.html#setting-up-kobocollect-with-a-qr-code",
+        "top_lang": "en",
+        "top_similarity": 0.703881561756134
+      },
+      "best_similarity": 0.7213919162750244
+    },
+    {
+      "id": "odk-repeat-count",
+      "file": "collections.yaml",
+      "language": "en",
+      "answerable": true,
+      "vector": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/repeat_groups_xls.html#counting-total-number-of-repeat-group-repetitions",
+        "top_lang": "en",
+        "top_similarity": 0.6410760879516602
+      },
+      "fts": {
+        "rank": 2,
+        "top": "http://kobo.local/docs/kobo/merging_dataset_excel_power_query.html#differences-between-individual-data-and-roster-data",
+        "top_lang": "en",
+        "top_similarity": null
+      },
+      "hybrid": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/repeat_groups_xls.html#setting-repeat-counts",
+        "top_lang": "en",
+        "top_similarity": 0.636823296546936
+      },
+      "rerank": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/xlsform/index.html#fixed-repeat-counts",
+        "top_lang": "en",
+        "top_similarity": 0.6539641618728638
+      },
+      "best_similarity": 0.6636266708374023
+    },
+    {
+      "id": "odk-es-troubleshooting",
+      "file": "collections.yaml",
+      "language": "es",
+      "answerable": true,
+      "vector": {
+        "rank": 2,
+        "top": "http://kobo.local/docs/kobo/es/data_collection_kobocollect.html#resolucion-de-problemas",
+        "top_lang": "es",
+        "top_similarity": 0.687787652015686
+      },
+      "fts": {
+        "rank": null,
+        "top": "http://kobo.local/docs/kobo/es/deploy_form_new_project.html#actualizar-formularios-despues-de-que-los-cambios-se-hayan-vuelto-a-implementar",
+        "top_lang": "es",
+        "top_similarity": null
+      },
+      "hybrid": {
+        "rank": 4,
+        "top": "http://kobo.local/docs/kobo/es/data_collection_kobocollect.html#resolucion-de-problemas",
+        "top_lang": "es",
+        "top_similarity": 0.687787652015686
+      },
+      "rerank": {
+        "rank": 4,
+        "top": "http://kobo.local/docs/kobo/es/data_collection_kobocollect.html#resolucion-de-problemas",
+        "top_lang": "es",
+        "top_similarity": 0.687787652015686
+      },
+      "best_similarity": 0.6958487033843994
+    },
+    {
+      "id": "xlsform-choice-filter",
+      "file": "collections.yaml",
+      "language": "en",
+      "answerable": true,
+      "vector": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/choice_filters_xls.html#id2",
+        "top_lang": "en",
+        "top_similarity": 0.6428866386413574
+      },
+      "fts": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/choice_filters_xls.html#adding-dynamic-choice-filters",
+        "top_lang": "en",
+        "top_similarity": null
+      },
+      "hybrid": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/choice_filters_xls.html#adding-static-choice-filters",
+        "top_lang": "en",
+        "top_similarity": 0.6207688450813293
+      },
+      "rerank": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/choice_filters_xls.html#adding-static-choice-filters",
+        "top_lang": "en",
+        "top_similarity": 0.6207688450813293
+      },
+      "best_similarity": 0.6497662663459778
+    },
+    {
+      "id": "xlsform-jr-choice-name",
+      "file": "collections.yaml",
+      "language": "en",
+      "answerable": true,
+      "vector": {
+        "rank": 3,
+        "top": "http://kobo.local/docs/kobo/custom_submission_message.html#displaying-choice-labels",
+        "top_lang": "en",
+        "top_similarity": 0.6983213424682617
+      },
+      "fts": {
+        "rank": 7,
+        "top": "http://kobo.local/docs/kobo/custom_submission_message.html#displaying-choice-labels",
+        "top_lang": "en",
+        "top_similarity": null
+      },
+      "hybrid": {
+        "rank": 3,
+        "top": "http://kobo.local/docs/kobo/custom_submission_message.html#displaying-choice-labels",
+        "top_lang": "en",
+        "top_similarity": 0.6983213424682617
+      },
+      "rerank": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/odk/form-operators-functions.html#select-questions",
+        "top_lang": "en",
+        "top_similarity": 0.6847454905509949
+      },
+      "best_similarity": 0.6983213424682617
+    },
+    {
+      "id": "xlsform-ref-table-appearance",
+      "file": "collections.yaml",
+      "language": "en",
+      "answerable": true,
+      "vector": {
+        "rank": 2,
+        "top": "http://kobo.local/docs/kobo/select_one_and_select_many.html#advanced-appearances",
+        "top_lang": "en",
+        "top_similarity": 0.5512555837631226
+      },
+      "fts": {
+        "rank": 2,
+        "top": "http://kobo.local/docs/kobo/select_one_and_select_many.html#advanced-appearances",
+        "top_lang": "en",
+        "top_similarity": null
+      },
+      "hybrid": {
+        "rank": 2,
+        "top": "http://kobo.local/docs/kobo/select_one_and_select_many.html#advanced-appearances",
+        "top_lang": "en",
+        "top_similarity": 0.5512555837631226
+      },
+      "rerank": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/xlsform/index.html#appearance",
+        "top_lang": "en",
+        "top_similarity": 0.5477678775787354
+      },
+      "best_similarity": 0.6296412944793701
+    },
+    {
+      "id": "qgis-csv-points",
+      "file": "collections.yaml",
+      "language": "en",
+      "answerable": true,
+      "vector": {
+        "rank": null,
+        "top": "http://kobo.local/docs/kobo/mapping_gps.html#exporting-as-csv-or-xls",
+        "top_lang": "en",
+        "top_similarity": 0.6590350270271301
+      },
+      "fts": {
+        "rank": null,
+        "top": "http://kobo.local/docs/kobo/mapping_gps.html#exporting-as-csv-or-xls",
+        "top_lang": "en",
+        "top_similarity": null
+      },
+      "hybrid": {
+        "rank": null,
+        "top": "http://kobo.local/docs/kobo/mapping_gps.html#exporting-as-csv-or-xls",
+        "top_lang": "en",
+        "top_similarity": 0.6590350270271301
+      },
+      "rerank": {
+        "rank": null,
+        "top": "http://kobo.local/docs/kobo/upload_to_gis.html",
+        "top_lang": "en",
+        "top_similarity": 0.6361567378044128
+      },
+      "best_similarity": 0.6590350270271301
+    },
+    {
+      "id": "qgis-reproject",
+      "file": "collections.yaml",
+      "language": "en",
+      "answerable": true,
+      "vector": {
+        "rank": null,
+        "top": "http://kobo.local/docs/qgis-docs-en/en/docs/user_manual/introduction/qgis_configuration.html#transformations-properties",
+        "top_lang": "en",
+        "top_similarity": 0.6170459389686584
+      },
+      "fts": {
+        "rank": 4,
+        "top": "http://kobo.local/docs/qgis-docs-en/en/docs/training_manual/complete_analysis/analysis_exercise.html#align-the-rasters",
+        "top_lang": "en",
+        "top_similarity": null
+      },
+      "hybrid": {
+        "rank": 8,
+        "top": "http://kobo.local/docs/qgis-docs-en/en/docs/training_manual/vector_analysis/basic_analysis.html#try-yourself-convert-layers-crs",
+        "top_lang": "en",
+        "top_similarity": 0.5770045518875122
+      },
+      "rerank": {
+        "rank": 3,
+        "top": "http://kobo.local/docs/qgis-docs-en/en/docs/training_manual/vector_analysis/basic_analysis.html#try-yourself-convert-layers-crs",
+        "top_lang": "en",
+        "top_similarity": 0.5770045518875122
+      },
+      "best_similarity": 0.6339537501335144
+    },
+    {
+      "id": "qgis-fr-join",
+      "file": "collections.yaml",
+      "language": "fr",
+      "answerable": true,
+      "vector": {
+        "rank": 4,
+        "top": "http://kobo.local/docs/qgis-docs-fr/fr/docs/user_manual/working_with_vector/attribute_table.html#introducing-the-attribute-table-interface",
+        "top_lang": "fr",
+        "top_similarity": 0.6800504326820374
+      },
+      "fts": {
+        "rank": 5,
+        "top": "http://kobo.local/docs/qgis-docs-fr/fr/docs/user_manual/working_with_vector/joins_relations.html#joining-features-between-two-layers",
+        "top_lang": "fr",
+        "top_similarity": null
+      },
+      "hybrid": {
+        "rank": 4,
+        "top": "http://kobo.local/docs/qgis-docs-fr/fr/docs/user_manual/working_with_vector/joins_relations.html#joining-features-between-two-layers",
+        "top_lang": "fr",
+        "top_similarity": 0.6669893264770508
+      },
+      "rerank": {
+        "rank": null,
+        "top": "http://kobo.local/docs/qgis-docs-fr/fr/docs/user_manual/working_with_vector/joins_relations.html#joining-features-between-two-layers",
+        "top_lang": "fr",
+        "top_similarity": 0.6669893264770508
+      },
+      "best_similarity": 0.6800504326820374
+    },
+    {
+      "id": "bait-sms-whatsapp-distribution",
+      "file": "hallucination_bait.yaml",
+      "language": "en",
+      "answerable": false,
+      "vector": {
+        "rank": null,
+        "top": "http://kobo.local/docs/kobo/question_options_xls.html#changing-the-default-required-message",
+        "top_lang": "en",
+        "top_similarity": 0.59043288230896
+      },
+      "fts": {
+        "rank": null,
+        "top": "http://kobo.local/docs/kobo/form_logic_xls.html#question-referencing",
+        "top_lang": "en",
+        "top_similarity": null
+      },
+      "hybrid": {
+        "rank": null,
+        "top": "http://kobo.local/docs/kobo/question_options_xls.html#changing-the-default-required-message",
+        "top_lang": "en",
+        "top_similarity": 0.59043288230896
+      },
+      "rerank": {
+        "rank": null,
+        "top": "http://kobo.local/docs/odk/collect-sms-submissions.html#configuring-sms-submission-in-a-form",
+        "top_lang": "en",
+        "top_similarity": 0.6227030754089355
+      },
+      "best_similarity": 0.6631357669830322
+    },
+    {
+      "id": "bait-auto-close-form-date",
+      "file": "hallucination_bait.yaml",
+      "language": "en",
+      "answerable": false,
+      "vector": {
+        "rank": null,
+        "top": "http://kobo.local/docs/kobo/kobocollect_settings.html#form-management-settings",
+        "top_lang": "en",
+        "top_similarity": 0.6167827844619751
+      },
+      "fts": {
+        "rank": null,
+        "top": "http://kobo.local/docs/kobo/managing_permissions.html#setting-user-level-permissions",
+        "top_lang": "en",
+        "top_similarity": null
+      },
+      "hybrid": {
+        "rank": null,
+        "top": "http://kobo.local/docs/kobo/kobocollect_settings.html#form-management-settings",
+        "top_lang": "en",
+        "top_similarity": 0.6167827844619751
+      },
+      "rerank": {
+        "rank": null,
+        "top": "http://kobo.local/docs/kobo/kobocollect_settings.html#form-management-settings",
+        "top_lang": "en",
+        "top_similarity": 0.6167827844619751
+      },
+      "best_similarity": 0.6366986632347107
+    },
+    {
+      "id": "bait-restore-deleted-submissions",
+      "file": "hallucination_bait.yaml",
+      "language": "en",
+      "answerable": false,
+      "vector": {
+        "rank": null,
+        "top": "http://kobo.local/docs/kobo/editing_deleting_data.html",
+        "top_lang": "en",
+        "top_similarity": 0.6065719127655029
+      },
+      "fts": {
+        "rank": null,
+        "top": "http://kobo.local/docs/kobo/managing_projects.html#archiving-and-deleting-projects",
+        "top_lang": "en",
+        "top_similarity": null
+      },
+      "hybrid": {
+        "rank": null,
+        "top": "http://kobo.local/docs/kobo/editing_deleting_data.html",
+        "top_lang": "en",
+        "top_similarity": 0.6065719127655029
+      },
+      "rerank": {
+        "rank": null,
+        "top": "http://kobo.local/docs/odk/central-api-form-management.html#deleting-a-form",
+        "top_lang": "en",
+        "top_similarity": 0.6559808254241943
+      },
+      "best_similarity": 0.6667759418487549
+    },
+    {
+      "id": "hallucination-bait-angry-deleted-submissions",
+      "file": "hallucination_bait.yaml",
+      "language": "en",
+      "answerable": false,
+      "vector": {
+        "rank": null,
+        "top": "http://kobo.local/docs/kobo/managing_projects.html#archiving-and-deleting-projects",
+        "top_lang": "en",
+        "top_similarity": 0.5568827390670776
+      },
+      "fts": {
+        "rank": null,
+        "top": "http://kobo.local/docs/kobo/managing_projects.html#archiving-and-deleting-projects",
+        "top_lang": "en",
+        "top_similarity": null
+      },
+      "hybrid": {
+        "rank": null,
+        "top": "http://kobo.local/docs/kobo/managing_projects.html#archiving-and-deleting-projects",
+        "top_lang": "en",
+        "top_similarity": 0.5568827390670776
+      },
+      "rerank": {
+        "rank": null,
+        "top": "http://kobo.local/docs/odk/central-api-submission-management.html#deleting-a-submission",
+        "top_lang": "en",
+        "top_similarity": 0.6311425566673279
+      },
+      "best_similarity": 0.6311425566673279
+    },
+    {
+      "id": "formbuilder-skip-logic-basic",
+      "file": "howto.yaml",
+      "language": "en",
+      "answerable": true,
+      "vector": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/skip_logic_xls.html#adding-skip-logic-based-on-whether-a-question-was-answered",
+        "top_lang": "en",
+        "top_similarity": 0.5508564114570618
+      },
+      "fts": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/skip_logic_xls.html#adding-skip-logic-based-on-whether-a-question-was-answered",
+        "top_lang": "en",
+        "top_similarity": null
+      },
+      "hybrid": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/skip_logic_xls.html#adding-skip-logic-based-on-whether-a-question-was-answered",
+        "top_lang": "en",
+        "top_similarity": 0.5508564114570618
+      },
+      "rerank": {
+        "rank": 3,
+        "top": "http://kobo.local/docs/xlsform/index.html#relevant",
+        "top_lang": "en",
+        "top_similarity": 0.547430157661438
+      },
+      "best_similarity": 0.6127338409423828
+    },
+    {
+      "id": "formbuilder-validation-age-range",
+      "file": "howto.yaml",
+      "language": "en",
+      "answerable": true,
+      "vector": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/constraints_xls.html#customizing-constraint-error-messages",
+        "top_lang": "en",
+        "top_similarity": 0.569640040397644
+      },
+      "fts": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/constraints_xls.html#adding-a-constraint",
+        "top_lang": "en",
+        "top_similarity": null
+      },
+      "hybrid": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/constraints_xls.html#adding-a-constraint",
+        "top_lang": "en",
+        "top_similarity": 0.540058970451355
+      },
+      "rerank": {
+        "rank": 2,
+        "top": "http://kobo.local/docs/xlsform/index.html#constraints",
+        "top_lang": "en",
+        "top_similarity": 0.6423163414001465
+      },
+      "best_similarity": 0.6423163414001465
+    },
+    {
+      "id": "formbuilder-repeat-group-household",
+      "file": "howto.yaml",
+      "language": "en",
+      "answerable": true,
+      "vector": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/repeat_groups_xls.html#creating-a-repeat-group",
+        "top_lang": "en",
+        "top_similarity": 0.6252123117446899
+      },
+      "fts": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/repeat_groups_xls.html#creating-a-repeat-group",
+        "top_lang": "en",
+        "top_similarity": null
+      },
+      "hybrid": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/repeat_groups_xls.html#creating-a-repeat-group",
+        "top_lang": "en",
+        "top_similarity": 0.6252123117446899
+      },
+      "rerank": {
+        "rank": 2,
+        "top": "http://kobo.local/docs/xlsform/index.html#repeats",
+        "top_lang": "en",
+        "top_similarity": 0.6590853929519653
+      },
+      "best_similarity": 0.6680861115455627
+    },
+    {
+      "id": "formbuilder-cascading-select",
+      "file": "howto.yaml",
+      "language": "en",
+      "answerable": true,
+      "vector": {
+        "rank": 7,
+        "top": "http://kobo.local/docs/kobo/select_from_map_xls.html",
+        "top_lang": "en",
+        "top_similarity": 0.5204658508300781
+      },
+      "fts": {
+        "rank": null,
+        "top": "http://kobo.local/docs/odk/central-entities.html#filter-by-property",
+        "top_lang": "en",
+        "top_similarity": null
+      },
+      "hybrid": {
+        "rank": null,
+        "top": "http://kobo.local/docs/xlsform/index.html#cascading-selects",
+        "top_lang": "en",
+        "top_similarity": 0.5039511919021606
+      },
+      "rerank": {
+        "rank": null,
+        "top": "http://kobo.local/docs/qgis-docs-en/en/docs/training_manual/complete_analysis/analysis_exercise.html#find-the-correct-districts",
+        "top_lang": "en",
+        "top_similarity": 0.5982767343521118
+      },
+      "best_similarity": 0.6081775426864624
+    },
+    {
+      "id": "xlsform-calculate-total",
+      "file": "howto.yaml",
+      "language": "en",
+      "answerable": true,
+      "vector": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/calculations_xls.html#id1",
+        "top_lang": "en",
+        "top_similarity": 0.6306275129318237
+      },
+      "fts": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/calculations_xls.html#id1",
+        "top_lang": "en",
+        "top_similarity": null
+      },
+      "hybrid": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/calculations_xls.html#id1",
+        "top_lang": "en",
+        "top_similarity": 0.6306275129318237
+      },
+      "rerank": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/calculations_xls.html#id1",
+        "top_lang": "en",
+        "top_similarity": 0.6306275129318237
+      },
+      "best_similarity": 0.6306275129318237
+    },
+    {
+      "id": "xlsform-choice-filter-dynamic",
+      "file": "howto.yaml",
+      "language": "en",
+      "answerable": true,
+      "vector": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/choice_filters_xls.html#id1",
+        "top_lang": "en",
+        "top_similarity": 0.7286644577980042
+      },
+      "fts": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/choice_filters_xls.html#id1",
+        "top_lang": "en",
+        "top_similarity": null
+      },
+      "hybrid": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/choice_filters_xls.html#id1",
+        "top_lang": "en",
+        "top_similarity": 0.7286644577980042
+      },
+      "rerank": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/choice_filters_xls.html",
+        "top_lang": "en",
+        "top_similarity": 0.6756194233894348
+      },
+      "best_similarity": 0.731201171875
+    },
+    {
+      "id": "xlsform-translation-columns",
+      "file": "howto.yaml",
+      "language": "en",
+      "answerable": true,
+      "vector": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/language_xls.html#language-codes-in-xlsform",
+        "top_lang": "en",
+        "top_similarity": 0.7106388807296753
+      },
+      "fts": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/language_xls.html#adding-translations",
+        "top_lang": "en",
+        "top_similarity": null
+      },
+      "hybrid": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/language_xls.html#language-codes-in-xlsform",
+        "top_lang": "en",
+        "top_similarity": 0.7106388807296753
+      },
+      "rerank": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/language_xls.html#adding-translations",
+        "top_lang": "en",
+        "top_similarity": 0.6618784070014954
+      },
+      "best_similarity": 0.7106388807296753
+    },
+    {
+      "id": "kobocollect-send-finalized",
+      "file": "howto.yaml",
+      "language": "en",
+      "answerable": true,
+      "vector": {
+        "rank": 5,
+        "top": "http://kobo.local/docs/kobo/manual_upload.html",
+        "top_lang": "en",
+        "top_similarity": 0.6983360648155212
+      },
+      "fts": {
+        "rank": 2,
+        "top": "http://kobo.local/docs/kobo/data-collection-tools.html#offline-data-collection",
+        "top_lang": "en",
+        "top_similarity": null
+      },
+      "hybrid": {
+        "rank": 3,
+        "top": "http://kobo.local/docs/kobo/data-collection-tools.html#offline-data-collection",
+        "top_lang": "en",
+        "top_similarity": 0.6930880546569824
+      },
+      "rerank": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/data_collection_kobocollect.html#editing-drafts",
+        "top_lang": "en",
+        "top_similarity": 0.669511079788208
+      },
+      "best_similarity": 0.7170228958129883
+    },
+    {
+      "id": "kobocollect-auto-update-forms",
+      "file": "howto.yaml",
+      "language": "en",
+      "answerable": true,
+      "vector": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/data_collection_kobocollect.html#retrieving-form-updates",
+        "top_lang": "en",
+        "top_similarity": 0.7321704030036926
+      },
+      "fts": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/kobocollect_settings.html#form-management-settings",
+        "top_lang": "en",
+        "top_similarity": null
+      },
+      "hybrid": {
+        "rank": 2,
+        "top": "http://kobo.local/docs/kobo/deploy_form_new_project.html#kobocollect",
+        "top_lang": "en",
+        "top_similarity": 0.7289127111434937
+      },
+      "rerank": {
+        "rank": 2,
+        "top": "http://kobo.local/docs/kobo/deploy_form_new_project.html#kobocollect",
+        "top_lang": "en",
+        "top_similarity": 0.7289127111434937
+      },
+      "best_similarity": 0.7321704030036926
+    },
+    {
+      "id": "data-export-xls-repeat-groups",
+      "file": "howto.yaml",
+      "language": "en",
+      "answerable": true,
+      "vector": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/managing_repeat_groups.html#exporting-repeat-group-data",
+        "top_lang": "en",
+        "top_similarity": 0.7519158720970154
+      },
+      "fts": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/managing_repeat_groups.html#exporting-repeat-group-data",
+        "top_lang": "en",
+        "top_similarity": null
+      },
+      "hybrid": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/managing_repeat_groups.html#exporting-repeat-group-data",
+        "top_lang": "en",
+        "top_similarity": 0.7519158720970154
+      },
+      "rerank": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/managing_repeat_groups.html#exporting-repeat-group-data",
+        "top_lang": "en",
+        "top_similarity": 0.7519158720970154
+      },
+      "best_similarity": 0.7519158720970154
+    },
+    {
+      "id": "data-edit-submission",
+      "file": "howto.yaml",
+      "language": "en",
+      "answerable": true,
+      "vector": {
+        "rank": null,
+        "top": "http://kobo.local/docs/kobo/xlsform_with_kobotoolbox.html#troubleshooting",
+        "top_lang": "en",
+        "top_similarity": 0.5354585647583008
+      },
+      "fts": {
+        "rank": null,
+        "top": "http://kobo.local/docs/kobo/dynamic_data_attachment.html#counting-submissions-from-the-project-itself",
+        "top_lang": "en",
+        "top_similarity": null
+      },
+      "hybrid": {
+        "rank": null,
+        "top": "http://kobo.local/docs/odk/central-api-submission-management.html#listing-versions",
+        "top_lang": "en",
+        "top_similarity": 0.5387992858886719
+      },
+      "rerank": {
+        "rank": null,
+        "top": "http://kobo.local/docs/odk/central-api-submission-management.html#getting-version-details",
+        "top_lang": "en",
+        "top_similarity": 0.5168771743774414
+      },
+      "best_similarity": 0.5597385168075562
+    },
+    {
+      "id": "data-validation-status-bulk",
+      "file": "howto.yaml",
+      "language": "en",
+      "answerable": true,
+      "vector": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/viewing_validating_data.html#validating-your-data",
+        "top_lang": "en",
+        "top_similarity": 0.639762282371521
+      },
+      "fts": {
+        "rank": 2,
+        "top": "http://kobo.local/docs/kobo/qualitative_analysis.html#analyzing-your-data",
+        "top_lang": "en",
+        "top_similarity": null
+      },
+      "hybrid": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/viewing_validating_data.html#validating-your-data",
+        "top_lang": "en",
+        "top_similarity": 0.639762282371521
+      },
+      "rerank": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/viewing_validating_data.html#validating-your-data",
+        "top_lang": "en",
+        "top_similarity": 0.639762282371521
+      },
+      "best_similarity": 0.6561546325683594
+    },
+    {
+      "id": "projects-share-view-only",
+      "file": "howto.yaml",
+      "language": "en",
+      "answerable": true,
+      "vector": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/project_sharing_settings.html#making-your-project-public",
+        "top_lang": "en",
+        "top_similarity": 0.6388811469078064
+      },
+      "fts": {
+        "rank": 3,
+        "top": "http://kobo.local/docs/kobo/data-collection-tools.html#preparing-for-data-collection",
+        "top_lang": "en",
+        "top_similarity": null
+      },
+      "hybrid": {
+        "rank": 3,
+        "top": "http://kobo.local/docs/kobo/data_through_webforms.html#sharing-web-forms-for-data-collection",
+        "top_lang": "en",
+        "top_similarity": 0.6166932582855225
+      },
+      "rerank": {
+        "rank": 2,
+        "top": "http://kobo.local/docs/odk/guide-end-of-form.html#no-edits-allowed-after-leaving-data-collection-subject",
+        "top_lang": "en",
+        "top_similarity": 0.6383730173110962
+      },
+      "best_similarity": 0.6388811469078064
+    },
+    {
+      "id": "account-reset-password",
+      "file": "howto.yaml",
+      "language": "en",
+      "answerable": true,
+      "vector": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/reset_password.html",
+        "top_lang": "en",
+        "top_similarity": 0.6367907524108887
+      },
+      "fts": {
+        "rank": 2,
+        "top": "http://kobo.local/docs/kobo/account_settings.html#security",
+        "top_lang": "en",
+        "top_similarity": null
+      },
+      "hybrid": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/reset_password.html",
+        "top_lang": "en",
+        "top_similarity": 0.6367907524108887
+      },
+      "rerank": {
+        "rank": 5,
+        "top": "http://kobo.local/docs/odk/central-command-line.html#setting-a-web-user-password-by-command-line",
+        "top_lang": "en",
+        "top_similarity": 0.5900917053222656
+      },
+      "best_similarity": 0.6367907524108887
+    },
+    {
+      "id": "multilingual-fr-export-excel",
+      "file": "multilingual.yaml",
+      "language": "fr",
+      "answerable": true,
+      "vector": {
+        "rank": 4,
+        "top": "http://kobo.local/docs/kobo/fr/merging_dataset_excel_power_query.html#resolution-de-problemes",
+        "top_lang": "fr",
+        "top_similarity": 0.666388750076294
+      },
+      "fts": {
+        "rank": null,
+        "top": "http://kobo.local/docs/kobo/fr/index.html",
+        "top_lang": "fr",
+        "top_similarity": null
+      },
+      "hybrid": {
+        "rank": 5,
+        "top": "http://kobo.local/docs/kobo/fr/pull_data_kobotoolbox.html#configurer-votre-xlsform",
+        "top_lang": "fr",
+        "top_similarity": 0.6346770524978638
+      },
+      "rerank": {
+        "rank": 5,
+        "top": "http://kobo.local/docs/kobo/fr/pull_data_kobotoolbox.html#configurer-votre-xlsform",
+        "top_lang": "fr",
+        "top_similarity": 0.6346770524978638
+      },
+      "best_similarity": 0.6671625375747681
+    },
+    {
+      "id": "multilingual-fr-share-project",
+      "file": "multilingual.yaml",
+      "language": "fr",
+      "answerable": true,
+      "vector": {
+        "rank": 6,
+        "top": "http://kobo.local/docs/kobo/fr/project_sharing_settings.html#rendre-votre-projet-public",
+        "top_lang": "fr",
+        "top_similarity": 0.6247486472129822
+      },
+      "fts": {
+        "rank": 4,
+        "top": "http://kobo.local/docs/kobo/fr/project_sharing_settings.html#autoriser-les-soumissions-sans-authentification",
+        "top_lang": "fr",
+        "top_similarity": null
+      },
+      "hybrid": {
+        "rank": 5,
+        "top": "http://kobo.local/docs/kobo/fr/project_sharing_settings.html#rendre-votre-projet-public",
+        "top_lang": "fr",
+        "top_similarity": 0.6247486472129822
+      },
+      "rerank": {
+        "rank": 7,
+        "top": "http://kobo.local/docs/kobo/fr/project_sharing_settings.html#rendre-votre-projet-public",
+        "top_lang": "fr",
+        "top_similarity": 0.6247486472129822
+      },
+      "best_similarity": 0.629966139793396
+    },
+    {
+      "id": "multilingual-es-kobocollect-offline",
+      "file": "multilingual.yaml",
+      "language": "es",
+      "answerable": true,
+      "vector": {
+        "rank": 4,
+        "top": "http://kobo.local/docs/kobo/es/data-offline.html",
+        "top_lang": "es",
+        "top_similarity": 0.7171149849891663
+      },
+      "fts": {
+        "rank": 3,
+        "top": "http://kobo.local/docs/kobo/es/data-collection-tools.html#recoleccion-de-datos-sin-conexion-a-internet",
+        "top_lang": "es",
+        "top_similarity": null
+      },
+      "hybrid": {
+        "rank": 2,
+        "top": "http://kobo.local/docs/kobo/es/data-collection-tools.html#recoleccion-de-datos-sin-conexion-a-internet",
+        "top_lang": "es",
+        "top_similarity": 0.711632251739502
+      },
+      "rerank": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/es/data_collection_kobocollect.html",
+        "top_lang": "es",
+        "top_similarity": 0.6948500871658325
+      },
+      "best_similarity": 0.7171149849891663
+    },
+    {
+      "id": "multilingual-es-required-question",
+      "file": "multilingual.yaml",
+      "language": "es",
+      "answerable": true,
+      "vector": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/es/question_options_xls.html#preguntas-obligatorias",
+        "top_lang": "es",
+        "top_similarity": 0.710525631904602
+      },
+      "fts": {
+        "rank": 2,
+        "top": "http://kobo.local/docs/kobo/es/required_logic_xls.html#agregar-logica-de-obligacion-segun-si-una-pregunta-fue-respondida",
+        "top_lang": "es",
+        "top_similarity": null
+      },
+      "hybrid": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/es/question_options_xls.html#preguntas-obligatorias",
+        "top_lang": "es",
+        "top_similarity": 0.710525631904602
+      },
+      "rerank": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/es/question_options_xls.html#preguntas-obligatorias",
+        "top_lang": "es",
+        "top_similarity": 0.710525631904602
+      },
+      "best_similarity": 0.7251589894294739
+    },
+    {
+      "id": "multilingual-pt-reset-password",
+      "file": "multilingual.yaml",
+      "language": "pt",
+      "answerable": true,
+      "vector": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/reset_password.html",
+        "top_lang": "en",
+        "top_similarity": 0.7447525262832642
+      },
+      "fts": {
+        "rank": 2,
+        "top": "http://kobo.local/docs/kobo/creating_account.html",
+        "top_lang": "en",
+        "top_similarity": null
+      },
+      "hybrid": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/reset_password.html",
+        "top_lang": "en",
+        "top_similarity": 0.7447525262832642
+      },
+      "rerank": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/reset_password.html",
+        "top_lang": "en",
+        "top_similarity": 0.7447525262832642
+      },
+      "best_similarity": 0.7665561437606812
+    },
+    {
+      "id": "multilingual-ar-add-translation",
+      "file": "multilingual.yaml",
+      "language": "ar",
+      "answerable": true,
+      "vector": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/language_xls.html#adding-translations",
+        "top_lang": "en",
+        "top_similarity": 0.6493934988975525
+      },
+      "fts": {
+        "rank": null,
+        "top": null,
+        "top_lang": null,
+        "top_similarity": null
+      },
+      "hybrid": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/language_xls.html#adding-translations",
+        "top_lang": "en",
+        "top_similarity": 0.6493934988975525
+      },
+      "rerank": {
+        "rank": 1,
+        "top": "http://kobo.local/docs/kobo/language_xls.html#adding-translations",
+        "top_lang": "en",
+        "top_similarity": 0.6493934988975525
+      },
+      "best_similarity": 0.6615751385688782
+    },
+    {
+      "id": "multilingual-de-skip-logic",
+      "file": "multilingual.yaml",
+      "language": "de",
+      "answerable": false,
+      "vector": {
+        "rank": null,
+        "top": "http://kobo.local/docs/kobo/question_options.html#guidance-hint",
+        "top_lang": "en",
+        "top_similarity": 0.6318279504776001
+      },
+      "fts": {
+        "rank": null,
+        "top": "http://kobo.local/docs/kobo/creating_account.html",
+        "top_lang": "en",
+        "top_similarity": null
+      },
+      "hybrid": {
+        "rank": null,
+        "top": "http://kobo.local/docs/kobo/question_options.html#guidance-hint",
+        "top_lang": "en",
+        "top_similarity": 0.6318279504776001
+      },
+      "rerank": {
+        "rank": null,
+        "top": "http://kobo.local/docs/kobo/fr/acknowledge.html",
+        "top_lang": "fr",
+        "top_similarity": 0.5973578095436096
+      },
+      "best_similarity": 0.6318279504776001
+    },
+    {
+      "id": "multilingual-sw-download-form",
+      "file": "multilingual.yaml",
+      "language": "sw",
+      "answerable": false,
+      "vector": {
+        "rank": null,
+        "top": "http://kobo.local/docs/kobo/data-collection-tools.html#offline-data-collection",
+        "top_lang": "en",
+        "top_similarity": 0.7319974899291992
+      },
+      "fts": {
+        "rank": null,
+        "top": "http://kobo.local/docs/kobo/kobocollect_on_android_latest.html",
+        "top_lang": "en",
+        "top_similarity": null
+      },
+      "hybrid": {
+        "rank": null,
+        "top": "http://kobo.local/docs/kobo/data_collection_kobocollect.html",
+        "top_lang": "en",
+        "top_similarity": 0.7298165559768677
+      },
+      "rerank": {
+        "rank": null,
+        "top": "http://kobo.local/docs/kobo/data-collection-tools.html#offline-data-collection",
+        "top_lang": "en",
+        "top_similarity": 0.7319974899291992
+      },
+      "best_similarity": 0.7716835737228394
+    },
+    {
+      "id": "multilingual-es-mixed-english-terms",
+      "file": "multilingual.yaml",
+      "language": "es",
+      "answerable": false,
+      "vector": {
+        "rank": null,
+        "top": "http://kobo.local/docs/kobo/es/advanced_calculate.html#usando-xlsforms",
+        "top_lang": "es",
+        "top_similarity": 0.6891040802001953
+      },
+      "fts": {
+        "rank": null,
+        "top": "http://kobo.local/docs/kobo/es/calculations_xls.html#agregar-calculos-en-un-xlsform",
+        "top_lang": "es",
+        "top_similarity": null
+      },
+      "hybrid": {
+        "rank": null,
+        "top": "http://kobo.local/docs/kobo/es/calculations_xls.html#agregar-calculos-en-un-xlsform",
+        "top_lang": "es",
+        "top_similarity": 0.6805953979492188
+      },
+      "rerank": {
+        "rank": null,
+        "top": "http://kobo.local/docs/kobo/es/calculations_xls.html#agregar-calculos-en-un-xlsform",
+        "top_lang": "es",
+        "top_similarity": 0.6805953979492188
+      },
+      "best_similarity": 0.6891040802001953
+    },
+    {
+      "id": "unanswerable-salesforce-sync",
+      "file": "unanswerable.yaml",
+      "language": "en",
+      "answerable": false,
+      "vector": {
+        "rank": null,
+        "top": "http://kobo.local/docs/kobo/kobotoolbox_monday_integration.html",
+        "top_lang": "en",
+        "top_similarity": 0.6992616057395935
+      },
+      "fts": {
+        "rank": null,
+        "top": "http://kobo.local/docs/kobo/kobotoolbox_interface.html#data-page",
+        "top_lang": "en",
+        "top_similarity": null
+      },
+      "hybrid": {
+        "rank": null,
+        "top": "http://kobo.local/docs/kobo/kobotoolbox_monday_integration.html",
+        "top_lang": "en",
+        "top_similarity": 0.6992616057395935
+      },
+      "rerank": {
+        "rank": null,
+        "top": "http://kobo.local/docs/kobo/kobotoolbox_monday_integration.html",
+        "top_lang": "en",
+        "top_similarity": 0.6992616057395935
+      },
+      "best_similarity": 0.7047016620635986
+    },
+    {
+      "id": "unanswerable-dark-mode",
+      "file": "unanswerable.yaml",
+      "language": "en",
+      "answerable": false,
+      "vector": {
+        "rank": null,
+        "top": "http://kobo.local/docs/kobo/account_settings.html",
+        "top_lang": "en",
+        "top_similarity": 0.5735914707183838
+      },
+      "fts": {
+        "rank": null,
+        "top": "http://kobo.local/docs/kobo/kobocollect_settings.html#project-display-settings",
+        "top_lang": "en",
+        "top_similarity": null
+      },
+      "hybrid": {
+        "rank": null,
+        "top": "http://kobo.local/docs/kobo/kobocollect_settings.html#project-display-settings",
+        "top_lang": "en",
+        "top_similarity": 0.5382406115531921
+      },
+      "rerank": {
+        "rank": null,
+        "top": "http://kobo.local/docs/kobo/kobocollect_settings.html#project-display-settings",
+        "top_lang": "en",
+        "top_similarity": 0.5382406115531921
+      },
+      "best_similarity": 0.5735914707183838
+    },
+    {
+      "id": "unanswerable-off-topic-python",
+      "file": "unanswerable.yaml",
+      "language": "en",
+      "answerable": false,
+      "vector": {
+        "rank": null,
+        "top": "http://kobo.local/docs/qgis-docs-en/en/docs/user_manual/introduction/qgis_configuration.html#python-settings",
+        "top_lang": "en",
+        "top_similarity": 0.48708099126815796
+      },
+      "fts": {
+        "rank": null,
+        "top": "http://kobo.local/docs/kobo/migrating_api.html#user-endpoints",
+        "top_lang": "en",
+        "top_similarity": null
+      },
+      "hybrid": {
+        "rank": null,
+        "top": "http://kobo.local/docs/qgis-docs-en/en/docs/user_manual/processing/scripts.html",
+        "top_lang": "en",
+        "top_similarity": 0.4821341037750244
+      },
+      "rerank": {
+        "rank": null,
+        "top": "http://kobo.local/docs/kobo/migrating_api.html#user-endpoints",
+        "top_lang": "en",
+        "top_similarity": 0.3867993950843811
+      },
+      "best_similarity": 0.5056107044219971
+    },
+    {
+      "id": "unanswerable-pt-salesforce",
+      "file": "unanswerable.yaml",
+      "language": "pt",
+      "answerable": false,
+      "vector": {
+        "rank": null,
+        "top": "http://kobo.local/docs/kobo/es/data_analysis.html#exportaciones-sincronicas",
+        "top_lang": "es",
+        "top_similarity": 0.6845335960388184
+      },
+      "fts": {
+        "rank": null,
+        "top": "http://kobo.local/docs/kobo/es/kobotoolbox_monday_integration.html",
+        "top_lang": "es",
+        "top_similarity": null
+      },
+      "hybrid": {
+        "rank": null,
+        "top": "http://kobo.local/docs/kobo/es/kobotoolbox_monday_integration.html",
+        "top_lang": "es",
+        "top_similarity": 0.6653040647506714
+      },
+      "rerank": {
+        "rank": null,
+        "top": "http://kobo.local/docs/kobo/es/kobotoolbox_monday_integration.html",
+        "top_lang": "es",
+        "top_similarity": 0.6653040647506714
+      },
+      "best_similarity": 0.6899123191833496
+    }
+  ],
+  "search_ms": 1942
+}
