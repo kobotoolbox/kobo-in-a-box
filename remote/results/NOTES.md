@@ -269,3 +269,38 @@ fresh Ubuntu 24.04 droplet, offline from the start but for the VPC, took it with
   KPI restarted), then green by itself.
 
 Not run: a restore onto a **replacement** box, and `update.sh` bringing the kff image.
+
+## 2026-11-05: OpenCode's permission rules on the Kobo tools (PRODUCT-247)
+
+W4's runner used `opencode run --auto`, which approves every "ask", so it never checked
+that writes wait for a person. `agents/w4-permissions.py` on the CPU rig: OpenCode 1.19.5
+(`opencode serve`) on a stand-in model (an OpenAI-compatible server in the script) that
+asks for exactly the tool under test, with the box's real `opencode.json`; the script
+watches `GET /permission`, replies through `POST /permission/<id>/reply`, and reads each
+call's outcome from the session (after a rejection OpenCode ends the turn, so the model
+never sees it). Placeholder arguments name no real project, so nothing could change even
+if a call ran.
+
+First run, two config bugs:
+- **Case notes added without asking.** OpenCode names MCP tools `<server>_<tool>`: the note
+  tool is `cases_cases_add_note`, so `"cases_add_note": "ask"` matched nothing and
+  `"cases_*": "allow"` let it run. Rule now `cases_*add_note`.
+- **`kobo_delete_dashboard` offered.** The `tools` map (`false`) doesn't hide MCP tools in
+  1.19.5; submission and project deletes were absent only because kobo-mcp's profile leaves
+  them out, the dashboards profile has the dashboard delete. Now `"kobo_delete_*": "deny"`:
+  OpenCode then doesn't offer it at all. The `tools` map is gone.
+
+Final run (`w4-permissions-20261105-090019.json`, PASS): 57 Kobo tools and 4 case tools
+offered; every one of the 27 that change data asked first and was refused after "reject"
+(add_dashboard_source, add_dashboard_table, add_transcript, archive_evidence,
+archive_project, clone_project, create_dashboard, create_export, create_submissions,
+deploy_form, duplicate_submission, edit_submissions, fetch_dashboard_boundaries,
+generate_dashboard_layout, publish_narrative, put_dashboard_table, refresh_dashboard,
+remove_dashboard_source, revert_dashboard, save_evidence, set_dashboard_settings,
+set_table_columns, set_validation_status, update_dashboard, upload_form_media,
+withdraw_narrative, cases_cases_add_note); reads (whoami, list_projects) ran without
+asking; no delete tool offered; `opencode.json`'s read-only list matches kobo-mcp's
+`readOnlyHint`; `set_validation_status` on a real submission: rejected, unchanged; approved
+once, approved → on hold (set back afterwards). Not done: the same with a real agent model
+(the CPU rig's batch model has a 16k context, OpenCode's prompt with the tools is ~21k): on
+the GPU rig.

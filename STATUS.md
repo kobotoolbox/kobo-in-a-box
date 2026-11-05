@@ -50,9 +50,10 @@ are in [PLAN.md](PLAN.md); per-run results are in [remote/results/NOTES.md](remo
 1. **W5 hardware:** buy the Strix Halo 128 GB dev unit and re-run the same tests on it
    (`gpu-tiers.sh` equivalents, `w4-run.py`), at full power and capped. This decides the
    kit; everything else so far is a cloud stand-in.
-2. **W4 follow-ups:** confirm OpenCode's `ask` rules really apply to the Kobo write tools
-   (the runner's `--auto` approves asks, so W4 didn't test it; check OpenCode's permission
-   log), shorter agent prompts (fewer built-in tools, smaller profiles), guidance about each
+2. **W4 follow-ups:** ~~confirm OpenCode's `ask` rules apply to the Kobo write tools~~: done
+   2026-11-05 (`agents/w4-permissions.py`: all 27 write tools ask, rejected calls never run,
+   deletes refused; fixed the case-note rule and deletes as `deny`; a real-model rerun on the
+   GPU rig still to do). Left: shorter agent prompts (fewer built-in tools, smaller profiles), guidance about each
    form (the enumerator-question mistakes), multi-user sign-in through kobo-mcp's OAuth,
    OpenWork, and a per-process DNS check offline.
 3. **W9:** done on the rig (2026-11-03, `remote/dash/`); left: a real basemap once the

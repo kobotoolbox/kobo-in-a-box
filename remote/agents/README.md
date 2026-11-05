@@ -7,9 +7,9 @@ without asking.
 | Setting | What it does |
 |---|---|
 | `mcp.kobo` | The box's kobo-mcp (`../dash/`) at `http://mcp.kobo.local/mcp`, through the edge, in header mode (OAuth for MCP clients needs https; PLAN.md §3h) |
-| `mcp.cases` | Case management's tools (`espocrm/cases_mcp.py`), added by `agents.sh` when the box runs it: reads allowed, `cases_add_note` asks; no contact details |
-| `tools`: `kobo_delete_*` → `false` | The model never sees the delete tools. Kobo has no trash |
+| `mcp.cases` | Case management's tools (`espocrm/cases_mcp.py`), added by `agents.sh` when the box runs it: reads allowed, adding a note asks; no contact details. OpenCode names them `cases_<tool>`, so the note tool is `cases_cases_add_note` (rule `cases_*add_note`) |
 | `permission`: `kobo_*` → `ask`, then the 36 read-only tools → `allow` | Reads run freely; anything that changes Kobo (deploying, editing submissions, sharing, dashboards…) asks first. The last matching rule wins, so the catch-all comes first |
+| `permission`: `kobo_delete_*` → `deny` | Deletes are refused outright, and OpenCode then doesn't offer them to the model. Kobo has no trash. (A `tools` map with `false` does **not** hide MCP tools in OpenCode 1.19.5: `kobo_delete_dashboard` was still offered) |
 | `webfetch`, `websearch` → `deny` | The box is offline; this avoids slow timeouts |
 | `autoupdate: false` | No update checks against the internet |
 
@@ -24,10 +24,24 @@ DASH_KOBO_HOSTS=kf.kobo.local        # if dashboards run on the box
 # Leave RELAY_KEYS / RESEND_API_KEY unset: email needs the internet
 ```
 
-**Unverified (check in W4 on the rig):** OpenCode's docs show `permission` keys as tool
-names with wildcards, but only give examples for built-in tools. That the `kobo_*` rules
-apply to MCP tools has to be tested. The `tools` map is documented for MCP tools, and
-`TOOL_PROFILES` without `deletes` removes the delete tools on the server anyway.
+**Checked** (`w4-permissions.py`, 2026-11-05, OpenCode 1.19.5): the `permission` rules
+apply to MCP tools. A stand-in model asked OpenCode to call each tool in turn, and the
+script watched OpenCode's API: all 27 tools that change data (26 Kobo, plus adding a case
+note) raised a permission request before running, and after "reject" none ran; reads ran
+without asking; the delete tools weren't offered; an approved `set_validation_status`
+changed Kobo, a rejected one didn't. The same run found two config bugs, fixed: the case
+note rule never matched (`cases_add_note` vs `cases_cases_add_note`), so notes were added
+without asking, and the `tools` map didn't hide `kobo_delete_dashboard` (the dashboards
+profile has it). Rerun the check after changing OpenCode's version or this file:
+
+```bash
+printf 'AGENT_LLM_URL=http://mcp.kobo.local:8099/v1\n' > agents.local.env && ./agents.sh up
+python3 -I w4-permissions.py       # writes ../results/w4-permissions-<time>.json
+rm agents.local.env && ./agents.sh up
+```
+
+`TOOL_PROFILES` without `deletes` also removes the submission and project deletes on the
+server, so they hold even with another client config.
 
 The read-only list comes from the tools' `readOnlyHint` annotations in kobo-mcp. Regenerate
 it when kobo-mcp gains tools.

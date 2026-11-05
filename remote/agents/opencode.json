@@ -9,11 +9,6 @@
       "oauth": {}
     }
   },
-  "tools": {
-    "kobo_delete_submissions": false,
-    "kobo_delete_project": false,
-    "kobo_delete_dashboard": false
-  },
   "permission": {
     "kobo_*": "ask",
     "kobo_compare_form_versions": "allow",
@@ -52,8 +47,9 @@
     "kobo_preview_form": "allow",
     "kobo_summarize_submissions": "allow",
     "kobo_whoami": "allow",
+    "kobo_delete_*": "deny",
     "cases_*": "allow",
-    "cases_add_note": "ask",
+    "cases_*add_note": "ask",
     "webfetch": "deny",
     "websearch": "deny"
   }

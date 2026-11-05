@@ -12,6 +12,8 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 set -a; source agents.env; set +a
+# This machine's overrides, e.g. AGENT_LLM_URL for w4-permissions.py's stand-in model (never packed)
+if [[ -f agents.local.env ]]; then set -a; source agents.local.env; set +a; fi
 KOBO_TOKEN_FILE=${KOBO_TOKEN_FILE:-/root/e2e-token}
 
 compose() { docker compose -p kobo-agents -f docker-compose.agents.yml "$@"; }

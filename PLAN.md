@@ -769,7 +769,7 @@ Done 2026-10-28 on kobo-mcp branch `w3-offline-box`; details in [STATUS.md](STAT
 - [x] Flag to allow `http://` for `EXTRA_KOBO_HOSTS` only (`HTTP_KOBO_HOSTS`)
 - [x] Offline config profile: email notifications off; dashboards on and pointed at the box (`DASH_KOBO_HOSTS`; kobo-dash's half still to do, W9)
 - [x] Tool profiles: register only a named set of tools, to shorten the prompt for small models (`TOOL_PROFILES`)
-- [x] Recommended OpenCode `permission` config: deny the delete tools, ask before writes (`remote/agents/opencode.json`; MCP permission keys to verify in W4)
+- [x] Recommended OpenCode `permission` config: deny the delete tools, ask before writes (`remote/agents/opencode.json`); checked for every tool by `agents/w4-permissions.py` (2026-11-05: 27 write tools ask, rejected calls never run; fixed the case-note rule and deletes as `deny`, since the `tools` map doesn't hide MCP tools)
 
 ### W4. Agents on the rig (~1–2 weeks, after W1 + W3)
 - [x] `agents` compose profile: OpenCode web (password, `autoupdate: false`, explicit provider and model), kobo-mcp, analysis sandbox image (`remote/agents/`, 2026-10-29)
@@ -902,7 +902,7 @@ Started and built 2026-11-04 (in W12 until then); Linear milestone "W14 · Synci
 | Transcription and translation quality in pilot languages | Evaluate before buying: about 50 clips per language scored against human transcripts; fine-tune or pick a community model where needed |
 | Whisper invents text from silence or noise, which looks like a real transcript | VAD before Whisper, filler-phrase filter, low-confidence segments flagged; silent and noisy clips in the eval set; transcripts are checked before agents act on them |
 | Smaller models break qual analysis's strict answer format | Measured: Gemma 4 E4B and 26B pass 3/3 with thinking off (chat template), fail every case with `--reasoning-budget 0`. The smoke test checks each model |
-| Agents make mistakes with write tools | Delete tools hidden and denied (both models refused every delete in W4), write tools ask first, read-only Kobo accounts by default. Gemma 26B looped on a write (211 calls, nothing done): use gpt-oss-120b where agents may change data |
+| Agents make mistakes with write tools | Delete tools denied (not even offered) and left out by kobo-mcp's profile (both models refused every delete in W4), write tools ask first (checked for all 27, `w4-permissions.py`), read-only Kobo accounts by default. Gemma 26B looped on a write (211 calls, nothing done): use gpt-oss-120b where agents may change data |
 | A free-text answer in a submission carries instructions to the agent | Submission values marked as data in tool output; deletes denied, writes ask; injection submissions in the W4 set |
 | Agents feel slow on Strix Halo with long prompts (prompt processing ~5× slower than a DGX Spark) | Prompt caching; short tool profiles; compact tool outputs; measure in W5 |
 | Agents misread a form (e.g. `_submitted_by` for the enumerator question, submission vs interview date) | Guidance about the form (a skill or instructions built from `describe_form`); re-run the W4 set per deployment |
