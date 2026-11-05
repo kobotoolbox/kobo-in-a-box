@@ -58,7 +58,7 @@ are in [PLAN.md](PLAN.md); per-run results are in [remote/results/NOTES.md](remo
 3. **W9:** done on the rig (2026-11-03, `remote/dash/`); left: a real basemap once the
    pilot countries are chosen, scoring the 11 dashboard tasks on the GPU rig, offline
    `desk_review` (W10), proposing kobo-mcp's `w9-box` settings upstream.
-3a. **Sync (kobo-transfer):** built into the box and working on kits installed from a pack,
+3a. **W14 sync (kobo-transfer):** built into the box and working on kits installed from a pack,
    offline (2026-11-04): every box has a `sync` account (key on the card) and answers to
    `kf.<name>.local`; a field kit paired once with `box/sync.py hub <address> -` syncs to
    its hub by itself every 5 minutes when connected, with attachments, statuses, AI results

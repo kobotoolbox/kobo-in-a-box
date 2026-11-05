@@ -9,6 +9,7 @@ Goal: one field device that runs KoboToolbox fully offline, plus:
 5. **Case management (optional)**: EspoCRM at `cases.kobo.local`, with a bridge that opens a case for each Kobo submission that needs follow-up (3j).
 6. **A box non-technical teams can run**: shipped preinstalled, set up by itself on first power-on, backed up by plugging in a stick (3k).
 7. **Paper forms**: kobo-field-forms at `paper.kobo.local` prints sheets from a deployed form, reads scanned or photographed sheets with the box's models, and submits them to the box's Kobo (3l).
+8. **Syncing between kits**: field kits send their data to a hub kit at base by themselves, with photos, edits and AI results, and the hub on to a KoboToolbox server when online (3m).
 
 Status (2026-10-22): scoping done. DigitalOcean test scripts are written (see `README.md`) but nothing has been run yet. No droplets or other cloud resources exist.
 
@@ -660,10 +661,10 @@ receive a kit, run it for months and survive losing it. Design and scripts in
   installed one, given the old box's passphrase (on the label card, kept apart from the box).
 - **One status page** (`kobo.local/status`, `box/status.py`): services, disk, last backup, AI
   models, battery, in plain words. The only page the focal point needs to check.
-- **Later:** sync to a cloud Kobo with kobo-transfer whenever there's a connection (the
-  concept note's "Connected" mode), a clean shutdown on low battery, updating a kit in place
+- **Later:** a clean shutdown on low battery, updating a kit in place
   from a newer content pack. That update must be **signed** (e.g. minisign), not just
-  checksummed, so a box can verify offline that a pack came from Kobo.
+  checksummed, so a box can verify offline that a pack came from Kobo. Syncing between kits
+  and to a cloud Kobo is its own workstream now (3m, W14).
 
 ### 3l. Paper forms on the box (kobo-field-forms, W13)
 
@@ -700,6 +701,27 @@ Running it:
   as such; measure on the W5 unit.
 - **Scripts:** Latin and Arabic today. Each pilot language in another script needs a
   registry entry, fonts and test data in kff before its sheets can be printed.
+
+### 3m. Syncing between kits (W14)
+
+The concept note's "Networked" and "Connected" modes: a kit per site, the same forms on
+each, their data together on a hub kit at base, and the hub (or a kit) on to a KoboToolbox
+server when there's a connection. One direction (kits → hub → online), nothing deleted
+anywhere, each kit keeping its full copy. User guide: `site/sync.html`; box:
+`remote/box/README.md` ("Syncing to a hub"); tests: `remote/sync/`.
+
+- **kobo-transfer**, Kobo's tool for copying a project between servers, does the copying:
+  submissions by their IDs (so repeats send nothing), attachments, validation statuses,
+  analysis data. Its analysis sync was broken against current KPI; fixed, with edits sent
+  as edits and unattended runs, on branch `supplement-api` (PR kobotoolbox/kobo-transfer#60).
+- **AI results as they are.** A KPI supplement import (`local-nlp-backend`, in the
+  backport) stores another server's analysis versions unchanged, so AI suggestions arrive
+  at the hub still waiting for review. Servers without it (KoboToolbox's, today) get
+  reviewed results only, as manual entries, never an AI result passed off as a person's.
+- **On the box** (`box/sync.py`): every box has a `sync` account that sees only projects
+  shared with it, and answers to `kf.<name>.local`; a field kit paired once with its hub
+  syncs every 5 minutes when the hub answers, and says so on the status page. A submission
+  edited on both kits is left for a person (`sync.py resolve`).
 
 ## 4. Testing on DigitalOcean (extends README)
 
@@ -848,11 +870,7 @@ Started 2026-10-30; scripts in `remote/box/`, details in [STATUS.md](STATUS.md).
 - [ ] Autoinstall USB with LUKS + TPM (W5 box)
 - [ ] Clean shutdown on low battery; OpenCode session history in backups (once W4 settles where it lives)
 - [x] In-place update from a newer content pack: signed packs, `update.sh`, by itself from a plugged-in stick (tested 37c → 37d)
-- [x] kobo-transfer sync, kit → hub, tested on three rigs offline (2026-11-04, `remote/sync/`, `site/sync.html`): kobo-transfer branch `supplement-api` (AI results through the advanced-features API, features merged across kits, statuses and analysis synced with no new submissions, error exit) and KPI's supplement import in the backport (`supplement_import.py`, 10 tests; the whole subsequences suite passes)
-- [x] Sync built into the box (2026-11-04): kobo-transfer in the content pack, `box/sync.py` (pairing, timer every 5 min when the hub answers, `resolve`), the status-page row, per-box names (`kf.<name>.local` through the edge), the `sync` account at first boot with its key on the card, pairing in backups; edits sent as edits; tested on three kits installed from a pack, offline
-- [ ] Sync to a KoboToolbox server online by itself (by hand works; needs an account); pairing on a bare cable (mDNS / link-local, W5 box); `update.sh` giving an older box its `sync` account
-- [x] kobo-transfer upstream: PR kobotoolbox/kobo-transfer#60 (2026-11-04, open), with the host-aware URL rule
-- [ ] Propose KPI's supplement import upstream, with the `validate_submission_supplement` bug (it checks nothing below the question)
+- Syncing between kits: its own workstream, W14
 
 ### W13. Paper forms on the box (~1–2 weeks; see 3l)
 Scheduled 2026-11-03; kff's own milestone 10. Built and tested on a second CPU rig the same day (`remote/paper/`, kff branch `milestone-10`).
@@ -864,6 +882,17 @@ Scheduled 2026-11-03; kff's own milestone 10. Built and tested on a second CPU r
 - [x] kff guide links to the library's copies when on the box (`KFF_HELP_URL`)
 - [ ] On the W5 unit: real paper (kff milestone 9) printed, filled in by hand, scanned and photographed on a field phone over the hotspot; time per sheet while KPI's batch jobs run
 - [ ] Phase 2: sign in with the user's own Kobo account; scripts for the pilot languages
+
+### W14. Syncing between kits (see 3m)
+Started and built 2026-11-04 (in W12 until then); Linear milestone "W14 · Syncing between kits".
+- [x] kobo-transfer sync, kit → hub, tested on three rigs offline (`remote/sync/`): kobo-transfer branch `supplement-api` (AI results through the advanced-features API, features merged across kits, statuses and analysis synced with no new submissions, error exit) and KPI's supplement import in the backport (`supplement_import.py`, 10 tests; the whole subsequences suite passes)
+- [x] Sync built into the box: kobo-transfer in the content pack, `box/sync.py` (pairing, timer every 5 min when the hub answers, `resolve`), the status-page row, per-box names (`kf.<name>.local` through the edge), the `sync` account at first boot with its key on the card, pairing in backups; edits sent as edits; tested on three kits installed from a pack, offline
+- [x] User guide `site/sync.html` with the federation diagram; homepage section; concept note in line with the tests
+- [ ] kobo-transfer upstream: PR kobotoolbox/kobo-transfer#60 (open, with the host-aware URL rule); a run against a KoboToolbox server account before it merges
+- [ ] Propose KPI's supplement import upstream, with the `validate_submission_supplement` bug (it checks nothing below the question)
+- [ ] Sync to a KoboToolbox server online by itself (by hand works; needs an account)
+- [ ] Pairing on a bare cable: mDNS / link-local (W5 box)
+- [ ] `update.sh` giving an older box its `sync` account, run for real
 
 ## 6. Risks
 
