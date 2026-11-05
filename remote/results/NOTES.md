@@ -290,6 +290,10 @@ First run, two config bugs:
   them out, the dashboards profile has the dashboard delete. Now `"kobo_delete_*": "deny"`:
   OpenCode then doesn't offer it at all. The `tools` map is gone.
 
+Runs: `-085620.json` (before the fixes: the dashboard delete offered, and the approval
+check's own bug, no `submission_ids`), `-085925.json` (fixed; only the drift check too
+strict about a denied delete), `-090019.json` (final).
+
 Final run (`w4-permissions-20261105-090019.json`, PASS): 57 Kobo tools and 4 case tools
 offered; every one of the 27 that change data asked first and was refused after "reject"
 (add_dashboard_source, add_dashboard_table, add_transcript, archive_evidence,

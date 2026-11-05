@@ -1,0 +1,368 @@
+{
+ "pass": false,
+ "checks": {
+  "opencode.json matches kobo-mcp readOnlyHint": [],
+  "delete tools not offered": [
+   "kobo_delete_dashboard"
+  ],
+  "every write tool asks first": [],
+  "a rejected call never runs": [],
+  "reads run without asking": [],
+  "approved once: Kobo changes; rejected: it does not": [
+   "once"
+  ]
+ },
+ "offered": [
+  "bash",
+  "cases_cases_add_note",
+  "cases_cases_find",
+  "cases_cases_get",
+  "cases_cases_summary",
+  "edit",
+  "glob",
+  "grep",
+  "kobo_add_dashboard_source",
+  "kobo_add_dashboard_table",
+  "kobo_add_transcript",
+  "kobo_archive_evidence",
+  "kobo_archive_project",
+  "kobo_clone_project",
+  "kobo_compare_form_versions",
+  "kobo_convert_xlsform",
+  "kobo_create_dashboard",
+  "kobo_create_export",
+  "kobo_create_submissions",
+  "kobo_delete_dashboard",
+  "kobo_deploy_form",
+  "kobo_describe_dashboard_sources",
+  "kobo_describe_form",
+  "kobo_duplicate_submission",
+  "kobo_edit_submissions",
+  "kobo_export_data",
+  "kobo_fetch_dashboard_boundaries",
+  "kobo_find_duplicates",
+  "kobo_generate_dashboard_layout",
+  "kobo_get_attachment",
+  "kobo_get_dashboard",
+  "kobo_get_dashboard_data",
+  "kobo_get_enketo_link",
+  "kobo_get_form_content",
+  "kobo_get_narrative_context",
+  "kobo_get_project",
+  "kobo_get_project_activity",
+  "kobo_get_submission",
+  "kobo_get_submission_count",
+  "kobo_get_submission_stats",
+  "kobo_get_submissions",
+  "kobo_get_xlsform",
+  "kobo_list_attachments",
+  "kobo_list_dashboard_revisions",
+  "kobo_list_dashboard_tables",
+  "kobo_list_dashboards",
+  "kobo_list_evidence",
+  "kobo_list_exports",
+  "kobo_list_form_media",
+  "kobo_list_projects",
+  "kobo_preview_dataset",
+  "kobo_preview_form",
+  "kobo_publish_narrative",
+  "kobo_put_dashboard_table",
+  "kobo_refresh_dashboard",
+  "kobo_remove_dashboard_source",
+  "kobo_revert_dashboard",
+  "kobo_save_evidence",
+  "kobo_set_dashboard_settings",
+  "kobo_set_table_columns",
+  "kobo_set_validation_status",
+  "kobo_summarize_submissions",
+  "kobo_update_dashboard",
+  "kobo_upload_form_media",
+  "kobo_whoami",
+  "kobo_withdraw_narrative",
+  "list_mcp_resource_templates",
+  "list_mcp_resources",
+  "question",
+  "read",
+  "read_mcp_resource",
+  "skill",
+  "task",
+  "todowrite",
+  "write"
+ ],
+ "calls": [
+  {
+   "tool": "kobo_add_dashboard_source",
+   "expected": "ask",
+   "asked": true,
+   "reply": "reject",
+   "permission": "kobo_add_dashboard_source",
+   "status": "error",
+   "result": "The user rejected permission to use this specific tool call."
+  },
+  {
+   "tool": "kobo_add_dashboard_table",
+   "expected": "ask",
+   "asked": true,
+   "reply": "reject",
+   "permission": "kobo_add_dashboard_table",
+   "status": "error",
+   "result": "The user rejected permission to use this specific tool call."
+  },
+  {
+   "tool": "kobo_add_transcript",
+   "expected": "ask",
+   "asked": true,
+   "reply": "reject",
+   "permission": "kobo_add_transcript",
+   "status": "error",
+   "result": "The user rejected permission to use this specific tool call."
+  },
+  {
+   "tool": "kobo_archive_evidence",
+   "expected": "ask",
+   "asked": true,
+   "reply": "reject",
+   "permission": "kobo_archive_evidence",
+   "status": "error",
+   "result": "The user rejected permission to use this specific tool call."
+  },
+  {
+   "tool": "kobo_archive_project",
+   "expected": "ask",
+   "asked": true,
+   "reply": "reject",
+   "permission": "kobo_archive_project",
+   "status": "error",
+   "result": "The user rejected permission to use this specific tool call."
+  },
+  {
+   "tool": "kobo_clone_project",
+   "expected": "ask",
+   "asked": true,
+   "reply": "reject",
+   "permission": "kobo_clone_project",
+   "status": "error",
+   "result": "The user rejected permission to use this specific tool call."
+  },
+  {
+   "tool": "kobo_create_dashboard",
+   "expected": "ask",
+   "asked": true,
+   "reply": "reject",
+   "permission": "kobo_create_dashboard",
+   "status": "error",
+   "result": "The user rejected permission to use this specific tool call."
+  },
+  {
+   "tool": "kobo_create_export",
+   "expected": "ask",
+   "asked": true,
+   "reply": "reject",
+   "permission": "kobo_create_export",
+   "status": "error",
+   "result": "The user rejected permission to use this specific tool call."
+  },
+  {
+   "tool": "kobo_create_submissions",
+   "expected": "ask",
+   "asked": true,
+   "reply": "reject",
+   "permission": "kobo_create_submissions",
+   "status": "error",
+   "result": "The user rejected permission to use this specific tool call."
+  },
+  {
+   "tool": "kobo_deploy_form",
+   "expected": "ask",
+   "asked": true,
+   "reply": "reject",
+   "permission": "kobo_deploy_form",
+   "status": "error",
+   "result": "The user rejected permission to use this specific tool call."
+  },
+  {
+   "tool": "kobo_duplicate_submission",
+   "expected": "ask",
+   "asked": true,
+   "reply": "reject",
+   "permission": "kobo_duplicate_submission",
+   "status": "error",
+   "result": "The user rejected permission to use this specific tool call."
+  },
+  {
+   "tool": "kobo_edit_submissions",
+   "expected": "ask",
+   "asked": true,
+   "reply": "reject",
+   "permission": "kobo_edit_submissions",
+   "status": "error",
+   "result": "The user rejected permission to use this specific tool call."
+  },
+  {
+   "tool": "kobo_fetch_dashboard_boundaries",
+   "expected": "ask",
+   "asked": true,
+   "reply": "reject",
+   "permission": "kobo_fetch_dashboard_boundaries",
+   "status": "error",
+   "result": "The user rejected permission to use this specific tool call."
+  },
+  {
+   "tool": "kobo_generate_dashboard_layout",
+   "expected": "ask",
+   "asked": true,
+   "reply": "reject",
+   "permission": "kobo_generate_dashboard_layout",
+   "status": "error",
+   "result": "The user rejected permission to use this specific tool call."
+  },
+  {
+   "tool": "kobo_publish_narrative",
+   "expected": "ask",
+   "asked": true,
+   "reply": "reject",
+   "permission": "kobo_publish_narrative",
+   "status": "error",
+   "result": "The user rejected permission to use this specific tool call."
+  },
+  {
+   "tool": "kobo_put_dashboard_table",
+   "expected": "ask",
+   "asked": true,
+   "reply": "reject",
+   "permission": "kobo_put_dashboard_table",
+   "status": "error",
+   "result": "The user rejected permission to use this specific tool call."
+  },
+  {
+   "tool": "kobo_refresh_dashboard",
+   "expected": "ask",
+   "asked": true,
+   "reply": "reject",
+   "permission": "kobo_refresh_dashboard",
+   "status": "error",
+   "result": "The user rejected permission to use this specific tool call."
+  },
+  {
+   "tool": "kobo_remove_dashboard_source",
+   "expected": "ask",
+   "asked": true,
+   "reply": "reject",
+   "permission": "kobo_remove_dashboard_source",
+   "status": "error",
+   "result": "The user rejected permission to use this specific tool call."
+  },
+  {
+   "tool": "kobo_revert_dashboard",
+   "expected": "ask",
+   "asked": true,
+   "reply": "reject",
+   "permission": "kobo_revert_dashboard",
+   "status": "error",
+   "result": "The user rejected permission to use this specific tool call."
+  },
+  {
+   "tool": "kobo_save_evidence",
+   "expected": "ask",
+   "asked": true,
+   "reply": "reject",
+   "permission": "kobo_save_evidence",
+   "status": "error",
+   "result": "The user rejected permission to use this specific tool call."
+  },
+  {
+   "tool": "kobo_set_dashboard_settings",
+   "expected": "ask",
+   "asked": true,
+   "reply": "reject",
+   "permission": "kobo_set_dashboard_settings",
+   "status": "error",
+   "result": "The user rejected permission to use this specific tool call."
+  },
+  {
+   "tool": "kobo_set_table_columns",
+   "expected": "ask",
+   "asked": true,
+   "reply": "reject",
+   "permission": "kobo_set_table_columns",
+   "status": "error",
+   "result": "The user rejected permission to use this specific tool call."
+  },
+  {
+   "tool": "kobo_set_validation_status",
+   "expected": "ask",
+   "asked": true,
+   "reply": "reject",
+   "permission": "kobo_set_validation_status",
+   "status": "error",
+   "result": "The user rejected permission to use this specific tool call."
+  },
+  {
+   "tool": "kobo_update_dashboard",
+   "expected": "ask",
+   "asked": true,
+   "reply": "reject",
+   "permission": "kobo_update_dashboard",
+   "status": "error",
+   "result": "The user rejected permission to use this specific tool call."
+  },
+  {
+   "tool": "kobo_upload_form_media",
+   "expected": "ask",
+   "asked": true,
+   "reply": "reject",
+   "permission": "kobo_upload_form_media",
+   "status": "error",
+   "result": "The user rejected permission to use this specific tool call."
+  },
+  {
+   "tool": "kobo_withdraw_narrative",
+   "expected": "ask",
+   "asked": true,
+   "reply": "reject",
+   "permission": "kobo_withdraw_narrative",
+   "status": "error",
+   "result": "The user rejected permission to use this specific tool call."
+  },
+  {
+   "tool": "kobo_whoami",
+   "expected": "allow",
+   "asked": false,
+   "status": "completed",
+   "result": "{\n  \"username\": \"e2e\",\n  \"server\": \"http://kf.kobo.local\",\n  \"accounts\": [\n    {\n      \"account\": \"e2e@kf.kobo.local\",\n      \"username\": \"e2e\",\n      \"server\": \"http://kf.kobo.local\"\n    }\n  ]\n}"
+  },
+  {
+   "tool": "kobo_list_projects",
+   "expected": "allow",
+   "asked": false,
+   "status": "completed",
+   "result": "{\n  \"count\": 25,\n  \"start\": 0,\n  \"next_start\": null,\n  \"projects\": [\n    {\n      \"uid\": \"a2oDPEpTjYyCcLaWryqnWF\",\n      \"name\": \"kobo-box sync test\",\n      \"deployment_status\": \"deployed\",\n      \"date"
+  },
+  {
+   "tool": "kobo_set_validation_status",
+   "expected": "ask, reject",
+   "asked": true,
+   "reply": "reject",
+   "before": "validation_status_approved",
+   "after": "validation_status_approved",
+   "args": {
+    "uid": "a2oDPEpTjYyCcLaWryqnWF",
+    "status": "on_hold"
+   },
+   "result": "The user rejected permission to use this specific tool call."
+  },
+  {
+   "tool": "kobo_set_validation_status",
+   "expected": "ask, once",
+   "asked": true,
+   "reply": "once",
+   "before": "validation_status_approved",
+   "after": "validation_status_approved",
+   "args": {
+    "uid": "a2oDPEpTjYyCcLaWryqnWF",
+    "status": "on_hold"
+   },
+   "result": "Error executing tool set_validation_status: Pass exactly one of `submission_ids` or `query`."
+  }
+ ]
+}
