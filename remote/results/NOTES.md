@@ -334,3 +334,18 @@ from today's (`20261105-0946`). Fresh Ubuntu 24.04 droplets, offline but for the
 Knowledge base: `knowledge.sh build` (image, bge-m3 Q8_0 0.6 GB), `index` of the Kobo guide
 (the library's HTML, en/es/fr, ~470 pages): ~8 s a page on the 8-vCPU rig (~1 section/s
 with 8 threads, while packs were building), so about an hour. Eval to follow.
+
+Later the same day, with the fixed pack (`20261105-1007`, built without the half-made index):
+
+- **Replacement box** (`kobo-6tmb`, a new droplet, offline but for the VPC): factory
+  install + first boot 13 min, all green. The old box's drive image moved to it over the
+  VPC (as a drive would be carried), and its passphrase from the old box (as off its card):
+  plugging the drive in backed up the new box first (its own repository on the same
+  drive), then `backup.sh restore /media/kobobackup/kobo-box-kobo-9dkr` with
+  `PASS_FILE`: 2 min 19 s. The 5 submissions checked out, the paper-forms form fetched on
+  the old box was in kff (signing in with the new box's own password, still 600),
+  dashboards and case management back, the status page "Everything is working".
+- **Pairing after the update:** the updated old box (as a field kit) paired with the new
+  one (as its hub) with its catch-up `sync` account: `sync.py hub 10.110.0.4 -` with the
+  hub's key read over the VPC; 2 new submissions seeded, one sync, `e2e-sync.py check`
+  against the hub: 7 of 7, PASS.
