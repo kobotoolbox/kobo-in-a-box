@@ -233,3 +233,39 @@ The rig was unpaired (`sync.py hub --forget`) and parked with this kobo-transfer
 `sync` account; the hub deleted. `park.sh` brought this run's files back:
 `sync-check-20261104-134037.json` (the pairing sync), `-134517.json` (the timer sync) and
 the kit's `sync-manifest-A.json`.
+
+## 2026-11-05: paper forms on a box installed from a pack (W13)
+
+The rig (`kobo-box-ai`, restored) had no kff image: W13 was built on a second rig, so the
+packs since had no paper forms. `paper.sh build` from kff `66d4c97` (only `.git` copied),
+`paper.sh up`, `pack.sh build` (31 GB, `kobo-field-forms:66d4c97` in `images/IMAGES`). A
+fresh Ubuntu 24.04 droplet, offline from the start but for the VPC, took it with
+`install.sh --pack … --first-boot-now` (name `kobo-9bxp`).
+
+- First boot's `paper` step: `paper-forms` account and owner-only token, kff up and
+  healthy, landing page link, card section, status "Paper forms: Working".
+- Access: the edge returns 401 without the password or with a wrong one, 200 with it.
+  `POST /fetch` of a form not shared with `paper-forms`: "Not found … check that you can
+  see it"; shared with View form + Add submissions (as Kobo's sharing dialog does): fetched.
+  (Shared through the API with `add_submissions` only, KPI doesn't add `view_asset`: the
+  form stays invisible. The dialog always includes it.)
+- `paper.sh e2e --sheets 2`, offline, as `paper-forms`: first **failed**, "The vision model
+  returned HTTP 500" (llama-server: "image input is not supported … provide the mmproj").
+  `detect-tier.py` wrote `LLM_MMPROJ=` for every tier, so first boot started the batch
+  model without its vision projector; the status page still said "Working". Fixed: the
+  projector whenever its file is on the box, and the status page reads `/props` and goes
+  amber when vision is off. After `detect-tier.py` + `ai.sh up auto`: **e2e passed** in
+  266 s: read 92.9 / 95.2 / 97.6 / 97.6% of 42 fields in the four profiles, wrong and
+  unflagged 0.0%, resubmission a 202 duplicate.
+- `/root/paper.secrets` was 644 (`paper.sh`'s umask didn't reach the redirect): fixed, 600.
+- Backup: a file-backed drive labelled `KOBOBACKUP`, attached with `losetup`, started the
+  drive backup by itself. exFAT **failed** ("couldn't be opened"): DigitalOcean's kernel has
+  no exfat module (no linux-modules-extra). The same drive as ext4: full backup in under a
+  minute, drive unmounted, "You can unplug the drive". Real boxes on Ubuntu's generic
+  kernel have exfat; the autoinstall (W12) must keep it.
+- Restore: paper forms stopped, their store wiped and started empty (the fetched form
+  gone), `backup.sh restore /media/kobobackup`: 70 s, the form back, the token refreshed,
+  the secrets still 600. Case management went amber for ~2 min (the bridge got 502s while
+  KPI restarted), then green by itself.
+
+Not run: a restore onto a **replacement** box, and `update.sh` bringing the kff image.

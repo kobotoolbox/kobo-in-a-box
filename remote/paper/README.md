@@ -22,8 +22,12 @@ box's Kobo. Nothing leaves the box. PLAN 3l.
   request (`KFF_WEB_PASSWORD`, any username), generated per box into `/root/paper.secrets`
   and printed on the label card. The Kobo token stays in the app; browsers never see it.
 - **Handwriting:** read by the box's batch model (Gemma 4 E4B with its mmproj, `ai.sh`),
-  shared with KPI's translation and qual. Without it, choices and numbers still read and
-  text is flagged for typing in; the status page says so (amber).
+  shared with KPI's translation and qual. The mmproj (`LLM_MMPROJ`) must be loaded:
+  `detect-tier.py` sets it whenever the file is in `/opt/models`. Without the model, or
+  without vision (llama-server's `/props`), choices and numbers still read and text is
+  flagged for typing in; the status page says which (amber).
+- **Sharing:** in Kobo's dialog, "Add submissions" comes with "View form". Through the
+  API, assign `view_asset` too: `add_submissions` alone leaves the form invisible.
 - **Store:** `/var/lib/kobo-box/paper` (forms, printed batches, scans, readings). `backup.sh`
   includes it (the nightly `--no-media` run only the database, like Kobo's media) and puts
   it back on a restore, the account's token too.

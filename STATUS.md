@@ -70,8 +70,11 @@ are in [PLAN.md](PLAN.md); per-run results are in [remote/results/NOTES.md](remo
    a bare cable (W5), `update.sh` on an older box; upstream: kobo-transfer PR
    kobotoolbox/kobo-transfer#60 (open), the KPI import still to propose. User
    guide: `site/sync.html`; box: `remote/box/README.md`; rigs: `remote/sync/README.md`.
-3b. **W13 paper forms:** running on the rig and its e2e passing offline (2026-11-03); left:
-   firstboot, backup/restore and the pack on a fresh box, then real paper on the W5 unit.
+3b. **W13 paper forms:** on a box installed from a pack, offline (2026-11-05): first boot's
+   `paper` step, access (password, only shared forms), kff e2e passing (92.9–97.6% read, 0.0%
+   wrong unflagged), drive backup and restore of its store. Fixed on the way: the batch
+   model's vision projector was off on first-boot boxes (and the status page didn't notice).
+   Left: restore onto a replacement box, `update.sh` with the image, real paper on the W5 unit.
 4. **W2 to finish:** a KPI image from the branch, the pilot languages' tables, and
    proposing the change upstream (talk to the KPI team).
 5. **W10 knowledge base**, and the W12 steps that need the box: hotspot + local DNS,
