@@ -21,6 +21,7 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, '..', 'ai.box.env')
+MODELS_DIR = os.environ.get('MODELS_DIR', '/opt/models')
 
 KOBO_RESERVE_GB = 8      # Kobo stack ~4-6 GB, plus the OS
 MIN_AI_RAM_GB = 16       # below this, run Kobo without AI
@@ -76,7 +77,11 @@ def detect():
     found = f'{ram:.0f} GB RAM, {cores} cores, ' + (
         f'NVIDIA GPU {vram:.0f} GB' if vram else 'AMD GPU' if amd else 'no GPU')
     notes = []
-    env = {'LLM_MODEL': 'gemma-4-E4B-it-Q4_0.gguf', 'LLM_MMPROJ': '',
+    # The batch model's vision projector: paper forms read handwriting through it (W13).
+    # Loaded whenever the box has it (~0.6 GB); without it image requests fail with a 500
+    mmproj = 'mmproj-gemma-4-E4B-it-Q8_0.gguf'
+    env = {'LLM_MODEL': 'gemma-4-E4B-it-Q4_0.gguf',
+           'LLM_MMPROJ': mmproj if os.path.exists(os.path.join(MODELS_DIR, mmproj)) else '',
            'LLM_THREADS': cores, 'WHISPER_THREADS': cores}
 
     if ram < MIN_AI_RAM_GB:

@@ -35,11 +35,13 @@ load_secrets() {
     if [[ ! -s "$PAPER_SECRETS" ]]; then
         # First start on this box: a password in four groups of four, typed off the label
         # card (no 0/O, 1/l/I)
+        # The redirect inside the subshell, so the umask applies to the file (owner-only)
         ( umask 077
           echo "PAPER_PASSWORD=$(python3 -I -c 'import secrets; a = "abcdefghjkmnpqrstuvwxyz23456789"
-print("-".join("".join(secrets.choice(a) for _ in range(4)) for _ in range(4)))')" ) > "$PAPER_SECRETS"
+print("-".join("".join(secrets.choice(a) for _ in range(4)) for _ in range(4)))')" > "$PAPER_SECRETS" )
         echo "generated the web password in $PAPER_SECRETS"
     fi
+    chmod 600 "$PAPER_SECRETS"   # boxes set up before the fix
     set -a; source "$PAPER_SECRETS"; set +a
 }
 

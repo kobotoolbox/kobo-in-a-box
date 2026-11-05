@@ -362,6 +362,16 @@ def paper():
             return check(name, 'warn', 'Working, but handwritten answers are not read: '
                          'people type them in when they check each sheet.',
                          'Restart the box. ' + CALL_SUPPORT)
+        # Up, but started without its vision projector (LLM_MMPROJ): it refuses images
+        status, props = fetch('http://127.0.0.1:8081/props')
+        try:
+            vision = json.loads(props)['modalities']['vision'] if status == 200 else True
+        except (ValueError, KeyError, TypeError):
+            vision = True  # an older llama-server that doesn't say: assume it can
+        if env.get('KFF_VLM_URL') and not vision:
+            return check(name, 'warn', 'Working, but handwritten answers are not read: the AI model '
+                         'was started without its image support. People type them in when they '
+                         'check each sheet.', 'Call support: the AI settings need LLM_MMPROJ.')
         return check(name, 'ok', 'Working.' + watchdog_note(cs))
     if starting():
         return check(name, 'busy', 'Starting up.')
