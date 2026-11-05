@@ -398,3 +398,29 @@ questions and the docs' text crossed it.
 - Screenshots (`site/knowledge-shots.py`, Playwright on the rig, OpenCode's password kept
   there): four sessions in OpenCode's web interface, the cited Spanish guide page at its
   section, the ODK guide in the library; `site/static/knowledge/`.
+
+## 2026-11-05 (late): web sign-in offline for users with unverified emails
+
+Found 2026-10-30: KPI's default `ACCOUNT_EMAIL_VERIFICATION=mandatory` makes allauth send a
+confirmation mail when such a user signs in (or signs up), and with kobo-install's SMTP
+backend and no mail server the request is a 500. API tokens are unaffected, which is why the
+other tests never hit it. The fix, `offline_mail()` in `kobo-setup.py` (no verification, KPI's
+file mail backend, in `kobo-env/envfiles/smtp.txt`), had been on every box since but never
+tested: the restored rig already had it from an earlier `--reconfigure`.
+
+`e2e-signin.sh` (with `e2e-signin.py` in a Playwright image) on the CPU rig, `offline.sh on`
+(PyPI unreachable from the rig), a new user each run, deleted afterwards:
+
+- **Control, kobo-install's stock settings** (smtp backend, verification unset → mandatory;
+  `kpi` container alone recreated): sign-up **500** at `/accounts/signup/`, sign-in **500**
+  at `/accounts/login/`, not signed in either time. The bug as found.
+- **With the fix** (two runs): sign-up lands signed in on `#/projects/home` (`/me/` names
+  the user), no "verify your email" page; signed out; sign-in again, signed in; no 5xx
+  response on any request; in the database the user's `EmailAddress` is `verified=False`;
+  no file in KPI's mail folder. 9/9.
+
+Found on the way: the Playwright image has the browsers but not the Python package, so
+`pip install` at run time (as in `site/kobo-shots.py`) fails offline; the test uses a local
+image with it installed (`kobo-box-test/playwright:1.55.0`, command in `e2e-signin.sh`).
+And KPI's user model is `kobo_auth.User`: `django.contrib.auth.models.User` raises
+"Manager isn't available" in `manage.py shell`.

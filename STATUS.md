@@ -154,15 +154,16 @@ Testing W2 on the CPU droplet (state kept in the snapshot):
   aren't benchmarks.
 - **E2E:** `remote/e2e-nlp.py` covers qual, translation and transcription. Run it as
   `e2e`, a regular user, password in `/root/e2e-user.pw`.
-- **Web sign-in fails offline for unverified emails (found 2026-10-30).** KPI runs with
+- **Web sign-in failed offline for unverified emails (found 2026-10-30, fixed).** KPI runs with
   `ACCOUNT_EMAIL_VERIFICATION = mandatory`, so signing in as a user whose email isn't
   verified makes allauth send a confirmation mail; with no mail server the login POST
   returns 500. API tokens are unaffected, which is why the tests never hit it. On the rig
   `e2e`'s `EmailAddress` is now marked verified. Fix in `kobo-setup.py` (`offline_mail`):
   `ACCOUNT_EMAIL_VERIFICATION=none` and KPI's file email backend, in the env file that
-  sets `EMAIL_BACKEND`. **Not run yet** (the rig was parked): next session, run
-  `kobo-setup.py --reconfigure`, check which file it changed, and sign in in a browser as
-  a new user with an unverified email, with `offline.sh on`.
+  sets `EMAIL_BACKEND` (`kobo-env/envfiles/smtp.txt`). **Tested 2026-11-05** with
+  `remote/e2e-signin.sh`, offline: browser sign-up and sign-in as a new user with an
+  unverified email, 9/9; with kobo-install's stock mail settings, both return 500
+  (NOTES).
 - **Homepage screenshots:** `site/kobo-shots.py` runs in the Playwright image on the
   droplet (command in its docstring, plus `--add-host` for the four `*.kobo.local` names).
   The box's own pages (status page, label card) come from `site/box-shots.py`, which

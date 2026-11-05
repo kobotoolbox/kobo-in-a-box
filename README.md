@@ -37,6 +37,7 @@ remote/
   gpu-tiers.sh          the GPU tier recipes below, one after another, with VRAM per run
   eval/fleurs-*.tsv     reference clips (transcript + English) fetched by bootstrap.sh
   e2e-nlp.py            KPI's automatic qual, translation and transcription through its real API
+  e2e-signin.sh         web sign-up and sign-in in a browser for a user whose email isn't verified
   kpi-test.sh           KPI's test suite against a KPI branch, set up like KPI's CI
   results/              JSON per run, for comparing tiers; NOTES.md maps runs to settings
   agents/               W4: agent model, kobo-mcp and OpenCode; test data, 30 tasks, runner
@@ -108,6 +109,8 @@ ssh root@<new-ip> '/root/kobo-box-ai/library/library.sh up'
 # KPI's API (needs KPI running NLP_BACKEND=local; see STATUS.md)
 ssh root@<ip> 'bash /root/kobo-box-ai/kpi-test.sh'
 ssh root@<ip> 'python3 -I /root/kobo-box-ai/e2e-nlp.py e2e "$(cat /root/e2e-user.pw)"'
+# Web sign-in with no mail server (run with ./offline.sh on; one-time image setup in the script)
+ssh root@<ip> '/root/kobo-box-ai/e2e-signin.sh'
 
 # Agents (W4): see remote/agents/README.md for the two-droplet session
 

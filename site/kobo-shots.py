@@ -11,8 +11,8 @@ user. Runs ON THE DROPLET in the Playwright image, so the password never leaves 
       sh -c "pip install -q --break-system-packages playwright==1.55.0; python3 /s.py"
 
 (The image has the browsers but not the Python package; --add-host is for the script's
-own API calls, which don't go through Chrome's host mapping.) The user's email must be
-verified, or sign-in fails offline (STATUS.md).
+own API calls, which don't go through Chrome's host mapping.) Offline the pip install fails:
+use the image made in remote/e2e-signin.sh instead.
 
 Writes PNGs to /root/shots, plus links.txt (what each page offered), for site/ to pick
 from. Uses the newest "kobo-box e2e qual" project (made by e2e-nlp.py: a text answer and
