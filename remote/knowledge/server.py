@@ -68,6 +68,10 @@ def search_knowledge(query: str, collections: list[str] | None = None, lang: str
         where = h['title'] + (f' > {h["section"]}' if h['section'] else '')
         parts.append(f'[{i}] {where} ({h["lang"]}, {h["collection"]}, similarity '
                      f'{h["similarity"]:.2f})\nURL: {h["url"]}\n{_quote(h["text"])}')
+    # Said again here, after the results, where a model reads it as it answers
+    parts.append('Answer only from these sections. End with the URLs of the ones you used. If '
+                 "they don't answer the question, say the guides on this kit don't cover it: "
+                 "don't describe any menu, setting or feature they don't mention.")
     return '\n\n'.join(parts)
 
 
@@ -107,7 +111,7 @@ async def healthz(request: Request) -> PlainTextResponse:
 async def search(request: Request) -> JSONResponse:
     q = request.query_params
     t = time.time()
-    hits = index.search(q.get('q', ''), k=int(q.get('k', 8)), mode=q.get('mode', 'hybrid'),
+    hits = index.search(q.get('q', ''), k=int(q.get('k', 8)), mode=q.get('mode') or None,
                         lang=q.get('lang') or None,
                         collections=[c for c in q.get('collections', '').split(',') if c] or None)
     if q.get('text') != '1':

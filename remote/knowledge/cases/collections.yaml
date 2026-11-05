@@ -1,0 +1,116 @@
+# Retrieval cases for the collections beyond the Kobo guide (W10): the ODK documentation,
+# XLSForm.org and QGIS. Expected pages are the library's (http://kobo.local/docs/...). A
+# question the Kobo guide also answers may be found there instead, so these ask what
+# mostly the other collection covers.
+
+- id: odk-offline-maps
+  category: collections
+  language: en
+  message: how do I put an offline basemap (mbtiles) on the phone for the geopoint question?
+  expect:
+    retrieve_any:
+      - http://kobo.local/docs/odk/collect-offline-maps.html
+
+- id: odk-regex-constraint
+  category: collections
+  language: en
+  message: regex constraint to check a phone number has exactly 10 digits
+  expect:
+    retrieve_any:
+      - http://kobo.local/docs/odk/form-regex.html
+
+- id: odk-audit-log
+  category: collections
+  language: en
+  message: can I record how long enumerators spend on each question?
+  expect:
+    retrieve_any:
+      - http://kobo.local/docs/odk/form-audit-log.html
+      - https://support.kobotoolbox.org/audit_logging
+
+- id: odk-collect-settings-qr
+  category: collections
+  language: en
+  message: configure many phones with the same Collect settings using a QR code
+  expect:
+    retrieve_any:
+      - http://kobo.local/docs/odk/collect-projects.html
+      - http://kobo.local/docs/odk/collect-settings.html
+      - https://support.kobotoolbox.org/kobocollect_settings
+
+- id: odk-repeat-count
+  category: collections
+  language: en
+  message: repeat_count from the number of household members
+  expect:
+    retrieve_any:
+      - http://kobo.local/docs/odk/form-repeats.html
+      - https://support.kobotoolbox.org/repeat_groups_xls
+      - http://kobo.local/docs/xlsform/index.html
+
+- id: odk-es-troubleshooting
+  category: collections
+  language: es
+  message: Collect dice que no puede descargar el formulario, ¿qué reviso?
+  expect:
+    retrieve_any:
+      - http://kobo.local/docs/odk/collect-troubleshooting.html
+      - https://support.kobotoolbox.org/troubleshooting_kobocollect
+
+- id: xlsform-choice-filter
+  category: collections
+  language: en
+  message: what goes in the choice_filter column?
+  expect:
+    retrieve_any:
+      - http://kobo.local/docs/xlsform/index.html
+      - https://support.kobotoolbox.org/choice_filters_xls
+      - http://kobo.local/docs/odk/form-datasets.html
+
+- id: xlsform-jr-choice-name
+  category: collections
+  language: en
+  message: jr:choice-name to show the label of the selected choice
+  expect:
+    retrieve_any:
+      - http://kobo.local/docs/xlsform/index.html
+      - http://kobo.local/docs/odk/form-operators-functions.html
+
+- id: xlsform-ref-table-appearance
+  category: collections
+  language: en
+  message: which appearances does select_multiple support, like minimal or likert?
+  expect:
+    retrieve_any:
+      - http://kobo.local/docs/xlsform/ref-table.html
+      - http://kobo.local/docs/xlsform/index.html
+      - https://support.kobotoolbox.org/appearances_xls
+      - http://kobo.local/docs/odk/form-styling.html
+
+- id: qgis-csv-points
+  category: collections
+  language: en
+  message: In QGIS, how do I load a CSV export with latitude and longitude columns as points?
+  expect:
+    retrieve_any:
+      - http://kobo.local/docs/qgis-docs-en/en/docs/user_manual/managing_data_source/opening_data.html
+      - http://kobo.local/docs/qgis-docs-en/en/docs/training_manual/vector_analysis/basic_analysis.html
+
+- id: qgis-reproject
+  category: collections
+  language: en
+  message: QGIS reproject a layer to UTM
+  expect:
+    retrieve_any:
+      - http://kobo.local/docs/qgis-docs-en/en/docs/user_manual/working_with_projections/working_with_projections.html
+      - http://kobo.local/docs/qgis-docs-en/en/docs/gentle_gis_introduction/coordinate_reference_systems.html
+
+- id: qgis-fr-join
+  category: collections
+  language: fr
+  message: Dans QGIS, comment joindre une table attributaire à une couche par un champ commun ?
+  expect:
+    retrieve_any:
+      - http://kobo.local/docs/qgis-docs-fr/fr/docs/user_manual/working_with_vector/vector_properties.html
+      - http://kobo.local/docs/qgis-docs-fr/fr/docs/user_manual/working_with_vector/joins_relations.html
+      - http://kobo.local/docs/qgis-docs-fr/fr/docs/training_manual/vector_analysis/basic_analysis.html

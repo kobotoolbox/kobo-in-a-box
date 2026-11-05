@@ -19,6 +19,10 @@ set -euo pipefail
 cd "$(dirname "$0")"
 set -a; source knowledge.env; [[ -f knowledge.local.env ]] && source knowledge.local.env; set +a
 
+# The reranker: its container (RERANK=1), or another machine's (RERANK_URL_REMOTE)
+if [[ -n "${RERANK_URL_REMOTE:-}" ]]; then export KNOWLEDGE_RERANK_URL=$RERANK_URL_REMOTE
+elif [[ "${RERANK:-0}" == 1 ]]; then export KNOWLEDGE_RERANK_URL=http://rerank:8080 COMPOSE_PROFILES=rerank
+fi
 compose() { docker compose -p kobo-knowledge -f docker-compose.knowledge.yml "$@"; }
 
 wait_ready() {
@@ -39,13 +43,15 @@ case "${1:-}" in
     build)
         docker build -q -t "$KNOWLEDGE_IMAGE" . >/dev/null
         docker pull -q "$EMBED_IMAGE" >/dev/null
-        file=${EMBED_DOWNLOAD#*:}
-        if [[ ! -s "$MODELS_DIR/$file" ]]; then
-            curl -fsSL --retry 3 -o "$MODELS_DIR/$file.part" \
-                "https://huggingface.co/${EMBED_DOWNLOAD%%:*}/resolve/main/$file"
-            mv "$MODELS_DIR/$file.part" "$MODELS_DIR/$file"
-        fi
-        echo "built $KNOWLEDGE_IMAGE; $EMBED_MODEL in $MODELS_DIR"
+        for dl in "$EMBED_DOWNLOAD" "$RERANK_DOWNLOAD"; do
+            file=${dl#*:}
+            if [[ ! -s "$MODELS_DIR/$file" ]]; then
+                curl -fsSL --retry 3 -o "$MODELS_DIR/$file.part" \
+                    "https://huggingface.co/${dl%%:*}/resolve/main/$file"
+                mv "$MODELS_DIR/$file.part" "$MODELS_DIR/$file"
+            fi
+        done
+        echo "built $KNOWLEDGE_IMAGE; $EMBED_MODEL and $RERANK_MODEL in $MODELS_DIR"
         ;;
     index)
         shift
@@ -58,7 +64,7 @@ case "${1:-}" in
         ;;
     up)
         [[ -s "$KNOWLEDGE_DIR/knowledge.db" ]] || { echo "no index in $KNOWLEDGE_DIR: './knowledge.sh index' (or the content pack)" >&2; exit 1; }
-        compose up -d --wait embed
+        compose up -d --wait embed ${KNOWLEDGE_RERANK_URL:+$([[ -z "${RERANK_URL_REMOTE:-}" ]] && echo rerank)}
         # Recreated: it reads the index at start, and an update may have replaced it
         compose up -d --wait --force-recreate knowledge
         wait_ready

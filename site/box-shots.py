@@ -56,13 +56,15 @@ def status_pages(tmp):
     kobo = c('KoboToolbox', 'ok', 'Working: forms, KoboCollect submissions and web forms.')
     cases = c('Case management', 'ok', 'Working.')
     paper = c('Paper forms', 'ok', 'Working.')
+    knowledge = c('Documentation search', 'ok', 'Working: the assistant answers how-to questions '
+                  'from the guides on this box.')
     library = c('Library and this page', 'ok', 'Working at http://kobo.local.')
     disk = c('Disk space', 'ok', '361 GB free of 415 GB (87%).')
     states = {
         'status-ok': [
             c('Update', 'ok', 'Updated at 19:28 to the version of 2 November 2026. '
               'You can remove the update stick.'),
-            kobo, ai, cases, paper, library, disk,
+            kobo, ai, cases, paper, knowledge, library, disk,
             c('Backups', 'ok', 'Last backup to a drive: 2 hours ago (today 17:24). '
               'Nightly copy on the box: 7 minutes ago.')],
         'status-update': [

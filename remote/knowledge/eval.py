@@ -27,13 +27,25 @@ import yaml
 import kb
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-MODES = ('vector', 'fts', 'hybrid')
+MODES = ('vector', 'fts', 'hybrid') + (('rerank',) if kb.RERANK_URL else ())
+
+
+COLLECTIONS = json.load(open(os.path.join(HERE, 'collections.json')))
 
 
 def article_of(url):
-    """support.kobotoolbox.org/<slug>[.html] -> the guide's article key (<slug>.html)."""
+    """A case's expected page -> (collection, article key): support.kobotoolbox.org/<slug>
+    is the Kobo guide's <slug>.html; http://kobo.local/docs/<dir>/<page> is the collection
+    with that folder, its language folder (two letters) taken out."""
     m = re.match(r'https?://support\.kobotoolbox\.org/(?:(?:es|fr|ar)/)?([^/#?]+?)(?:\.html)?/?$', url)
-    return ('kobo-guide', f'{m.group(1)}.html') if m else (None, url)
+    if m:
+        return ('kobo-guide', f'{m.group(1)}.html')
+    m = re.match(r'http://kobo\.local/(docs/[^/]+)/([^#?]+)', url)
+    if m:
+        col = next((c['id'] for c in COLLECTIONS if m.group(1) in c['dirs']), None)
+        parts = m.group(2).split('/')
+        return (col, '/'.join(parts[1:]) if len(parts) > 1 and len(parts[0]) == 2 else m.group(2))
+    return (None, url)
 
 
 def load_cases():
@@ -103,8 +115,14 @@ def main():
     print(f"{'mode':8} " + ' '.join(f'{k:>8}' for k in report['modes']['hybrid'] if k != 'cases'))
     for m in MODES:
         print(f'{m:8} ' + ' '.join(f'{"-" if v is None else v:>8}' for k, v in report['modes'][m].items() if k != 'cases'))
-    print('misses (hybrid, not in the first k): ' + ', '.join(
-        r['id'] for r in rows if r['answerable'] and not r['hybrid']['rank']) or 'none')
+    best = MODES[-1]
+    print(f'misses ({best}, not in the first k): ' + (', '.join(
+        r['id'] for r in rows if r['answerable'] and not r[best]['rank']) or 'none'))
+    t = time.time()
+    for c in cases[:10]:
+        index.search(c['message'], k=args.k)
+    report['search_ms'] = round((time.time() - t) * 100)
+    print(f"search as the agent gets it ({best}): {report['search_ms']} ms a question, embedding included")
     if sa and su:
         print(f'best similarity: answerable median {statistics.median(sa):.3f} (min {sa[0]:.3f}), '
               f'no answer median {statistics.median(su):.3f} (max {su[-1]:.3f})')

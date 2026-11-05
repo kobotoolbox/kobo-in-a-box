@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Looking things up in the guides: Kobo in a box</title>
+<meta name="description" content="How the Kobo in a box assistant answers how-to questions from the guides on the kit, with no internet: the KoboToolbox user guide, the ODK documentation and the QGIS documentation, searched by meaning and by exact words, in the user's language, with citations that open on the kit. What it covers, how to use it, and what was measured.">
+<link rel="icon" href="static/site/icon.png" type="image/png">
+<link rel="stylesheet" href="static/site/home.css">
+</head>
+<body>
+<header class="header">
+  <div class="wrap">
+    <a class="header__brand" href="./"><img src="static/site/logo.svg" alt="KoboToolbox"><span class="header__product">In a box</span></a>
+    <ul class="header__nav">
+      <li><a href="./#how">How it works</a></li>
+      <li><a href="./#field">In the field</a></li>
+      <li><a href="./#ai">AI</a></li>
+      <li><a href="./#assistant">The assistant</a></li>
+      <li><a href="./#results">Results</a></li>
+    </ul>
+    <a class="button button--filled button--m" href="./">Back to the overview</a>
+  </div>
+</header>
+
+<main>
+<section class="banner">
+  <div class="wrap">
+    <h1>Looking things up in the guides</h1>
+    <p class="banner__lead">Field teams have questions the data can't answer: how to make a question required, why a phone won't download a form, how to load the export into QGIS. With no internet there's no help centre to search. The kit carries the guides instead, and the assistant searches them: ask in your own language and it answers from the guide, with links to the pages it used, which open on the kit.</p>
+    <div class="banner__buttons">
+      <a class="button button--filled" href="#ask">How to ask</a>
+      <a class="button button--light" href="#tested">What was measured</a>
+    </div>
+  </div>
+</section>
+
+<section class="steps" aria-label="The flow">
+  <div class="wrap">
+    <ol>
+      <li><h3>Ask the assistant</h3><p>A how-to question, in any language: "how do I make a question only show if the answer before was yes?"</p></li>
+      <li><h3>It searches the guides on the kit</h3><p>The KoboToolbox user guide, the ODK documentation and the QGIS documentation, by meaning and by exact words, in under a second.</p></li>
+      <li><h3>It answers, with its sources</h3><p>From the sections it found, in your language, ending with the pages it used. They open on the kit, at the right section.</p></li>
+    </ol>
+  </div>
+</section>
+
+<div class="wrap docs">
+<nav class="docs__nav" aria-label="On this page">
+  <ul>
+    <li><a href="#what">What's on the kit</a></li>
+    <li><a href="#ask">How to ask</a></li>
+    <li><a href="#sources">Sources that open on the kit</a></li>
+    <li><a href="#languages">Languages</a></li>
+    <li><a href="#gaps">When the guides don't cover it</a></li>
+    <li><a href="#status">On the status page</a></li>
+    <li><a href="#tested">What was measured</a></li>
+    <li><a href="#limits">Limits</a></li>
+    <li><a href="#technical">Technical details</a></li>
+  </ul>
+</nav>
+
+<article class="prose">
+
+<section id="what">
+<h2>What's on the kit</h2>
+<p>The same guides the kit's library offers for reading, made searchable for the assistant. They are prepared once, when the kit's content is made, and travel with it: nothing is downloaded in the field.</p>
+<div class="table-scroll"><table>
+  <thead><tr><th>Guide</th><th>Languages</th><th>Pages</th><th>Licence</th></tr></thead>
+  <tbody>
+    <tr><td>KoboToolbox user guide (support.kobotoolbox.org)</td><td>English, Spanish, French</td><td>426</td><td>Kobo's own</td></tr>
+    <tr><td>ODK documentation (KoboCollect is based on ODK Collect; form design, XLSForm)</td><td>English</td><td>146</td><td>CC BY 4.0</td></tr>
+    <tr><td>QGIS documentation (user manual, training manual, introduction to GIS)</td><td>English, Spanish, French</td><td>about 800</td><td>CC BY-SA 3.0</td></tr>
+  </tbody>
+</table></div>
+<p>XLSForm.org's guide was searched in testing, but isn't on kits: the site publishes no licence yet, and we have asked. Next: a deployment's own documents (protocols, the assessment's terms of reference, sector guidance), added before the kit leaves.</p>
+<p>The guides are for everyone who uses the kit, so they never hold personal data. Submissions stay in KoboToolbox, and the assistant reaches them only with the user's own permissions.</p>
+</section>
+
+<section id="ask">
+<h2>How to ask</h2>
+<p>Ask the assistant as you would ask a colleague. It looks things up by itself for questions about KoboToolbox, KoboCollect, web forms, XLSForm, ODK and QGIS:</p>
+<div class="figures">
+<figure><a href="static/knowledge/answer-odk.jpg"><img src="static/knowledge/answer-odk.jpg" width="1680" height="560" alt="The assistant on the kit. Question: how do I put an offline basemap (mbtiles) on the phone for the geopoint question? It called knowledge_search_knowledge with offline basemap mbtiles phone geopoint question. Answer: prepare the .mbtiles file, copy it to the device, then in ODK Collect, Settings, Maps, add it as a reference layer, or import it to the Collect projects' layers folder; select the layer in a geopoint, geotrace or geoshape question. Sources: two links to http://kobo.local/docs/odk/collect-offline-maps.html, at the quick start and at manually importing mbtiles files."></a><figcaption>A question about offline maps, answered from the ODK documentation on the kit. A real answer from the test environment.</figcaption></figure>
+<figure><a href="static/knowledge/answer-choice-filter.jpg"><img src="static/knowledge/answer-choice-filter.jpg" width="1680" height="580" alt="Question: what goes in the choice_filter column? The assistant searched for choice_filter column, then answered: the choice_filter column contains an expression that filters the rows of the choices sheet for that select question; it must evaluate to true or false and typically references a column in choices and a previous answer, for example category equals the job category answer, or selected of the parent question and name. Sources: the KoboToolbox guide's choice filters page, at adding dynamic choice filters, and the ODK documentation's form logic page, at filtering options in select questions."></a><figcaption>An exact XLSForm name, found in two guides.</figcaption></figure>
+</div>
+<ul>
+  <li><strong>Exact names work.</strong> A column name (<code>choice_filter</code>, <code>select_one_from_file</code>), a function (<code>pulldata</code>) or the text of an error message ("Value not allowed") finds the page that explains it.</li>
+  <li><strong>Plain questions work too.</strong> "I need the age to be between 18 and 65" finds validation criteria without the word.</li>
+  <li><strong>Say what you're using</strong> when it matters: "in the Formbuilder" or "in XLSForm", "in KoboCollect" or "in a web form".</li>
+  <li><strong>It changes nothing.</strong> Looking things up needs no permission, and a how-to answer never edits a project; anything that would change data still asks first.</li>
+</ul>
+</section>
+
+<section id="sources">
+<h2>Sources that open on the kit</h2>
+<p>Every answer should end with the pages it came from. They are links to the kit's own copy of the guide (<code>http://kobo.local/docs/…</code>), at the section, so they open on a phone or laptop on the kit's Wi-Fi with no internet. Check the source when an answer matters: the assistant makes mistakes (<a href="#tested">see below</a>).</p>
+<figure><a href="static/knowledge/guide-section.jpg"><img src="static/knowledge/guide-section.jpg" width="2880" height="1440" alt="The KoboToolbox user guide in Spanish, opened on the kit at the section Respuesta obligatoria: by default questions are optional; setting Mandatory response to Yes makes the respondent answer it. A screenshot of the Formbuilder's question settings with Mandatory Response highlighted, then a note that skip logic takes priority over mandatory responses."></a><figcaption>A cited page, opened on the kit at its section: the Spanish guide's "Respuesta obligatoria".</figcaption></figure>
+</section>
+
+<section id="languages">
+<h2>Languages</h2>
+<p>Ask in any language. The search works by meaning across languages, so a question in Swahili or Arabic finds a page written in English. It then prefers pages in the question's language when the guide has them (English, Spanish or French for the KoboToolbox guide), and English otherwise. The assistant answers in the language of the question.</p>
+<figure><a href="static/knowledge/answer-arabic.jpg"><img src="static/knowledge/answer-arabic.jpg" width="1680" height="620" alt="A question in Arabic: how do I add a question to record a GPS location in the form? The assistant searched with the question, then answered in Arabic: to add a question recording a GPS location, use the Formbuilder: press the ADD QUESTION button, choose the question type GPS Point (or Line or Area for a line or an area), enter the question text in the Label field and save. Source: http://kobo.local/docs/kobo/gps_questions.html, at adding a GPS question in the Formbuilder."></a><figcaption>A question in Arabic, answered in Arabic from the English guide.</figcaption></figure>
+</section>
+
+<section id="gaps">
+<h2>When the guides don't cover it</h2>
+<p>The assistant is told to say so, rather than answer from memory, and never to describe a menu or setting the guides don't mention. It usually does:</p>
+<figure><a href="static/knowledge/answer-not-covered.jpg"><img src="static/knowledge/answer-not-covered.jpg" width="1680" height="420" alt="Question: how do I sync my KoboToolbox submissions into Salesforce automatically? The assistant searched, then answered: the guides don't cover an automatic sync from KoboToolbox to Salesforce."></a><figcaption>A question the guides can't answer.</figcaption></figure>
+<p>But not always: in testing it once described a form setting that doesn't exist, and cited a real page for it (<a href="#tested">see below</a>). Treat an answer as a pointer to the guide, and the guide as the authority.</p>
+</section>
+
+<section id="status">
+<h2>On the status page</h2>
+<p>The kit's status page has a <strong>Documentation search</strong> row: green when the assistant can search the guides. If it isn't working, the assistant still works with KoboToolbox, but can't look things up; restarting the kit usually fixes it.</p>
+</section>
+
+<section id="tested">
+<h2>What was measured</h2>
+<p>On the test environment: the guides above (1,378 pages, 13,043 sections) on the CPU-only test machine, and the agent model (gpt-oss-120b) on a GPU machine. The questions: 20 from Kobo's support chatbot, which has the same job online, and 25 written for the kit, in seven languages, including exact names, ODK and QGIS questions, plus 11 the guides can't answer.</p>
+<p><strong>Finding the right page</strong> (45 questions with an answer in the guides):</p>
+<div class="table-scroll"><table>
+  <thead><tr><th>Search</th><th>Right page first</th><th>In the first 3</th><th>In the first 8</th><th>Time a question</th></tr></thead>
+  <tbody>
+    <tr><td>By meaning and exact words (kits without a GPU)</td><td>49%</td><td>73%</td><td>89%</td><td>0.1 s</td></tr>
+    <tr><td>Then reordered by a second model (kits with a GPU)</td><td>53%</td><td>76%</td><td>89%</td><td>0.1 s on a GPU; 14–19 s without</td></tr>
+  </tbody>
+</table></div>
+<p>The first result was in the question's language (or English) for every question. On the KoboToolbox guide alone (33 questions) the right page was in the first 3 for 79% and the first 8 for 94%. Searching by exact words, besides meaning, is what finds names like <code>pulldata</code>.</p>
+<p><strong>Answers</strong> (56 questions, the agent model through the assistant): 32 passed every check. It searched first for 47, never made up a page in 54, cited one of the expected pages for 28 of 49, answered in the question's language every time it could be told, and never tried to change anything. Of the questions the guides can't answer, it said so for 4 of 7, invented a setting once, answered one from memory (correctly, but without checking), and wrote the code asked for in the last. The common failure: answering without a source, or from a neighbouring page. Questions about doing something with data ("I need the data in SPSS") it took as a task, not a how-to.</p>
+</section>
+
+<section id="limits">
+<h2>Limits</h2>
+<ul>
+  <li><strong>The assistant needs the recommended hardware</strong> (a graphics card or the 128 GB tier); the search itself runs on any kit.</li>
+  <li><strong>Answers can be wrong.</strong> Check the cited page for anything that matters.</li>
+  <li><strong>The guides are as of when the kit was prepared.</strong> A newer KoboToolbox release on an updated kit comes with its guide.</li>
+  <li><strong>No way to add your own documents yet</strong>; planned before deployment.</li>
+  <li><strong>Similarity alone can't tell</strong> a question the guides answer from one they don't: the assistant has to judge from what it reads.</li>
+</ul>
+</section>
+
+<section id="technical">
+<h2>Technical details</h2>
+<ul>
+  <li><strong>On the kit:</strong> <code>remote/knowledge/</code>, an MCP server at <code>knowledge.kobo.local</code> with read-only tools (<code>search_knowledge</code>, <code>read_document</code>, <code>list_collections</code>), registered in OpenCode with instructions for using them. The index is one SQLite file (full-text search and float16 vectors), built when the content pack is made and shipped in it.</li>
+  <li><strong>Models:</strong> bge-m3 (MIT) for meaning, on llama-server, CPU only (a question takes about 50 ms); bge-reranker-v2-m3 (Apache 2.0) to reorder, off unless there's a GPU.</li>
+  <li><strong>Pages</strong> are the library's own HTML, cut into sections with the support chatbot's chunker; each section keeps its anchor, so a citation opens at it.</li>
+  <li>The checks are <code>knowledge/eval.py</code> (finding pages) and <code>knowledge/answers.py</code> (answers through the assistant); the results are in <code>remote/results/</code>.</li>
+</ul>
+</section>
+
+</article>
+</div>
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <div>
+      <img src="static/site/logo-white.svg" alt="KoboToolbox">
+      <p>Kobo in a box: KoboToolbox, local AI and an offline library for teams working without reliable internet. A prototype in testing.</p>
+    </div>
+    <div>
+      <span class="footer__label">KoboToolbox</span>
+      <ul>
+        <li><a href="https://www.kobotoolbox.org">kobotoolbox.org</a></li>
+        <li><a href="https://support.kobotoolbox.org">Help Center</a></li>
+        <li><a href="https://community.kobotoolbox.org">Community forum</a></li>
+      </ul>
+    </div>
+    <div>
+      <span class="footer__label">On this site</span>
+      <ul>
+        <li><a href="./">Overview</a></li>
+        <li><a href="sync.html">Syncing kits</a></li>
+        <li><a href="cases.html">Case management</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>
+</body>
+</html>

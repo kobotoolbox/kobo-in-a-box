@@ -114,6 +114,12 @@ def guide_items(rows, sums):
             + (f'<br><span class="meta">support.kobotoolbox.org as of {html.escape(commit)}</span>' if commit else '')
             + '</li>'
         )
+    for folder, name in (('odk', 'ODK documentation (Collect, form design)'), ('xlsform', 'XLSForm.org guide')):
+        built = LIBRARY_DIR / 'docs' / folder
+        if (built / 'index.html').exists():
+            commit = (built / '.source-commit').read_text().strip() if (built / '.source-commit').exists() else ''
+            items.append(f'<li><a href="/docs/{folder}/index.html">{html.escape(name)}</a>'
+                         + (f' <span class="meta">as of {html.escape(commit)}</span>' if commit else '') + '</li>')
     for row in rows:
         if row['kind'] == 'site':
             url = site_index(LIBRARY_DIR / 'docs' / row['id'])

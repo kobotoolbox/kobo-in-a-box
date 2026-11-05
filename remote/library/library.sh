@@ -5,6 +5,9 @@
 #   ./library.sh build [id...]   fetch + docs + render (online)
 #   ./library.sh fetch [id...]   download and verify files in manifest.tsv (online)
 #   ./library.sh docs            build the Kobo user guide from kobotoolbox/docs (online)
+#   ./library.sh docs-odk        build the ODK documentation from getodk/docs (online; CC BY 4.0)
+#   ./library.sh docs-xlsform    save xlsform.org's two pages (online). For tests only: the
+#                                site has no licence yet, so packs leave it out (pack.sh)
 #   ./library.sh render          regenerate index.html from what is on disk
 #   ./library.sh check           list external URLs the docs would load (want: none)
 #   ./library.sh up|down|logs    edge nginx
@@ -19,6 +22,9 @@ KOBO_DOCS_REPO=https://github.com/kobotoolbox/docs.git
 KOBO_DOCS_REF=${KOBO_DOCS_REF:-master}
 # Upstream builds es and fr; ar exists in locales/ but isn't in their Makefile yet
 KOBO_DOCS_LOCALES=${KOBO_DOCS_LOCALES:-es fr}
+ODK_DOCS_REPO=https://github.com/getodk/docs.git
+ODK_DOCS_REF=${ODK_DOCS_REF:-master}
+XLSFORM_PAGES="https://xlsform.org/en/ https://xlsform.org/en/ref-table/"
 export EDGE_IMAGE
 
 manifest() {  # rows of manifest.tsv, optionally only the given ids
@@ -105,6 +111,49 @@ docs() {
     echo "$commit" > "$out/.source-commit"
 }
 
+docs_odk() {  # the ODK docs (Collect, form design, Central), as docs.getodk.org builds them
+    local src="$BUILD_DIR/odk-docs" out="$LIBRARY_DIR/docs/odk" commit
+    if [[ ! -d "$src" ]]; then git clone -q "$ODK_DOCS_REPO" "$src"; fi
+    git -C "$src" fetch -q origin "$ODK_DOCS_REF"
+    git -C "$src" checkout -q --detach FETCH_HEAD
+    git -C "$src" clean -qfdx
+    commit=$(git -C "$src" log -1 --format='%h %cs')
+    echo "building the ODK documentation at $commit"
+    # conf.py loads the spelling extension, which needs the enchant library
+    docker run --rm -v "$src:/docs" -w /docs "$DOCS_IMAGE" sh -ec '
+        apt-get update -qq && apt-get install -y -qq libenchant-2-2 >/dev/null
+        pip install -q --root-user-action=ignore -r requirements.txt
+        sphinx-build -q -b html docs _build/html 2>&1 | grep -v WARNING || true
+        test -f _build/html/index.html'
+    rm -rf "$out"; mkdir -p "$(dirname "$out")"
+    cp -a "$src/_build/html" "$out"
+    vendor_fonts "$out"
+    # docs.getodk.org's pages load Cloudflare's analytics beacon, Font Awesome from cdnjs and
+    # (two pages) MathJax: no beacon or MathJax here, Font Awesome from the library
+    local fa=https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2 v="$out/_static/vendor/fontawesome"
+    mkdir -p "$v/css" "$v/webfonts"
+    curl -fsSL -o "$v/css/all.min.css" "$fa/css/all.min.css"
+    grep -o '\.\./webfonts/[^)?#]*' "$v/css/all.min.css" | sort -u | while read -r f; do
+        curl -fsSL -o "$v/webfonts/$(basename "$f")" "$fa/webfonts/$(basename "$f")"
+    done
+    find "$out" -name '*.html' -exec sed -i -E \
+        -e "s#<script defer src='https://static\.cloudflareinsights\.com/[^']*'[^>]*></script>##g" \
+        -e 's#<script async="async" src="https://cdn\.jsdelivr\.net/npm/mathjax[^"]*"></script>##g' \
+        -e "s#$fa/css/all\.min\.css#/docs/odk/_static/vendor/fontawesome/css/all.min.css#g" {} +
+    echo "$commit" > "$out/.source-commit"
+}
+
+docs_xlsform() {  # xlsform.org's guide and reference table, as served (a Jekyll site)
+    local out="$LIBRARY_DIR/docs/xlsform" url name
+    mkdir -p "$out"
+    for url in $XLSFORM_PAGES; do
+        name=$(basename "${url%/}"); [[ $name == en ]] && name=index
+        curl -fsSL -o "$out/$name.html" "$url"
+    done
+    date +%F > "$out/.source-commit"
+    echo "saved $(ls "$out" | wc -l) xlsform.org pages in $out"
+}
+
 vendor_fonts() {  # vendor_fonts <site dir>: swap Google Fonts @imports for local copies
     local css url dir
     while IFS= read -r css; do
@@ -146,6 +195,8 @@ case "${1:-}" in
     build) shift; fetch "$@"; docs; python3 -I render.py ;;
     fetch) shift; fetch "$@" ;;
     docs) docs ;;
+    docs-odk) docs_odk ;;
+    docs-xlsform) docs_xlsform ;;
     render) python3 -I render.py ;;
     check) check ;;
     up)

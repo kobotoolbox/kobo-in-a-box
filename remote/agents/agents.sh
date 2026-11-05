@@ -23,7 +23,7 @@ compose() { docker compose -p kobo-agents -f docker-compose.agents.yml "$@"; }
 write_config() {
     mkdir -p opencode
     python3 - <<'PY'
-import json, os, urllib.request
+import json, os, shutil, urllib.request
 cfg = json.load(open('opencode.json'))
 ctx = int(os.environ['AGENT_CTX']) // int(os.environ['AGENT_SLOTS'])
 cfg['provider'] = {'box': {
@@ -61,6 +61,9 @@ try:
     urllib.request.urlopen('http://127.0.0.1:8088/healthz', timeout=5)
     cfg['mcp']['knowledge'] = {'type': 'remote', 'url': 'http://knowledge.kobo.local/mcp',
                                'enabled': True, 'oauth': False, 'timeout': 30000}
+    # How to use it: OpenCode doesn't pass an MCP server's own instructions to the model
+    shutil.copy('knowledge-instructions.md', 'opencode/knowledge-instructions.md')
+    cfg['instructions'] = cfg.get('instructions', []) + ['/config/knowledge-instructions.md']
 except OSError:
     pass
 json.dump(cfg, open('opencode/opencode.json', 'w'), indent=2)

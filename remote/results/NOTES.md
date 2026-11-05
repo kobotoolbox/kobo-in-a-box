@@ -370,3 +370,31 @@ The knowledge base, once indexed (426 pages, 2,696 sections, 52 min, 12.8 MB):
   again from `-0946`: 3 min 22 s, catch-up added the knowledge base, the status page fixed
   and all green ("Documentation search: Working", the sync row "Synced to the hub kobo-6tmb
   3 minutes ago"), `knowledge.sh search` on the box answered from its own index.
+
+## 2026-11-05 (evening): the knowledge base on the GPU rig: more docs, the reranker, answers
+
+No `gpu-h100x1-80gb` in any region (16 tried); a `gpu-h200x1-141gb` in nyc2. The CPU
+snapshot's copy to nyc2 ran over an hour without finishing, so the CPU rig was restored in
+ams3 and reached the GPU over the public network, the GPU firewall open on 8083 (the agent
+model), 8091 and 8092 (bge-m3, the reranker, on CUDA) to the rig's address only. Only test
+questions and the docs' text crossed it.
+
+- Library: `library.sh docs-odk` (getodk/docs `1b4d4cd`, 146 pages; needed libenchant;
+  analytics beacon and MathJax removed, Font Awesome vendored: `check` OK), `docs-xlsform`
+  (2 pages, test rigs only).
+- Index with QGIS on: 1,378 pages, 13,043 sections, 63 MB, 10 min with the GPU's embeddings.
+- Retrieval (`knowledge-eval-3.json`, `-4.json`), 45 questions: hybrid hit@3 0.73, hit@8
+  0.89; with the reranker (its order of the first 10) 0.76, 0.89, hit@1 0.49 → 0.53.
+  Settings compared: its order or fused with hybrid's, 10/20/40 candidates: within one
+  case of each other. Reranking 10 sections: ~105 ms on the H200, 14–19 s on the rig's CPU.
+- Answers (`knowledge-answers-gpt-oss-120b-20261105-144812.json`, rescored): the first
+  smoke run, with only the MCP server's instructions, answered the Spanish 2FA question
+  from memory and called `kobo_refresh_dashboard` (a write: OpenCode waited for an OK the
+  script never gave, so `answers.py` now rejects and records any). With
+  `agents/knowledge-instructions.md` and a reminder after the results: 32/56 pass;
+  searched 47; made-up URLs in 2; an expected page cited 28/49; nothing it asked to change.
+  The full list of failures is in the report; the guide (`site/knowledge.html`) and
+  `knowledge/README.md` summarise them.
+- Screenshots (`site/knowledge-shots.py`, Playwright on the rig, OpenCode's password kept
+  there): four sessions in OpenCode's web interface, the cited Spanish guide page at its
+  section, the ODK guide in the library; `site/static/knowledge/`.

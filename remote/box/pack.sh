@@ -146,8 +146,9 @@ build_files() {
     log "library from $LIBRARY_DIR"
     [[ -f "$LIBRARY_DIR/index.html" ]] || die "no library in $LIBRARY_DIR (library.sh build first)"
     # Never a box's status page or label card (its passwords), nor its services' links
+    # docs/xlsform: xlsform.org has no licence yet, so it's on test rigs only (PRODUCT-277)
     rsync -a --delete --exclude 'status/' --exclude 'card/' --exclude '.services/' --exclude box.json \
-        "$LIBRARY_DIR/" "$pack/library/"
+        --exclude docs/xlsform "$LIBRARY_DIR/" "$pack/library/"
     log "kobo-box-ai from $REMOTE"
     # Per-box and generated files stay behind; install.sh and the box make their own
     rsync -a --delete --exclude results --exclude __pycache__ --exclude '*.local.env' \
@@ -189,6 +190,19 @@ build_files() {
     if [[ -s "$KNOWLEDGE_DIR/knowledge.db" ]]; then
         log "knowledge index ($(du -sh "$KNOWLEDGE_DIR/knowledge.db" | cut -f1))"
         rsync -a --delete "$KNOWLEDGE_DIR/" "$pack/knowledge/"
+        # Nor its pages in the pack's index (a collection with "pack": false)
+        python3 -I - "$pack/knowledge/knowledge.db" "$REMOTE/knowledge/collections.json" <<'EOF'
+import json, sqlite3, sys
+db = sqlite3.connect(sys.argv[1])
+for c in json.load(open(sys.argv[2])):
+    if c.get('pack', True) is False:
+        db.execute('DELETE FROM chunks WHERE url IN (SELECT url FROM pages WHERE collection = ?)', (c['id'],))
+        db.execute('DELETE FROM pages WHERE collection = ?', (c['id'],))
+        db.execute('DELETE FROM collections WHERE id = ?', (c['id'],))
+db.execute("INSERT INTO chunks_fts (chunks_fts) VALUES ('rebuild')")
+db.commit()
+db.execute('VACUUM')
+EOF
     fi
 }
 

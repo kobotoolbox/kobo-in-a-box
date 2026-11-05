@@ -14,6 +14,8 @@ Used by index.py (building the index), server.py (the agent's tools) and eval.py
   (float16, normalised). A few thousand chunks, so a search reads them all.
 - Search: the vector ranking and the FTS ranking fused by reciprocal rank, times the
   collection's boost; one language per article (the asker's, usually, as it ranks first).
+  With a reranker (bge-reranker-v2-m3 on llama-server, RERANK_URL), the first
+  RERANK_CANDIDATES of that list are put in its order.
 """
 import hashlib
 import json
@@ -26,6 +28,10 @@ from html.parser import HTMLParser
 import numpy as np
 
 EMBED_URL = os.environ.get('EMBED_URL', 'http://embed:8080')
+RERANK_URL = os.environ.get('RERANK_URL', '')   # empty: no reranker
+RERANK_CANDIDATES = int(os.environ.get('RERANK_CANDIDATES', '10'))
+RERANK_MIX = os.environ.get('RERANK_MIX', 'only')   # only: its order; fuse: its and hybrid's, by rank
+RERANK_CHARS = 1500         # of each section, for the reranker (its cost grows with length)
 DB_PATH = os.environ.get('KNOWLEDGE_DB', '/data/knowledge.db')
 
 MAX_CHUNK_CHARS = 600 * 4   # the bot's sizes (1 token ~ 4 characters)
@@ -56,8 +62,9 @@ class _PageText(HTMLParser):
     BLOCK = {'p', 'div', 'section', 'li', 'tr', 'pre', 'dt', 'dd', 'table', 'ul', 'ol',
              'blockquote', 'figcaption', 'br'}
 
-    def __init__(self):
+    def __init__(self, start='role-main'):
         super().__init__(convert_charrefs=True)
+        self.start = start    # role-main: the role="main" element; else that tag (main, body)
         self.lang = ''
         self.depth = 0        # open elements inside main (0: not in main)
         self.skip = 0         # open elements inside something skipped
@@ -73,7 +80,7 @@ class _PageText(HTMLParser):
         if tag == 'html':
             self.lang = (a.get('lang') or '').split('-')[0].lower()
         if self.depth == 0:
-            if a.get('role') == 'main':
+            if (a.get('role') == 'main') if self.start == 'role-main' else (tag == self.start):
                 self.depth = 1
             return
         self.depth += 1
@@ -84,7 +91,8 @@ class _PageText(HTMLParser):
             self.sections.append((self.depth, a['id']))
         if re.fullmatch(r'h[1-6]', tag):
             self.heading = int(tag[1])
-            anchor = self.sections[-1][1] if self.sections else ''
+            # The heading's own id (xlsform.org), else its section's (Sphinx)
+            anchor = a.get('id') or (self.sections[-1][1] if self.sections else '')
             self.out.append(f'\n\n{"#" * self.heading} \x00{anchor}\x00')
         elif tag == 'li':
             self.out.append('\n- ')
@@ -134,6 +142,13 @@ def page_text(raw_html):
     """(language, text) of a library page; headings carry their anchor as '\\0id\\0'."""
     p = _PageText()
     p.feed(raw_html)
+    if not ''.join(p.out).strip():
+        # Not a Sphinx page (xlsform.org): its <main>, else the whole body
+        for start in ('main', 'body'):
+            p = _PageText(start)
+            p.feed(raw_html)
+            if ''.join(p.out).strip():
+                break
     text = ''.join(p.out)
     text = re.sub(r'[ \t]+\n', '\n', text)
     text = re.sub(r'\n{3,}', '\n\n', text)
@@ -225,6 +240,20 @@ def embed(texts, batch=32):
         out.extend(d['embedding'] for d in data)
     v = np.asarray(out, dtype=np.float32)
     return v / np.maximum(np.linalg.norm(v, axis=1, keepdims=True), 1e-9)
+
+
+def rerank(query, texts):
+    """Relevance of each text to the query from the reranker, in the texts' order."""
+    body = json.dumps({'query': query, 'documents': [t[:RERANK_CHARS] for t in texts],
+                       'top_n': len(texts)}).encode()
+    req = urllib.request.Request(f'{RERANK_URL}/v1/rerank', data=body,
+                                 headers={'Content-Type': 'application/json'})
+    with urllib.request.urlopen(req, timeout=120) as r:
+        results = json.load(r)['results']
+    scores = [0.0] * len(texts)
+    for x in results:
+        scores[x['index']] = x['relevance_score']
+    return scores
 
 
 def embed_model():
@@ -329,9 +358,25 @@ class Index:
         finally:
             db.close()
 
-    def search(self, query, k=8, collections=None, lang=None, mode='hybrid', qvec=None):
+    def search(self, query, k=8, collections=None, lang=None, mode=None, qvec=None):
         """Best chunks first: [{score, similarity, url, anchor, title, section, collection,
-        lang, text}]. mode: hybrid | vector | fts (eval.py compares them)."""
+        lang, text}]. mode: hybrid | vector | fts | rerank (hybrid, then the reranker's
+        order); default rerank when there is a reranker, else hybrid."""
+        mode = mode or ('rerank' if RERANK_URL else 'hybrid')
+        if mode == 'rerank':
+            hits = self.search(query, k=RERANK_CANDIDATES, collections=collections, lang=lang,
+                               mode='hybrid', qvec=qvec)
+            for h, s in zip(hits, rerank(query, [h['text'] for h in hits]) if hits else []):
+                h['rerank'] = s
+            by_rerank = sorted(range(len(hits)), key=lambda i: -hits[i]['rerank'])
+            if RERANK_MIX == 'only':
+                return [hits[i] for i in by_rerank][:k]
+            # Fused with hybrid's own order by rank: the reranker reads each section with the
+            # question, hybrid knows the language and exact words
+            fused = {i: 1 / (RRF_K + i) for i in range(len(hits))}
+            for rank, i in enumerate(by_rerank):
+                fused[i] += 1 / (RRF_K + rank)
+            return [hits[i] for i in sorted(fused, key=lambda i: -fused[i])][:k]
         if not len(self.ids):
             return []
         sims = (self.vecs @ (qvec if qvec is not None else embed([query])[0])) if mode != 'fts' else None

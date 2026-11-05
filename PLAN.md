@@ -831,9 +831,9 @@ Done 2026-10-28 on kobo-mcp branch `w3-offline-box`; details in [STATUS.md](STAT
 
 ### W10. Local knowledge base (~2–3 weeks; can start now, see 3i)
 - [x] `remote/knowledge/` (2026-11-05): indexer (support-bot chunker, over the library's HTML with section anchors), one SQLite file (FTS5 + float16 vectors, hybrid search by rank fusion) instead of pgvector, search API, MCP server (`knowledge.kobo.local/mcp`)
-- [x] Embedding: bge-m3 Q8_0 on its own llama-server in `docker-compose.knowledge.yml` (CPU only); [ ] the reranker
-- [ ] Corpus build from the library's docs plus XLSForm, ODK docs and the XForms spec; licence check per source
-- [ ] Port the support bot's eval cases; measure retrieval recall@k (`retrieve_any`/`cite_any`) and answer quality with the local agent model; re-tune threshold and boosts; with and without the reranker
+- [x] Embedding: bge-m3 Q8_0 on its own llama-server in `docker-compose.knowledge.yml` (CPU only); the reranker (bge-reranker-v2-m3, `RERANK=1`): measured, off by default (slow without a GPU, small gain)
+- [x] Corpus: the Kobo guide, the ODK docs (`library.sh docs-odk`, CC BY 4.0), QGIS (CC BY-SA); xlsform.org on test rigs only (no licence: kept out of packs); [ ] the XForms spec
+- [x] Port the support bot's eval cases (`knowledge.sh cases`; private, not in git); retrieval recall@k, with and without the reranker; answer checks with the local agent model (`answers.py`: 32/56); [ ] key facts read by a person
 - [ ] `knowledge.sh add` for PDF/DOCX/ODT/HTML/Markdown; originals served by the library
 - [x] OpenCode registration (`knowledge_*` allowed: read-only), the server's instructions; [ ] injection cases pass
 - [x] Ship the prebuilt index in the content pack (`knowledge/`), first boot's `knowledge` step, status row; [ ] tested on a box from a pack

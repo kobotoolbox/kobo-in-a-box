@@ -259,7 +259,9 @@ Box settings for kobo-dash: `ALLOWED_SERVERS=http://kf.kobo.local`, `PUBLIC_URL=
 - [x] Eval cases: the support bot's (howto, multilingual, unanswerable, hallucination bait) and 13 of the box's (Swahili, Arabic, Hindi, Portuguese, exact names)
 - [x] Retrieval on the rig: 426 pages, 2,696 sections, 52 min to index on 8 vCPUs; hybrid search finds the right page in the first 3 for 79% of 33 questions, in the first 8 for 94%, in the question's language (or English) every time. No similarity line separates questions the guide can't answer (`remote/knowledge/README.md`)
 - [x] Through OpenCode: offered, allowed without asking, permissions test still PASS (`agents.sh` registers it when it answers)
-- [ ] A box from a pack with it; answer quality with the agent model on the GPU rig; the reranker; more collections
+- [x] A box from a pack with it (2026-11-05: an older box updated, catch-up added it)
+- [x] 2026-11-05, GPU rig: the ODK docs (CC BY 4.0) in the library, QGIS on, xlsform.org on test rigs only (no licence); 1,378 pages. The reranker (bge-reranker-v2-m3): +4 points at hit@1, nothing at hit@8, 0.1 s on a GPU but 14–19 s on a CPU, so off by default. Answers through OpenCode with gpt-oss-120b: 32/56 pass every check after giving OpenCode instructions (it doesn't pass the MCP server's own); one made-up setting; usual failure an answer without its source. User guide `site/knowledge.html` with screenshots
+- [ ] Answers that always cite their source; a deployment's own documents (`knowledge.sh add`); XLSForm.org's permission
 
 ### 3c. W4: agents on the rig ✅ first runs 2026-10-29
 `remote/agents/`: agent model (own llama-server), kobo-mcp and OpenCode 1.19.5 as a compose

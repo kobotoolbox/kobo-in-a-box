@@ -1,8 +1,11 @@
 # Knowledge base (W10)
 
-The assistant's search over the documentation on the box (PLAN 3i): the KoboToolbox user
-guide in English, Spanish and French, as the offline library serves it at
-`http://kobo.local/docs/kobo/`. OpenCode reaches it as an MCP server,
+The assistant's search over the documentation on the box (PLAN 3i), as the offline library
+serves it: the KoboToolbox user guide in English, Spanish and French (`/docs/kobo/`), the
+ODK documentation (`/docs/odk/`, `library.sh docs-odk`, CC BY 4.0) and the QGIS
+documentation in three languages (`/docs/qgis-docs-*`); on test rigs also xlsform.org
+(`library.sh docs-xlsform`: no licence published, so `pack.sh` leaves its pages out of the
+library and the index). User guide: `site/knowledge.html`. OpenCode reaches it as an MCP server,
 `http://knowledge.kobo.local/mcp`, next to kobo-mcp; its tools are read-only and allowed
 without asking.
 
@@ -11,9 +14,11 @@ without asking.
 | `kb.py` | Pages to text (the page's main element, headings with their anchors), the support bot's chunker, the SQLite store (chunks, FTS5, float16 embeddings), hybrid search |
 | `index.py` | Builds or refreshes the index from `collections.json` (unchanged pages skipped) |
 | `server.py` | MCP tools `search_knowledge`, `read_document`, `list_collections`; `GET /healthz`, `GET /search?q=` |
+| `answers.py` | Answer checks through OpenCode with the agent model: searched, no made-up URLs, the expected page cited, the question's language, "not covered" when there's nothing to find, the bot's forbidden patterns; key facts kept for a person |
+| `../agents/knowledge-instructions.md` | How the assistant uses the guides (OpenCode doesn't pass an MCP server's own instructions on): `agents.sh` adds it when the knowledge base answers |
 | `eval.py`, `cases/` | Retrieval checks: `box.yaml`, and the support bot's cases (`howto`, `multilingual`, `unanswerable`, `hallucination_bait`) when copied in with `knowledge.sh cases <checkout>`: kobo-support-bot-poc is private, so they're not in git here |
 | `knowledge.sh` | `build` (online), `index`, `up`, `down`, `search`, `eval` |
-| `docker-compose.knowledge.yml` | `embed` (llama-server, bge-m3, embeddings only), `knowledge` (search and MCP on 127.0.0.1:8088), `index` (on demand) |
+| `docker-compose.knowledge.yml` | `embed` (llama-server, bge-m3, embeddings only), `rerank` (bge-reranker-v2-m3, with `RERANK=1`), `knowledge` (search and MCP on 127.0.0.1:8088), `index` (on demand) |
 
 ```bash
 ./knowledge.sh build                 # online, on the rig: the image and bge-m3 (0.6 GB)
@@ -90,11 +95,47 @@ support bot's 20 with `retrieve_any`, the box's 13) and 11 with none:
 
 Reports: `../results/knowledge-eval-*.json`.
 
+## With the ODK, XLSForm and QGIS docs, the reranker and the agent model (2026-11-05, GPU rig)
+
+The CPU rig (ams3) with an H200 droplet (nyc2: no H100 anywhere) for the agent model
+(gpt-oss-120b) and, for indexing, bge-m3 and the reranker on CUDA (`EMBED_URL` and
+`RERANK_URL_REMOTE` in `knowledge.local.env`), over the public network, the GPU's ports open
+to the rig's address only.
+
+- **Index:** 1,378 pages (the guide 426, ODK 146, xlsform.org 2, QGIS ~800), 13,043
+  sections, 63 MB, 10 min (the round trip to nyc2, not the GPU, set the pace).
+- **ODK build:** its `conf.py` needs the enchant library (spelling); its pages load
+  Cloudflare's analytics beacon, Font Awesome from cdnjs and MathJax: `docs-odk` takes the
+  beacon and MathJax out and serves Font Awesome from the library (`library.sh check`: no
+  external assets). xlsform.org's "reference table" is only a template download; its guide
+  is one long page whose headings carry their own ids (anchors now come from either).
+- **Retrieval, 45 questions** (`cases/collections.yaml` adds 12: ODK, XLSForm, QGIS):
+
+  | Search | hit@1 | hit@3 | hit@5 | hit@8 | MRR | time |
+  |---|---|---|---|---|---|---|
+  | hybrid (the default) | 0.49 | 0.73 | 0.84 | 0.89 | 0.62 | 0.1 s (CPU) |
+  | + reranker, its order of the first 10 | 0.53 | 0.76 | 0.87 | 0.89 | 0.66 | 0.1 s on the GPU, 14–19 s on 4 CPU threads |
+
+  The reranker helps the new collections (hit@3 0.67 → 0.83) and the support bot's how-to
+  questions (0.79 → 0.86), and hurts the box's (0.77 → 0.62); fused with hybrid's order
+  instead, or with 20 or 40 candidates, no better (`RERANK_MIX`, `RERANK_CANDIDATES`). So
+  it's off by default (`RERANK=0`), worth it only with a GPU. Reports: `knowledge-eval-3`, `-4`.
+- **Answers, 56 questions, gpt-oss-120b through OpenCode** (`answers.py`,
+  `knowledge-answers-gpt-oss-120b-*.json`): first, with only the MCP server's
+  instructions, it often answered from memory: OpenCode doesn't pass them on. With
+  `knowledge-instructions.md` and a reminder after the search results: **32/56 pass**;
+  searched first 47, no made-up URL 54, an expected page cited 28/49, the question's
+  language whenever it could be told, nothing it wanted to change. Of 7 with no answer in
+  the guides: "the guides don't cover it" 4, a made-up "Form Availability → End date"
+  setting (citing a real page at a made-up section) 1, from memory 1, the Python asked for
+  1. Usual failure: an answer without its source, or from a neighbouring page; "I need the
+  data in SPSS" taken as a task. The language check was first wrong (`docker exec` without
+  `-i`; short technical answers), and the "not covered" pattern missed `don’t` with a
+  curly apostrophe: `--rescore` reran both on the saved answers.
+
 ## Not yet
 
-- The other collections: QGIS is in `collections.json` but off (its user manual is large,
-  and it needs its own cases); ODK docs (CC BY 4.0) aren't in the library yet; XLSForm.org
-  has no licence file, so it waits for permission.
-- `knowledge.sh add` for a deployment's own documents (PDF, DOCX, ODT), and the reranker.
-- Answer quality with the agent model (the support bot's key facts and rules), on the GPU
-  rig: W4's runner with knowledge questions.
+- XLSForm.org: permission to ship it (no licence file); the XForms spec.
+- `knowledge.sh add` for a deployment's own documents (PDF, DOCX, ODT).
+- Answers that always cite their source: the main failure above. And the key facts, read by
+  a person (they're in the report).

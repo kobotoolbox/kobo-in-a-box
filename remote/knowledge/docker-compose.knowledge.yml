@@ -2,6 +2,7 @@
 #
 #   embed       llama-server with bge-m3, embeddings only, on this project's network (it
 #               embeds a question in ~50 ms on the CPU, so it never needs the GPU)
+#   rerank      llama-server with bge-reranker-v2-m3 (--reranking), with RERANK=1 only
 #   knowledge   the search and the agent's MCP tools on 127.0.0.1:${KNOWLEDGE_PORT} (edge:
 #               knowledge.kobo.local); reads the index and the library's pages, read-only
 #   index       the indexer (knowledge.sh index), run on demand: writes the index
@@ -9,7 +10,8 @@
 x-knowledge: &knowledge
   image: ${KNOWLEDGE_IMAGE}
   environment:
-    EMBED_URL: http://embed:8080
+    EMBED_URL: ${EMBED_URL}
+    RERANK_URL: ${KNOWLEDGE_RERANK_URL:-}
     KNOWLEDGE_DB: /data/knowledge.db
     LIBRARY: /library
     LIBRARY_URL: http://kobo.local
@@ -27,6 +29,25 @@ services:
     # -ub = -b = -c: an embedding input must fit one batch; bge-m3 takes 8,192 tokens
     command: >-
       -m /models/${EMBED_MODEL} --embeddings --host 0.0.0.0 --port 8080
+      -c 8192 -b 8192 -ub 8192 -t ${EMBED_THREADS}
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-m", "5", "-o", "/dev/null", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 6s
+      retries: 30
+      start_period: 2m
+    labels:
+      kobo-box.watchdog: restart
+
+  rerank:
+    image: ${EMBED_IMAGE}
+    profiles: [rerank]
+    restart: unless-stopped
+    mem_limit: 2g
+    volumes:
+      - ${MODELS_DIR}:/models:ro
+    command: >-
+      -m /models/${RERANK_MODEL} --reranking --host 0.0.0.0 --port 8080
       -c 8192 -b 8192 -ub 8192 -t ${EMBED_THREADS}
     healthcheck:
       test: ["CMD", "curl", "-fsS", "-m", "5", "-o", "/dev/null", "http://localhost:8080/health"]

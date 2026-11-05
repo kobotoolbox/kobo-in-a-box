@@ -2,19 +2,50 @@
   {
     "id": "kobo-guide",
     "title": "KoboToolbox user guide (support.kobotoolbox.org), English, Spanish and French",
-    "dirs": ["docs/kobo"],
+    "dirs": [
+      "docs/kobo"
+    ],
     "boost": 1.25,
     "source": "kobotoolbox/docs, built by library.sh docs",
     "licence": "Kobo's own documentation"
   },
   {
+    "id": "odk",
+    "title": "ODK documentation (docs.getodk.org): KoboCollect's basis ODK Collect, form design, XLSForm",
+    "dirs": [
+      "docs/odk"
+    ],
+    "boost": 1.0,
+    "source": "getodk/docs, built by library.sh docs-odk",
+    "licence": "CC BY 4.0, Get ODK Inc."
+  },
+  {
+    "id": "xlsform",
+    "title": "XLSForm.org: the XLSForm guide and reference table",
+    "dirs": [
+      "docs/xlsform"
+    ],
+    "boost": 1.1,
+    "source": "xlsform.org, saved by library.sh docs-xlsform",
+    "licence": "no licence published: test rigs only, never in packs",
+    "pack": false
+  },
+  {
     "id": "qgis",
     "title": "QGIS documentation (user manual, training manual, GIS introduction), English, Spanish and French",
-    "dirs": ["docs/qgis-docs-en", "docs/qgis-docs-es", "docs/qgis-docs-fr"],
-    "exclude": ["*/docs/pyqgis_developer_cookbook/*", "*/docs/developers_guide/*", "*/docs/documentation_guidelines/*", "*/docs/server_manual/*"],
+    "dirs": [
+      "docs/qgis-docs-en",
+      "docs/qgis-docs-es",
+      "docs/qgis-docs-fr"
+    ],
+    "exclude": [
+      "*/docs/pyqgis_developer_cookbook/*",
+      "*/docs/developers_guide/*",
+      "*/docs/documentation_guidelines/*",
+      "*/docs/server_manual/*"
+    ],
     "boost": 0.8,
     "source": "qgis/QGIS-Documentation, from the library (manifest.tsv)",
-    "licence": "CC BY-SA 3.0, QGIS project",
-    "enabled": false
+    "licence": "CC BY-SA 3.0, QGIS project"
   }
 ]
