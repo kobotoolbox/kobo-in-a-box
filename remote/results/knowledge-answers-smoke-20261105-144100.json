@@ -1,0 +1,77 @@
+{
+  "label": "smoke",
+  "summary": {
+    "pass": 1,
+    "searched": 3,
+    "cited_ok": 3,
+    "expected_page_cited": "1/2",
+    "cases": 3
+  },
+  "cases": [
+    {
+      "id": "box-es-two-factor",
+      "file": "box.yaml",
+      "language": "es",
+      "question": "¿Cómo activo la verificación en dos pasos en mi cuenta?",
+      "answer": "1. Inicia sesión en KoboToolbox.  \n2. Haz clic en el ícono de tu perfil (esquina superior derecha) → **CONFIGURACIÓN DE LA CUENTA**.  \n3. En la sección **Seguridad**, activa la 2FA cambiando el botón de **Desactivado** a **Activado**.  \n4. Abre una aplicación de autenticación (Google Authenticator, Authy, etc.) y sigue el proceso de código QR o clave manual.  \n\nFuente: http://kobo.local/docs/kobo/es/two_factor_authentication.html#configurar-la-2fa-en-kobotoolbox",
+      "seconds": 16,
+      "tools": [
+        "knowledge_search_knowledge"
+      ],
+      "asked": [],
+      "cited": [
+        "http://kobo.local/docs/kobo/es/two_factor_authentication.html#configurar-la-2fa-en-kobotoolbox"
+      ],
+      "searched": true,
+      "cited_ok": true,
+      "made_up_urls": [],
+      "cite": true,
+      "must_not_match": [],
+      "language_ok": true,
+      "key_facts": null,
+      "review": null,
+      "pass": true
+    },
+    {
+      "id": "formbuilder-skip-logic-basic",
+      "file": "howto.yaml",
+      "language": "en",
+      "seconds": 6,
+      "tools": [
+        "knowledge_search_knowledge"
+      ],
+      "asked": [],
+      "cited": [],
+      "searched": true,
+      "cited_ok": true,
+      "made_up_urls": [],
+      "cite": false,
+      "must_not_match": [],
+      "language_ok": true,
+      "pass": false,
+      "note": "support bot case (private repo): question, answer, key facts and review left out"
+    },
+    {
+      "id": "unanswerable-dark-mode",
+      "file": "unanswerable.yaml",
+      "language": "en",
+      "seconds": 6,
+      "tools": [
+        "knowledge_search_knowledge"
+      ],
+      "asked": [],
+      "cited": [
+        "http://kobo.local/docs/kobo/account_settings.html#language"
+      ],
+      "searched": true,
+      "cited_ok": true,
+      "made_up_urls": [],
+      "cite": null,
+      "must_not_match": [],
+      "language_ok": true,
+      "not_covered": false,
+      "pass": false,
+      "note": "support bot case (private repo): question, answer, key facts and review left out"
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "label": "smoke",
+  "summary": {
+    "pass": 0,
+    "searched": 0,
+    "cited_ok": 2,
+    "expected_page_cited": "0/2",
+    "cases": 2
+  },
+  "cases": [
+    {
+      "id": "box-es-two-factor",
+      "file": "box.yaml",
+      "language": "es",
+      "question": "¿Cómo activo la verificación en dos pasos en mi cuenta?",
+      "answer": "Ve a **Configuración → Seguridad**, habilita **Verificación en dos pasos**, elige el método (authenticator o SMS), sigue el asistente para registrar el dispositivo y confirma el código.  \n\n/help para más comandos.",
+      "seconds": 67,
+      "tools": [],
+      "cited": [],
+      "searched": false,
+      "cited_ok": true,
+      "made_up_urls": [],
+      "cite": false,
+      "must_not_match": [],
+      "language_ok": false,
+      "key_facts": null,
+      "review": null,
+      "pass": false
+    },
+    {
+      "id": "formbuilder-skip-logic-basic",
+      "file": "howto.yaml",
+      "language": "en",
+      "seconds": null,
+      "tools": [
+        "kobo_refresh_dashboard"
+      ],
+      "cited": [],
+      "searched": false,
+      "cited_ok": true,
+      "made_up_urls": [],
+      "cite": false,
+      "must_not_match": [],
+      "language_ok": false,
+      "pass": false,
+      "note": "support bot case (private repo): question, answer, key facts and review left out"
+    }
+  ]
+}
