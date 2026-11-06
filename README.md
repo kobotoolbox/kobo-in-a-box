@@ -40,6 +40,10 @@ remote/
   e2e-signin.sh         web sign-up and sign-in in a browser for a user whose email isn't verified
   e2e-users.sh          the Kobo accounts page (box/users.py): accounts, CSV lists, KoboCollect
                         QR codes, deactivating; kpi-delete-users.sh removes test accounts
+  phone.sh up|reset     a stand-in Android phone on the droplet: redroid (Android 13 in Docker,
+                        no KVM needed) with the library's KoboCollect, *.kobo.local → the box
+  e2e-collect.sh        KoboCollect itself on that phone: a new account's project, Download
+                        form, fill in, send, read back from KPI (e2e-collect.py drives the app)
   kpi-test.sh           KPI's test suite against a KPI branch, set up like KPI's CI
   results/              JSON per run, for comparing tiers; NOTES.md maps runs to settings
   agents/               W4: agent model, kobo-mcp and OpenCode; test data, 30 tasks, runner
@@ -114,6 +118,9 @@ ssh root@<ip> 'bash /root/kobo-box-ai/kpi-test.sh'
 ssh root@<ip> 'python3 -I /root/kobo-box-ai/e2e-nlp.py e2e "$(cat /root/e2e-user.pw)"'
 # Web sign-in with no mail server (run with ./offline.sh on; one-time image setup in the script)
 ssh root@<ip> '/root/kobo-box-ai/e2e-signin.sh'
+# KoboCollect on a stand-in phone (after box.sh install; the first phone.sh up needs the
+# internet for redroid's image and uiautomator2): screenshots in results/collect-<date>/
+ssh root@<ip> '/root/kobo-box-ai/phone.sh up && /root/kobo-box-ai/e2e-collect.sh'
 
 # Agents (W4): see remote/agents/README.md for the two-droplet session
 

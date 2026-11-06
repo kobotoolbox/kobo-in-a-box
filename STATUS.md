@@ -86,8 +86,12 @@ are in [PLAN.md](PLAN.md); per-run results are in [remote/results/NOTES.md](remo
    Digest partial digest; no browser script), KoboCollect QR codes with the box's Collect
    settings, and deactivation instead of deletion. Offline on the rig: `e2e-users.sh` 24/24.
    Found: the endpoint moved to `/api/v2/authorized_application/users/`, it answers 500 for a
-   taken username, and deleting a user in KPI leaves KoboCAT's copy. Left: KPI fixes upstream
-   (branch `fix/create-user-partial-digest`), a scan on a real phone, a box from a pack.
+   taken username, and deleting a user in KPI leaves KoboCAT's copy. KoboCollect itself, on a
+   stand-in Android phone on the droplet (`phone.sh`: redroid, no KVM), offline: a new
+   account's project, Download form, fill in, send, read back from KPI (`e2e-collect.sh` 8/8,
+   2026-11-06). Left: KPI fixes upstream (branch `fix/create-user-partial-digest`), Collect
+   scanning a code (the stand-in has no camera: a real phone, or an emulator with KVM), a box
+   from a pack.
    User guide: `site/index.html#accounts`; box: `remote/box/README.md`.
 4. **W2 to finish:** a KPI image from the branch, the pilot languages' tables, and
    proposing the change upstream (talk to the KPI team).
