@@ -1,0 +1,10 @@
+asset aZowHqoJsh7XYEJH5uAWdw version vShNxLDXFfpqaJmagALzyq
+submission ad2fc5a8-7370-4227-841a-67ebcafd722a
+qualSelectOne: CORRECT in 13.4s  {'uuid': 'd4e4cc10-2ab3-4055-bc61-482034e93263', 'value': '5fbd3acf-6409-4f08-8c65-901465d94b78', 'status': 'complete'}
+qualSelectMultiple: CORRECT in 12.0s  {'uuid': 'ab3d6b72-2067-40d0-91ae-a3173c438dd7', 'value': ['8a7e413e-3ff5-4b39-acf3-95313ba3686e', '54f4ffb4-1b45-47ab-90b9-608607b461d1'], 'status': 'complete'}
+qualInteger: CORRECT in 7.5s  {'uuid': '1c284cfd-9d01-44e3-a4c9-c3fea0993ea2', 'value': 5, 'status': 'complete'}
+translation: first response in_progress
+translation: CORRECT in 29.7s  {'value': 'Solíamos sacar agua del pozo cerca de la escuela, pero se rompió en marzo y nadie ha venido a arreglarlo. Ahora mis hijas caminan unas dos horas cada día hasta el río. Tenemos cinco hijos en total. Nos gustaría que repararan el pozo y algo de ayuda con las cuotas escolares.', 'status': 'complete', 'language': 'es'}
+transcription: first response in_progress
+transcription: CORRECT (WER 0%) in 29.9s  {'value': 'Al día de hoy no se ha demostrado a ciencia cierta que algún fármaco sea adecuado para tratar la infección existente causada por ébola, aun cuando existe una vacuna experimental que pareciera ser capaz de disminuir la mortalidad causada por esa enfermedad.', 'status': 'complete', 'language': 'es'}
+E2E PASS

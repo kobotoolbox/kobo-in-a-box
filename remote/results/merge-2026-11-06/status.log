@@ -1,0 +1,13 @@
+Working, but something needs attention.  (10:46)
+  [  ok] KoboToolbox: Working: forms, KoboCollect submissions and web forms.
+  [  ok] AI: transcription, translation, analysis: Ready (gemma-4-E4B-it-Q4_0, large-v3-turbo-q8_0).
+  [busy] AI assistant: Loading the assistant's model. This takes a few minutes after a restart.
+  [warn] Case management: Working, but 1 Kobo submission couldn't become a case. It is kept and tried again by itself.
+         -> Call support: they can see which ones and why (espocrm.sh failed).
+  [  ok] Dashboards: Working.
+  [  ok] Maps: Working: Colombia, Lesotho, Venezuela, OpenStreetMap as of 2026-11-06.
+  [  ok] Paper forms: Working.
+  [  ok] Documentation search: Working: the assistant answers how-to questions from the guides on this box.
+  [  ok] Library and this page: Working at http://kobo.local.
+  [  ok] Disk space: 263 GB free of 415 GB (63%).
+  [  ok] Backups: Last backup to a drive: 4 days ago (Mon 02 Nov, 16:55). Nightly copy on the box: 3 hours ago.

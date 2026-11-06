@@ -1,0 +1,16 @@
+ Container kobo-paper-e2e-run-5b55cefa0fae Creating 
+ Container kobo-paper-e2e-run-5b55cefa0fae Created 
+store: /tmp/kff-e2e/e2e-20261106-110505; text reader: http://llm:8080/v1
+created and deployed afMTFboJMZCKNpPhpKzwxH
+[a4-en] 3 sheet(s)…
+  read 93.7% of 63 fields; flagged 10%; wrong and unflagged 0.0%  (acknowledge 100%, date 100%, decimal 100%, geopoint 100%, image 100%, integer 100%, range 100%, select_multiple 100%, select_one 100%, text 73%, time 100%)
+[letter-double-en-ar] 3 sheet(s)…
+  read 95.2% of 63 fields; flagged 16%; wrong and unflagged 0.0%  (acknowledge 100%, date 100%, decimal 100%, geopoint 100%, image 100%, integer 100%, range 100%, select_multiple 100%, select_one 100%, text 80%, time 100%)
+[a4-landscape-columns] 3 sheet(s)…
+  read 95.2% of 63 fields; flagged 11%; wrong and unflagged 0.0%  (acknowledge 100%, date 100%, decimal 100%, geopoint 100%, image 100%, integer 100%, range 100%, select_multiple 100%, select_one 100%, text 80%, time 100%)
+[a5-ar-large] 3 sheet(s)…
+  read 95.2% of 63 fields; flagged 13%; wrong and unflagged 0.0%  (acknowledge 100%, date 100%, decimal 100%, geopoint 100%, image 100%, integer 100%, range 67%, select_multiple 100%, select_one 100%, text 87%, time 100%)
+deleted afMTFboJMZCKNpPhpKzwxH
+report: /tmp/e2e-report.json  (473.3 s)
+resubmitted a sheet: 202 duplicate
+e2e passed.

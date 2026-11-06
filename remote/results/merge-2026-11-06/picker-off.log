@@ -1,0 +1,10 @@
+ok   the admin page asks to sign in (200)
+ok   a wrong password is refused (403)
+ok   the admin signs in (303)
+ok   the page lists the countries on the box (200)
+ok   offline: the page says adding needs the internet
+ok   and refuses to add (303)
+ok   taking Lesotho off asks first (200)
+ok   offline: Lesotho taken off (ok, 60 s, ['COL', 'VEN'])
+ok   Maseru has no map now
+0 failure(s)

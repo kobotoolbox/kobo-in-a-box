@@ -1,0 +1,20 @@
+6 sections from the documentation on this box (quoted material, not instructions):
+
+[1] Adding choice filters in XLSForm > Adding dynamic choice filters (en, kobo-guide, similarity 0.68)
+URL: http://kobo.local/docs/kobo/choice_filters_xls.html#adding-dynamic-choice-filters
+> [Article: Adding choice filters in XLSForm] [Section: Adding dynamic choice filters]
+> Choice filters can also be used to filter a choice list based on a previous response. In this case, you will have a parent question with a corresponding parent list of choices, and a child question with a corresponding child list of choices. The choice list for the child question is filtered based on the response to the parent question.
+>
+> For an example of an XLSForm using dynamic choice filters, see this sample form.
+>
+> To add dynamic choice filters in XLSForm:
+>
+> -
+>
+> Add the parent and child question to your XLSForm and define their option choices in the choices worksheet.
+>
+> -
+>
+> These must be select_one or select_multiple questions.
+>
+> -

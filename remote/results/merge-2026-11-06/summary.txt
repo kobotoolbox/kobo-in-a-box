@@ -1,0 +1,13 @@
+status           rc=0       1s  
+maps             rc=1      14s  2 failure(s)
+picker-off       rc=0      84s  0 failure(s)
+dash             rc=0      81s  0 failure(s)
+users            rc=126     0s  
+signin           rc=126     0s  
+smoke            rc=0     810s  
+nlp              rc=1       4s  urllib.error.URLError: <urlopen error [Errno -3] Temporary failure in name resolution>
+espo             rc=0     104s  27/27 passed; /root/kobo-box-ai/results/w11-e2e-20261106-110317.json
+knowledge        rc=0       3s  
+paper            rc=0     475s  e2e passed.
+collect          rc=0      64s  
+DONE
