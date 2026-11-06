@@ -38,6 +38,8 @@ remote/
   eval/fleurs-*.tsv     reference clips (transcript + English) fetched by bootstrap.sh
   e2e-nlp.py            KPI's automatic qual, translation and transcription through its real API
   e2e-signin.sh         web sign-up and sign-in in a browser for a user whose email isn't verified
+  e2e-users.sh          the Kobo accounts page (box/users.py): accounts, CSV lists, KoboCollect
+                        QR codes, deactivating; kpi-delete-users.sh removes test accounts
   kpi-test.sh           KPI's test suite against a KPI branch, set up like KPI's CI
   results/              JSON per run, for comparing tiers; NOTES.md maps runs to settings
   agents/               W4: agent model, kobo-mcp and OpenCode; test data, 30 tasks, runner
@@ -48,7 +50,8 @@ remote/
                         printed from Kobo forms, scanned and submitted back (paper/README.md)
   box/                  W12: what makes it a kit that runs itself (box/README.md): fixed
                         internal address, AI tier from the hardware, KOBOBACKUP drive backups,
-                        the status page at kobo.local/status (status.py), the content
+                        the status page at kobo.local/status (status.py), Kobo accounts
+                        and KoboCollect QR codes at kobo.local/users (users.py), the content
                         pack (pack.sh build), the factory install from it (install.sh --pack)
                         and the first power-on (firstboot.sh, label card)
   library/
