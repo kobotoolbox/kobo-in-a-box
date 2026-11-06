@@ -739,6 +739,30 @@ settings), and deactivates rather than deletes accounts, so a leaver's projects 
 stay. Two KPI fixes to propose upstream: the order of `set_password`, and the endpoint's
 500 for a taken username (its serializer drops the unique check).
 
+### 3o. Encrypted forms (W16, planned)
+
+Full plan: [ENCRYPTION-PLAN.md](ENCRYPTION-PLAN.md). This is ODK Central's *managed
+encryption* on top of KoboToolbox. A box admin turns encryption on for a form at
+`kobo.local/keys` (`box/keys.py`, signed in like `kobo.local/users`). Phones and Enketo
+encrypt each submission, so the box stores only ciphertext. The admin downloads the
+decrypted data by typing a passphrase.
+
+- **KPI already accepts encrypted forms.** It marks a form encrypted when the form has
+  both `public_key` and `submission_url`, stores the `.enc` files, and serves ODK's
+  Briefcase API. What's missing is key management and decryption.
+- **Keys:** RSA-2048 pairs made on the box. The private key is a passphrase-locked PKCS#8
+  PEM in `/etc/kobo-box/keys/` (so it's in backups, still locked). The passphrase is never
+  stored. One key can cover many forms.
+- **Kits encrypt, the hub decrypts:** a field kit holds only the public key, so a stolen
+  kit gives nothing away.
+- **kobo-transfer breaks encrypted submissions as it is.** It replaces the root element's
+  attributes (which drops `encrypted="yes"`), rewrites `id`/`version`, and adds
+  `formhub/uuid` and `__version__`. It needs an encrypted mode before W14 can carry them.
+- **What an encrypted form loses:** the data table and exports show metadata only. KPI's
+  AI features, agents, dashboards and the case bridge can't use the data. kff would submit
+  in plaintext, so it refuses these forms in phase 1. The passphrase crosses the box's
+  plain-HTTP Wi-Fi, which adds weight to the local-HTTPS question (section 7).
+
 ## 4. Testing on DigitalOcean (extends README)
 
 The DigitalOcean rig covers **functional and offline** testing. Performance numbers only count from a real Strix Halo unit.
@@ -921,6 +945,17 @@ Not in the original plan; started and built 2026-11-06. Linear milestone "W15 ·
 - [ ] Scan the QR codes with KoboCollect on a real phone (W5 kit or any Android phone on the rig)
 - [ ] In the content pack and `firstboot.sh`/`update.sh` (the service comes with `box.sh install`; check on a box from a pack)
 
+### W16. Encrypted forms (~2 weeks; see 3o and ENCRYPTION-PLAN.md)
+Planned 2026-11-06, not started. Linear milestone "W16 · Encrypted forms" (PRODUCT-343 to PRODUCT-350).
+- [ ] `box/odk_crypto.py`: decrypt and check signatures (and encrypt, for tests and later kff), checked against Central's `crypto.js` and Briefcase, with fixtures made by real KoboCollect
+- [ ] `box/keys.py` at `kobo.local/keys`: make, import and export keys, turn a form on, decrypted export; sign-in shared with `users.py`
+- [ ] Find out the `submission_url` path KPI accepts, and whether form-builder redeploys keep the settings
+- [ ] kobo-transfer: an encrypted mode (manifest unchanged, `.enc` attachments as they are)
+- [ ] kobo-mcp, kff and the case bridge say a form is encrypted instead of failing silently
+- [ ] `remote/e2e-encryption.sh` on the rig, offline (KoboCollect, Enketo, canary search, kit → hub, restore)
+- [ ] `box/decrypt.py` for laptops; user guide with screenshots
+- [ ] Decisions: who manages keys, whether kits may hold private keys, one key per team or per form, no decrypted copy in Kobo
+
 ## 6. Risks
 
 | Risk | Mitigation |
@@ -950,6 +985,7 @@ Not in the original plan; started and built 2026-11-06. Linear milestone "W15 ·
 | Documents added to the knowledge base carry personal data or injected instructions | Box-wide by design, so a "no personal data" rule for collections; retrieved text marked as untrusted; deletes denied, writes ask |
 | A handwritten answer is read wrongly and submitted as if right | kff flags anything unsure and refuses to submit unresolved flags; text on lines is always reviewed; its e2e fails on any wrong-and-unflagged reading; measure on real paper (W13) |
 | Everyone using the paper-forms app on the Wi-Fi submits as one Kobo account | A box account that only sees forms shared with it, the app behind a password; per-user sign-in in phase 2 (3l) |
+| An encrypted form's passphrase is lost, or read off the Wi-Fi when typed | Central's warning on the page (no recovery, ever); the locked key exported to a second stick; decrypt from a device plugged into the box until local HTTPS (W16) |
 | Offline basemaps and boundaries only cover what was loaded | Choose regions with the partner before deployment; shapes and points still draw with no basemap |
 
 ## 7. Open questions
