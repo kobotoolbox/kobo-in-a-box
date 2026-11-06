@@ -371,6 +371,10 @@ def maps():
         return None
     name = 'Maps'
     env = env_file(REMOTE / 'maps' / 'maps.env')
+    try:  # a change from kobo.local/maps (maps.sh job) restarts the tile server
+        job = json.loads(Path('/var/lib/kobo-box/maps-job.json').read_text())
+    except (OSError, ValueError):
+        job = {}
     try:
         doc = json.loads(Path(env.get('MAPS_DIR', '/opt/maps'), 'basemap', 'countries.json').read_text())
         names = ', '.join(c['name'] for c in doc['countries'])
@@ -380,8 +384,8 @@ def maps():
         what = ''
     if http(f"http://127.0.0.1:{env.get('MAPS_PORT', '8090')}/health") == 200 and not not_running(cs):
         return check(name, 'ok', 'Working:' + what + watchdog_note(cs) if what else 'Working.' + watchdog_note(cs))
-    if starting():
-        return check(name, 'busy', 'Starting up.')
+    if starting() or job.get('running'):
+        return check(name, 'busy', "Changing the map's countries." if job.get('running') else 'Starting up.')
     return check(name, 'warn', 'Not working: dashboards show their areas and points, but no map '
                  'behind them.', 'Restart the box. ' + CALL_SUPPORT)
 

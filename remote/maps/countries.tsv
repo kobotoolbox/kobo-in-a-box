@@ -1,0 +1,232 @@
+# Countries the picker offers (kobo.local/maps/): geoBoundaries gbOpen ADM0, 2026-11-06
+iso	name	continent	area_km2
+AFG	Afghanistan	Asia	641868
+ALB	Albania	Europe	28784
+DZA	Algeria	Africa	2310020
+ASM	American Samoa	Oceania	193
+AND	Andorra	Europe	470
+AGO	Angola	Africa	1282739
+AIA	Anguilla	Latin America and the Caribbean	75
+ATA	Antartica	Undefined	12163158
+ATG	Antigua and Barbuda	Latin America and the Caribbean	421
+ARG	Argentina	Latin America and the Caribbean	2776548
+ARM	Armenia	Asia	29274
+ABW	Aruba	Latin America and the Caribbean	178
+AUS	Australia	Oceania	7688095
+AUT	Austria	Europe	83947
+AZE	Azerbaijan	Asia	84709
+BHS	Bahamas	Latin America and the Caribbean	12593
+BHR	Bahrain	Asia	761
+BGD	Bangladesh	Asia	140222
+BRB	Barbados	Latin America and the Caribbean	433
+BLR	Belarus	Europe	207721
+BEL	Belgium	Europe	30669
+BLZ	Belize	Latin America and the Caribbean	21898
+BEN	Benin	Africa	115454
+BMU	Bermuda	Northern America	52
+BTN	Bhutan	Asia	40331
+BOL	Bolivia	Latin America and the Caribbean	1068783
+BES	Bonaire Sint Eustatius and Saba	Latin America and the Caribbean	243
+BIH	Bosnia and Herzegovina	Europe	51447
+BWA	Botswana	Africa	578132
+BRA	Brazil	Latin America and the Caribbean	8510253
+VGB	British Virgin Islands	Latin America and the Caribbean	142
+BRN	Brunei Darussalam	Asia	6059
+BGR	Bulgaria	Europe	110955
+BFA	Burkina Faso	Africa	273377
+BDI	Burundi	Africa	25048
+CPV	Cabo Verde	Africa	4060
+KHM	Cambodia	Asia	181701
+CMR	Cameroon	Africa	465736
+CAN	Canada	Northern America	9877951
+CYM	Cayman Islands	Latin America and the Caribbean	262
+CAF	Central African Republic	Africa	619739
+TCD	Chad	Africa	1273902
+CHL	Chile	Latin America and the Caribbean	736595
+CHN	China	Asia	9481447
+COL	Colombia	Latin America and the Caribbean	1139347
+COM	Comoros	Africa	1649
+COG	Congo	Africa	343275
+COK	Cook Islands	Oceania	218
+CRI	Costa Rica	Latin America and the Caribbean	51087
+HRV	Croatia	Europe	56406
+CUB	Cuba	Latin America and the Caribbean	110881
+CUW	Curaçao	Latin America and the Caribbean	423
+CYP	Cyprus	Asia	8982
+CZE	Czechia	Europe	78874
+CIV	Côte d'Ivoire	Africa	320677
+PRK	Dem. People's Republic of Korea	Asia	122568
+COD	Democratic Republic of the Congo	Africa	2308808
+DNK	Denmark	Europe	42896
+DJI	Djibouti	Africa	21848
+DMA	Dominica	Latin America and the Caribbean	752
+DOM	Dominican Republic	Latin America and the Caribbean	48092
+ECU	Ecuador	Latin America and the Caribbean	255951
+EGY	Egypt	Africa	1000005
+SLV	El Salvador	Latin America and the Caribbean	25339
+GNQ	Equatorial Guinea	Africa	27032
+ERI	Eritrea	Africa	120393
+EST	Estonia	Europe	43479
+SWZ	Eswatini	Africa	17363
+ETH	Ethiopia	Africa	1126359
+FLK	Falkland Islands	Latin America and the Caribbean	11797
+FRO	Faroe Islands	Europe	1368
+FJI	Fiji	Oceania	18608
+FIN	Finland	Europe	337441
+FRA	France	Europe	554364
+GUF	French Guiana	Latin America and the Caribbean	82710
+PYF	French Polynesia	Oceania	3492
+GAB	Gabon	Africa	259093
+GMB	Gambia	Africa	10568
+GEO	Georgia	Asia	69658
+DEU	Germany	Europe	357734
+GHA	Ghana	Africa	238761
+GIB	Gibraltar	Europe	6
+GRC	Greece	Europe	131804
+GRL	Greenland	Northern America	1758407
+GRD	Grenada	Latin America and the Caribbean	350
+GLP	Guadeloupe	Latin America and the Caribbean	1627
+GUM	Guam	Oceania	539
+GTM	Guatemala	Latin America and the Caribbean	107941
+GGY	Guernsey	Europe	78
+GIN	Guinea	Africa	244931
+GNB	Guinea-Bissau	Africa	35270
+GUY	Guyana	Latin America and the Caribbean	210975
+HTI	Haiti	Latin America and the Caribbean	26920
+VAT	Holy See	Europe	1
+HND	Honduras	Latin America and the Caribbean	112013
+HUN	Hungary	Europe	92118
+ISL	Iceland	Europe	102680
+IDN	Indonesia	Asia	1890132
+IRN	Iran	Asia	1622509
+IRQ	Iraq	Asia	437367
+IRL	Ireland	Europe	69846
+IMN	Isle of Man	Europe	569
+ISR	Israel	Asia	22065
+ITA	Italy	Europe	301400
+JAM	Jamaica	Latin America and the Caribbean	11056
+JPN	Japan	Asia	378000
+JOR	Jordan	Asia	89125
+KAZ	Kazakhstan	Asia	2706685
+KEN	Kenya	Africa	590898
+KIR	Kiribati	Oceania	888
+XKX	Kosovo	Europe	10907
+KWT	Kuwait	Asia	17214
+KGZ	Kyrgyzstan	Asia	198665
+LAO	Lao People's Democratic Republic	Asia	229733
+LVA	Latvia	Europe	64594
+LBN	Lebanon	Asia	10176
+LSO	Lesotho	Africa	30549
+LBR	Liberia	Africa	95845
+LBY	Libya	Africa	1623759
+LIE	Liechtenstein	Europe	161
+LTU	Lithuania	Europe	64898
+LUX	Luxembourg	Europe	2593
+MDG	Madagascar	Africa	588528
+MWI	Malawi	Africa	95821
+MYS	Malaysia	Asia	329652
+MDV	Maldives	Asia	196
+MLI	Mali	Africa	1254307
+MLT	Malta	Europe	321
+MHL	Marshall Islands	Oceania	125
+MTQ	Martinique	Latin America and the Caribbean	1098
+MRT	Mauritania	Africa	1035115
+MUS	Mauritius	Africa	1998
+MYT	Mayotte	Africa	373
+MEX	Mexico	Latin America and the Caribbean	1965256
+FSM	Micronesia	Oceania	688
+MCO	Monaco	Europe	2
+MNG	Mongolia	Asia	1565194
+MNE	Montenegro	Europe	13886
+MSR	Montserrat	Latin America and the Caribbean	102
+MAR	Morocco	Africa	682756
+MOZ	Mozambique	Africa	787269
+MMR	Myanmar	Asia	668567
+NAM	Namibia	Africa	825771
+NRU	Nauru	Oceania	22
+NPL	Nepal	Asia	148042
+NLD	Netherlands	Europe	41546
+NCL	New Caledonia	Oceania	18545
+NZL	New Zealand	Oceania	267898
+NIC	Nicaragua	Latin America and the Caribbean	126983
+NER	Niger	Africa	1181732
+NGA	Nigeria	Africa	912722
+NIU	Niue	Oceania	261
+MKD	North Macedonia	Europe	24959
+MNP	Northern Mariana Islands	Oceania	309
+NOR	Norway	Europe	323098
+OMN	Oman	Asia	308158
+PAK	Pakistan	Asia	866214
+PLW	Palau	Oceania	1161
+PAN	Panama	Latin America and the Caribbean	75260
+PNG	Papua New Guinea	Oceania	461730
+PRY	Paraguay	Latin America and the Caribbean	399666
+PER	Peru	Latin America and the Caribbean	1291662
+PHL	Philippines	Asia	295281
+PCN	Pitcairn Islands	Oceania	43
+POL	Poland	Europe	313970
+PRT	Portugal	Europe	92220
+QAT	Qatar	Asia	11555
+KOR	Republic of Korea	Asia	98544
+MDA	Republic of Moldova	Europe	33996
+ROU	Romania	Europe	237432
+RUS	Russian Federation	Europe	18179289
+RWA	Rwanda	Africa	23673
+REU	Réunion	Africa	2494
+BLM	Saint Barthélemy	Latin America and the Caribbean	20
+SHN	Saint Helena	Africa	394
+KNA	Saint Kitts and Nevis	Latin America and the Caribbean	263
+LCA	Saint Lucia	Latin America and the Caribbean	610
+VCT	Saint Vincent and the Grenadines	Latin America and the Caribbean	387
+WSM	Samoa	Oceania	2835
+SMR	San Marino	Europe	61
+STP	Sao Tome and Principe	Africa	990
+SAU	Saudi Arabia	Asia	1925091
+SEN	Senegal	Africa	196691
+SRB	Serbia	Europe	77593
+SYC	Seychelles	Africa	481
+SLE	Sierra Leone	Africa	72613
+SGP	Singapore	Asia	724
+SVK	Slovakia	Europe	49025
+SVN	Slovenia	Europe	20400
+SLB	Solomon Islands	Oceania	27199
+SOM	Somalia	Africa	633043
+ZAF	South Africa	Africa	1220813
+SSD	South Sudan	Africa	632495
+ESP	Spain	Europe	506009
+LKA	Sri Lanka	Asia	66069
+PSE	State of Palestine	Asia	5909
+SDN	Sudan	Africa	1871528
+SUR	Suriname	Latin America and the Caribbean	145362
+SWE	Sweden	Europe	446025
+CHE	Switzerland	Europe	41287
+SYR	Syrian Arab Republic	Asia	186511
+TWN	Taiwan	Asia	36955
+TJK	Tajikistan	Asia	141290
+THA	Thailand	Asia	514935
+TLS	Timor-Leste	Asia	14889
+TGO	Togo	Africa	56899
+TKL	Tokelau	Oceania	10
+TON	Tonga	Oceania	682
+TTO	Trinidad and Tobago	Latin America and the Caribbean	5139
+TUN	Tunisia	Africa	155217
+TUR	Turkey	Asia	780053
+TKM	Turkmenistan	Asia	491433
+TCA	Turks and Caicos Islands	Latin America and the Caribbean	683
+TUV	Tuvalu	Oceania	22
+UGA	Uganda	Africa	209006
+UKR	Ukraine	Europe	640065
+ARE	United Arab Emirates	Asia	70647
+GBR	United Kingdom	Europe	244518
+TZA	United Republic of Tanzania	Africa	889855
+VIR	United States Virgin Islands	Latin America and the Caribbean	214
+USA	United States of America	Northern America	9366497
+URY	Uruguay	Latin America and the Caribbean	176823
+UZB	Uzbekistan	Asia	443682
+VUT	Vanuatu	Oceania	12202
+VEN	Venezuela	Latin America and the Caribbean	912684
+VNM	Viet Nam	Asia	331079
+WLF	Wallis and Futuna Islands	Oceania	140
+YEM	Yemen	Asia	452866
+ZMB	Zambia	Africa	751174
+ZWE	Zimbabwe	Africa	390772

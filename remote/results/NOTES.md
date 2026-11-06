@@ -482,3 +482,9 @@ first time, under 1 ms from the edge's cache; ~205 MB of memory. `e2e-maps.py --
 offline: 27/27. From the laptop, plain http to the droplet took 59 s to connect every time
 (ssh fine); screenshots and QGIS went through SSH tunnels instead.
 
+Later the same day, the country picker (`maps/picker.py`) on a new `kobo-box-maps` from the
+same snapshot, with `box.sh install`: through the page, Lesotho added in 90 s and Ecuador in
+~60 s (each cuts every country on the box again from build 20261106, plus the MBTiles:
+COL+LSO+VEN 1,032 MB), Lesotho taken off offline in 63 s. `e2e-maps.py --picker` 11/11,
+`--picker-offline` 9/9, `e2e-maps.py` 27 checks, 0 failures.
+

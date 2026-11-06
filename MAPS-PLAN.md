@@ -9,7 +9,9 @@ guide `site/maps.html` with screenshots. Decided on the way: one PMTiles file fo
 box's countries (one style, one source), cut with the union of their outlines; an MBTiles
 copy for downloads, since QGIS and QField open MBTiles and not PMTiles (the pmtiles CLI only
 converts the other way, so `maps.py mbtiles` does it); the host `maps.kobo.local`, with the
-edge caching drawn tiles. Phases 2 and 3 are still to do.
+edge caching drawn tiles. Phase 2's country picker is done too (2026-11-06,
+`remote/maps/picker.py` at `kobo.local/maps/`, the accounts page's admin sign-in, 20/20
+online and offline, kept on pack updates); its maps-only pack, and phase 3, are still to do.
 
 **Suggestion (from a friend of the project):** bundle offline OpenStreetMap maps for the one or
 two countries a deployment works in. Little disk space, and very handy.

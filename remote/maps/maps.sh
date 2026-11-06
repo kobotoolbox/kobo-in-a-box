@@ -9,7 +9,12 @@
 #                                Protomaps' newest OpenStreetMap build, and fetch their
 #                                administrative areas for dashboards (online)
 #   ./maps.sh remove VEN         take a country off (offline: cut from the box's own map)
+#   ./maps.sh refresh            the same countries from Protomaps' newest build (online)
 #   ./maps.sh list               the countries on the box, the map's date and size
+#   ./maps.sh job add|remove|refresh [ISO3...]   as above, one at a time, for the admin
+#                                page (picker.py): its log and state in /var/lib/kobo-box,
+#                                and the change marked as made on this box (so a newer
+#                                pack's map doesn't replace it: update.sh)
 #   ./maps.sh up                 start the tile server (and point dashboards at it)
 #   ./maps.sh down | logs | status
 #   ./maps.sh check              nothing in the style reaches outside the box; tiles answer
@@ -20,6 +25,8 @@ cd "$(dirname "$0")"
 set -a; source maps.env; [[ -f maps.local.env ]] && source maps.local.env; set +a
 LIBRARY_DIR=${LIBRARY_DIR:-/srv/library}
 PMTILES=$MAPS_DIR/bin/pmtiles
+JOB_STATE=/var/lib/kobo-box/maps-job.json
+JOB_LOG=/var/lib/kobo-box/maps-job.log
 
 compose() { docker compose -p kobo-maps -f docker-compose.maps.yml "$@"; }
 log() { echo "[$(date +%H:%M:%S)] $*"; }
@@ -68,6 +75,32 @@ extract_map() {  # extract_map <source> <ISO3...>: the basemap of exactly these 
     log "the map as MBTiles, for download: $(python3 -I maps.py mbtiles "$BASEMAP_DIR/basemap.pmtiles" "$BASEMAP_DIR/download/basemap.mbtiles")"
 }
 
+outline() {  # outline ISO3: its ADM0 outline (to cut along), and ADM1-2 for dashboards
+    local iso=$1
+    [[ -s "$BOUNDARIES_DIR/${iso}_ADM0.geojson" ]] && return 0
+    if docker image inspect "$(sed -n 's/^DASH_IMAGE=//p' ../dash/dash.env)" >/dev/null 2>&1; then
+        ../dash/dash.sh boundaries "$iso" --levels ADM0,ADM1,ADM2
+    else  # no dashboards on this box: the outline only, straight from geoBoundaries
+        local url
+        url=$(curl -fsS --retry 2 "https://www.geoboundaries.org/api/current/gbOpen/$iso/ADM0/"             | jq -r '.simplifiedGeometryGeoJSON // empty') || true
+        [[ -n "$url" ]] || die "geoBoundaries has no outline for $iso"
+        mkdir -p "$BOUNDARIES_DIR"
+        curl -fsSL --retry 2 -o "$BOUNDARIES_DIR/${iso}_ADM0.geojson.part" "$url"
+        mv "$BOUNDARIES_DIR/${iso}_ADM0.geojson.part" "$BOUNDARIES_DIR/${iso}_ADM0.geojson"
+    fi
+    [[ -s "$BOUNDARIES_DIR/${iso}_ADM0.geojson" ]] || die "no outline for $iso"
+}
+
+room() {  # room: enough free disk for a new map and its take-away copy beside the old ones
+    local free_gb
+    free_gb=$(df -P --block-size=1G "$MAPS_DIR" | awk 'NR == 2 {print $4}')
+    (( free_gb >= MIN_FREE_GB )) || die "only $free_gb GB free on the disk: a map needs at least $MIN_FREE_GB GB"
+}
+
+info() {  # info <build> <ISO3...>: countries.json, marked as changed on this box in a job
+    python3 -I maps.py info "$BASEMAP_DIR" "$@" ${MAPS_ON_BOX:+--on-box}
+}
+
 restart() {  # the tile server opens the map at start: after a new one, start it again
     if running; then "$0" up; else files; fi
 }
@@ -110,13 +143,22 @@ case "${1:-}" in
         [[ -x "$PMTILES" ]] || die "no pmtiles CLI: ./maps.sh build (online)"
         for iso in "$@"; do [[ $iso =~ ^[A-Z]{3}$ ]] || die "not an ISO 3166 alpha-3 code: $iso"; done
         mapfile -t all < <({ countries; printf '%s\n' "$@"; } | sort -u)
-        for iso in "${all[@]}"; do   # the outline to cut along, and the areas for dashboards
-            [[ -s "$BOUNDARIES_DIR/${iso}_ADM0.geojson" ]] || ../dash/dash.sh boundaries "$iso" --levels ADM0,ADM1,ADM2
-        done
-        build=${PROTOMAPS_BUILD:-$(curl -fsS "$PROTOMAPS_BUILDS" | jq -r 'map(.key) | sort | last')}
-        [[ $build == *.pmtiles ]] || die "no Protomaps build found at $PROTOMAPS_BUILDS"
-        extract_map "$PROTOMAPS_URL/$build" "${all[@]}"
-        python3 -I maps.py info "$BASEMAP_DIR" "$build" "$MAX_ZOOM" "${all[@]}"
+        "$0" fetch "${all[@]}"
+        ;;
+    refresh)
+        mapfile -t all < <(countries)
+        [[ ${#all[@]} -gt 0 ]] || die "no countries on this box to bring up to date"
+        "$0" fetch "${all[@]}"
+        ;;
+    fetch)  # fetch ISO3...: the map of exactly these countries, from the newest build
+        shift
+        [[ -x "$PMTILES" ]] || die "no pmtiles CLI: ./maps.sh build (online)"
+        room
+        for iso in "$@"; do outline "$iso"; done
+        build=${PROTOMAPS_BUILD:-$(curl -fsS --max-time 30 "$PROTOMAPS_BUILDS" | jq -r 'map(.key) | sort | last')} || true
+        [[ $build == *.pmtiles ]] || die "no Protomaps build found at $PROTOMAPS_BUILDS: is the box online?"
+        extract_map "$PROTOMAPS_URL/$build" "$@"
+        info "$build" "$MAX_ZOOM" "$@"
         restart
         running || "$0" list   # up says it otherwise
         ;;
@@ -131,10 +173,9 @@ case "${1:-}" in
             log "no countries left: the box has no basemap"; exit 0
         fi
         build=$(jq -r .osm_build "$BASEMAP_DIR/countries.json")
-        cp "$BASEMAP_DIR/basemap.pmtiles" "$BASEMAP_DIR/previous.pmtiles"
-        extract_map "$BASEMAP_DIR/previous.pmtiles" "${keep[@]}"
-        rm -f "$BASEMAP_DIR/previous.pmtiles"
-        python3 -I maps.py info "$BASEMAP_DIR" "$build" "$MAX_ZOOM" "${keep[@]}"
+        # From the map in place: it's replaced only once the new one verifies
+        extract_map "$BASEMAP_DIR/basemap.pmtiles" "${keep[@]}"
+        info "$build" "$MAX_ZOOM" "${keep[@]}"
         restart
         running || "$0" list   # up says it otherwise
         ;;
@@ -157,6 +198,32 @@ case "${1:-}" in
         # Dashboards take their basemap from here (dash.sh basemap), if they run
         if [[ -n "$(docker compose -p kobo-dash ps -q dash 2>/dev/null)" ]]; then ../dash/dash.sh up >/dev/null 2>&1 || die "dashboards did not restart (../dash/dash.sh up)"; fi
         echo "Maps on http://maps.kobo.local: $("$0" list)"
+        ;;
+    job)
+        shift
+        action=${1:-}; shift || true
+        [[ $action =~ ^(add|remove|refresh)$ ]] || die "usage: $0 job add|remove|refresh [ISO3...]"
+        mkdir -p "$(dirname "$JOB_STATE")"
+        exec 9>"$JOB_STATE.lock"
+        flock -n 9 || die "a map job is already running"
+        state() {  # state <running> [ok] [error]
+            jq -n --arg action "$action" --arg running "$1" --arg ok "${2:-}" \
+                --arg error "${3:-}" --arg started "$started" --arg now "$(date +%Y-%m-%dT%H:%M:%S%z)" \
+                '{action: $action, countries: ($ARGS.positional), running: ($running == "true"),
+                  ok: (if $ok == "" then null else $ok == "true" end), error: $error,
+                  started: $started, finished: (if $running == "true" then null else $now end)}' \
+                --args "${isos[@]}" > "$JOB_STATE.tmp"
+            mv "$JOB_STATE.tmp" "$JOB_STATE"
+        }
+        isos=("$@"); started=$(date +%Y-%m-%dT%H:%M:%S%z)
+        state true
+        if MAPS_ON_BOX=1 "$0" "$action" "$@" > "$JOB_LOG" 2>&1; then
+            state false true
+        else
+            state false false "$(grep -E '^maps: ' "$JOB_LOG" | tail -1 | sed 's/^maps: //')"
+        fi
+        systemctl start --no-block kobo-box-status.service 2>/dev/null || true
+        jq -e .ok "$JOB_STATE" >/dev/null
         ;;
     down) compose down; library_link off ;;
     logs) compose logs -f --tail 100 ;;

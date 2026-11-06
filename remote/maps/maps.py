@@ -4,9 +4,13 @@ The basemap's files, for maps.sh. Standard library only.
 
     python3 -I maps.py region <boundaries dir> <out.geojson> ISO3...
         the countries' outlines (dash.sh boundaries' ADM0 layers) as one area to cut out
-    python3 -I maps.py info <basemap dir> <build> <max zoom> ISO3...
+    python3 -I maps.py info <basemap dir> <build> <max zoom> ISO3... [--on-box]
         countries.json: the countries, their bounds, the OpenStreetMap build and the
-        basemap's size and SHA-256 (the status and download pages read it)
+        basemap's size and SHA-256 (the status and download pages read it); --on-box:
+        changed on this box (the admin page), so a pack update keeps it
+    python3 -I maps.py pack-update <pack's basemap dir> <box's basemap dir>
+        on an update (update.sh): the pack's map, unless countries were changed on the box
+        and the pack's map has no country the box's lacks
     python3 -I maps.py config <basemap dir>
         the tile server's config.json
     python3 -I maps.py downloads <basemap dir>
@@ -71,8 +75,12 @@ def sha256(path):
     return h.hexdigest()
 
 
-def info(basemap, build, maxzoom, isos):
+def info(basemap, build, maxzoom, isos, on_box=False):
     basemap = Path(basemap)
+    try:
+        before = json.loads((basemap / 'countries.json').read_text())
+    except (OSError, ValueError):
+        before = {}
     boundaries = basemap.parent / 'boundaries'
     countries = []
     for iso in isos:
@@ -98,6 +106,10 @@ def info(basemap, build, maxzoom, isos):
         'attribution': ATTRIBUTION,
         'licence': 'Map data © OpenStreetMap contributors, ODbL 1.0 (openstreetmap.org/copyright)',
         'made': datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'),
+        # Countries changed on this box (maps.sh job), and ones a pack update dropped,
+        # which the admin page offers to add again
+        'on_box': bool(on_box or before.get('on_box')),
+        'readd': [i for i in before.get('readd', []) if i not in isos],
     }
     (basemap / 'countries.json').write_text(json.dumps(doc, indent=1) + '\n')
 
@@ -295,6 +307,53 @@ def mbtiles(src, out):
         print(f'{count} tiles ({len(stored)} distinct), {Path(out).stat().st_size / 1e6:.0f} MB')
 
 
+def pack_update(pack, box):
+    """A newer pack's map onto a box in use. The pack's map replaces the box's, as for
+    every other part of the pack, unless the box's countries were changed on the box: then
+    the box's map stays if it has every country the pack's has (only the style, fonts and
+    icons are the pack's); otherwise the pack's map comes in, and the countries only the
+    box had are listed for the admin page to add again (that needs the internet)."""
+    import shutil
+    pack, box = Path(pack), Path(box)
+
+    def countries(d):
+        try:
+            return json.loads((d / 'countries.json').read_text())
+        except (OSError, ValueError):
+            return {}
+
+    def copy(names):
+        for name in names:
+            src, dst = pack / name, box / name
+            if src.is_dir():
+                shutil.rmtree(dst, ignore_errors=True)
+                shutil.copytree(src, dst)
+            elif src.exists():
+                tmp = dst.with_name(dst.name + '.part')
+                shutil.copy2(src, tmp)
+                tmp.replace(dst)
+
+    p, b = countries(pack), countries(box)
+    pack_isos = [c['iso'] for c in p.get('countries', [])]
+    box_isos = [c['iso'] for c in b.get('countries', [])]
+    box.mkdir(parents=True, exist_ok=True)
+    copy(['styles', 'fonts', 'sprites'])
+    if b.get('on_box') and box_isos and set(pack_isos) <= set(box_isos):
+        print(f"kept this box's map ({', '.join(box_isos)}, changed on the box)")
+        return
+    if not pack_isos:
+        print("the pack has no map: this box's stays" if box_isos else 'no map in the pack or on the box')
+        return
+    copy(['basemap.pmtiles', 'download', 'countries.json'])
+    dropped = [i for i in box_isos if i not in pack_isos] if b.get('on_box') else []
+    if dropped:
+        doc = countries(box)
+        doc['readd'] = sorted(set(dropped) | set(b.get('readd', [])))
+        (box / 'countries.json').write_text(json.dumps(doc, indent=1) + '\n')
+    print(f"the pack's map ({', '.join(pack_isos)})"
+          + (f"; {', '.join(dropped)} only on this box: add again on kobo.local/maps when online" if dropped else ''))
+
+
 def check(basemap):
     basemap = Path(basemap)
     bad = []
@@ -330,8 +389,11 @@ if __name__ == '__main__':
     cmd, args = (sys.argv[1], sys.argv[2:]) if len(sys.argv) > 1 else ('', [])
     if cmd == 'region' and len(args) >= 3:
         region(args[0], args[1], args[2:])
-    elif cmd == 'info' and len(args) >= 4:
-        info(args[0], args[1], args[2], args[3:])
+    elif cmd == 'info' and len([a for a in args if a != '--on-box']) >= 4:
+        rest = [a for a in args if a != '--on-box']
+        info(rest[0], rest[1], rest[2], rest[3:], '--on-box' in args)
+    elif cmd == 'pack-update' and len(args) == 2:
+        pack_update(args[0], args[1])
     elif cmd == 'mbtiles' and len(args) == 2:
         mbtiles(args[0], args[1])
     elif cmd in ('config', 'downloads', 'check') and len(args) == 1:

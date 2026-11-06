@@ -501,7 +501,12 @@ Venezuela. Tested on a second CPU rig, `kobo-box-maps`, restored from `kobo-box-
 - [x] User guide `site/maps.html`, screenshots from the rig (`site/maps-shots.py`)
 - Not run yet: `firstboot.sh`'s `maps` step on a fresh box, the map and image through
   `pack.sh`/`install.sh`/`update.sh`, the QGIS GUI by hand
-  (the checks used PyQGIS), QField. Phases 2 (country picker) and 3 (KoboCollect) to do
+  (the checks used PyQGIS), QField. Phase 3 (KoboCollect) to do
+- [x] Phase 2, the country picker (2026-11-06): `maps/picker.py` at `kobo.local/maps/`, Kobo
+      admins sign in as on `/users/`; add, take off, bring up to date as `maps.sh job` units;
+      offline it takes countries off and explains adding; changes kept on pack updates
+      (`maps.py pack-update`). `e2e-maps.py --picker` 11/11 online, `--picker-offline` 9/9;
+      screenshots in `site/maps.html`. Left: a maps-only pack; `update.sh` with a real pack
 
 ### 4. GPU tiers (W1) ✅ run on an H100, 2026-10-29
 RTX 4000/6000 Ada and L40S stayed out of stock, so `remote/gpu-tiers.sh` ran on

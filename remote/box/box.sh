@@ -8,7 +8,8 @@
 #                                the status page (kobo.local/status) every minute,
 #                                after watchdog.sh has restarted any hung model server,
 #                                syncing to the hub every 5 minutes (sync.py), and the
-#                                Kobo accounts page (kobo.local/users/, users.py)
+#                                Kobo accounts page (kobo.local/users/, users.py) and
+#                                the map's countries (kobo.local/maps/, maps/picker.py)
 #   ./box.sh update-drive        update from the KOBOPACK stick just plugged in, if its
 #                                signature checks out (the udev rule runs this)
 #   ./box.sh uninstall
@@ -221,11 +222,25 @@ RestartSec=5s
 [Install]
 WantedBy=multi-user.target
 EOF
+    # The map's countries at kobo.local/maps/ (maps/picker.py): Kobo admins add or remove them
+    cat > "$UNIT_DIR/kobo-box-maps-picker.service" <<EOF
+[Unit]
+Description=Kobo in a box: the map's countries (kobo.local/maps/)
+After=docker.service
+
+[Service]
+ExecStart=/usr/bin/python3 -I $(dirname "$HERE")/maps/picker.py
+Restart=on-failure
+RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target
+EOF
     systemctl daemon-reload
     udevadm control --reload
     systemctl enable --now kobo-box-ip.service kobo-box-backup.timer kobo-box-status.timer kobo-box-cases-setup.timer \
-        kobo-box-sync.timer kobo-box-users.service
-    echo "Installed: kobo-box-ip ($BOX_IP), nightly backup timer, KOBOBACKUP drive rule, KOBOPACK update rule, status page timer, sync timer, accounts page"
+        kobo-box-sync.timer kobo-box-users.service kobo-box-maps-picker.service
+    echo "Installed: kobo-box-ip ($BOX_IP), nightly backup timer, KOBOBACKUP drive rule, KOBOPACK update rule, status page timer, sync timer, accounts page, maps page"
 }
 
 update_drive() {

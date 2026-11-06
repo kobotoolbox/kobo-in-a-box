@@ -39,7 +39,7 @@
 <section class="steps" aria-label="The loop">
   <div class="wrap">
     <ol>
-      <li><h3>Chosen before it ships</h3><p>Support puts the deployment's countries on the kit when it's prepared. For the pilot, Colombia and Venezuela: about 1 GB.</p></li>
+      <li><h3>Your countries</h3><p>The kit comes with the deployment's countries; for the pilot, Colombia and Venezuela (about 1 GB). An admin can add others from the kit's home page while it's online.</p></li>
       <li><h3>Open it on the Wi-Fi</h3><p>Tap <strong>Open the map</strong> on the kit's home page, on a phone or a laptop. Dashboards show it under their points and areas by themselves.</p></li>
       <li><h3>Take it into QGIS</h3><p>A layer file opens the same map in QGIS on the Wi-Fi. The whole map is also a file you can take away.</p></li>
     </ol>
@@ -54,7 +54,7 @@
     <li><a href="#dashboards">Under dashboards</a></li>
     <li><a href="#qgis">In QGIS</a></li>
     <li><a href="#away">Taking it away</a></li>
-    <li><a href="#countries">Which countries</a></li>
+    <li><a href="#countries">Choosing countries</a></li>
     <li><a href="#trouble">When something goes wrong</a></li>
     <li><a href="#tested">What was tested</a></li>
     <li><a href="#limits">Limits</a></li>
@@ -69,7 +69,7 @@
 <p>It's one map for every tool on the kit. A browser draws it as it is; dashboards and QGIS get it as images the kit draws on request and keeps, so the second time anyone looks at a place it comes straight back.</p>
 <div class="figures">
 <figure><a href="static/maps/map-countries.jpg"><img src="static/maps/map-countries.jpg" width="1440" height="900" alt="A map of Colombia and Venezuela, with Bogotá, Medellín, Cali, Maracaibo, Caracas and other cities labelled in Spanish. The corners outside the two countries' area are plain grey."></a><figcaption>The pilot kit's map: Colombia and Venezuela. Outside them (the grey corners) the kit has no map.</figcaption></figure>
-<figure><a href="static/maps/landing-maps.jpg"><img src="static/maps/landing-maps.jpg" width="1440" height="378" alt="The Maps section of the kit's home page: an Open the map button; OpenStreetMap of Colombia, Venezuela, as of 2026-11-05, Dashboards use it as their background; a Map for QGIS layer file; the Whole map, to take away, MBTiles, 1.1 GB, with its SHA-256; Map data © OpenStreetMap contributors, ODbL."></a><figcaption>The Maps section of the kit's home page, <code>kobo.local</code>.</figcaption></figure>
+<figure><a href="static/maps/landing-maps.jpg"><img src="static/maps/landing-maps.jpg" width="1440" height="377" alt="The Maps section of the kit's home page: an Open the map button; OpenStreetMap of Colombia, Venezuela, as of 2026-11-06, Dashboards use it as their background; a Map for QGIS layer file; the Whole map, to take away, MBTiles, 1.1 GB, with its SHA-256; Map data © OpenStreetMap contributors, ODbL; Admins: add or take off countries."></a><figcaption>The Maps section of the kit's home page, <code>kobo.local</code>.</figcaption></figure>
 </div>
 </section>
 
@@ -115,9 +115,28 @@
 </section>
 
 <section id="countries">
-<h2>Which countries</h2>
-<p>The countries are chosen when the kit is prepared, from what the deployment needs, usually one or two. The pilot kits carry <strong>Colombia and Venezuela</strong>, with their departments, states and municipalities for dashboards. The home page and the status page say which countries a kit has and how recent its map is.</p>
-<p>Adding or changing a country needs the internet, so it's done by support before the kit goes out, or at base when the kit is online. It takes a few minutes for a country; the map is brought up to date at the same time. A newer content pack brings a newer map too.</p>
+<h2>Choosing countries</h2>
+<p>A kit comes with the countries the deployment needs, usually one or two, chosen when it's prepared. The pilot kits carry <strong>Colombia and Venezuela</strong>, with their departments, states and municipalities for dashboards. The home page and the status page say which countries a kit has and how recent its map is.</p>
+<p>A Kobo admin can change them on the kit itself, at <code>kobo.local/maps</code> (the <strong>add or take off countries</strong> link under Maps on the home page):</p>
+<ol>
+  <li>Sign in with a Kobo admin account. The admin password is on the kit's label card.</li>
+  <li>To <strong>add a country</strong>, choose it from the list and tap <strong>Add it to the map</strong>. This needs the internet: connect the kit to a network with internet first, at the office for example.</li>
+  <li>The page shows the change while it runs. It takes a few minutes for most countries, longer for big ones; you can close the page and come back. Its regions and districts come too, for dashboards.</li>
+  <li>To <strong>take a country off</strong>, tap <strong>Take off</strong> beside it, then confirm. This works without the internet.</li>
+</ol>
+<p><strong>Bring the map up to date</strong> fetches the same countries again, with OpenStreetMap's latest changes. Adding a country does that too, for all of them.</p>
+<div class="figures figures--half">
+<figure><a href="static/maps/picker-choose.jpg"><img src="static/maps/picker-choose.jpg" width="1100" height="860" alt="The Maps on this box page, signed in as super_admin: OpenStreetMap as of 2026-11-06; On the map: Colombia, Lesotho and Venezuela, each with a Take off button; Bring the map up to date; Add a country, with Ecuador chosen in the list and an Add it to the map button; a note on time and disk space, 266 GB free."></a><figcaption>Choosing a country to add.</figcaption></figure>
+<figure><a href="static/maps/picker-adding.jpg"><img src="static/maps/picker-adding.jpg" width="1100" height="860" alt="The same page while Ecuador is added: Adding Ecuador… This takes a few minutes. You can leave this page: it carries on by itself; the step it's on; the buttons greyed out until it's done."></a><figcaption>While it's added: the buttons wait until it's done.</figcaption></figure>
+<figure><a href="static/maps/picker-done.jpg"><img src="static/maps/picker-done.jpg" width="1100" height="860" alt="The page after: Done: adding Ecuador; On the map: Colombia, Ecuador, Lesotho, Venezuela."></a><figcaption>Done, about a minute later.</figcaption></figure>
+<figure><a href="static/maps/picker-offline.jpg"><img src="static/maps/picker-offline.jpg" width="1100" height="560" alt="The page with the kit offline: the countries with their Take off buttons, Bring the map up to date greyed out, and under Add a country: This box isn't on the internet now. Adding a country needs it: connect the box to a network with internet (at the office, for example), then come back to this page. Taking a country off works without."></a><figcaption>With no internet: taking a country off still works.</figcaption></figure>
+</div>
+<div class="figures">
+<figure><a href="static/maps/picker-phone.jpg"><img src="static/maps/picker-phone.jpg" width="824" height="1720" alt="The page on a phone: the countries with Take off buttons, Bring the map up to date, and the list to add a country."></a><figcaption>On a phone.</figcaption></figure>
+<figure><a href="static/maps/picker-signin.jpg"><img src="static/maps/picker-signin.jpg" width="1100" height="520" alt="Maps on this box: Choose which countries are on the box's map. Sign in with a Kobo admin account (the admin password is on the label card). Username and Password fields and a Sign in button."></a><figcaption>Signing in: Kobo admins only.</figcaption></figure>
+</div>
+<figure><a href="static/maps/picker-confirm.jpg"><img src="static/maps/picker-confirm.jpg" width="1100" height="300" alt="Take Ecuador off the map? Its map goes from the box: the browser, dashboards and QGIS show nothing there any more. Putting it back needs the internet. Its regions and districts stay, for dashboards. A Take Ecuador off button and a Keep it link."></a><figcaption>Taking a country off asks first.</figcaption></figure>
+<p>Only Kobo admins can sign in; others see only the sign-in page. Changes made here stay when the kit is updated from a newer content pack. If a newer pack brings a country the kit didn't have, the kit takes the pack's map, and the page offers to add the kit's own extra countries again.</p>
 <figure><a href="static/maps/status-maps.jpg"><img src="static/maps/status-maps.jpg" width="557" height="80" alt="The Maps row of the status page: a green light, Maps, Working: Colombia, Venezuela, OpenStreetMap as of 2026-11-05."></a><figcaption>The Maps row on the status page, <code>kobo.local/status</code>.</figcaption></figure>
 </section>
 
@@ -141,17 +160,18 @@
   <li>The assistant's tools made a dashboard of 14 sites along the border with a map, and the kit's map was under it. Colombia's departments and Venezuela's states (58 areas) came from the kit.</li>
   <li>QGIS (3.42) opened the layer file, and the map with the kit's style, through the kit; and the take-away file with no kit at all.</li>
 </ul>
+<p>The admin page, on the same kit: <strong>20 of 20 checks</strong>. Online, an admin signed in (a wrong password and a form from elsewhere were refused) and added Lesotho, whose map then answered at Maseru, in 90 seconds; Ecuador took about a minute. With the internet cut off, the page said adding needs it and refused to add, and took Lesotho off in a minute, after asking. Choosing which map a kit keeps on an update was checked for the four cases (a kit's own extra country kept, the pack's new country taken, the extra one offered again).</p>
 <p>Preparing the map: Colombia and Venezuela took about a minute and a half on the build machine (33 seconds to fetch them, the rest to make the take-away file). On the kit: 0.9 GB for the map, 1.1 GB for the take-away file, and about 200 MB of memory. Drawing a street-level image the first time took about a tenth of a second on the test kit's processor.</p>
 </section>
 
 <section id="limits">
 <h2>Limits</h2>
 <ul>
-  <li><strong>Only the countries on the kit.</strong> Outside them there's no map. Adding one needs the internet.</li>
+  <li><strong>Only the countries on the kit.</strong> Outside them there's no map.</li>
   <li><strong>As recent as when the kit was prepared.</strong> OpenStreetMap keeps changing; the map is updated with each content pack.</li>
   <li><strong>KoboCollect doesn't use it yet.</strong> Showing the map under a GPS question on phones needs a map file of an area put on each phone; that's the next step.</li>
   <li><strong>The take-away file in QGIS has no street names</strong>: QGIS can't read all of the map style's label rules. On the kit's Wi-Fi, the layer file has them all.</li>
-  <li><strong>Choosing countries from the kit's home page</strong>, while it's online at base, isn't built yet; for now support does it.</li>
+  <li><strong>Adding a country needs the internet</strong> on the kit. A kit that never goes online gets new countries from a newer content pack.</li>
 </ul>
 </section>
 

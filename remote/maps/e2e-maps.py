@@ -10,6 +10,12 @@ and dashboards reach them. Run ON THE BOX / DROPLET after `maps.sh add COL VEN` 
         --add-host kobo.local:127.0.0.1 -v /opt/maps:/opt/maps:ro \\
         -v $PWD/e2e-maps.py:/e2e.py:ro --entrypoint python kobo-mcp:box /e2e.py [--dashboard [--keep]]
 
+The admin page (kobo.local/maps/, picker.py), with the admin password in the environment
+(-e KOBO_ADMIN_PASSWORD, read on the box): --picker, online, signs in (a wrong password and
+a form without its CSRF token are refused) and adds Lesotho through the page, then checks
+Maseru's tiles; --picker-offline, with ./offline.sh on, checks the page says the box is
+offline and refuses to add, and takes Lesotho off through the page (with its confirmation).
+
 Checks the map's tiles (both kinds) in the pilot countries' cities, that a place outside
 them gets no error, that nothing the map names is outside the box, the downloads for
 QGIS, and the landing and status pages. --dashboard also makes a project of sites along
@@ -34,6 +40,8 @@ PLACES = {  # lat, lon
     'Caracas': (10.5061, -66.9146), 'Maracaibo': (10.6545, -71.6406),
 }
 OUTSIDE = ('Lima', (-12.0464, -77.0428))
+MASERU = (-29.3151, 27.4869)
+HOME = 'http://kobo.local'
 failures = 0
 
 
@@ -214,7 +222,85 @@ async def dashboard(web, keep):
     await kobo.aclose()
 
 
+def on_box():
+    return [c['iso'] for c in json.load(open('/opt/maps/basemap/countries.json')).get('countries', [])]
+
+
+async def admin(web):
+    """Signed in to the admin page: its CSRF token, or None."""
+    r = await web.get(f'{HOME}/maps/')
+    check('the admin page asks to sign in', r.status_code == 200 and 'name="password"' in r.text, r.status_code)
+    r = await web.post(f'{HOME}/maps/signin', data={'username': 'super_admin', 'password': 'not-the-password'})
+    check('a wrong password is refused', r.status_code == 403, r.status_code)
+    r = await web.post(f'{HOME}/maps/signin', data={'username': 'super_admin',
+                                                    'password': os.environ['KOBO_ADMIN_PASSWORD']})
+    check('the admin signs in', r.status_code == 303 and 'kobo_box_maps' in r.headers.get('set-cookie', ''), r.status_code)
+    r = await web.get(f'{HOME}/maps/')
+    m = re.search(r'name="csrf" value="([^"]+)"', r.text)
+    check('the page lists the countries on the box', all(n in r.text for n in ('Colombia', 'Venezuela')), r.status_code)
+    return (m.group(1) if m else None), r.text
+
+
+async def wait_job(web, timeout=900):
+    start = time.time()
+    while time.time() - start < timeout:
+        state = (await web.get(f'{HOME}/maps/job.json')).json()
+        if state and not state.get('running'):
+            return state, time.time() - start
+        if not state and time.time() - start > 30:  # no job was started
+            return {}, time.time() - start
+        await asyncio.sleep(3)
+    return {}, timeout
+
+
+async def maseru(web):
+    z, x, y = tile(*MASERU, 14)
+    return (await web.get(f'{MAPS}/data/basemap/{z}/{x}/{y}.pbf')).status_code
+
+
+async def picker(web):
+    csrf, page = await admin(web)
+    check('online: the page offers countries to add', '<select' in page and 'Lesotho' in page)
+    before = (await web.get(f'{HOME}/maps/job.json')).json().get('started')
+    r = await web.post(f'{HOME}/maps/add', data={'iso': 'LSO'})
+    after = (await web.get(f'{HOME}/maps/job.json')).json().get('started')
+    check('a form without its CSRF token changes nothing', r.status_code == 303 and before == after)
+    r = await web.post(f'{HOME}/maps/add', data={'iso': 'LSO', 'csrf': csrf})
+    page = (await web.get(f'{HOME}/maps/')).text
+    check('adding Lesotho starts, and the page says so', 'Adding Lesotho' in page, r.status_code)
+    state, took = await wait_job(web)
+    check('the job finished', state.get('ok') is True, f"{state.get('error') or 'ok'}, {took:.0f} s")
+    check('Lesotho is on the map, with Colombia and Venezuela', on_box() == ['COL', 'LSO', 'VEN'], on_box())
+    check("Maseru's tiles", await maseru(web) == 200)
+    r = await web.get(f'{HOME}/')
+    check("the landing page's card names Lesotho", 'Lesotho' in r.text)
+    for place, (lat, lon) in PLACES.items():  # the others are still there
+        z, x, y = tile(lat, lon, 14)
+        if (await web.get(f'{MAPS}/data/basemap/{z}/{x}/{y}.pbf')).status_code != 200:
+            check(f'{place} still on the map', False)
+
+
+async def picker_offline(web):
+    csrf, page = await admin(web)
+    check("offline: the page says adding needs the internet", "isn't on the internet" in page and '<select' not in page)
+    r = await web.post(f'{HOME}/maps/add', data={'iso': 'ECU', 'csrf': csrf})
+    page = (await web.get(f'{HOME}/maps/')).text
+    check('and refuses to add', 'Not added' in page and 'ECU' not in on_box(), r.status_code)
+    r = await web.post(f'{HOME}/maps/remove', data={'iso': 'LSO', 'csrf': csrf})
+    check('taking Lesotho off asks first', r.status_code == 200 and 'Take Lesotho off' in r.text, r.status_code)
+    r = await web.post(f'{HOME}/maps/remove', data={'iso': 'LSO', 'csrf': csrf, 'confirm': 'yes'})
+    state, took = await wait_job(web)
+    check('offline: Lesotho taken off', state.get('ok') is True and on_box() == ['COL', 'VEN'],
+          f"{state.get('error') or 'ok'}, {took:.0f} s, {on_box()}")
+    check('Maseru has no map now', await maseru(web) in (204, 404))
+
+
 async def main(args):
+    if '--picker' in args or '--picker-offline' in args:
+        async with httpx.AsyncClient(timeout=120) as web:
+            await (picker(web) if '--picker' in args else picker_offline(web))
+        print(f'{failures} failure(s)')
+        sys.exit(1 if failures else 0)
     async with httpx.AsyncClient(timeout=120) as web:
         r = await web.get(f'{MAPS}/health')
         check('maps.kobo.local answers through the edge', r.status_code == 200, r.status_code)

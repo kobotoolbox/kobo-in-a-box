@@ -169,7 +169,7 @@ def maps_card():
     return body + [
         '</ul>',
         f'<p class="hint">Map data {e("© OpenStreetMap contributors")}, '
-        f'<a href="{maps}/download/LICENCE.txt">ODbL</a>.</p>',
+        f'<a href="{maps}/download/LICENCE.txt">ODbL</a>. Admins: <a href="/maps/">add or take off countries</a>.</p>',
     ]
 
 
@@ -216,6 +216,9 @@ def main():
     # maps.sh up/down
     if (LIBRARY_DIR / '.services' / 'maps').exists():
         body += maps_card()
+    elif (MAPS_DIR / 'basemap' / 'styles' / 'basemap.json').exists():  # maps, but no country yet
+        body.append('<p class="hint">Admins: <a href="/maps/">add a map of your countries</a> '
+                    '(needs the internet).</p>')
     guides = guide_items([r for r in rows if r['section'] == 'docs'], sums)
     if guides:
         body += ['<h2>Guides</h2>', '<ul>', *guides, '</ul>']
