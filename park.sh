@@ -14,11 +14,26 @@ read -r -p "Snapshot and destroy $NAME ($DROPLET_ID)? [y/N] " ok
 # Replace the previous snapshot only after the new one succeeds
 OLD_SNAPSHOTS=$(doctl compute snapshot list --format ID,Name --no-header | awk -v n="$SNAPSHOT_NAME" '$2 == n {print $1}')
 
-# The snapshot replaces the previous one, so keep a local copy of every run
+# The snapshot replaces the previous one, so keep a local copy of every run. Files git
+# already tracks are left alone: some were edited after the run (the support bot's private
+# case text taken out), and the rig still has the originals
 IP=$(doctl compute droplet get "$DROPLET_ID" --format PublicIPv4 --no-header)
-mkdir -p remote/results
-ssh -p "$SSH_PORT" "root@$IP" 'tar -C /root/kobo-box-ai -cf - results' | tar -C remote -xf -
-echo "Results pulled to remote/results/"
+PULLED=$(mktemp -d)
+trap 'rm -rf "$PULLED"' EXIT
+ssh -p "$SSH_PORT" "root@$IP" 'tar -C /root/kobo-box-ai -cf - results' | tar -C "$PULLED" -xf -
+new=0
+while IFS= read -r -d '' f; do
+    rel=${f#"$PULLED"/}
+    if git ls-files --error-unmatch "remote/$rel" >/dev/null 2>&1; then
+        cmp -s "$f" "remote/$rel" || echo "  kept the committed remote/$rel (the rig's copy differs)"
+        continue
+    fi
+    cmp -s "$f" "remote/$rel" && continue
+    mkdir -p "remote/$(dirname "$rel")"
+    cp -p "$f" "remote/$rel"
+    new=$((new + 1))
+done < <(find "$PULLED/results" -type f -print0)
+echo "Results pulled to remote/results/ ($new new or changed)"
 
 doctl compute droplet-action power-off "$DROPLET_ID" --wait
 doctl compute droplet-action snapshot "$DROPLET_ID" --snapshot-name "$SNAPSHOT_NAME" --wait
