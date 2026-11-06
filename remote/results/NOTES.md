@@ -464,3 +464,33 @@ Kobo 2.026.37d), tested with `e2e-users.sh` through the edge nginx and in a real
   under `testing` and `testing_no_stripe`; the same tests on the unpatched serializer: 8/10
   (both new ones fail, the duplicate as a 500) (`w15-kpi-create-user-20261106.txt`).
 - Not tested: scanning a code with KoboCollect on a phone; a box from a pack.
+
+## 2026-11-06 (later): KoboCollect itself, on a stand-in phone on the droplet
+
+- **The phone:** `phone.sh` runs redroid (Android 13, x86_64) in Docker on the droplet's own
+  kernel, so no KVM (DO has no nested virtualization); `binder_linux` from Ubuntu's
+  `linux-modules-extra` on 6.8.0-147. The library's KoboCollect v2025.2.3 APK, driven
+  over adb with uiautomator2. Its hosts file stands in for the hotspot's DNS: `*.kobo.local`
+  → `BOX_IP`, reached through the Docker bridge as a phone reaches the box's address.
+  Up in about a minute; no Google Play services (Collect only logs about it).
+- **e2e-collect.sh, offline (`offline.sh on`, example.org unreachable): 8/8**
+  (`w15-collect-offline-20261106-100131.txt`, screenshots in `collect-20261106-100131/`):
+  an account made on the accounts page and its QR code; a three-question form deployed;
+  on a phone fresh from the box, Collect adds the project with the code's server,
+  username and password, signs in over Digest with no web sign-in first, downloads the
+  form, the answers are typed in, finalized and sent ("Successful submission"); KPI has
+  them, submitted by that account. About 1 min a run; 8/8 online too. The Collect steps
+  passed in all five offline runs (the first three before the cleanup fix below).
+- **QR codes:** the phone has no camera, and both of Collect's QR screens (first launch,
+  and Reconfigure with QR code) close when it fails, before their "Import QR code" menu
+  can be reached. So the test reads the code itself (zbarimg) and types in what it holds;
+  Collect's own reading of the code, and the admin settings in it, are still untested.
+  The Android emulator's virtual camera can show an image (`-camera-back virtualscene`),
+  but needs KVM: a GitHub Actions runner, a GCP machine with nested virtualization, or a
+  phone.
+- **Also found:** `kpi-delete-users.sh` couldn't remove an account with submissions from
+  KoboCAT's database (`viewer_parsedinstance` points at `logger_instance`, not at
+  `auth_user`), and rolled back; it now follows foreign keys all the way down. 10 leftover
+  test accounts deleted with it.
+- Ran on `kobo-box-collect`, restored from `kobo-box-ai-snapshot` (2026-11-06) on
+  `s-8vcpu-32gb-amd`; deleted afterwards with its firewall.

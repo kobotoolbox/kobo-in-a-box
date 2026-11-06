@@ -118,14 +118,18 @@ superuser, signed in with their Kobo password). `users.py`, run by `kobo-box-use
   the page has just made the account (never for older ones), and the box's settings from
   `/users/collect` (`/etc/kobo-box/collect.json`, 600: auto send, form updates, hide the
   server settings, an optional KoboCollect admin password). Tested by reading the code off
-  the page (zbarimg) and signing in with it; not yet scanned on a phone.
+  the page (zbarimg) and signing in with it. KoboCollect itself, on a stand-in phone
+  (`remote/e2e-collect.sh`), adds a project with what a code holds, downloads a form and
+  sends a submission; Collect hasn't scanned a code yet (the stand-in has no camera).
 - **Deactivate, never delete:** `/users/accounts` lists people's accounts (not the box's
   services, which have no password) and deactivates or reactivates them (`is_active` only,
   copied to KoboCAT by KPI). A deactivated account can't sign in (web, KoboCollect, API);
   its projects and submissions stay. Admins can't be deactivated there.
 - Over SSH: `users.py --import list.csv` (results with passwords on stdout),
   `users.py --deactivate|--reactivate <username>...`.
-- **Tests:** `remote/e2e-users.sh` (24 checks, offline); screenshots `site/users-shots.py`.
+- **Tests:** `remote/e2e-users.sh` (24 checks, offline); `remote/e2e-collect.sh` (8 checks,
+  offline: a new account in KoboCollect on `remote/phone.sh`'s stand-in Android phone, a
+  form downloaded, filled in and sent); screenshots `site/users-shots.py`.
   Test accounts are deleted with `remote/kpi-delete-users.sh`, from both of Kobo's
   databases (deleting a user in KPI leaves KoboCAT's copy, and the same username can't be
   made again); never for people's accounts.

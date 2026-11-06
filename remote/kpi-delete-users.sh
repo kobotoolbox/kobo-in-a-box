@@ -29,13 +29,20 @@ kpi = get_user_model().objects.filter(q).delete()[0]
 with transaction.atomic(using='kobocat'), connections['kobocat'].cursor() as c:
     c.execute('select id from auth_user where username like any(%s)', [like])
     ids = [r[0] for r in c.fetchall()]
-    if ids:
-        c.execute('''select tc.table_name, kcu.column_name from information_schema.table_constraints tc
+    def purge(table, column, values, depth=0):
+        # Rows pointing at these rows first, all the way down (an account's submissions
+        # have their own: viewer_parsedinstance on logger_instance, and more)
+        c.execute('''select tc.table_name, kcu.column_name, ccu.column_name from information_schema.table_constraints tc
           join information_schema.key_column_usage kcu on tc.constraint_name = kcu.constraint_name
           join information_schema.constraint_column_usage ccu on ccu.constraint_name = tc.constraint_name
-          where tc.constraint_type = 'FOREIGN KEY' and ccu.table_name = 'auth_user' ''')
-        for table, column in c.fetchall():
-            c.execute(f'delete from {table} where {column} = any(%s)', [ids])
-        c.execute('delete from auth_user where id = any(%s)', [ids])
+          where tc.constraint_type = 'FOREIGN KEY' and ccu.table_name = %s''', [table])
+        for ref_table, ref_column, key in c.fetchall():
+            c.execute(f'select {key} from {table} where {column} = any(%s)', [values])
+            keys = [r[0] for r in c.fetchall()]
+            if keys and depth < 8:
+                purge(ref_table, ref_column, keys, depth + 1)
+        c.execute(f'delete from {table} where {column} = any(%s)', [values])
+    if ids:
+        purge('auth_user', 'id', ids)
 print(f'deleted: {kpi} rows in KPI, {len(ids)} accounts in KoboCAT')
 EOF

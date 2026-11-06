@@ -942,7 +942,8 @@ Not in the original plan; started and built 2026-11-06. Linear milestone "W15 ·
 - [x] Deactivate / reactivate instead of deleting; a deactivated account's project kept, and theirs again when reactivated
 - [x] User guide: homepage section "Accounts for your team", screenshots from the rig (`site/users-shots.py`)
 - [ ] KPI fixes upstream (branch `fix/create-user-partial-digest`): `set_password` after the username, and a 400 instead of a 500 for a taken username, with tests
-- [ ] Scan the QR codes with KoboCollect on a real phone (W5 kit or any Android phone on the rig)
+- [x] KoboCollect itself on a stand-in Android phone on the rig (`remote/phone.sh`: redroid, Android 13 in Docker, no KVM): a new account's project, Download form, fill in, send, read back from KPI; offline, `remote/e2e-collect.sh` 8/8
+- [ ] Scan the QR codes with KoboCollect's camera (the stand-in has none, and Collect's QR screens close without one): a real phone (W5 kit), or the Android emulator's virtual camera where there's KVM
 - [ ] In the content pack and `firstboot.sh`/`update.sh` (the service comes with `box.sh install`; check on a box from a pack)
 
 ### W16. Encrypted forms (~2 weeks; see 3o and ENCRYPTION-PLAN.md)
