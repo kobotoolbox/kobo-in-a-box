@@ -6,7 +6,9 @@ are in [PLAN.md](PLAN.md); per-run results are in [remote/results/NOTES.md](remo
 ## Where we are (2026-11-04)
 
 - **Rigs:** the CPU rig (`s-8vcpu-32gb-amd`: Kobo, the KPI backport, kobo-mcp, OpenCode, test
-  data) is parked as `kobo-box-ai-snapshot` in ams3 (2026-11-04, with box sync: `box/sync.py`,
+  data) is parked as `kobo-box-ai-snapshot` in ams3 (2026-11-06, 145 GiB, with the accounts
+  page (W15): `kobo-box-users.service`, the app key in `/etc/kobo-box/users-app.key`, qrencode,
+  and zbar-tools + librsvg2-bin for `e2e-users.sh`; before that 2026-11-04, with box sync: `box/sync.py`,
   kobo-transfer `supplement-api` at `4e024cf` in `/root/kobo-transfer`, its own `sync` account,
   not paired with a hub; the KPI supplement import in the backport). Its Kobo is 2.026.37d (since
   2026-11-02, with the backport rebased onto it) on the fixed address
