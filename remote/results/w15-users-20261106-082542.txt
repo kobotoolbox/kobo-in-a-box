@@ -1,0 +1,27 @@
+# e2e-users.sh, 2026-11-06T08:25:42+00:00, offline: yes
+PASS  sign-in: wrong password refused (403)
+PASS  sign-in: not a superuser, refused (403)
+PASS  sign-in: superuser (303)
+PASS  signed in: the page has its forms 
+PASS  create: refused without the form token (303)
+PASS  one account: made, password in the download (303)
+PASS  one account: KoboCollect (Digest) straight away 
+PASS  one account: API with its password 
+PASS  QR code: server, username and password for KoboCollect {"general": {"server_url": "http://kc.kobo.local", "username": "e2eu1793953547one", "autosend": "wifi_only", "form_update_mode": "match_exactly", "metadata_username": "e2eu1793953547one", "periodic_form_updates_check": "every_fifteen_minutes"}, "admin": {"change_server": false}, "project": {"name": "Kobo kobo-box-ai", "icon": "K", "color": "#2095f3"}}
+PASS  QR code: its credentials sign in to KoboCollect 
+PASS  KoboCollect settings: saved and in new codes (303, 600)
+PASS  list with a bad row: refused, row named, nothing made (400, 0 made)
+PASS  list: two made, the existing one reported (made made exists fj5T-QwAL-HabC-pwN2 -)
+PASS  list: only made passwords in the download 
+PASS  list: KoboCollect (Digest) for both 
+PASS  list: email filled in and verified, name kept emails [('e2eu1793953547a@kobo.local', True)] name Ana Diaz
+PASS  accounts page: lists the new account, not the services 
+PASS  QR code, account made before: username, no password 
+PASS  deactivate: done (303)
+PASS  deactivated: no KoboCollect, no API (Digest 401, API 401)
+PASS  deactivated: the project is still there (atspu6Lfp5VKZnMf2SP8wS)
+PASS  deactivate: an admin is refused 
+PASS  reactivated: KoboCollect again, and the project is theirs 
+PASS  sign out: results forgotten 
+deleted: 108 rows in KPI, 5 accounts in KoboCAT
+0 failed

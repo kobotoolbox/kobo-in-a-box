@@ -1,0 +1,26 @@
+##### fix
+=== testing
+=============================== warnings summary ===============================
+10 passed, 15 warnings in 169.63s (0:02:49)
+=== testing_no_stripe
+=============================== warnings summary ===============================
+10 passed, 5 warnings in 75.26s (0:01:15)
+##### main
+=== testing
+=================================== FAILURES ===================================
+ERROR:django.request:Internal Server Error: /api/v2/authorized_application/users/
+ERROR    django.request:log.py:253 Internal Server Error: /api/v2/authorized_application/users/
+=============================== warnings summary ===============================
+=========================== short test summary info ============================WARNING:root:`MONGO_DB_URL` is not found. `KPI_MONGO_HOST`, `KPI_MONGO_PORT`, `KPI_MONGO_NAME`, `KPI_MONGO_USER`, `KPI_MONGO_PASS` are deprecated and will not be supported anymore soon.
+FAILED kpi/tests/test_authorized_application.py::AuthorizedApplicationUserTestCase::test_create_user_stores_partial_digest
+FAILED kpi/tests/test_authorized_application.py::AuthorizedApplicationUserTestCase::test_create_user_with_existing_username
+2 failed, 8 passed, 16 warnings in 169.45s (0:02:49)
+=== testing_no_stripe
+=================================== FAILURES ===================================
+ERROR:django.request:Internal Server Error: /api/v2/authorized_application/users/
+ERROR    django.request:log.py:253 Internal Server Error: /api/v2/authorized_application/users/
+=============================== warnings summary ===============================
+=========================== short test summary info ============================
+FAILED kpi/tests/test_authorized_application.py::AuthorizedApplicationUserTestCase::test_create_user_with_existing_usernameWARNING:root:`MONGO_DB_URL` is not found. `KPI_MONGO_HOST`, `KPI_MONGO_PORT`, `KPI_MONGO_NAME`, `KPI_MONGO_USER`, `KPI_MONGO_PASS` are deprecated and will not be supported anymore soon.
+FAILED kpi/tests/test_authorized_application.py::AuthorizedApplicationUserTestCase::test_create_user_stores_partial_digest
+2 failed, 8 passed, 6 warnings in 70.78s (0:01:10)

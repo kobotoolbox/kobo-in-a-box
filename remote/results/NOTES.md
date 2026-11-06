@@ -425,6 +425,46 @@ image with it installed (`kobo-box-test/playwright:1.55.0`, command in `e2e-sign
 And KPI's user model is `kobo_auth.User`: `django.contrib.auth.models.User` raises
 "Manager isn't available" in `manage.py shell`.
 
+## 2026-11-06: Kobo accounts and KoboCollect QR codes on the box (W15)
+
+`box/users.py` at `kobo.local/users` on the CPU rig (restored from the 2026-11-05 snapshot,
+Kobo 2.026.37d), tested with `e2e-users.sh` through the edge nginx and in a real browser
+(`site/users-shots.py`, Playwright image).
+
+- **Why accounts from KPI's registered-application endpoint needed a first web sign-in:**
+  KoboCollect's Digest sign-in needs a django-digest partial digest, and
+  `CreateUserSerializer.create()` calls `set_password()` before setting the username, so
+  none is stored. A new user's `/formList` with Digest was 401 (three users, also 20 s
+  later); after one Basic-auth API call (or `authenticate_user/`) with the password, 200.
+  The website, API tokens, sharing, the verified email, the organization and KoboCAT's
+  user and profile were all there before any sign-in. `users.py` calls `authenticate_user/`
+  once per new account.
+- **Also found:** the endpoint moved to `/api/v2/authorized_application/users/` (the
+  Notion page's `/authorized_application/users/` is 410); a taken username is a 500
+  (IntegrityError: the serializer's own `username` field drops the unique check); deleting
+  a user in KPI leaves its copy in KoboCAT's database, and the same username then can't be
+  made again (124 leftover test users cleaned with SQL, `kpi-delete-users.sh`); Chrome
+  posts forms with `Origin: null` under `Referrer-Policy: no-referrer` (the page's origin
+  check refused its own sign-in in a browser, never with curl; now `same-origin`).
+- **e2e-users.sh, offline (`offline.sh on`, example.org unreachable): 24/24**
+  (`w15-users-20261106-082542.txt`): admin-only sign-in (wrong password and non-superuser
+  refused), form token required; one account and a CSV list ready for KoboCollect (Digest
+  200) and the API at once; a list with a bad row makes nothing and names it; Excel's BOM
+  and semicolons; a taken username reported, not failed; emails filled in and verified;
+  QR codes read off the page with zbarimg and decoded (Base64, zlib, JSON) with the server,
+  the username and a password that signs in, and the saved Collect settings (file 600);
+  an older account's code has no password; deactivated → Digest 401 and API 401 with the
+  project kept, reactivated → both back and the project theirs; admins can't be
+  deactivated; sign-out forgets the results. Also 24/24 online.
+- **Speed:** 100 accounts from a list in 143 s (two password hashes and KPI's signals per
+  account, 8 vCPUs), and the first of them signed in to KoboCollect.
+- **KPI fix** (branch `fix/create-user-partial-digest` from `origin/main`, not pushed):
+  `set_password()` after the other fields, and a `UniqueValidator` on `username`, with two
+  tests. `kpi/tests/test_authorized_application.py` with `kpi-test.sh` (`KPI_SRC=`): 10/10
+  under `testing` and `testing_no_stripe`; the same tests on the unpatched serializer: 8/10
+  (both new ones fail, the duplicate as a 500) (`w15-kpi-create-user-20261106.txt`).
+- Not tested: scanning a code with KoboCollect on a phone; a box from a pack.
+
 ## 2026-11-06: offline maps, `kobo-box-maps` (`s-8vcpu-32gb-amd`, from `kobo-box-ai-snapshot`)
 
 Protomaps build 20261105, `pmtiles extract` with geoBoundaries ADM0 outlines, 8 download

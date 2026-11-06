@@ -44,6 +44,7 @@ are built.
 | `update.sh --pack <dir>`, `box.sh update-drive` | Update a box in use from a newer pack, keeping its data and passwords; by itself when a signed `KOBOPACK` stick is plugged in | Built; tested 37c → 37d offline |
 | `watchdog.sh` | Restarts a model server that stops answering its healthcheck (every minute, before the status page) | Built; tested on the rig |
 | `status.py` | Status page at `kobo.local/status`: Kobo, AI, disk, backups, battery in plain words; every minute | Built |
+| `users.py` | Kobo accounts at `kobo.local/users/`: one or a CSV list, ready for KoboCollect at once (no web sign-in first); KoboCollect QR codes with the box's Collect settings; deactivate/reactivate (never delete) | Built; tested on the rig, offline (`e2e-users.sh`) |
 | `sync.py` | A field kit syncs its projects to its hub by itself (kobo-transfer), every 5 minutes when connected; pairing, status page row | Built; tested on fresh boxes from a pack (below) |
 | Autoinstall USB | Ubuntu 26.04 ISO + `CIDATA` + `KOBOPACK` partitions, LUKS + TPM | Needs the W5 box |
 
@@ -88,6 +89,46 @@ box/backup.sh status                    # last result, as JSON (for the status p
   secrets file (EspoCRM's config and database expect them), and recreates the containers.
   The case bridge's token file is rewritten from the restored Kobo database
   (`kobo-account.py`), and the label card from the restored passwords.
+
+## Accounts
+
+`http://kobo.local/users/`, linked from the landing page, for the box's admins (any Kobo
+superuser, signed in with their Kobo password). `users.py`, run by `kobo-box-users.service`
+(`box.sh install`) on `127.0.0.1:8089` behind the edge nginx. User guide: `site/index.html#accounts`.
+
+- **Making accounts** goes through KPI's endpoint for registered applications
+  (`POST /api/v2/authorized_application/users/`; the old `/authorized_application/users/`
+  answers 410). It marks the email verified. The application and its key are made the
+  first time they're needed (`/etc/kobo-box/users-app.key`, 600), and fetched again if
+  KPI no longer knows the key (a restore).
+- **Ready for KoboCollect at once.** The endpoint sets the password before the username,
+  so django-digest stores no partial digest, and KoboCollect's Digest sign-in fails until
+  the person has signed in on the website once (the "log into each account" step).
+  `users.py` checks each new password once through the same application
+  (`authenticate_user/`), which stores the digest. Fix proposed for KPI (below).
+- **A taken username** gets a 500 from the endpoint, not a 400: its serializer replaces the
+  username field and with it the unique check. `users.py` asks KPI which usernames are taken
+  before making any.
+- **CSV lists:** every row checked before any account is made; Excel's BOM and semicolons;
+  empty passwords made (four groups of four), empty emails `<username>@kobo.local`; up to
+  500 at a time (about 1.4 s each on 8 vCPUs: 100 in 143 s). The passwords made are only
+  in the session's download, never on disk, and gone at sign-out.
+- **KoboCollect QR codes** ([ODK's format](https://docs.getodk.org/collect-import-export/):
+  JSON, zlib, Base64): the server `http://kc.kobo.local`, the username, the password when
+  the page has just made the account (never for older ones), and the box's settings from
+  `/users/collect` (`/etc/kobo-box/collect.json`, 600: auto send, form updates, hide the
+  server settings, an optional KoboCollect admin password). Tested by reading the code off
+  the page (zbarimg) and signing in with it; not yet scanned on a phone.
+- **Deactivate, never delete:** `/users/accounts` lists people's accounts (not the box's
+  services, which have no password) and deactivates or reactivates them (`is_active` only,
+  copied to KoboCAT by KPI). A deactivated account can't sign in (web, KoboCollect, API);
+  its projects and submissions stay. Admins can't be deactivated there.
+- Over SSH: `users.py --import list.csv` (results with passwords on stdout),
+  `users.py --deactivate|--reactivate <username>...`.
+- **Tests:** `remote/e2e-users.sh` (24 checks, offline); screenshots `site/users-shots.py`.
+  Test accounts are deleted with `remote/kpi-delete-users.sh`, from both of Kobo's
+  databases (deleting a user in KPI leaves KoboCAT's copy, and the same username can't be
+  made again); never for people's accounts.
 
 ## Status page
 
