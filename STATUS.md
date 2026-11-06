@@ -56,8 +56,8 @@ are in [PLAN.md](PLAN.md); per-run results are in [remote/results/NOTES.md](remo
    GPU rig still to do). Left: shorter agent prompts (fewer built-in tools, smaller profiles), guidance about each
    form (the enumerator-question mistakes), multi-user sign-in through kobo-mcp's OAuth,
    OpenWork, and a per-process DNS check offline.
-3. **W9:** done on the rig (2026-11-03, `remote/dash/`); left: a real basemap once the
-   pilot countries are chosen, scoring the 11 dashboard tasks on the GPU rig, offline
+3. **W9:** done on the rig (2026-11-03, `remote/dash/`); left: a real basemap for the
+   pilot countries, Colombia and Venezuela (chosen 2026-11-06; plan in MAPS-PLAN.md), scoring the 11 dashboard tasks on the GPU rig, offline
    `desk_review` (W10), proposing kobo-mcp's `w9-box` settings upstream.
 3a. **W14 sync (kobo-transfer):** built into the box and working on kits installed from a pack,
    offline (2026-11-04): every box has a `sync` account (key on the card) and answers to
@@ -246,7 +246,7 @@ without the build, `test_indexing_and_embedding` fails and 4 tests skip, on `mai
 - [x] W4: 11 dashboard tasks (`dash-*`) and an `after: dashboard` check from kobo-dash's
       database (a widget or filter must be new); checked against a real dashboard, not
       yet run with an agent model.
-- [ ] Left: a basemap rendered for the pilot region (made-up tiles in the test); scoring
+- [ ] Left: a basemap for Colombia and Venezuela (made-up tiles in the test; MAPS-PLAN.md); scoring
       the dashboard tasks (GPU rig); offline `desk_review` (W10); upstream proposals; the
       sign-in page labels the box's Kobo "kf.kobo.local — kf.kobo.local" (cosmetic).
 
