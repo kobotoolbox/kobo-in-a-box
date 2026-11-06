@@ -17,7 +17,7 @@ the official MCP client and httpx):
 Makes a throwaway project ("W9 dashboard e2e <time>") and archives it at the end, with
 its dashboard deleted (--keep leaves both, e.g. for screenshots). --maps <ISO3> also checks
 the maps folder: that country's areas come from the box (dash.sh boundaries) into the
-dashboard, and the viewer gets the box's basemap (dash.sh tiles). Prints counts and
+dashboard, and the viewer gets the box's basemap (../maps/, or dash.sh tiles). Prints counts and
 statuses, never tokens.
 """
 import asyncio
@@ -105,10 +105,13 @@ async def maps(c, anon, slug, country):
     check('the viewer gets the layer', r.status_code == 200 and len(r.json().get('features', [])) > 1,
           r.status_code)
     basemap = (await anon.get(f'{DASH}/api/d/{slug}/page')).json().get('basemap') or {}
-    check("the viewer's basemap is the box's tiles", basemap.get('url', '').startswith('http://kobo.local/tiles/'),
-          basemap.get('url'))
+    # The countries' map (../maps/), or tiles unpacked into the maps folder (dash.sh tiles)
+    url = basemap.get('url', '')
+    origin = next((o for o in ('http://maps.kobo.local/styles/basemap/', 'http://kobo.local/tiles/')
+                   if url.startswith(o)), None)
+    check("the viewer's basemap is the box's tiles", bool(origin), url)
     csp = (await anon.get(f'{DASH}/d/{slug}')).headers.get('content-security-policy', '')
-    check('its CSP lets the page load them', 'http://kobo.local' in csp)
+    check('its CSP lets the page load them', bool(origin) and origin.split('/')[2] in csp)
     r = await anon.get(basemap.get('url', '').format(z=0, x=0, y=0))
     check('a tile loads from the box', r.status_code == 200 and r.headers.get('content-type', '').startswith('image/'),
           r.status_code)

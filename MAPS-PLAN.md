@@ -1,7 +1,15 @@
 # Offline maps on the box: plan
 
 Draft 2026-11-06. Companion to [PLAN.md](PLAN.md) (3g "offline basemaps", 3h dashboards) and
-[RISA-PLAN.md](RISA-PLAN.md) (R4, the KoboCollect basemap). Nothing here is built yet.
+[RISA-PLAN.md](RISA-PLAN.md) (R4, the KoboCollect basemap).
+
+**Progress (2026-11-06):** phases 0 and 1 done on a second CPU rig (branch `maps`):
+`remote/maps/` (README there), Colombia and Venezuela, 27/27 offline, QGIS checked, user
+guide `site/maps.html` with screenshots. Decided on the way: one PMTiles file for all the
+box's countries (one style, one source), cut with the union of their outlines; an MBTiles
+copy for downloads, since QGIS and QField open MBTiles and not PMTiles (the pmtiles CLI only
+converts the other way, so `maps.py mbtiles` does it); the host `maps.kobo.local`, with the
+edge caching drawn tiles. Phases 2 and 3 are still to do.
 
 **Suggestion (from a friend of the project):** bundle offline OpenStreetMap maps for the one or
 two countries a deployment works in. Little disk space, and very handy.
@@ -156,6 +164,10 @@ the country list only, so a restore onto a replacement box says which maps to br
   region" points here.
 
 ## 5. Phases
+
+Measured in phase 0 (build 20261105, z15): COL 585 MB, VEN 308 MB, LSO 149 MB; z14 about
+half; 10–35 s each from ams3. Together COL+VEN 883 MB, plus 1,074 MB as MBTiles. Small
+enough for full countries: the operating-areas fallback in section 1 isn't needed.
 
 | Phase | What | Size | Done when |
 |---|---|---|---|

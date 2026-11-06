@@ -424,3 +424,21 @@ Found on the way: the Playwright image has the browsers but not the Python packa
 image with it installed (`kobo-box-test/playwright:1.55.0`, command in `e2e-signin.sh`).
 And KPI's user model is `kobo_auth.User`: `django.contrib.auth.models.User` raises
 "Manager isn't available" in `manage.py shell`.
+
+## 2026-11-06: offline maps, `kobo-box-maps` (`s-8vcpu-32gb-amd`, from `kobo-box-ai-snapshot`)
+
+Protomaps build 20261105, `pmtiles extract` with geoBoundaries ADM0 outlines, 8 download
+threads, from ams3 (MAPS-PLAN phase 0):
+
+| Area | z15 | z14 | Time (z15) |
+|---|---|---|---|
+| Lesotho | 149 MB | 76 MB | 9 s |
+| Colombia | 585 MB | 286 MB | 32 s |
+| Venezuela | 308 MB | 158 MB | 27 s |
+| Colombia + Venezuela (one file) | 883 MB | | 33 s; MBTiles copy 1,074 MB, +40 s |
+
+Tile server (tileserver-gl 5.7.0, 8 vCPU): a z15 image tile of central Bogotá in 0.11 s the
+first time, under 1 ms from the edge's cache; ~205 MB of memory. `e2e-maps.py --dashboard`
+offline: 27/27. From the laptop, plain http to the droplet took 59 s to connect every time
+(ssh fine); screenshots and QGIS went through SSH tunnels instead.
+

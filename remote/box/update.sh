@@ -185,6 +185,9 @@ fi
 if running kobo-cases; then
     "$BOX_DIR/espocrm/espocrm.sh" up
 fi
+if running kobo-maps; then
+    "$BOX_DIR/maps/maps.sh" up   # on the pack's map; before dashboards, which use it
+fi
 if running kobo-dash; then
     "$BOX_DIR/dash/dash.sh" up
 fi

@@ -15,7 +15,7 @@ made from a signed content pack, set themselves up at first power-on, back up, r
 a replacement and update themselves from a newer pack, all tested on DigitalOcean. What's
 left for a pilot mostly needs the recommended computer (W5): its Wi-Fi hotspot, the
 encrypted autoinstall USB, power measurements. The site's user guides: `site/index.html` (the overview),
-`site/cases.html` (case management in detail), `site/dashboards.html` (dashboards) and `site/sync.html` (syncing kits to a hub and to KoboToolbox online). [docs/concept-note.md](docs/concept-note.md) is the
+`site/cases.html` (case management in detail), `site/dashboards.html` (dashboards) and `site/sync.html` (syncing kits to a hub and to KoboToolbox online) and `site/maps.html` (offline maps). [docs/concept-note.md](docs/concept-note.md) is the
 non-technical overview for partners and donors.
 
 ## Layout
@@ -44,6 +44,9 @@ remote/
                         (agents/README.md)
   espocrm/              W11 (optional): EspoCRM case management at cases.kobo.local, and a
                         bridge that opens cases from Kobo submissions (espocrm/README.md)
+  maps/                 offline OpenStreetMap map of the deployment's countries at maps.kobo.local
+                        (tileserver-gl), under dashboards, in QGIS, and as a take-away file
+                        (maps/README.md, MAPS-PLAN.md)
   paper/                W13 (optional): kobo-field-forms at paper.kobo.local, paper sheets
                         printed from Kobo forms, scanned and submitted back (paper/README.md)
   box/                  W12: what makes it a kit that runs itself (box/README.md): fixed

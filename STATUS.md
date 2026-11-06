@@ -56,8 +56,8 @@ are in [PLAN.md](PLAN.md); per-run results are in [remote/results/NOTES.md](remo
    GPU rig still to do). Left: shorter agent prompts (fewer built-in tools, smaller profiles), guidance about each
    form (the enumerator-question mistakes), multi-user sign-in through kobo-mcp's OAuth,
    OpenWork, and a per-process DNS check offline.
-3. **W9:** done on the rig (2026-11-03, `remote/dash/`); left: a real basemap for the
-   pilot countries, Colombia and Venezuela (chosen 2026-11-06; plan in MAPS-PLAN.md), scoring the 11 dashboard tasks on the GPU rig, offline
+3. **W9:** done on the rig (2026-11-03, `remote/dash/`); the basemap for the pilot
+   countries, Colombia and Venezuela, is done (2026-11-06, `remote/maps/`, section 3g); left: scoring the 11 dashboard tasks on the GPU rig, offline
    `desk_review` (W10), proposing kobo-mcp's `w9-box` settings upstream.
 3a. **W14 sync (kobo-transfer):** built into the box and working on kits installed from a pack,
    offline (2026-11-04): every box has a `sync` account (key on the card) and answers to
@@ -246,7 +246,8 @@ without the build, `test_indexing_and_embedding` fails and 4 tests skip, on `mai
 - [x] W4: 11 dashboard tasks (`dash-*`) and an `after: dashboard` check from kobo-dash's
       database (a widget or filter must be new); checked against a real dashboard, not
       yet run with an agent model.
-- [ ] Left: a basemap for Colombia and Venezuela (made-up tiles in the test; MAPS-PLAN.md); scoring
+- [x] The basemap for Colombia and Venezuela (2026-11-06, `remote/maps/`, section 3g)
+- [ ] Left: scoring
       the dashboard tasks (GPU rig); offline `desk_review` (W10); upstream proposals; the
       sign-in page labels the box's Kobo "kf.kobo.local — kf.kobo.local" (cosmetic).
 
@@ -473,6 +474,25 @@ unit tests). Tested on a second CPU rig, `kobo-box-paper`, restored from
 - Not run yet: `firstboot.sh`'s `paper` step and the card on a fresh box, a drive backup and
   restore with the kff store, the image through `pack.sh`/`install.sh`, real paper and phone
   photos (W5 unit, kff milestone 9)
+
+### 3g. Offline maps (MAPS-PLAN.md) ✅ phases 0–1 built and tested 2026-11-06
+`remote/maps/` ([README](remote/maps/README.md)), branch `maps`; pilot countries Colombia and
+Venezuela. Tested on a second CPU rig, `kobo-box-maps`, restored from `kobo-box-ai-snapshot`
+(deleted afterwards, not parked).
+- [x] `maps.sh build` (tileserver-gl 5.7.0, pmtiles 1.31.2, Protomaps style 5.7.2 in Spanish,
+      fonts and icons pinned) and `maps.sh add COL VEN` from Protomaps' 20261105 build: 883 MB
+      in 33 s, plus a 1,074 MB MBTiles for downloads (`maps.py mbtiles`, 25/25 sampled tiles
+      identical to `pmtiles tile`)
+- [x] `e2e-maps.py --dashboard` with `offline.sh on`: 27/27 (tiles in four cities, cached
+      by the edge; nothing outside the box; QGIS files; landing card and status row; a
+      dashboard of 14 border sites on the box's map, with COL/VEN ADM1)
+- [x] `e2e-dash.py --maps COL` against it, offline: 0 failures (33 departments, the new basemap URL and CSP)
+- [x] QGIS 3.42 on a Mac: the `.qlr` through the rig (labels), the take-away MBTiles with no
+      box (colours, but no street names: QGIS's style converter)
+- [x] User guide `site/maps.html`, screenshots from the rig (`site/maps-shots.py`)
+- Not run yet: `firstboot.sh`'s `maps` step on a fresh box, the map and image through
+  `pack.sh`/`install.sh`/`update.sh`, the QGIS GUI by hand
+  (the checks used PyQGIS), QField. Phases 2 (country picker) and 3 (KoboCollect) to do
 
 ### 4. GPU tiers (W1) ✅ run on an H100, 2026-10-29
 RTX 4000/6000 Ada and L40S stayed out of stock, so `remote/gpu-tiers.sh` ran on

@@ -1,0 +1,24 @@
+# Offline maps (MAPS-PLAN.md). Started by maps.sh, which sets the env.
+#
+#   tiles   tileserver-gl on 127.0.0.1:${MAPS_PORT} (edge: maps.kobo.local): the basemap's
+#           vector tiles as they are, image tiles drawn from them on demand, the style,
+#           fonts and icons, and a map viewer. Reads the maps folder, read-only
+
+services:
+  tiles:
+    image: ${TILESERVER_IMAGE}
+    restart: unless-stopped
+    mem_limit: 2g
+    # No network of its own to reach: it only answers the edge
+    ports: ["127.0.0.1:${MAPS_PORT}:8080"]
+    volumes:
+      - ${BASEMAP_DIR}:/data:ro
+    command: ["--config", "/data/config.json", "--silent"]
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:8080/health').then(r => process.exit(r.ok ? 0 : 1), () => process.exit(1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 4
+      start_period: 1m
+    labels:
+      kobo-box.watchdog: restart
