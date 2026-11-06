@@ -15,9 +15,10 @@
     <ul class="header__nav">
       <li><a href="#how">How it works</a></li>
       <li><a href="#field">In the field</a></li>
-      <li><a href="#accounts">Accounts</a></li>
+        <li><a href="#accounts">Accounts</a></li>
       <li><a href="#ai">AI</a></li>
       <li><a href="#library">Library</a></li>
+      <li><a href="#maps">Maps</a></li>
       <li><a href="#results">Results</a></li>
       <li><a href="#hardware">Hardware</a></li>
     </ul>
@@ -55,11 +56,13 @@
     <li><a href="#prepare">Preparing kits</a></li>
     <li><a href="#field">In the field</a></li>
     <li><a href="#accounts">Accounts for your team</a></li>
+    <li><a href="#sync">Syncing kits</a></li>
     <li><a href="#ai">AI in KoboToolbox</a></li>
     <li><a href="#assistant">The assistant</a></li>
     <li><a href="#library">Offline library</a></li>
     <li><a href="#cases">Case management</a></li>
     <li><a href="#dashboards">Dashboards</a></li>
+    <li><a href="#maps">Maps</a></li>
     <li><a href="#paper">Paper forms</a></li>
     <li><a href="#results">Results</a></li>
     <li><a href="#models">Models</a></li>
@@ -363,6 +366,19 @@
 <p>Setting it up, making and sharing a dashboard, maps, what to do when something goes wrong, who sees what, and what was tested.</p>
 </section>
 
+<section id="maps">
+<h2>Maps</h2>
+<p>The kit carries its own <a href="https://www.openstreetmap.org">OpenStreetMap</a> map of the deployment's countries, down to street level, at <code>maps.kobo.local</code>: roads, towns, rivers, health posts, with names in the local language. The pilot kits carry Colombia and Venezuela.</p>
+<ul>
+  <li><strong>One map for every tool.</strong> It opens in any browser on the Wi-Fi, sits under every dashboard map, and loads in QGIS from a layer file on the kit's home page.</li>
+  <li><strong>A copy to take away.</strong> The whole map as one file, for QGIS on a laptop with no kit.</li>
+  <li><strong>Countries chosen by an admin</strong> at <code>kobo.local/maps</code>: adding one needs the internet, taking one off doesn't.</li>
+</ul>
+<p>Tested on the test kit with the internet cut off: 27 of 27 checks, with nothing loaded from outside the kit; the admin page 20 of 20.</p>
+<p><a class="button button--filled" href="maps.html">Maps in detail</a></p>
+<p>Using the map, under dashboards and in QGIS, taking it away, choosing countries, what to do when something goes wrong, and what was tested.</p>
+</section>
+
 <section id="paper">
 <h2>Paper forms (optional)</h2>
 <p>Where phones are short, broken or unsafe to carry, interviews can still be done on paper and end up in KoboToolbox. The kit runs <a href="https://github.com/joshuaberetta/kobo-field-forms">KoboToolbox Paper Forms</a> at <code>paper.kobo.local</code>, also with no internet: print numbered sheets from any form shared with it, fill them in by hand, then scan them or photograph them with a phone. Each page carries corner markers and a QR code, so a crooked photo is straightened and matched to the exact form version it was printed from.</p>
@@ -664,13 +680,24 @@
       <span class="footer__label">On this page</span>
       <ul>
         <li><a href="#field">In the field</a></li>
-      <li><a href="#accounts">Accounts</a></li>
+        <li><a href="#accounts">Accounts</a></li>
         <li><a href="#results">Results</a></li>
         <li><a href="#hardware">Hardware</a></li>
         <li><a href="#help">Questions</a></li>
       </ul>
     </div>
+    <div>
+      <span class="footer__label">In detail</span>
+      <ul>
+        <li><a href="sync.html">Syncing kits</a></li>
+        <li><a href="knowledge.html">Looking things up in the guides</a></li>
+        <li><a href="cases.html">Case management</a></li>
+        <li><a href="dashboards.html">Dashboards</a></li>
+        <li><a href="maps.html">Maps</a></li>
+      </ul>
+    </div>
   </div>
 </footer>
+<script src="static/site/menu.js" defer></script>
 </body>
 </html>
