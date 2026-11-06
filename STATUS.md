@@ -6,7 +6,14 @@ are in [PLAN.md](PLAN.md); per-run results are in [remote/results/NOTES.md](remo
 ## Where we are (2026-11-04)
 
 - **Rigs:** the CPU rig (`s-8vcpu-32gb-amd`: Kobo, the KPI backport, kobo-mcp, OpenCode, test
-  data) is parked as `kobo-box-ai-snapshot` in ams3 (2026-11-06, 145 GiB, with the accounts
+  data) is parked as `kobo-box-ai-snapshot` in ams3 (2026-11-06 afternoon, after merging maps:
+  the map of Colombia and Venezuela at `maps.kobo.local` and the picker at `kobo.local/maps/`,
+  `kobo-box-maps-picker.service`, the stand-in phone's redroid image. The full suite passed
+  offline on main there (maps, picker, dashboards, accounts, sign-in, AI smoke, KPI NLP, case
+  management 27/27, knowledge, paper, KoboCollect) except the two dashboard checks that need
+  COL/VEN regions: geoBoundaries' API was unreachable from that droplet. On a restore, run
+  `box/box.sh ip up` before tests that use the box's names (`/etc/hosts` had lost its block).
+  Before that 2026-11-06, 145 GiB, with the accounts
   page (W15): `kobo-box-users.service`, the app key in `/etc/kobo-box/users-app.key`, qrencode,
   and zbar-tools + librsvg2-bin for `e2e-users.sh`; before that 2026-11-04, with box sync: `box/sync.py`,
   kobo-transfer `supplement-api` at `4e024cf` in `/root/kobo-transfer`, its own `sync` account,
