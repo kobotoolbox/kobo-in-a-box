@@ -5,7 +5,7 @@
 #   ./firstboot.sh          set up whatever isn't done yet
 #   ./firstboot.sh status   what's done, as JSON
 #   ./firstboot.sh catch-up on a box set up by an older pack: the parts it doesn't have yet
-#                           (cases, dash, paper, sync, knowledge) when this pack has them, then the
+#                           (cases, maps, dash, paper, sync, knowledge) when this pack has them, then the
 #                           label card again (update.sh)
 #
 # Nothing per-box is decided at the factory, so every box installed from the same pack is
@@ -18,6 +18,8 @@
 #   cases     case management, when the pack has EspoCRM's images: a Kobo account for the
 #             bridge (cases-bridge, sees only the forms shared with it), EspoCRM with its
 #             own passwords (espocrm.sh up)
+#   maps      the countries' map, when the pack has the tile server's image and a map
+#             (maps.sh up); before dash, which uses it as dashboards' background
 #   dash      dashboards, when the pack has kobo-dash's images: kobo-dash and the box's
 #             kobo-mcp with their own keys (dash.sh up)
 #   paper     paper forms, when the pack has kobo-field-forms' image: a Kobo account
@@ -41,7 +43,7 @@ ETC=/etc/kobo-box
 STATE=/var/lib/kobo-box/firstboot.json
 DONE=$ETC/firstboot-done
 LIBRARY_DIR=${LIBRARY_DIR:-/srv/library}
-STEPS=(name kobo secrets cases dash paper sync knowledge ai card)
+STEPS=(name kobo secrets cases maps dash paper sync knowledge ai card)
 
 log() { echo "[$(date +%H:%M:%S)] $*"; }
 
@@ -116,6 +118,16 @@ step_cases() {
     "$REMOTE/espocrm/espocrm.sh" up
 }
 
+step_maps() {
+    local image
+    image=$(sed -n 's/^TILESERVER_IMAGE=//p' "$REMOTE/maps/maps.env")
+    if ! docker image inspect "$image" >/dev/null 2>&1 || [[ ! -s /opt/maps/basemap/basemap.pmtiles ]]; then
+        log "no maps in this pack ($image)"; return
+    fi
+    echo '# This box (firstboot.sh): the maps are on' > "$ETC/maps.env"
+    "$REMOTE/maps/maps.sh" up
+}
+
 step_dash() {
     local image
     image=$(sed -n 's/^DASH_IMAGE=//p' "$REMOTE/dash/dash.env")
@@ -166,6 +178,7 @@ step_card() {
 has() {  # has <step>: whether this box has that part already (made by firstboot or by hand)
     case $1 in
         cases) [[ -s $ETC/espocrm.env ]] ;;
+        maps) [[ -s $ETC/maps.env ]] ;;
         dash) [[ -s $(sed -n 's/^DASH_SECRETS=//p' "$REMOTE/dash/dash.env") ]] ;;
         paper) [[ -s $ETC/paper.env ]] ;;
         sync) [[ -s $ETC/sync.token ]] ;;
@@ -178,7 +191,7 @@ catch_up() {
     # as done when it skipped it
     [[ -f $DONE ]] || { echo "first-boot setup isn't done: ./firstboot.sh" >&2; exit 1; }
     local s added=false
-    for s in cases dash paper sync knowledge; do
+    for s in cases maps dash paper sync knowledge; do
         has "$s" && continue
         log "== $s (new in this pack)"
         "step_$s"

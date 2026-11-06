@@ -157,6 +157,7 @@ SETUP_STEPS = {  # firstboot.sh's steps, as the focal point sees them
     'cases': 'setting up case management',
     'dash': 'setting up dashboards',
     'paper': 'setting up paper forms',
+    'maps': 'starting the maps',
     'ai': 'starting the AI models',
     'card': 'writing the label card',
 }
@@ -362,6 +363,31 @@ def knowledge():
         return check(name, 'busy', 'Starting up.')
     return check(name, 'warn', "Not working: the assistant can still use KoboToolbox, but "
                  "can't look things up in the guides.", 'Restart the box. ' + CALL_SUPPORT)
+
+
+def maps():
+    cs = containers('kobo-maps')
+    if not cs:
+        return None
+    name = 'Maps'
+    env = env_file(REMOTE / 'maps' / 'maps.env')
+    try:  # a change from kobo.local/maps (maps.sh job) restarts the tile server
+        job = json.loads(Path('/var/lib/kobo-box/maps-job.json').read_text())
+    except (OSError, ValueError):
+        job = {}
+    try:
+        doc = json.loads(Path(env.get('MAPS_DIR', '/opt/maps'), 'basemap', 'countries.json').read_text())
+        names = ', '.join(c['name'] for c in doc['countries'])
+        build = doc['osm_build']
+        what = f" {names}, OpenStreetMap as of {build[:4]}-{build[4:6]}-{build[6:8]}."
+    except (OSError, ValueError, KeyError):
+        what = ''
+    if http(f"http://127.0.0.1:{env.get('MAPS_PORT', '8090')}/health") == 200 and not not_running(cs):
+        return check(name, 'ok', 'Working:' + what + watchdog_note(cs) if what else 'Working.' + watchdog_note(cs))
+    if starting() or job.get('running'):
+        return check(name, 'busy', "Changing the map's countries." if job.get('running') else 'Starting up.')
+    return check(name, 'warn', 'Not working: dashboards show their areas and points, but no map '
+                 'behind them.', 'Restart the box. ' + CALL_SUPPORT)
 
 
 def paper():
@@ -636,7 +662,7 @@ def update():
     return None, False
 
 
-CHECKS = (kobo, ai, assistant, cases, dashboards, paper, knowledge, library, disk, backups, sync, battery)
+CHECKS = (kobo, ai, assistant, cases, dashboards, maps, paper, knowledge, library, disk, backups, sync, battery)
 
 
 def run_checks():

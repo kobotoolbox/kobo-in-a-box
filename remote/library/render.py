@@ -16,6 +16,7 @@ from pathlib import Path
 
 LIBRARY_DIR = Path(os.environ.get('LIBRARY_DIR', '/srv/library'))
 DOMAIN = os.environ.get('KOBO_DOMAIN', 'kobo.local')
+MAPS_DIR = Path(os.environ.get('MAPS_DIR', '/opt/maps'))
 HERE = Path(__file__).resolve().parent
 
 SECTIONS = {
@@ -135,6 +136,43 @@ def guide_items(rows, sums):
     return items
 
 
+def maps_card():
+    """The box's map (maps/maps.sh): which countries, and how to open it in QGIS."""
+    path = MAPS_DIR / 'basemap' / 'countries.json'
+    if not path.exists():
+        return []
+    doc = json.loads(path.read_text())
+    e = html.escape
+    names = ', '.join(c['name'] for c in doc['countries'])
+    w, s, east, n = doc['bounds']
+    maps = f'http://maps.{DOMAIN}'
+    body = [
+        '<h2>Maps</h2>',
+        f'<p><a class="big" href="{maps}/styles/basemap/#5/{(s + n) / 2:.2f}/{(w + east) / 2:.2f}">Open the map</a></p>',
+        f'<p>OpenStreetMap of <strong>{e(names)}</strong>, as of {e(doc["osm_build"][:4])}-'
+        f'{e(doc["osm_build"][4:6])}-{e(doc["osm_build"][6:8])}. Dashboards use it as their background.</p>',
+        '<ul>',
+        f'<li><a href="{maps}/download/kobo-box-map.qlr" download>Map for QGIS</a> '
+        '<span class="meta">layer file</span><br><span class="hint">Open it in QGIS (double-click, or drag it '
+        'onto the map) while on this Wi-Fi.</span></li>',
+    ]
+    if 'mbtiles' in doc:
+        body += [
+            f'<li><a href="{maps}/download/basemap.mbtiles" download>Whole map, to take away</a> '
+            f'<span class="meta">MBTiles · {human_size(doc["mbtiles"]["size"])}</span><br><span class="hint">'
+            'For QGIS or QField away from this Wi-Fi. In QGIS: Layer › Add Layer › Add Vector Tile '
+            'Layer, then this file; for its colours, load the '
+            f'<a href="{maps}/styles/basemap/style.json" download="kobo-box-map-style.json">map style</a> '
+            'in the layer\'s Symbology.</span>'
+            f'<br><span class="sha">SHA-256 {e(doc["mbtiles"]["sha256"])}</span></li>',
+        ]
+    return body + [
+        '</ul>',
+        f'<p class="hint">Map data {e("© OpenStreetMap contributors")}, '
+        f'<a href="{maps}/download/LICENCE.txt">ODbL</a>. Admins: <a href="/maps/">add or take off countries</a>.</p>',
+    ]
+
+
 def main():
     rows = read_manifest()
     sums = read_sums()
@@ -175,6 +213,12 @@ def main():
             '<p class="hint">Print sheets from a Kobo form, then scan or photograph the '
             'filled-in sheets and send their answers to Kobo. Password on the label card.</p>',
         ]
+    # maps.sh up/down
+    if (LIBRARY_DIR / '.services' / 'maps').exists():
+        body += maps_card()
+    elif (MAPS_DIR / 'basemap' / 'styles' / 'basemap.json').exists():  # maps, but no country yet
+        body.append('<p class="hint">Admins: <a href="/maps/">add a map of your countries</a> '
+                    '(needs the internet).</p>')
     guides = guide_items([r for r in rows if r['section'] == 'docs'], sums)
     if guides:
         body += ['<h2>Guides</h2>', '<ul>', *guides, '</ul>']

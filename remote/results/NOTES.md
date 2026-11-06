@@ -494,3 +494,27 @@ Kobo 2.026.37d), tested with `e2e-users.sh` through the edge nginx and in a real
   test accounts deleted with it.
 - Ran on `kobo-box-collect`, restored from `kobo-box-ai-snapshot` (2026-11-06) on
   `s-8vcpu-32gb-amd`; deleted afterwards with its firewall.
+
+## 2026-11-06: offline maps, `kobo-box-maps` (`s-8vcpu-32gb-amd`, from `kobo-box-ai-snapshot`)
+
+Protomaps build 20261105, `pmtiles extract` with geoBoundaries ADM0 outlines, 8 download
+threads, from ams3 (MAPS-PLAN phase 0):
+
+| Area | z15 | z14 | Time (z15) |
+|---|---|---|---|
+| Lesotho | 149 MB | 76 MB | 9 s |
+| Colombia | 585 MB | 286 MB | 32 s |
+| Venezuela | 308 MB | 158 MB | 27 s |
+| Colombia + Venezuela (one file) | 883 MB | | 33 s; MBTiles copy 1,074 MB, +40 s |
+
+Tile server (tileserver-gl 5.7.0, 8 vCPU): a z15 image tile of central Bogotá in 0.11 s the
+first time, under 1 ms from the edge's cache; ~205 MB of memory. `e2e-maps.py --dashboard`
+offline: 27/27. From the laptop, plain http to the droplet took 59 s to connect every time
+(ssh fine); screenshots and QGIS went through SSH tunnels instead.
+
+Later the same day, the country picker (`maps/picker.py`) on a new `kobo-box-maps` from the
+same snapshot, with `box.sh install`: through the page, Lesotho added in 90 s and Ecuador in
+~60 s (each cuts every country on the box again from build 20261106, plus the MBTiles:
+COL+LSO+VEN 1,032 MB), Lesotho taken off offline in 63 s. `e2e-maps.py --picker` 11/11,
+`--picker-offline` 9/9, `e2e-maps.py` 27 checks, 0 failures.
+

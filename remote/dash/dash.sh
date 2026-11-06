@@ -30,8 +30,19 @@ LIBRARY_DIR=${LIBRARY_DIR:-/srv/library}
 
 compose() { docker compose -p kobo-dash -f docker-compose.dash.yml "$@"; }
 
-basemap() {  # TILE_URL and the rest from the maps folder's tiles, unless set
-    [[ -z "$TILE_URL" && -f "$MAPS_DIR/tiles/metadata.json" ]] || return 0
+basemap() {  # TILE_URL and the rest from the box's maps, unless set
+    [[ -z "$TILE_URL" ]] || return 0
+    # The countries' OpenStreetMap map (../maps/), when its tile server runs. It draws
+    # past the map's own deepest zoom (15), so dashboards can zoom in to street level
+    if [[ -s "$MAPS_DIR/basemap/countries.json" && -n "$(docker compose -p kobo-maps ps -q tiles 2>/dev/null)" ]]; then
+        TILE_URL='http://maps.kobo.local/styles/basemap/{z}/{x}/{y}.png'
+        TILE_ATTRIBUTION=${TILE_ATTRIBUTION:-$(jq -r .attribution "$MAPS_DIR/basemap/countries.json")}
+        TILE_MAX_ZOOM=${TILE_MAX_ZOOM:-18}
+        export TILE_URL TILE_ATTRIBUTION TILE_MAX_ZOOM
+        return 0
+    fi
+    # Else raster tiles unpacked from an MBTiles file (dash.sh tiles)
+    [[ -f "$MAPS_DIR/tiles/metadata.json" ]] || return 0
     local info; info=$(python3 -I mbtiles.py info "$MAPS_DIR/tiles")
     TILE_URL="http://kobo.local/tiles/{z}/{x}/{y}$(jq -r '.ext // ".png"' <<<"$info")"
     TILE_ATTRIBUTION=${TILE_ATTRIBUTION:-$(jq -r '.attribution // empty' <<<"$info")}

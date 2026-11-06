@@ -135,7 +135,14 @@ rsync -a --delete --exclude results --exclude __pycache__ --exclude '*.local.env
     --exclude ai.box.env --exclude 'agents/opencode/' --exclude pack.json \
     "$PACK/kobo-box-ai/" "$BOX_DIR/"
 rsync -a --delete --exclude '*.part' "$PACK/models/" "$MODELS_DIR/"
-if [[ -d "$PACK/maps" ]]; then mkdir -p "$MAPS_DIR"; rsync -a --delete "$PACK/maps/" "$MAPS_DIR/"; fi
+if [[ -d "$PACK/maps" ]]; then
+    mkdir -p "$MAPS_DIR"
+    # Administrative areas: the pack's, and any fetched for a country added on this box
+    [[ ! -d "$PACK/maps/boundaries" ]] || rsync -a "$PACK/maps/boundaries/" "$MAPS_DIR/boundaries/"
+    rsync -a --delete --exclude boundaries/ --exclude basemap/ "$PACK/maps/" "$MAPS_DIR/"
+    # The basemap: the pack's, unless its countries were changed here (kobo.local/maps)
+    [[ ! -d "$PACK/maps/basemap" ]] || log "maps: $(python3 -I "$BOX_DIR/maps/maps.py" pack-update "$PACK/maps/basemap" "$MAPS_DIR/basemap")"
+fi
 if [[ -d "$PACK/knowledge" ]]; then mkdir -p /opt/knowledge; rsync -a --delete "$PACK/knowledge/" /opt/knowledge/; fi
 rsync -a --delete --exclude 'status/' --exclude 'card/' --exclude '.services/' --exclude box.json \
     "$PACK/library/" "$LIBRARY_DIR/"
@@ -184,6 +191,9 @@ if running kobo-ai; then
 fi
 if running kobo-cases; then
     "$BOX_DIR/espocrm/espocrm.sh" up
+fi
+if running kobo-maps; then
+    "$BOX_DIR/maps/maps.sh" up   # on the pack's map; before dashboards, which use it
 fi
 if running kobo-dash; then
     "$BOX_DIR/dash/dash.sh" up

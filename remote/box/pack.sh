@@ -143,6 +143,11 @@ build_files() {
     log "maps from $MAPS_DIR"
     mkdir -p "$MAPS_DIR"
     rsync -a --delete "$MAPS_DIR/" "$pack/maps/"
+    # A pack's map is the pack's, even if it was changed on this machine's admin page
+    if [[ -s "$pack/maps/basemap/countries.json" ]]; then
+        jq '.on_box = false | .readd = []' "$pack/maps/basemap/countries.json" > "$pack/maps/basemap/countries.json.tmp"
+        mv "$pack/maps/basemap/countries.json.tmp" "$pack/maps/basemap/countries.json"
+    fi
     log "library from $LIBRARY_DIR"
     [[ -f "$LIBRARY_DIR/index.html" ]] || die "no library in $LIBRARY_DIR (library.sh build first)"
     # Never a box's status page or label card (its passwords), nor its services' links

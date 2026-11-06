@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Maps on the kit: Kobo in a box</title>
+<meta name="description" content="How offline maps work on Kobo in a box: an OpenStreetMap map of the deployment's countries, down to street level, served by the kit itself. In the browser, under dashboards, in QGIS on the kit's Wi-Fi, and as a file to take away, with no internet. What's on the kit, how to use it, adding a country, and what was tested.">
+<link rel="icon" href="static/site/icon.png" type="image/png">
+<link rel="stylesheet" href="static/site/home.css">
+</head>
+<body>
+<header class="header">
+  <div class="wrap">
+    <a class="header__brand" href="./"><img src="static/site/logo.svg" alt="KoboToolbox"><span class="header__product">In a box</span></a>
+    <ul class="header__nav">
+      <li><a href="./#how">How it works</a></li>
+      <li><a href="./#field">In the field</a></li>
+      <li><a href="./#ai">AI</a></li>
+      <li><a href="./#assistant">Assistant</a></li>
+      <li><a href="./#dashboards">Dashboards</a></li>
+      <li><a href="./#results">Results</a></li>
+    </ul>
+    <a class="button button--filled button--m" href="./">Back to the overview</a>
+  </div>
+</header>
+
+<main>
+<section class="banner">
+  <div class="wrap">
+    <h1>Maps on the kit</h1>
+    <p class="banner__lead">A map of the countries you work in, down to the streets, buildings and paths, that works with no internet: in any browser on the kit's Wi-Fi, behind every dashboard, and in QGIS. It comes from OpenStreetMap, is prepared before the kit ships, and is served by the kit itself.</p>
+    <div class="banner__buttons">
+      <a class="button button--filled" href="#using">Use it</a>
+      <a class="button button--light" href="#qgis">Open it in QGIS</a>
+    </div>
+  </div>
+</section>
+
+<section class="steps" aria-label="The loop">
+  <div class="wrap">
+    <ol>
+      <li><h3>Your countries</h3><p>The kit comes with the deployment's countries; for the pilot, Colombia and Venezuela (about 1 GB). An admin can add others from the kit's home page while it's online.</p></li>
+      <li><h3>Open it on the Wi-Fi</h3><p>Tap <strong>Open the map</strong> on the kit's home page, on a phone or a laptop. Dashboards show it under their points and areas by themselves.</p></li>
+      <li><h3>Take it into QGIS</h3><p>A layer file opens the same map in QGIS on the Wi-Fi. The whole map is also a file you can take away.</p></li>
+    </ol>
+  </div>
+</section>
+
+<div class="wrap docs">
+<nav class="docs__nav" aria-label="On this page">
+  <ul>
+    <li><a href="#what">What it is</a></li>
+    <li><a href="#using">Using the map</a></li>
+    <li><a href="#dashboards">Under dashboards</a></li>
+    <li><a href="#qgis">In QGIS</a></li>
+    <li><a href="#away">Taking it away</a></li>
+    <li><a href="#countries">Choosing countries</a></li>
+    <li><a href="#trouble">When something goes wrong</a></li>
+    <li><a href="#tested">What was tested</a></li>
+    <li><a href="#limits">Limits</a></li>
+  </ul>
+</nav>
+
+<article class="prose">
+
+<section id="what">
+<h2>What it is</h2>
+<p>The kit carries an <a href="https://www.openstreetmap.org">OpenStreetMap</a> map of the deployment's countries and serves it at <code>maps.kobo.local</code>. Roads and street names, towns and neighbourhoods, rivers, parks, buildings, health posts and other places people have mapped: everything OpenStreetMap had on the day the map was prepared, with names in the local language.</p>
+<p>It's one map for every tool on the kit. A browser draws it as it is; dashboards and QGIS get it as images the kit draws on request and keeps, so the second time anyone looks at a place it comes straight back.</p>
+<div class="figures">
+<figure><a href="static/maps/map-countries.jpg"><img src="static/maps/map-countries.jpg" width="1440" height="900" alt="A map of Colombia and Venezuela, with Bogotá, Medellín, Cali, Maracaibo, Caracas and other cities labelled in Spanish. The corners outside the two countries' area are plain grey."></a><figcaption>The pilot kit's map: Colombia and Venezuela. Outside them (the grey corners) the kit has no map.</figcaption></figure>
+<figure><a href="static/maps/landing-maps.jpg"><img src="static/maps/landing-maps.jpg" width="1440" height="377" alt="The Maps section of the kit's home page: an Open the map button; OpenStreetMap of Colombia, Venezuela, as of 2026-11-06, Dashboards use it as their background; a Map for QGIS layer file; the Whole map, to take away, MBTiles, 1.1 GB, with its SHA-256; Map data © OpenStreetMap contributors, ODbL; Admins: add or take off countries."></a><figcaption>The Maps section of the kit's home page, <code>kobo.local</code>.</figcaption></figure>
+</div>
+</section>
+
+<section id="using">
+<h2>Using the map</h2>
+<p>On the kit's home page, tap <strong>Open the map</strong>. Drag to move, pinch or use the + and − buttons to zoom. It works the same on a phone and on a laptop, and needs no app or account.</p>
+<div class="figures">
+<figure><a href="static/maps/phone-border.jpg"><img src="static/maps/phone-border.jpg" width="824" height="1720" alt="The map on a phone at street level in La Parada, Villa del Rosario, by the border bridge: Autopista Internacional, Calle 7, Calle 8, Carrera 16 and the blocks of houses around them."></a><figcaption>On a phone: La Parada, by the border bridge.</figcaption></figure>
+<figure><a href="static/maps/map-border.jpg"><img src="static/maps/map-border.jpg" width="1440" height="900" alt="The border between Colombia and Venezuela at Villa del Rosario and San Antonio del Táchira: the towns, neighbourhood names, the Río Táchira between them, roads and the airport."></a><figcaption>Villa del Rosario (Colombia) and San Antonio del Táchira (Venezuela), either side of the Río Táchira.</figcaption></figure>
+<figure><a href="static/maps/map-bogota.jpg"><img src="static/maps/map-bogota.jpg" width="1440" height="900" alt="Central Bogotá at street level: La Candelaria, Las Nieves, Santa Fé, Plaza de Bolívar, Parque de la Independencia, street names such as Avenida Calle 19 and Carrera 13, and Cerro de Monserrate."></a><figcaption>Central Bogotá.</figcaption></figure>
+</div>
+</section>
+
+<section id="dashboards">
+<h2>Under dashboards</h2>
+<p>Every map in a <a href="dashboards.html">dashboard</a> has the kit's map under it: GPS points from the forms, and areas shaded by district or department. There's nothing to set up: once the kit has a map, dashboards use it.</p>
+<div class="figures">
+<figure><a href="static/maps/dash-border-map.jpg"><img src="static/maps/dash-border-map.jpg" width="688" height="503" alt="A dashboard's Location map: blue points around Cúcuta and San Cristóbal, Maicao and Maracaibo, and Arauca and Guasdualito, over the kit's map of Colombia and Venezuela."></a><figcaption>A dashboard's map of 14 test sites along the border.</figcaption></figure>
+<figure><a href="static/maps/dash-border.jpg"><img src="static/maps/dash-border.jpg" width="1440" height="900" alt="A dashboard titled Border sites, Colombia and Venezuela: 14 responses, submissions over time, a map of the sites, and the share of sites by country (Colombia 8, Venezuela 6)."></a><figcaption>The whole dashboard the assistant's tools made of the test sites. Made-up data.</figcaption></figure>
+</div>
+<p>Without a map (a kit prepared for countries it doesn't have), dashboards still show their points, areas and shading, on a plain background.</p>
+</section>
+
+<section id="qgis">
+<h2>In QGIS, on the kit's Wi-Fi</h2>
+<ol>
+  <li>On the kit's home page, under Maps, download <strong>Map for QGIS</strong> (a small layer file, <code>kobo-box-map.qlr</code>).</li>
+  <li>Double-click it, or drag it onto QGIS's map. The kit's map appears as a layer, named after its countries.</li>
+  <li>Put it at the bottom of the layer list, under your own layers.</li>
+</ol>
+<p>The layer reads from the kit, so it works while the laptop is on the kit's Wi-Fi. It's the same map, labels and all, as in the browser. QGIS and QField are in the kit's library if a laptop doesn't have them.</p>
+<figure><a href="static/maps/qgis-bogota.jpg"><img src="static/maps/qgis-bogota.jpg" width="1200" height="800" alt="Central Bogotá drawn by QGIS from the kit's layer file, with street and neighbourhood names."></a><figcaption>The layer file in QGIS: central Bogotá.</figcaption></figure>
+</section>
+
+<section id="away">
+<h2>Taking it away</h2>
+<p>For work away from the kit, download <strong>Whole map, to take away</strong> (an MBTiles file, 1.1 GB for Colombia and Venezuela) while on the Wi-Fi. Check it arrived whole against the SHA-256 shown beside it.</p>
+<ul>
+  <li><strong>QGIS:</strong> Layer › Add Layer › Add Vector Tile Layer, then choose the file. For the kit's colours, also download the map style (the link beside the file), then in the layer's properties, Symbology › Style › Load Style, choose it.</li>
+  <li><strong>QField:</strong> add the file to a QGIS project as above before packaging it for QField. Not yet tried on a phone.</li>
+</ul>
+<figure><a href="static/maps/qgis-file-caracas.jpg"><img src="static/maps/qgis-file-caracas.jpg" width="1200" height="800" alt="Central Caracas drawn by QGIS from the take-away file with the kit's style, on a laptop with no connection to the kit: roads, the Río Guaire, parks and blocks, with road numbers but no street names."></a><figcaption>The take-away file in QGIS with no kit or internet: Caracas. Street names don't show (see <a href="#limits">Limits</a>).</figcaption></figure>
+</section>
+
+<section id="countries">
+<h2>Choosing countries</h2>
+<p>A kit comes with the countries the deployment needs, usually one or two, chosen when it's prepared. The pilot kits carry <strong>Colombia and Venezuela</strong>, with their departments, states and municipalities for dashboards. The home page and the status page say which countries a kit has and how recent its map is.</p>
+<p>A Kobo admin can change them on the kit itself, at <code>kobo.local/maps</code> (the <strong>add or take off countries</strong> link under Maps on the home page):</p>
+<ol>
+  <li>Sign in with a Kobo admin account. The admin password is on the kit's label card.</li>
+  <li>To <strong>add a country</strong>, choose it from the list and tap <strong>Add it to the map</strong>. This needs the internet: connect the kit to a network with internet first, at the office for example.</li>
+  <li>The page shows the change while it runs. It takes a few minutes for most countries, longer for big ones; you can close the page and come back. Its regions and districts come too, for dashboards.</li>
+  <li>To <strong>take a country off</strong>, tap <strong>Take off</strong> beside it, then confirm. This works without the internet.</li>
+</ol>
+<p><strong>Bring the map up to date</strong> fetches the same countries again, with OpenStreetMap's latest changes. Adding a country does that too, for all of them.</p>
+<div class="figures figures--half">
+<figure><a href="static/maps/picker-choose.jpg"><img src="static/maps/picker-choose.jpg" width="1100" height="860" alt="The Maps on this box page, signed in as super_admin: OpenStreetMap as of 2026-11-06; On the map: Colombia, Lesotho and Venezuela, each with a Take off button; Bring the map up to date; Add a country, with Ecuador chosen in the list and an Add it to the map button; a note on time and disk space, 266 GB free."></a><figcaption>Choosing a country to add.</figcaption></figure>
+<figure><a href="static/maps/picker-adding.jpg"><img src="static/maps/picker-adding.jpg" width="1100" height="860" alt="The same page while Ecuador is added: Adding Ecuador… This takes a few minutes. You can leave this page: it carries on by itself; the step it's on; the buttons greyed out until it's done."></a><figcaption>While it's added: the buttons wait until it's done.</figcaption></figure>
+<figure><a href="static/maps/picker-done.jpg"><img src="static/maps/picker-done.jpg" width="1100" height="860" alt="The page after: Done: adding Ecuador; On the map: Colombia, Ecuador, Lesotho, Venezuela."></a><figcaption>Done, about a minute later.</figcaption></figure>
+<figure><a href="static/maps/picker-offline.jpg"><img src="static/maps/picker-offline.jpg" width="1100" height="560" alt="The page with the kit offline: the countries with their Take off buttons, Bring the map up to date greyed out, and under Add a country: This box isn't on the internet now. Adding a country needs it: connect the box to a network with internet (at the office, for example), then come back to this page. Taking a country off works without."></a><figcaption>With no internet: taking a country off still works.</figcaption></figure>
+</div>
+<div class="figures">
+<figure><a href="static/maps/picker-phone.jpg"><img src="static/maps/picker-phone.jpg" width="824" height="1720" alt="The page on a phone: the countries with Take off buttons, Bring the map up to date, and the list to add a country."></a><figcaption>On a phone.</figcaption></figure>
+<figure><a href="static/maps/picker-signin.jpg"><img src="static/maps/picker-signin.jpg" width="1100" height="520" alt="Maps on this box: Choose which countries are on the box's map. Sign in with a Kobo admin account (the admin password is on the label card). Username and Password fields and a Sign in button."></a><figcaption>Signing in: Kobo admins only.</figcaption></figure>
+</div>
+<figure><a href="static/maps/picker-confirm.jpg"><img src="static/maps/picker-confirm.jpg" width="1100" height="300" alt="Take Ecuador off the map? Its map goes from the box: the browser, dashboards and QGIS show nothing there any more. Putting it back needs the internet. Its regions and districts stay, for dashboards. A Take Ecuador off button and a Keep it link."></a><figcaption>Taking a country off asks first.</figcaption></figure>
+<p>Only Kobo admins can sign in; others see only the sign-in page. Changes made here stay when the kit is updated from a newer content pack. If a newer pack brings a country the kit didn't have, the kit takes the pack's map, and the page offers to add the kit's own extra countries again.</p>
+<figure><a href="static/maps/status-maps.jpg"><img src="static/maps/status-maps.jpg" width="557" height="80" alt="The Maps row of the status page: a green light, Maps, Working: Colombia, Venezuela, OpenStreetMap as of 2026-11-05."></a><figcaption>The Maps row on the status page, <code>kobo.local/status</code>.</figcaption></figure>
+</section>
+
+<section id="trouble">
+<h2>When something goes wrong</h2>
+<ul>
+  <li><strong>Grey instead of a map</strong> where you're looking: the place is outside the kit's countries. Ask support for a kit with that country.</li>
+  <li><strong>Dashboards with no map under them</strong>, or a blank map page: look at the status page. If Maps isn't green, restart the kit. If it stays that way after a restart, call support.</li>
+  <li><strong>QGIS shows nothing from the layer file</strong>: check the laptop is on the kit's Wi-Fi, and that <code>kobo.local</code> opens in its browser.</li>
+</ul>
+</section>
+
+<section id="tested">
+<h2>What was tested</h2>
+<p>On a test kit with the internet cut off, through the kit's own addresses: <strong>27 of 27 checks</strong>.</p>
+<ul>
+  <li>Street-level map tiles, both kinds, for Bogotá, Cúcuta, Caracas and Maracaibo; each came back from the kit's copy in about 2 milliseconds the second time.</li>
+  <li>A place outside the two countries (Lima) got no map and no error.</li>
+  <li>The map, its style, fonts and icons, and the map page loaded nothing from outside the kit (also checked in a browser for every screenshot here).</li>
+  <li>The QGIS layer file, the take-away file (its size matching what the kit lists), and the map's licence were served; the home page and status page showed the countries.</li>
+  <li>The assistant's tools made a dashboard of 14 sites along the border with a map, and the kit's map was under it. Colombia's departments and Venezuela's states (58 areas) came from the kit.</li>
+  <li>QGIS (3.42) opened the layer file, and the map with the kit's style, through the kit; and the take-away file with no kit at all.</li>
+</ul>
+<p>The admin page, on the same kit: <strong>20 of 20 checks</strong>. Online, an admin signed in (a wrong password and a form from elsewhere were refused) and added Lesotho, whose map then answered at Maseru, in 90 seconds; Ecuador took about a minute. With the internet cut off, the page said adding needs it and refused to add, and took Lesotho off in a minute, after asking. Choosing which map a kit keeps on an update was checked for the four cases (a kit's own extra country kept, the pack's new country taken, the extra one offered again).</p>
+<p>Preparing the map: Colombia and Venezuela took about a minute and a half on the build machine (33 seconds to fetch them, the rest to make the take-away file). On the kit: 0.9 GB for the map, 1.1 GB for the take-away file, and about 200 MB of memory. Drawing a street-level image the first time took about a tenth of a second on the test kit's processor.</p>
+</section>
+
+<section id="limits">
+<h2>Limits</h2>
+<ul>
+  <li><strong>Only the countries on the kit.</strong> Outside them there's no map.</li>
+  <li><strong>As recent as when the kit was prepared.</strong> OpenStreetMap keeps changing; the map is updated with each content pack.</li>
+  <li><strong>KoboCollect doesn't use it yet.</strong> Showing the map under a GPS question on phones needs a map file of an area put on each phone; that's the next step.</li>
+  <li><strong>The take-away file in QGIS has no street names</strong>: QGIS can't read all of the map style's label rules. On the kit's Wi-Fi, the layer file has them all.</li>
+  <li><strong>Adding a country needs the internet</strong> on the kit. A kit that never goes online gets new countries from a newer content pack.</li>
+</ul>
+</section>
+
+</article>
+</div>
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <div>
+      <img src="static/site/logo-white.svg" alt="KoboToolbox">
+      <p>Kobo in a box: KoboToolbox, local AI and an offline library for teams working without reliable internet. A prototype in testing.</p>
+    </div>
+    <div>
+      <span class="footer__label">KoboToolbox</span>
+      <ul>
+        <li><a href="https://www.kobotoolbox.org">kobotoolbox.org</a></li>
+        <li><a href="https://support.kobotoolbox.org">Help Center</a></li>
+        <li><a href="https://community.kobotoolbox.org">Community forum</a></li>
+      </ul>
+    </div>
+    <div>
+      <span class="footer__label">On this site</span>
+      <ul>
+        <li><a href="./">Overview</a></li>
+        <li><a href="dashboards.html">Dashboards</a></li>
+        <li><a href="#qgis">Maps in QGIS</a></li>
+        <li><a href="#trouble">Maps: when something goes wrong</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>
+</body>
+</html>

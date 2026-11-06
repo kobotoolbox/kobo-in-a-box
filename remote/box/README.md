@@ -44,6 +44,7 @@ are built.
 | `update.sh --pack <dir>`, `box.sh update-drive` | Update a box in use from a newer pack, keeping its data and passwords; by itself when a signed `KOBOPACK` stick is plugged in | Built; tested 37c → 37d offline |
 | `watchdog.sh` | Restarts a model server that stops answering its healthcheck (every minute, before the status page) | Built; tested on the rig |
 | `status.py` | Status page at `kobo.local/status`: Kobo, AI, disk, backups, battery in plain words; every minute | Built |
+| `../maps/picker.py` | The map's countries at `kobo.local/maps/`: Kobo admins add or take off countries (online), with `users.py`'s sign-in; changes kept on updates | Built; tested on the rig, online and offline (`maps/e2e-maps.py --picker`) |
 | `users.py` | Kobo accounts at `kobo.local/users/`: one or a CSV list, ready for KoboCollect at once (no web sign-in first); KoboCollect QR codes with the box's Collect settings; deactivate/reactivate (never delete) | Built; tested on the rig, offline (`e2e-users.sh`) |
 | `sync.py` | A field kit syncs its projects to its hub by itself (kobo-transfer), every 5 minutes when connected; pairing, status page row | Built; tested on fresh boxes from a pack (below) |
 | Autoinstall USB | Ubuntu 26.04 ISO + `CIDATA` + `KOBOPACK` partitions, LUKS + TPM | Needs the W5 box |
