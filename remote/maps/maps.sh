@@ -76,19 +76,24 @@ extract_map() {  # extract_map <source> <ISO3...>: the basemap of exactly these 
 }
 
 outline() {  # outline ISO3: its ADM0 outline (to cut along), and ADM1-2 for dashboards
-    local iso=$1
+    local iso=$1 name
     [[ -s "$BOUNDARIES_DIR/${iso}_ADM0.geojson" ]] && return 0
     if docker image inspect "$(sed -n 's/^DASH_IMAGE=//p' ../dash/dash.env)" >/dev/null 2>&1; then
-        ../dash/dash.sh boundaries "$iso" --levels ADM0,ADM1,ADM2
-    else  # no dashboards on this box: the outline only, straight from geoBoundaries
-        local url
-        url=$(curl -fsS --retry 2 "https://www.geoboundaries.org/api/current/gbOpen/$iso/ADM0/"             | jq -r '.simplifiedGeometryGeoJSON // empty') || true
-        [[ -n "$url" ]] || die "geoBoundaries has no outline for $iso"
-        mkdir -p "$BOUNDARIES_DIR"
-        curl -fsSL --retry 2 -o "$BOUNDARIES_DIR/${iso}_ADM0.geojson.part" "$url"
-        mv "$BOUNDARIES_DIR/${iso}_ADM0.geojson.part" "$BOUNDARIES_DIR/${iso}_ADM0.geojson"
+        ../dash/dash.sh boundaries "$iso" --levels ADM0,ADM1,ADM2 || true
     fi
-    [[ -s "$BOUNDARIES_DIR/${iso}_ADM0.geojson" ]] || die "no outline for $iso"
+    [[ -s "$BOUNDARIES_DIR/${iso}_ADM0.geojson" ]] && return 0
+    # No dashboards on this box, or geoBoundaries' API didn't answer: the outline only, from
+    # its release on GitHub (the file the API points to)
+    log "$iso: the outline from geoBoundaries' release on GitHub (dashboards' regions: ../dash/dash.sh boundaries $iso, later)"
+    mkdir -p "$BOUNDARIES_DIR"
+    curl -fsSL --retry 2 -o "$BOUNDARIES_DIR/${iso}_ADM0.geojson.part" \
+        "$GEOBOUNDARIES_RELEASE/$iso/ADM0/geoBoundaries-$iso-ADM0_simplified.geojson" \
+        || die "no outline for $iso: geoBoundaries can't be reached"
+    mv "$BOUNDARIES_DIR/${iso}_ADM0.geojson.part" "$BOUNDARIES_DIR/${iso}_ADM0.geojson"
+    name=$(awk -F'\t' -v i="$iso" '$1 == i {print $2}' countries.tsv)
+    jq -n --arg iso "$iso" --arg name "${name:-$iso}" \
+        '{boundaryName: $name, boundaryISO: $iso, boundaryType: "ADM0", boundarySource: "geoBoundaries",
+          boundaryLicense: "see geoBoundaries"}' > "$BOUNDARIES_DIR/${iso}_ADM0.json"
 }
 
 room() {  # room: enough free disk for a new map and its take-away copy beside the old ones

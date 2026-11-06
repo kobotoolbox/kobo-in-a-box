@@ -104,8 +104,11 @@ superusers sign in with their Kobo password, through the accounts page's code
 - **Online or not:** a GET of Protomaps' builds list, at most every 30 s (it refuses HEAD).
   Offline, adding and bringing up to date are refused with a message; taking a country off
   works (it's cut from the box's own map). Adding needs `MIN_FREE_GB` (10) free.
-- **A country without dashboards on the box:** its outline comes straight from geoBoundaries'
-  API instead of `dash.sh boundaries`.
+- **A country's outline** comes with its regions from `dash.sh boundaries` (geoBoundaries'
+  API). Without dashboards on the box, or when the API doesn't answer, the outline alone comes
+  from geoBoundaries' release on GitHub (`GEOBOUNDARIES_RELEASE`, the files the API points
+  to), so the map can still be made; `dash.sh boundaries` fetches the regions later.
+  (2026-11-06: the API timed out from one droplet while GitHub answered.)
 - **Kept on updates.** A job marks `countries.json` `on_box`. `update.sh` then runs
   `maps.py pack-update`: the box keeps its map if it has every country the pack's has (the
   style, fonts and icons are still the pack's); if the pack brings a country the box lacks,
