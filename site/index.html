@@ -15,6 +15,7 @@
     <ul class="header__nav">
       <li><a href="#how">How it works</a></li>
       <li><a href="#field">In the field</a></li>
+      <li><a href="#accounts">Accounts</a></li>
       <li><a href="#ai">AI</a></li>
       <li><a href="#library">Library</a></li>
       <li><a href="#results">Results</a></li>
@@ -53,6 +54,7 @@
     <li><a href="#how">How it works</a></li>
     <li><a href="#prepare">Preparing kits</a></li>
     <li><a href="#field">In the field</a></li>
+    <li><a href="#accounts">Accounts for your team</a></li>
     <li><a href="#ai">AI in KoboToolbox</a></li>
     <li><a href="#assistant">The assistant</a></li>
     <li><a href="#library">Offline library</a></li>
@@ -154,6 +156,47 @@
 <h3>Back up</h3>
 <p>Plug a USB drive labelled <code>KOBOBACKUP</code> into the kit. It backs up the data, recordings, settings and case records by itself, encrypted, copying only what changed since the last time, then releases the drive. The status page says "don't unplug it" while it works and "you can unplug the drive" when it's done; a drive that's too small fails at once and says so. Keep the drive somewhere other than the kit. Do it weekly, or after a big collection day. The kit also keeps a nightly copy of its databases on its own disk, to undo mistakes.</p>
 <p>If a kit is lost or breaks, a replacement installed from the kit's USB stick can be restored from the drive with the backup passphrase on the original kit's label card. Keep the card apart from both the kit and the drive. In testing, two deleted projects (63 submissions, and an audio recording that came back byte for byte) were restored in under a minute, and a freshly installed replacement kit took the whole backup in under two, with phones able to submit to it straight after.</p>
+</section>
+
+<section id="accounts">
+<h2>Accounts for your team</h2>
+<p>Everyone who collects or manages data signs in with their own KoboToolbox account. On the kit, the admin makes them at <code>kobo.local/users</code>, linked from the home page: one at a time, or a whole team from a spreadsheet. Accounts are ready straight away, on the website and in KoboCollect. Nobody has to confirm an email (the kit sends none) or sign in on the website first.</p>
+<div class="figures">
+<figure><a href="static/users/page.jpg"><img src="static/users/page.jpg" width="896" height="1200" alt="The Kobo accounts page, signed in as an admin: One account, with username, password (empty: one is made), first and last name, email and organization; Many accounts from a file, with the columns it reads, a template to download, a file picker and a box to paste rows into; KoboCollect, with a link to the kit's KoboCollect settings; Accounts on this box, with a link to everyone's accounts."></a><figcaption>The accounts page, for the kit's admin.</figcaption></figure>
+<div>
+<h4>Make accounts</h4>
+<ol>
+  <li>Open <code>kobo.local/users</code> and sign in with the KoboToolbox admin account on the kit's label card. Only admins can sign in here.</li>
+  <li><strong>One person:</strong> fill in a username and their name, and choose <strong>Make the account</strong>. Leave the password empty and the page makes one, in four groups of four letters and digits.</li>
+  <li><strong>A team:</strong> make a spreadsheet with a column <code>username</code> and, if you want, <code>password</code>, <code>first_name</code>, <code>last_name</code>, <code>email</code> and <code>organization</code> (the page has a template to download). Save it as CSV (in Excel, <em>File → Save as → CSV</em>), then choose the file and <strong>Make the accounts</strong>.</li>
+  <li><strong>Download the results.</strong> The passwords the page made are only in that download, and only until you sign out. Give each person theirs, then delete the file. Everyone can change their password in KoboToolbox's account settings.</li>
+  <li>Share projects with the new accounts in KoboToolbox as usual, and set up their phones with a QR code (below).</li>
+</ol>
+<p>Usernames are lowercase letters, digits and <code>_</code>, starting with a letter; passwords are at least 10 characters. An empty email becomes <code>username@kobo.local</code>.</p>
+</div>
+</div>
+<p><strong>Every row is checked first.</strong> If one is wrong, no accounts are made and the page says which rows to fix, so a list never ends up half made. A username that already exists is left as it is and reported. A team of 100 took 2½ minutes in testing; keep the page open until the results show.</p>
+<div class="figures figures--half">
+<figure><a href="static/users/list-errors.jpg"><img src="static/users/list-errors.jpg" width="1200" height="912" alt="No accounts made. Fix these rows and try again: Row 3, password shorter than 10 characters; Row 4, username carlos martinez: lowercase letters, digits and _ only, starting with a letter, 2 to 30 characters."></a><figcaption>A list with mistakes: nothing is made, and the rows to fix are named.</figcaption></figure>
+<figure><a href="static/users/list-made.jpg"><img src="static/users/list-made.jpg" width="1200" height="912" alt="Results: 4 made, 1 already there. Download the results with the passwords. KoboCollect QR codes for all of them. A table: jperez Juan Pérez, lrodriguez Lucía Rodríguez, cmartinez Carlos Martínez and amedina Andrea Medina, Ready on the website and in KoboCollect, each with a QR code link; mgonzalez María González, Already an account: left as it is."></a><figcaption>The list fixed: four new accounts, and one that already existed.</figcaption></figure>
+</div>
+
+<h3>Set up phones with a QR code</h3>
+<p>Every account gets a QR code that sets up KoboCollect on its person's phone. In KoboCollect, choose <strong>Add project</strong> (or <strong>Configure with QR code</strong> the first time it opens) and scan the code: the phone gets a project called <em>Kobo</em> and the kit's name, connected to <code>http://kc.kobo.local</code> with the person's username and password, and the kit's KoboCollect settings. Nothing to type. <strong>KoboCollect QR codes for all of them</strong>, under the results, shows a code for each new account, ready to print; <strong>QR code</strong> next to each one shows just theirs.</p>
+<p><strong>A code with a password in it is the password.</strong> Show each person their own, on the screen or on paper you collect afterwards; don't send photos of it or pin it up. The page only has the passwords of accounts it has just made, until you sign out. For an older account, the code from the accounts list has everything but the password, and KoboCollect asks for it the first time.</p>
+<p><strong>KoboCollect settings</strong>, linked from the accounts page, are the same for everyone on the kit: whether finished forms are sent by themselves (on Wi-Fi only by default), whether phones keep their forms the same as the ones shared with each person (by default; checked every 15 minutes, and filled-in forms of a removed form stay), whether the server settings are hidden so a phone stays connected to the kit (by default), and an optional password for KoboCollect's admin settings, without which anyone holding the phone can change them back. A change applies to codes made from then on: a phone set up already keeps its settings until it scans a new code (<em>Project settings → Reconfigure with QR code</em>).</p>
+<div class="figures figures--half">
+<figure><a href="static/users/qr-codes.jpg"><img src="static/users/qr-codes.jpg" width="1200" height="912" alt="KoboCollect QR codes: instructions to add a project in KoboCollect and scan the code; a warning that a code with a password in it is the password; a Print button; and a QR code card for each new account, with the person's name, username and Has their password: show it only to them."></a><figcaption>QR codes for the new accounts, to show or print (made-up accounts, deleted since).</figcaption></figure>
+<figure><a href="static/users/collect-settings.jpg"><img src="static/users/collect-settings.jpg" width="1200" height="912" alt="KoboCollect settings: Send finished forms by themselves, with No, On Wi-Fi only (chosen) and On Wi-Fi or mobile data; Form updates, keep the phone's forms the same as the ones shared with them (chosen) or only when people download forms themselves; What people can change, Hide the server settings (ticked) and an optional password for KoboCollect's admin settings."></a><figcaption>The kit's KoboCollect settings, in every QR code.</figcaption></figure>
+</div>
+
+<h3>When someone leaves</h3>
+<p><strong>Deactivate their account; don't delete it.</strong> <strong>See everyone's accounts</strong> on the accounts page lists the people on the kit, with when each last signed in. <strong>Deactivate</strong> stops an account signing in, on the website, in KoboCollect and through the API. Its projects, forms and submissions stay on the kit, and so does anything shared with it. <strong>Reactivate</strong> brings it back as it was. Admin accounts and the kit's own services (syncing, case management, paper forms) aren't listed and can't be deactivated here.</p>
+<div class="figures figures--half">
+<figure><a href="static/users/accounts.jpg"><img src="static/users/accounts.jpg" width="1200" height="912" alt="Accounts on this box: 7 active, 1 deactivated. A message: cmartinez deactivated, their projects and data are still here. A search box and a table of usernames, names, status and last sign-in, a QR code link for each active account, and Deactivate on each active account, Reactivate on cmartinez, and admin on the two admin accounts."></a><figcaption>Everyone's accounts: one deactivated, ready to be reactivated.</figcaption></figure>
+<figure><a href="static/users/deactivated-signin.jpg"><img src="static/users/deactivated-signin.jpg" width="1200" height="912" alt="KoboToolbox's Account Inactive page: This account is inactive."></a><figcaption>What a deactivated person sees when they try to sign in. KoboCollect refuses their username and password.</figcaption></figure>
+</div>
+<p>In testing, with all internet traffic blocked: new accounts, one at a time and from a list (Excel's semicolon CSV included), signed in to KoboCollect and the API straight away; a list with mistakes made nothing; the QR codes, read off the page with a barcode reader and decoded as KoboCollect does, held the kit's server, the person's username and a password that KoboCollect's server accepted, and the settings chosen; a deactivated account was refused by KoboCollect and the API while its project stayed, and got it back when reactivated; signing in with a wrong password, or as someone who isn't an admin, was refused (24 of 24 checks). The QR codes haven't been scanned with KoboCollect on a phone yet.</p>
 </section>
 
 <section id="sync">
@@ -620,6 +663,7 @@
       <span class="footer__label">On this page</span>
       <ul>
         <li><a href="#field">In the field</a></li>
+      <li><a href="#accounts">Accounts</a></li>
         <li><a href="#results">Results</a></li>
         <li><a href="#hardware">Hardware</a></li>
         <li><a href="#help">Questions</a></li>

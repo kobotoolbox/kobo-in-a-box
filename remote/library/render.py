@@ -148,6 +148,8 @@ def main():
         f'<p><a class="big" href="{kf}/">Open KoboToolbox</a></p>',
         f'<p>KoboCollect server URL: <code>{kc}</code> '
         '(when adding the project, choose to enter the details manually).</p>',
+        '<p class="hint">Admins: <a href="/users/">make accounts for your team</a>, one at a time '
+        'or from a spreadsheet.</p>',
     ]
     # espocrm.sh up/down adds or removes this marker
     if (LIBRARY_DIR / '.services' / 'cases').exists():

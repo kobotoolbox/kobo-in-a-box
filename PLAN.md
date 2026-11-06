@@ -723,6 +723,22 @@ anywhere, each kit keeping its full copy. User guide: `site/sync.html`; box:
   syncs every 5 minutes when the hub answers, and says so on the status page. A submission
   edited on both kits is left for a person (`sync.py resolve`).
 
+### 3n. Accounts and phone setup (W15)
+
+Every enumerator and supervisor needs their own Kobo account, and a box has no email to
+confirm them with. KPI has a little-known endpoint for registered applications that makes
+accounts with the email marked verified (`POST /api/v2/authorized_application/users/`, a
+key from the admin's *Authorized applications*), but accounts made through it couldn't
+sign in to KoboCollect until they had signed in on the website once: the endpoint sets the
+password before the username, so django-digest stores no Digest "partial digest". On the
+box, `box/users.py` (kobo.local/users, admins only) makes accounts one at a time or from a
+CSV list through that endpoint, then checks each password once through the same
+application, which stores the digest: no browser script, no web sign-in. It also makes
+KoboCollect QR codes (ODK's settings format: server, username, password, the box's Collect
+settings), and deactivates rather than deletes accounts, so a leaver's projects and data
+stay. Two KPI fixes to propose upstream: the order of `set_password`, and the endpoint's
+500 for a taken username (its serializer drops the unique check).
+
 ## 4. Testing on DigitalOcean (extends README)
 
 The DigitalOcean rig covers **functional and offline** testing. Performance numbers only count from a real Strix Halo unit.
@@ -894,6 +910,16 @@ Started and built 2026-11-04 (in W12 until then); Linear milestone "W14 · Synci
 - [ ] Sync to a KoboToolbox server online by itself (by hand works; needs an account)
 - [ ] Pairing on a bare cable: mDNS / link-local (W5 box)
 - [ ] `update.sh` giving an older box its `sync` account, run for real
+
+### W15. Accounts and phone setup (see 3n)
+Not in the original plan; started and built 2026-11-06. Linear milestone "W15 · Accounts and phone setup".
+- [x] `box/users.py` at kobo.local/users: one account or a CSV list (checked before anything is made), ready for KoboCollect at once; tested offline on the rig (`remote/e2e-users.sh`), 100 accounts in 143 s
+- [x] KoboCollect QR codes per account, with the box's Collect settings (auto send, form updates, server locked, admin password); read off the page and signed in with in the tests
+- [x] Deactivate / reactivate instead of deleting; a deactivated account's project kept, and theirs again when reactivated
+- [x] User guide: homepage section "Accounts for your team", screenshots from the rig (`site/users-shots.py`)
+- [ ] KPI fixes upstream (branch `fix/create-user-partial-digest`): `set_password` after the username, and a 400 instead of a 500 for a taken username, with tests
+- [ ] Scan the QR codes with KoboCollect on a real phone (W5 kit or any Android phone on the rig)
+- [ ] In the content pack and `firstboot.sh`/`update.sh` (the service comes with `box.sh install`; check on a box from a pack)
 
 ## 6. Risks
 

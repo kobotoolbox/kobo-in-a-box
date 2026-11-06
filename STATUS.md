@@ -78,6 +78,15 @@ are in [PLAN.md](PLAN.md); per-run results are in [remote/results/NOTES.md](remo
    model's vision projector was off on first-boot boxes (and the status page didn't notice).
    Also 2026-11-05: an older box got paper forms from `update.sh` (catch-up), and a backup
    restored onto a replacement box brought them back. Left: real paper on the W5 unit.
+3c. **W15 accounts (new, 2026-11-06):** `box/users.py` at kobo.local/users makes Kobo
+   accounts one at a time or from a CSV list, ready for KoboCollect at once (KPI's
+   registered-application endpoint, then one password check so django-digest stores the
+   Digest partial digest; no browser script), KoboCollect QR codes with the box's Collect
+   settings, and deactivation instead of deletion. Offline on the rig: `e2e-users.sh` 24/24.
+   Found: the endpoint moved to `/api/v2/authorized_application/users/`, it answers 500 for a
+   taken username, and deleting a user in KPI leaves KoboCAT's copy. Left: KPI fixes upstream
+   (branch `fix/create-user-partial-digest`), a scan on a real phone, a box from a pack.
+   User guide: `site/index.html#accounts`; box: `remote/box/README.md`.
 4. **W2 to finish:** a KPI image from the branch, the pilot languages' tables, and
    proposing the change upstream (talk to the KPI team).
 5. **W10 knowledge base**, and the W12 steps that need the box: hotspot + local DNS,

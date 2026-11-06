@@ -7,7 +7,8 @@
 #                                a backup whenever the KOBOBACKUP drive is plugged in,
 #                                the status page (kobo.local/status) every minute,
 #                                after watchdog.sh has restarted any hung model server,
-#                                and syncing to the hub every 5 minutes (sync.py)
+#                                syncing to the hub every 5 minutes (sync.py), and the
+#                                Kobo accounts page (kobo.local/users/, users.py)
 #   ./box.sh update-drive        update from the KOBOPACK stick just plugged in, if its
 #                                signature checks out (the udev rule runs this)
 #   ./box.sh uninstall
@@ -206,11 +207,25 @@ AccuracySec=5s
 [Install]
 WantedBy=timers.target
 EOF
+    # The accounts page at kobo.local/users/ (users.py): Kobo admins make their team's accounts
+    cat > "$UNIT_DIR/kobo-box-users.service" <<EOF
+[Unit]
+Description=Kobo in a box: the Kobo accounts page (kobo.local/users/)
+After=docker.service
+
+[Service]
+ExecStart=/usr/bin/python3 -I $HERE/users.py
+Restart=on-failure
+RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target
+EOF
     systemctl daemon-reload
     udevadm control --reload
     systemctl enable --now kobo-box-ip.service kobo-box-backup.timer kobo-box-status.timer kobo-box-cases-setup.timer \
-        kobo-box-sync.timer
-    echo "Installed: kobo-box-ip ($BOX_IP), nightly backup timer, KOBOBACKUP drive rule, KOBOPACK update rule, status page timer, sync timer"
+        kobo-box-sync.timer kobo-box-users.service
+    echo "Installed: kobo-box-ip ($BOX_IP), nightly backup timer, KOBOBACKUP drive rule, KOBOPACK update rule, status page timer, sync timer, accounts page"
 }
 
 update_drive() {
@@ -256,8 +271,8 @@ case "${1:-}" in
     install) install_units ;;
     uninstall)
         systemctl disable --now kobo-box-ip.service kobo-box-backup.timer kobo-box-status.timer kobo-box-cases-setup.timer \
-            kobo-box-sync.timer 2>/dev/null || true
-        rm -f "$UNIT_DIR"/kobo-box-{ip,backup,backup-drive,update-drive,status,cases-setup,sync}.service \
+            kobo-box-sync.timer kobo-box-users.service 2>/dev/null || true
+        rm -f "$UNIT_DIR"/kobo-box-{ip,backup,backup-drive,update-drive,status,cases-setup,sync,users}.service \
             "$UNIT_DIR"/kobo-box-{backup,status,cases-setup,sync}.timer \
             "$UNIT_DIR/media-kobobackup.mount" /etc/udev/rules.d/99-kobo-box-{backup,update}.rules
         systemctl daemon-reload
