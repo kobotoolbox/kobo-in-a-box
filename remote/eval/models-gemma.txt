@@ -1,0 +1,50 @@
+# Weights for the Gemma benchmark (MODELS-PLAN.md): <hf-repo> <file>, fetched by
+# `models.sh fetch` into /opt/models. ~200 GB in all; the E4B kit's own files come
+# from bootstrap.sh (ai.env MODEL_DOWNLOADS) and are skipped here if present.
+
+# --- Gemma 4 instruct (ggml-org, Apache 2.0): Q4_0, Q8_0; BF16 for the two small ones
+ggml-org/gemma-4-E2B-it-GGUF gemma-4-E2B-it-Q4_0.gguf
+ggml-org/gemma-4-E2B-it-GGUF gemma-4-E2B-it-Q8_0.gguf
+ggml-org/gemma-4-E2B-it-GGUF gemma-4-E2B-it-BF16.gguf
+ggml-org/gemma-4-E4B-it-GGUF gemma-4-E4B-it-Q4_0.gguf
+ggml-org/gemma-4-E4B-it-GGUF gemma-4-E4B-it-Q8_0.gguf
+ggml-org/gemma-4-E4B-it-GGUF gemma-4-E4B-it-BF16.gguf
+ggml-org/gemma-4-12B-it-GGUF gemma-4-12B-it-Q4_0.gguf
+ggml-org/gemma-4-12B-it-GGUF gemma-4-12B-it-Q8_0.gguf
+ggml-org/gemma-4-26B-A4B-it-GGUF gemma-4-26B-A4B-it-Q4_0.gguf
+ggml-org/gemma-4-26B-A4B-it-GGUF gemma-4-26B-A4B-it-Q8_0.gguf
+ggml-org/gemma-4-31B-it-GGUF gemma-4-31B-it-Q4_0.gguf
+ggml-org/gemma-4-31B-it-GGUF gemma-4-31B-it-Q8_0.gguf
+
+# Projectors (images, audio): Q8_0 and BF16
+ggml-org/gemma-4-E2B-it-GGUF mmproj-gemma-4-E2B-it-Q8_0.gguf
+ggml-org/gemma-4-E2B-it-GGUF mmproj-gemma-4-E2B-it-BF16.gguf
+ggml-org/gemma-4-E4B-it-GGUF mmproj-gemma-4-E4B-it-Q8_0.gguf
+ggml-org/gemma-4-E4B-it-GGUF mmproj-gemma-4-E4B-it-BF16.gguf
+ggml-org/gemma-4-12B-it-GGUF mmproj-gemma-4-12B-it-Q8_0.gguf
+ggml-org/gemma-4-12B-it-GGUF mmproj-gemma-4-12B-it-BF16.gguf
+ggml-org/gemma-4-26B-A4B-it-GGUF mmproj-gemma-4-26B-A4B-it-Q8_0.gguf
+ggml-org/gemma-4-26B-A4B-it-GGUF mmproj-gemma-4-26B-A4B-it-BF16.gguf
+ggml-org/gemma-4-31B-it-GGUF mmproj-gemma-4-31B-it-Q8_0.gguf
+ggml-org/gemma-4-31B-it-GGUF mmproj-gemma-4-31B-it-BF16.gguf
+
+# Draft files for speculative decoding (to check with the llama.cpp server first)
+ggml-org/gemma-4-E2B-it-GGUF mtp-gemma-4-E2B-it-Q8_0.gguf
+ggml-org/gemma-4-E4B-it-GGUF mtp-gemma-4-E4B-it-Q8_0.gguf
+ggml-org/gemma-4-12B-it-GGUF mtp-gemma-4-12B-it-Q8_0.gguf
+ggml-org/gemma-4-26B-A4B-it-GGUF mtp-gemma-4-26B-A4B-it-Q8_0.gguf
+ggml-org/gemma-4-26B-A4B-it-GGUF dflash-gemma-4-26B-A4B-it-Q8_0.gguf
+ggml-org/gemma-4-31B-it-GGUF mtp-gemma-4-31B-it-Q8_0.gguf
+ggml-org/gemma-4-31B-it-GGUF dflash-gemma-4-31B-it-Q8_0.gguf
+
+# --- EmbeddingGemma 2 (ggml-org, Apache 2.0): the knowledge base, against bge-m3
+ggml-org/embeddinggemma-2-GGUF embeddinggemma-2-Q8_0.gguf
+
+# --- TranslateGemma (Google, Gemma licence: benchmark only, not in the pack until
+# its terms are reviewed). Community GGUFs by mradermacher; models.sh records checksums
+mradermacher/translategemma-4b-it-GGUF translategemma-4b-it.Q4_K_M.gguf
+mradermacher/translategemma-4b-it-GGUF translategemma-4b-it.Q8_0.gguf
+mradermacher/translategemma-12b-it-GGUF translategemma-12b-it.Q4_K_M.gguf
+mradermacher/translategemma-12b-it-GGUF translategemma-12b-it.Q8_0.gguf
+mradermacher/translategemma-27b-it-GGUF translategemma-27b-it.Q4_K_M.gguf
+mradermacher/translategemma-27b-it-GGUF translategemma-27b-it.Q8_0.gguf

@@ -1,0 +1,560 @@
+{
+  "about": "Photos for the model benchmark's image questions (MODELS-PLAN.md section 3), in eval/photos/, from Wikimedia Commons under open licences (credits below), resized to 1280 px wide. Each has KoboToolbox analysis questions and expected answers written by looking at the photo; 'why' says what makes it hard. The October photo (eval/water-point.jpg) stays in smoke-test.py's own set. Choice indexes count from 0; qualText passes when the answer has a word from each group in expect_words.",
+  "photos": [
+    {
+      "file": "flood-damaged-house.jpg",
+      "scene": "damage",
+      "credit": "Ben Brennan (FEMA), public domain: https://commons.wikimedia.org/wiki/File:FEMA_-_41710_-_A_flood_damaged_home_in_Alaska.jpg",
+      "why": "how bad the damage is; a tyre on the ground that isn't a vehicle",
+      "cases": [
+        {
+          "type": "qualSelectOne",
+          "question": "What condition is the house in?",
+          "choices": [
+            "Intact",
+            "Minor damage",
+            "Severely damaged or collapsed",
+            "Under construction"
+          ],
+          "expect": [
+            2
+          ]
+        },
+        {
+          "type": "qualSelectMultiple",
+          "question": "What can you see in the photo?",
+          "choices": [
+            "Debris on the ground",
+            "People",
+            "A vehicle",
+            "Trees"
+          ],
+          "expect": [
+            0,
+            3
+          ]
+        },
+        {
+          "type": "qualText",
+          "question": "Describe the damage to the house in one sentence.",
+          "expect_words": [
+            [
+              "tilt",
+              "lean",
+              "collaps",
+              "shift",
+              "foundation",
+              "slid",
+              "sunk",
+              "sink",
+              "destroy",
+              "crooked",
+              "angle",
+              "off"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "file": "clinic-weighing.jpg",
+      "scene": "health",
+      "credit": "Vernon McKay, public domain: https://commons.wikimedia.org/wiki/File:Mothers_wait_in_line_at_Child_Clinic_Centre_in_Lagos,_Nigeria.png",
+      "why": "an old black-and-white photo; what one person is doing",
+      "cases": [
+        {
+          "type": "qualSelectOne",
+          "question": "Where was this photo taken?",
+          "choices": [
+            "A clinic or health centre",
+            "A school classroom",
+            "A market",
+            "A place of worship"
+          ],
+          "expect": [
+            0
+          ]
+        },
+        {
+          "type": "qualSelectMultiple",
+          "question": "What can you see in the photo?",
+          "choices": [
+            "A baby being weighed",
+            "Women holding babies",
+            "A computer",
+            "A man in a suit"
+          ],
+          "expect": [
+            0,
+            1
+          ]
+        },
+        {
+          "type": "qualSelectOne",
+          "question": "Is the photo in colour?",
+          "choices": [
+            "Colour",
+            "Black and white"
+          ],
+          "expect": [
+            1
+          ]
+        },
+        {
+          "type": "qualText",
+          "question": "What is the health worker on the right doing?",
+          "expect_words": [
+            [
+              "weigh",
+              "scale"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "file": "ward-mosquito-nets.jpg",
+      "scene": "health",
+      "credit": "USAID in Africa, public domain: https://commons.wikimedia.org/wiki/File:USAID_in_Zambia_(35893804191).jpg",
+      "why": "mosquito nets present but tied up, not in use; an empty room",
+      "cases": [
+        {
+          "type": "qualSelectOne",
+          "question": "What kind of room is this?",
+          "choices": [
+            "A ward or dormitory with beds",
+            "A classroom",
+            "An office",
+            "A kitchen"
+          ],
+          "expect": [
+            0
+          ]
+        },
+        {
+          "type": "qualSelectMultiple",
+          "question": "What is in the room?",
+          "choices": [
+            "Mosquito nets",
+            "Beds",
+            "People lying in bed",
+            "Bags"
+          ],
+          "expect": [
+            0,
+            1,
+            3
+          ]
+        },
+        {
+          "type": "qualSelectOne",
+          "question": "Are the mosquito nets in use over the beds?",
+          "choices": [
+            "Yes, hanging down over the beds",
+            "No, tied up above the beds",
+            "There are no mosquito nets"
+          ],
+          "expect": [
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "file": "mnch-building.jpg",
+      "scene": "health",
+      "credit": "USAID in Africa, public domain: https://commons.wikimedia.org/wiki/File:USAID_in_Zambia_(35893804721).jpg",
+      "why": "reading a sign partly hidden by a tree",
+      "cases": [
+        {
+          "type": "qualSelectOne",
+          "question": "What kind of building is this?",
+          "choices": [
+            "A health facility",
+            "A school",
+            "A shop",
+            "A place of worship"
+          ],
+          "expect": [
+            0
+          ]
+        },
+        {
+          "type": "qualSelectMultiple",
+          "question": "What can you see in front of the building?",
+          "choices": [
+            "A bicycle",
+            "A car",
+            "People",
+            "Livestock"
+          ],
+          "expect": [
+            0,
+            2
+          ]
+        },
+        {
+          "type": "qualText",
+          "question": "What does the sign on the building say?",
+          "expect_words": [
+            [
+              "maternal"
+            ],
+            [
+              "child"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "file": "computer-classroom.jpg",
+      "scene": "education",
+      "credit": "Gwanki, CC0: https://commons.wikimedia.org/wiki/File:Wiki_In_Classroom_2.0_Kano_12.jpg",
+      "why": "screens seen from behind",
+      "cases": [
+        {
+          "type": "qualSelectOne",
+          "question": "What kind of room is this?",
+          "choices": [
+            "A computer room or classroom",
+            "A clinic",
+            "A market",
+            "A shop"
+          ],
+          "expect": [
+            0
+          ]
+        },
+        {
+          "type": "qualSelectOne",
+          "question": "Which way do the computer screens face?",
+          "choices": [
+            "Towards the camera",
+            "Away from the camera (we see their backs)"
+          ],
+          "expect": [
+            1
+          ]
+        },
+        {
+          "type": "qualSelectMultiple",
+          "question": "Who is in the room?",
+          "choices": [
+            "Students in white head coverings",
+            "A man in a cap",
+            "Small children",
+            "A teacher writing on a board"
+          ],
+          "expect": [
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "file": "latrine-raised.jpg",
+      "scene": "sanitation",
+      "credit": "SuSanA Secretariat, CC BY 2.0: https://commons.wikimedia.org/wiki/File:Boy_in_front_of_typical_Pit_latrine_in_Kampala_slums_(3482586547).jpg",
+      "why": "a raised pit latrine that looks like a shed; a boy in front",
+      "cases": [
+        {
+          "type": "qualSelectOne",
+          "question": "What is the structure behind the boy?",
+          "choices": [
+            "A latrine",
+            "A house",
+            "A water tank",
+            "A shop"
+          ],
+          "expect": [
+            0
+          ]
+        },
+        {
+          "type": "qualSelectMultiple",
+          "question": "What can you see in the photo?",
+          "choices": [
+            "A ladder",
+            "A brick wall",
+            "A water tap",
+            "A vehicle"
+          ],
+          "expect": [
+            0,
+            1
+          ]
+        },
+        {
+          "type": "qualText",
+          "question": "How do people get up to the doors?",
+          "expect_words": [
+            [
+              "ladder"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "file": "water-queue-jerrycans.jpg",
+      "scene": "water",
+      "credit": "Oxfam East Africa, CC BY 2.0: https://commons.wikimedia.org/wiki/File:Dabora_Alek,_right,_has_waited_two_hours_to_collect_water_(12451605083).jpg",
+      "why": "a queue shown by containers, not by people standing in line",
+      "cases": [
+        {
+          "type": "qualSelectOne",
+          "question": "What are the people waiting for?",
+          "choices": [
+            "Water",
+            "Food",
+            "Medical care",
+            "Registration"
+          ],
+          "expect": [
+            0
+          ]
+        },
+        {
+          "type": "qualSelectOne",
+          "question": "What colour are most of the containers?",
+          "choices": [
+            "Yellow",
+            "Blue",
+            "Red",
+            "White"
+          ],
+          "expect": [
+            0
+          ]
+        },
+        {
+          "type": "qualSelectMultiple",
+          "question": "What can you see in the photo?",
+          "choices": [
+            "Jerrycans lined up",
+            "A pipe or tap",
+            "A vehicle",
+            "Animals"
+          ],
+          "expect": [
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "file": "earthquake-roof-blurred.jpg",
+      "scene": "damage",
+      "credit": "Silpa Acharya, CC BY-SA 4.0: https://commons.wikimedia.org/wiki/File:Earthquake_crack_village_house.jpg",
+      "why": "a blurred photo, as field photos often are",
+      "cases": [
+        {
+          "type": "qualSelectOne",
+          "question": "What condition is the roof in?",
+          "choices": [
+            "Intact",
+            "Damaged, with sheets out of place",
+            "There is no roof"
+          ],
+          "expect": [
+            1
+          ]
+        },
+        {
+          "type": "qualSelectOne",
+          "question": "Is the photo sharp or blurred?",
+          "choices": [
+            "Sharp",
+            "Blurred"
+          ],
+          "expect": [
+            1
+          ]
+        },
+        {
+          "type": "qualText",
+          "question": "Describe the damage in one sentence.",
+          "expect_words": [
+            [
+              "roof",
+              "sheet",
+              "tile",
+              "panel"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "file": "tapstand-sign.jpg",
+      "scene": "water",
+      "credit": "Oxfam East Africa, CC BY 2.0: https://commons.wikimedia.org/wiki/File:Jeanette,_an_attendant_at_an_Oxfam_tapstand_(8073661418).jpg",
+      "why": "reading a sign in Kirundi with times; small logos in the background",
+      "cases": [
+        {
+          "type": "qualInteger",
+          "question": "How many opening time periods are listed on the sign?",
+          "expect": 3
+        },
+        {
+          "type": "qualSelectMultiple",
+          "question": "Which organisations' names or logos can you see?",
+          "choices": [
+            "UNICEF",
+            "Oxfam",
+            "UNHCR",
+            "WFP"
+          ],
+          "expect": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "type": "qualText",
+          "question": "What is the first time period on the sign?",
+          "expect_words": [
+            [
+              "6"
+            ],
+            [
+              "9"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "file": "well-cattle-carts.jpg",
+      "scene": "water",
+      "credit": "NigerTZai, CC BY-SA 4.0: https://commons.wikimedia.org/wiki/File:Niger,_Margou_(11),_water_well_with_tree.jpg",
+      "why": "a well that is a small concrete block, with many things around it",
+      "cases": [
+        {
+          "type": "qualSelectOne",
+          "question": "What kind of water point is this?",
+          "choices": [
+            "A well",
+            "A hand pump",
+            "A tap stand",
+            "A river"
+          ],
+          "expect": [
+            0
+          ]
+        },
+        {
+          "type": "qualSelectMultiple",
+          "question": "What can you see near the water point?",
+          "choices": [
+            "Cattle",
+            "Jerrycans",
+            "Carts",
+            "A motor vehicle"
+          ],
+          "expect": [
+            0,
+            1,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "file": "latrine-ramp.jpg",
+      "scene": "sanitation",
+      "credit": "SuSanA Secretariat, CC BY 2.0: https://commons.wikimedia.org/wiki/File:Raised_ecosan_latrine_(UDDT)_with_ramp_(Uganda)_(5567632430).jpg",
+      "why": "a latrine block that looks like a small house; accessibility",
+      "cases": [
+        {
+          "type": "qualSelectOne",
+          "question": "What is this building?",
+          "choices": [
+            "A latrine block",
+            "A house",
+            "A shop",
+            "A classroom"
+          ],
+          "expect": [
+            0
+          ]
+        },
+        {
+          "type": "qualSelectMultiple",
+          "question": "Which features does it have?",
+          "choices": [
+            "A ramp",
+            "Steps",
+            "A water tank on the roof",
+            "Solar panels"
+          ],
+          "expect": [
+            0,
+            1
+          ]
+        },
+        {
+          "type": "qualSelectOne",
+          "question": "Could someone in a wheelchair reach the entrance?",
+          "choices": [
+            "Yes, there is a ramp",
+            "No"
+          ],
+          "expect": [
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "file": "distribution-tent.jpg",
+      "scene": "distribution",
+      "credit": "DFID - UK Department for International Development, CC BY 2.0: https://commons.wikimedia.org/wiki/File:WFP_food_distribution_in_Bamako,_Mali_(8511062128).jpg",
+      "why": "an event to recognise from its setting; a banner in French",
+      "cases": [
+        {
+          "type": "qualSelectOne",
+          "question": "What is happening in this photo?",
+          "choices": [
+            "A distribution or registration event",
+            "A market",
+            "A school lesson",
+            "A wedding"
+          ],
+          "expect": [
+            0
+          ]
+        },
+        {
+          "type": "qualSelectMultiple",
+          "question": "What can you see?",
+          "choices": [
+            "A tent or canopy",
+            "A banner",
+            "A megaphone",
+            "A truck"
+          ],
+          "expect": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "type": "qualText",
+          "question": "What language is the banner written in?",
+          "expect_words": [
+            [
+              "french",
+              "français"
+            ]
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -74,22 +74,8 @@ mkdir -p "$MODELS_DIR/audio"
     https://raw.githubusercontent.com/ggml-org/whisper.cpp/master/samples/jfk.wav
 
 # FLEURS clips listed in eval/fleurs-<config>.tsv, which smoke-test.py scores against
-# the reference transcripts and English translations. FLEURS only ships one archive
-# per split (250-600MB), so stream each one once and keep just the listed clips.
-for manifest in eval/fleurs-*.tsv; do
-    [[ -e "$manifest" ]] || continue
-    config=$(basename "$manifest" .tsv); config=${config#fleurs-}
-    for split in $(tail -n +2 "$manifest" | cut -f2 | sort -u); do
-        missing=()
-        while read -r file; do
-            [[ -s "$MODELS_DIR/audio/$file" ]] || missing+=("$split/$file")
-        done < <(tail -n +2 "$manifest" | awk -F'\t' -v s="$split" '$2 == s {print $1}')
-        if [[ ${#missing[@]} -eq 0 ]]; then echo "have fleurs $config $split"; continue; fi
-        echo "downloading ${#missing[@]} fleurs $config $split clips"
-        curl -fL --retry 3 "https://huggingface.co/datasets/google/fleurs/resolve/main/data/$config/audio/$split.tar.gz" \
-            | tar -xzf - -C "$MODELS_DIR/audio" --strip-components=1 "${missing[@]}"
-    done
-done
+# the reference transcripts and translations (models.sh, also run alone after a new manifest)
+MODELS_DIR=$MODELS_DIR ./models.sh fleurs
 
 df -h "$MODELS_DIR"
 echo
