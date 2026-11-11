@@ -4,7 +4,7 @@
 # smoke-test's log hasn't grown for STALL minutes, or the recipe has run longer than
 # MAX minutes, stop that smoke-test (the batch records it as failed and moves on; failed
 # recipes are rerun once at the end). Ends when the follow-ups are done.
-STALL=${STALL:-15} MAX=${MAX:-45}
+STALL=${STALL:-30} MAX=${MAX:-60}
 log() { echo "$(date -u +%FT%TZ) $*" >> /root/watchdog.log; }
 log "watchdog started (stall ${STALL} min, max ${MAX} min per recipe)"
 while [ ! -f /root/followup.done ]; do

@@ -440,6 +440,9 @@ def section(title):
 
 
 def main():
+    # gpu-tiers.sh pipes this through tee: line by line, so a log that stops growing means a
+    # stuck run (eval/watchdog.sh), not Python's block buffering
+    sys.stdout.reconfigure(line_buffering=True)
     ap = argparse.ArgumentParser()
     ap.add_argument('--audio-dir', default='/opt/models/audio')
     ap.add_argument('--skip-gemma-audio', action='store_true')
