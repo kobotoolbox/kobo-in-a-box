@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Babysits a benchmark batch ON THE GPU DROPLET (MODELS-PLAN.md phase 1 and its follow-ups,
 # which write /root/followup.done when finished): every minute, if the running
-# smoke-tests log hasnt grown for STALL minutes, or the recipe has run longer than
+# smoke-test's log hasn't grown for STALL minutes, or the recipe has run longer than
 # MAX minutes, stop that smoke-test (the batch records it as failed and moves on; failed
 # recipes are rerun once at the end). Ends when the follow-ups are done.
 STALL=${STALL:-15} MAX=${MAX:-45}
