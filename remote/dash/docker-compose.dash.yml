@@ -18,6 +18,7 @@ x-box-hosts: &box-hosts
   - "kf.kobo.local:host-gateway"
   - "dash.kobo.local:host-gateway"
   - "mcp.kobo.local:host-gateway"
+  - "cases.kobo.local:host-gateway"
 
 x-dash-env: &dash-env
   DATABASE_URL: postgresql+asyncpg://kobo_dash:${DASH_DB_PASSWORD}@db:5432/kobo_dash
@@ -33,6 +34,8 @@ x-dash-env: &dash-env
   BOUNDARIES_DIR: /data/boundaries
   # Documents in the box's library may be cited as evidence
   LOCAL_EVIDENCE_ORIGINS: http://kobo.local
+  # The box's own EspoCRM (case management) may be a dashboard's source, over plain http
+  LOCAL_ESPO_ORIGINS: http://cases.kobo.local
   CLIENT_IP_HEADER: x-real-ip
 
 services:

@@ -543,3 +543,20 @@ snapshot's data. Gemma 4 E4B Q4_0 with its Q8_0 vision projector, Whisper large-
   tokens 74 s; `--image-max-tokens 560` 36 s; 280, 17 s ("Concrete water trough" for the
   kind of water point, against "Hand pump station" at the default).
 - Deleted afterwards with its firewall.
+
+## 2026-11-11: the box's KPI image on the rig (`kobo-box-ai`, `s-8vcpu-32gb-amd`), CPU only
+
+KPI `kobo-box/kpi:4a345b570-8ad95b67fc8c` (`kpi/build.sh`), the vendored kobo-espo-bridge
+(e3408e4), kobo-dash `main` a2b86cd, kobo-mcp `w9-box-main`. Offline (egress checked blocked).
+
+- **Benchmark** (`smoke-test.py`, LLM restarted first): `log-cpu-20261111.txt`,
+  `20261111-083041-gemma-4-E4B-it-Q4_0.gguf.json`. Unchanged: Whisper 2.0% WER, chrF 59.4 text
+  / 57.5 pipeline, translation 2.6–3.8 s. Qual on a transcript 3/3 (6–11 s); **on a typed
+  answer** (French, KPI text-source prompts) 4/4 (7–11 s); **on a photo** (KPI image prompts,
+  image first) 3/3: 72 s for the first question with no prompt cache (1,240 prompt tokens),
+  then 8 and 11 s. GPU: none in stock in any region (all sizes polled every 5 min); not
+  measured.
+- **Suite** (`e2e-all.sh`): every test passes except `maps_dash` (COL/VEN ADM1 not on the
+  rig, known since 11-06): nlp, signin, users, cases 27/27, ledger 38/38, edits 34/34,
+  follow-up 42/42 (with `BRIDGE_LIST_MIN_SECONDS=20`), cases-mcp, dash, maps, mcp, agent
+  permissions (60 kobo tools, 4 cases tools), knowledge, paper, collect.

@@ -115,7 +115,7 @@ ACTION=="add|change", SUBSYSTEM=="block", ENV{ID_FS_LABEL}=="KOBOPACK", TAG+="sy
 EOF
 
     # Case management: a choice added to the Kobo form reaches EspoCRM's fields by itself
-    # (espocrm-setup.py reads the deployed form; a no-op unless its version changed)
+    # (the bridge's setup.py reads the deployed form; a no-op unless its version changed)
     cat > "$UNIT_DIR/kobo-box-cases-setup.service" <<EOF
 [Unit]
 Description=Kobo in a box: case management follows changes to the Kobo form

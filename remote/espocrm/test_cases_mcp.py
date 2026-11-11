@@ -13,9 +13,14 @@ import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 
-import bridge
-import cases_mcp
-import health_fixture as fx
+import sys
+
+HERE = Path(__file__).resolve().parent
+sys.path[:0] = [str(HERE / 'kobo-espo-bridge'), str(HERE / 'kobo-espo-bridge' / 'tests')]
+
+import bridge  # noqa: E402
+import cases_mcp  # noqa: E402
+import health_fixture as fx  # noqa: E402
 from test_bridge import BASE, CaseEspo, FollowupKobo, submission
 
 NOW = datetime(2026, 10, 30, 12, 0, tzinfo=timezone.utc)  # 3 days after the visits

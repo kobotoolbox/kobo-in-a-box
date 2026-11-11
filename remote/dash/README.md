@@ -47,6 +47,15 @@ names only:
   - `PUBLIC_KOBO_SERVERS=false`. Only the box's Kobo, so the sign-in page doesn't offer
     Global and EU (unreachable offline), and a token with no server goes to the box's Kobo.
 
+  Since 2026-11-11 the box builds kobo-mcp from `w9-box-main`: those three commits rebased
+  onto kobo-mcp `main` 3398982 (local worktree `kobo-mcp-w9-main`; not pushed), which needs
+  kobo-dash `main` from 2026-11-03 or later (the role check on `/roles`).
+- kobo-dash (`main` a2b86cd, 2026-11-10): `LOCAL_ESPO_ORIGINS=http://cases.kobo.local`, so
+  the box's own EspoCRM can be a dashboard's source over plain http (EspoCRM feeds, kobo-dash
+  `/admin/espo`; kobo-mcp's `list_espo_connections`, `create_espo_feed`, `update_espo_feed`).
+  Its containers resolve `cases.kobo.local` to the host's edge. Feeds aren't in `e2e-dash.py`
+  yet.
+
 **Owners and their dashboard accounts.** kobo-dash never holds an owner's own token. It
 reads each owner's projects through a second Kobo account of theirs, which only ever gets
 view access to the projects they make dashboards of. `dash.sh account alice` makes

@@ -104,10 +104,12 @@ are in [PLAN.md](PLAN.md); per-run results are in [remote/results/NOTES.md](remo
    (rebased: `local-nlp-backend-main` in `~/code/kpi`), offline on a CPU droplet: qual and
    translation on **typed answers** through 2.026.43's new screens (Translate & analyze,
    Generate with AI), and qual on **photos** (kpi `main` only, behind
-   `?ff_nlpImageActionsEnabled=true`), all answers right (NOTES, 2026-11-10). Left: run that
-   image on the rig and in the pack instead of the 2.026.37d backport (once 2.026.43 is
-   tagged, or from main), `kpi/ai-setup.py` in `kobo-setup.py`/`firstboot.sh`, the pilot
-   languages in it, and proposing the change upstream (talk to the KPI team).
+   `?ff_nlpImageActionsEnabled=true`), all answers right (NOTES, 2026-11-10). 2026-11-11:
+   the image (`kpi/build.sh`) runs on the rig, with `kpi/ai-setup.py` from `kobo-setup.py`;
+   the CPU benchmark has typed answers 4/4 and photos 3/3, and the full suite passes
+   (NOTES, 2026-11-11). Left: the pack with it (install and update), GPU numbers (no GPU
+   droplet in stock), the pilot languages in `ai-setup.py`, and proposing the change
+   upstream (talk to the KPI team).
 5. **W10 knowledge base**, and the W12 steps that need the box: hotspot + local DNS,
    autoinstall USB with LUKS + TPM.
 6. **Decisions needed:** the pilot languages and partner, mock interviews recorded on field

@@ -52,12 +52,13 @@ from pathlib import Path
 from urllib.parse import parse_qs, urlsplit
 
 HERE = Path(__file__).resolve().parent
-sys.path.insert(0, str(HERE))  # -I leaves the script's own directory off the path
+BRIDGE = HERE / 'kobo-espo-bridge'  # the shared bridge, kept here (VERSION)
+sys.path[:0] = [str(BRIDGE), str(BRIDGE / 'tests')]  # -I leaves them off the path
 import health_fixture as fx  # noqa: E402
 from bridge import BridgeError, Espo, load_template  # noqa: E402
 
 KF, KC = 'kf.kobo.local', 'kc.kobo.local'
-TEMPLATE = load_template(HERE / 'templates' / 'health-referral.toml')
+TEMPLATE = load_template(BRIDGE / 'templates' / 'health-referral.toml')
 NAME = TEMPLATE['form']['name']
 RESULTS = []
 
@@ -423,6 +424,12 @@ def ledger_check(admin, kobo, uid, status_path, timeout):
     # A zone of this run's own: box.sh's timer may have set up an earlier run's form since
     new_zone = f'zone_t{uuid.uuid4().hex[:6]}'
     bad, good = str(uuid.uuid4()), str(uuid.uuid4())
+    # Failures already in the ledger (e.g. an earlier run's kept follow-up form) stay there:
+    # count this run's against them
+    try:
+        base = json.loads(status_path.read_text()).get('failed') or 0
+    except (OSError, ValueError):
+        base = 0
     # V02 (one case, nutrition) in a zone EspoCRM's cZone doesn't have; then V03 as it is
     kobo.submit({**fx.with_reasons(fx.VISITS[1]['answers']), 'zone': new_zone}, bad)
     kobo.submit(fx.with_reasons(fx.VISITS[2]['answers']), good)
@@ -436,11 +443,17 @@ def ledger_check(admin, kobo, uid, status_path, timeout):
             st = json.loads(status_path.read_text())
         except (OSError, ValueError):
             st = {}
-        if st.get('failed'):
+        if (st.get('failed') or 0) > base:
             break
         time.sleep(5)
-    check('status.json counts it', st.get('failed') == 1, st.get('failed'))
-    check('status.json says why, without answers', 'cZone' in (st.get('oldest_error') or ''),
+    check('status.json counts it', st.get('failed') == base + 1, st.get('failed'))
+    # Why, without answers: the oldest failure's reason in status.json, or (when an older
+    # one is in the ledger) the bridge's list of failures
+    why = st.get('oldest_error') or ''
+    if base and 'cZone' not in why:
+        why = subprocess.run(['python3', '-I', str(BRIDGE / 'bridge.py'), 'failed', str(status_path.parent)],
+                             capture_output=True, text=True).stdout
+    check('status.json says why, without answers', 'cZone' in why and bad not in why,
           st.get('oldest_error'))
     # The fix: the zone added to the Kobo form, then setup (box.sh's timer runs it every
     # 10 min); it adds the option from the form and makes the bridge retry now
@@ -457,10 +470,10 @@ def ledger_check(admin, kobo, uid, status_path, timeout):
             check('with the zone from the form', admin.call('GET', f'/Case/{case["id"]}')['cZone'] == new_zone)
         for _ in range(int(timeout / 5)):
             st = json.loads(status_path.read_text())
-            if not st.get('failed'):
+            if (st.get('failed') or 0) <= base:
                 break
             time.sleep(5)
-        check('and leaves the ledger', st.get('failed') == 0, st.get('failed'))
+        check('and leaves the ledger', st.get('failed') == base, st.get('failed'))
         again = subprocess.run([str(HERE / 'espocrm.sh'), 'setup', '--if-form-changed'],
                                capture_output=True, text=True)
         check('setup again: nothing to do', again.returncode == 0 and not again.stdout.strip(),

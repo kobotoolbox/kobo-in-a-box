@@ -47,6 +47,7 @@ remote/
   e2e-collect.sh        KoboCollect itself on that phone: a new account's project, Download
                         form, fill in, send, read back from KPI (e2e-collect.py drives the app)
   kpi-test.sh           KPI's test suite against a KPI branch, set up like KPI's CI
+  e2e-all.sh            every one-box end-to-end test in turn, with a PASS/FAIL summary
   kpi/build.sh          the box's KPI image: kpi with local-nlp-backend.patch (local AI, sync's
                         supplement import), run by kobo-setup.py and packed by pack.sh;
                         kpi/ai-setup.py turns on what KPI's screens need to offer the AI

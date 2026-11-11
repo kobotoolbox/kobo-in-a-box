@@ -95,8 +95,12 @@ case "${1:-}" in
         curl -fsS -o /dev/null -H 'Host: mcp.kobo.local' http://127.0.0.1/healthz \
             || { echo "kobo-mcp isn't answering at mcp.kobo.local: run ../dash/dash.sh up" >&2; exit 1; }
         docker network inspect kobo-assistant >/dev/null 2>&1 || docker network create kobo-assistant >/dev/null
+        # Built only when missing (online, or loaded from the content pack): a build checks
+        # its base image on Docker Hub, so offline it fails even with the image here
+        docker image inspect "kobo-box-opencode:$OPENCODE_VERSION" >/dev/null 2>&1 \
+            || compose --profile agents build
         # Recreate, so OpenCode reads the config just written (it reads it only at start)
-        compose --profile agents up -d --build --force-recreate --remove-orphans
+        compose --profile agents up -d --no-build --force-recreate --remove-orphans
         wait_for http://localhost:4096/ 180
         echo "OpenCode on 127.0.0.1:4096 (model at $AGENT_LLM_URL; kobo-mcp at mcp.kobo.local)" ;;
     down) compose --profile agents down ;;

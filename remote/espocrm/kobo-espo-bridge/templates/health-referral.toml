@@ -25,6 +25,8 @@ name = "Community health referral"
 when = { referral_needed = "yes" }
 
 [case]
+# The case page's panel with the template's fields
+panel = "Referral details"
 # {question} is the answer's label from [[field]] below; multiple answers are joined by ", "
 name = "{referral_reasons}: {patient_type}, {zone}"
 # Lines in the case description, skipped when the answer is empty
@@ -222,3 +224,41 @@ kobo = "severe_dehydration"
 
 [[field]]
 kobo = "notes"
+
+# --- kobo-in-a-box: EspoCRM settings, staff roles, the assistant, demo users -----------
+[espo]
+offline = true  # no daily version checks (they call s.espocrm.com)
+application_name = "Kobo in a box: cases"
+
+# Their teams' cases only, can't delete or export
+[[role]]
+name = "Case worker"
+data = { Case = { create = "yes", read = "team", edit = "team", delete = "no", stream = "team" }, Team = { read = "team" }, User = { read = "team" } }
+assignmentPermission = "team"
+userPermission = "team"
+
+# All cases, no delete
+[[role]]
+name = "Case supervisor"
+data = { Case = { create = "yes", read = "all", edit = "all", delete = "no", stream = "all" }, Team = { read = "all" }, User = { read = "all" } }
+assignmentPermission = "all"
+userPermission = "all"
+exportPermission = "yes"
+massUpdatePermission = "yes"
+
+# The box's assistant (cases_mcp.py): read cases and post notes, nothing else; contact
+# details withheld by EspoCRM itself
+[[role]]
+name = "Assistant"
+data = { Case = { create = "no", read = "all", edit = "no", delete = "no", stream = "all" }, Team = { read = "all" } }
+hidden_fields = ["cCaregiverName", "cCaregiverPhone"]
+
+[[api_user]]
+name = "kobo-assistant"
+role = "Assistant"
+key = "ESPO_ASSISTANT_API_KEY"
+
+# --demo-users: one case worker per team, and a supervisor
+[demo]
+worker = "Case worker"
+supervisor = "Case supervisor"
