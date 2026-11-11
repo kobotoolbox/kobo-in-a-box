@@ -1,0 +1,21 @@
+ok   GET /healthz (200)
+ok   tool profile (32 tools, expected 32)
+ok   no delete tools
+ok   whoami {} (0.1s, 194 bytes)
+ok   server is the box (http://kf.kobo.local)
+ok   list_projects {'limit': 100} (0.3s, 6731 bytes)
+ok   has projects (31 projects)
+     using a8gQ28SoGwV77oknTv5sDa: 63 submissions
+ok   describe_form {'uid': 'a8gQ28SoGwV77oknTv5sDa'} (0.2s, 3144 bytes)
+ok   get_submission_stats {'uid': 'a8gQ28SoGwV77oknTv5sDa'} (0.8s, 377 bytes)
+ok   stats count submissions (total 63)
+ok   summarize_submissions {'uid': 'a8gQ28SoGwV77oknTv5sDa'} (0.3s, 8456 bytes)
+ok   get_submissions {'uid': 'a8gQ28SoGwV77oknTv5sDa', 'limit': 5} (0.1s, 4552 bytes)
+ok   reads submissions (5 submissions)
+ok   set_validation_status {'uid': 'a8gQ28SoGwV77oknTv5sDa', 'status': 'on_hold', 'submission_ids': [198]} (0.1s, 112 bytes)
+ok   get_submissions {'uid': 'a8gQ28SoGwV77oknTv5sDa', 'limit': 5} (0.1s, 4689 bytes)
+ok   write over http (none -> on_hold)
+ok   set_validation_status {'uid': 'a8gQ28SoGwV77oknTv5sDa', 'status': 'none', 'submission_ids': [198]} (0.1s, 89 bytes)
+ok   https://kobo.example.org refused (400: {"error": "invalid_request", "error_description": "KoboToolbox server kobo.example.org is not on this MCP server's allow)
+ok   http://kf.kobotoolbox.org refused (400: {"error": "invalid_request", "error_description": "The KoboToolbox server URL must use https:// (plain http is only for )
+MCP CHECK PASS

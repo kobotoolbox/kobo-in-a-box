@@ -1,0 +1,7 @@
+ok   a wrong token is refused (401)
+ok   initialize and four tools (['cases_find', 'cases_get', 'cases_summary', 'cases_add_note'])
+ok   cases_find (181 open, fields cFollowUpDue,cReferralReasons,cVisitDate,cZone,createdAt,modifiedAt,name,number,overdue,priority,status,teams)
+ok   no contact details
+ok   cases_summary ({'Nutrition (OTP)': 105, 'Referral coordinators': 95, 'Surveillance': 38})
+ok   cases_get (1 note(s))
+ok   an unknown case is an error, not a crash

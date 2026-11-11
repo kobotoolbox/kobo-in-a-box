@@ -55,6 +55,7 @@
     <li><a href="#making">Making a dashboard</a></li>
     <li><a href="#sharing">Sharing it</a></li>
     <li><a href="#maps">Maps</a></li>
+    <li><a href="#cases">Case management data</a></li>
     <li><a href="#trouble">When something goes wrong</a></li>
     <li><a href="#privacy">Who sees what</a></li>
     <li><a href="#tested">What was tested</a></li>
@@ -157,12 +158,25 @@
 <p>Dashboards, their settings and the dashboard accounts are in the kit's <a href="./#field">backups</a>, and come back with a restore, also onto a replacement kit.</p>
 </section>
 
+<section id="cases">
+<h2>Case management data</h2>
+<p>A dashboard can also show the kit's <a href="cases.html">case management</a>: how many referrals each team has open, by zone, reason and priority, next to the survey they came from. The dashboards service reads the cases through an EspoCRM <em>API user</em> whose role decides what it can see: one team's cases, and only the fields the dashboard needs. Names and phone numbers stay out.</p>
+<ol>
+  <li><strong>Support makes the API user</strong> in EspoCRM (Administration → API users), with a role that reads one team's cases and only those fields, and nothing else.</li>
+  <li><strong>The owner pastes its key</strong> in the dashboards page, in the <strong>EspoCRM</strong> card, with the address <code>http://cases.kobo.local</code>.</li>
+  <li><strong>The assistant makes the feed</strong> ("show the nutrition team's open cases by zone"): the cases become a table in the owner's library, read again whenever EspoCRM changes, which it can put on a dashboard like a project.</li>
+</ol>
+<figure><a href="static/dash/espo-card.jpg"><img src="static/dash/espo-card.jpg" width="1392" height="840" alt="The EspoCRM card on the dashboards page: a connection called Case management at http://cases.kobo.local, API user dash-nutrition-cases, Working, with one feed, nutrition_cases: Case, 5 fields, 123 rows, up to date; buttons Check again and Remove; below, the form to add a connection with a name, the EspoCRM address and the API user's key."></a><figcaption><strong>The kit's case management as a source.</strong> One feed of the nutrition team's 123 cases, five fields, kept up to date.</figcaption></figure>
+<p>Whatever the API user can read reaches everyone who can open the dashboard, and EspoCRM's teams no longer apply there, so give it only what viewers may see.</p>
+</section>
+
 <section id="privacy">
 <h2>Who sees what</h2>
 <ul>
   <li><strong>The dashboards service</strong> reads only the projects shared with the owner's dashboard account, view only, and keeps a copy of their submissions to draw the charts. It never holds an owner's own KoboToolbox token. The dashboard accounts' tokens are stored encrypted with a key only this kit has.</li>
   <li><strong>Viewers</strong> see what the dashboard shows, and nothing else of the project: not the raw submissions, unless a table on the dashboard shows them.</li>
   <li><strong>The assistant</strong> works with the signed-in user's own KoboToolbox permissions, on the kit's KoboToolbox only.</li>
+  <li><strong>Case management data</strong> comes through an EspoCRM API user that reads only what its role allows; its key is stored encrypted, like the dashboard accounts' tokens, and never shown again.</li>
   <li><strong>Nothing leaves the kit.</strong> The dashboards, maps and fonts are all on the kit; in the offline test no part of it tried to reach the internet.</li>
 </ul>
 </section>
@@ -179,6 +193,7 @@
   <li>A packet capture during the run saw nothing addressed outside the kit.</li>
   <li>After a restart, everything came back by itself. A backup restored dashboards onto a kit with other keys.</li>
 </ul>
+<p>Case management as a source (11 November 2026, offline, on the test kit, on a kit updated from a content pack and on one installed from it): an API user reading the nutrition team's cases and five of their fields; its key saved in the EspoCRM card; a feed made through the assistant's tools with that team's cases only (123 of the test kit's 228), and no names or phones; a case changed in EspoCRM was in the table at the next read. <strong>15 of 15 checks.</strong></p>
 <p>Footprint: 1.3 GB of the kit's disk, and about 255 MB of memory when idle.</p>
 </section>
 

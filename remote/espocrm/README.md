@@ -12,11 +12,7 @@ instead of fixed dev ones.
 | `espocrm.env` | Image versions, port (127.0.0.1:8084), site URL, time zone, the template, where the bridge finds Kobo and its token |
 | `docker-compose.espocrm.yml` | `db` (MariaDB), `espocrm`, `espocrm-daemon` (scheduled jobs), `bridge` (profile `bridge`) |
 | `espocrm.sh` | `pull` (online), `up [--demo-users]`, `setup`, `down`, `logs`, `status`, `backup`, `restore` |
-| `espocrm-setup.py` | Idempotent setup from the template: teams, roles, Case fields, layouts, the bridge's API user; version checks off |
-| `bridge.py` | Kobo → EspoCRM: polls the form's submissions, opens one case per submission that needs it. Stdlib only |
-| `templates/health-referral.toml` | The test scenario: which form, which submissions, how they map to case fields, which team gets what |
-| `health_fixture.py` | The scenario's Kobo form (with the referral rules as calculations), 13 made-up visits and the case each should open |
-| `test_bridge.py` | Unit tests with Kobo and EspoCRM faked: `python3 -m unittest test_bridge` |
+| `kobo-espo-bridge/` | The bridge, shared with kobo-espo: a copy of [kobo-espo-bridge](https://github.com/joshuaberetta/kobo-espo-bridge) at the commit in its `VERSION`, refreshed with `update-bridge.sh`. The box runs its `bridge.py run` (Kobo → EspoCRM: one case per submission that needs it; stdlib only), its `setup.py` (teams, roles, fields, layouts, the API users and demo users, all from the template; version checks off) and its `templates/health-referral.toml` (the test scenario, with its roles and demo users). Its `tests/` has the scenario's form and visits (`health_fixture.py`) and the unit tests. Not used on the box yet: `serve` (every connection in one process) and the EspoCRM MCP (`espo_mcp/`, which needs the MCP SDK) |
 | `e2e-espo.py` | End to end through the running bridge: visits in Kobo → cases, routing, permissions, no external assets; `--ledger`, `--edits`, `--followup` |
 | `cases_mcp.py` | The assistant's case tools (MCP server); `test_cases_mcp.py`, `cases-mcp-check.py` |
 
@@ -42,7 +38,7 @@ earliest follow-up. The caregiver's phone is only asked for, and so only on the 
 they agree to be called back. Staff record the outcome (arrived and treated, admitted,
 enrolled, did not arrive, refused…) and close the case.
 
-**Roles** (`espocrm-setup.py`): *Case worker*: their teams' cases only, can't delete or
+**Roles** (the template's `[[role]]`s, made by the bridge's `setup.py`): *Case worker*: their teams' cases only, can't delete or
 export. *Case supervisor*: all cases, no delete. *Kobo bridge*: create and read cases,
 nothing else. `--demo-users` adds one case worker per team and a `supervisor`, with
 passwords in the secrets file.
@@ -191,6 +187,14 @@ restore` does this as part of a whole-box restore.
 - **Logs** carry ids and counts, never answers.
 
 ## Tested
+
+**The vendored kobo-espo-bridge (2026-11-11):** e3408e4 in place of the box's own bridge,
+setup and template, on the rig offline with the box's KPI image (`e2e-all.sh`, NOTES
+2026-11-11): `--edge` 27/27, `--ledger` 38/38 (the ledger check now counts against what was
+already failing, since the rig's ledger keeps an older follow-up), `--edits` 34/34,
+`--followup` 42/42 (with `BRIDGE_LIST_MIN_SECONDS=20`), `cases-mcp-check.py` PASS. A box
+updated offline from the older pack: `--edge --share-with cases-bridge` 28/28. The box's
+EspoCRM as a dashboards source (kobo-dash's EspoCRM feeds): `../dash/e2e-dash-espo.py`.
 
 **The ledger (2026-11-03):** 16 unit tests (a refused visit between good ones, backoff,
 retry on a template or form change, deleted in Kobo, template errors quoting no answer,

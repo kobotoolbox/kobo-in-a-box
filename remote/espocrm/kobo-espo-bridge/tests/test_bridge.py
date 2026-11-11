@@ -1,7 +1,7 @@
 """
 Unit tests for the bridge, with Kobo and EspoCRM faked in memory (no network):
 
-    python3 -m unittest test_bridge -v        (in remote/espocrm)
+    python3 -m unittest discover -s tests -t . (in the repo root; PYTHONPATH=.)
 
 The live checks against a running EspoCRM and Kobo are in e2e-espo.py.
 """
@@ -16,10 +16,10 @@ from pathlib import Path
 import bridge
 import health_fixture as fx
 
-BASE = bridge.load_template(Path(__file__).parent / 'templates' / 'health-referral.toml')
+BASE = bridge.load_template(Path(__file__).parent.parent / 'templates' / 'health-referral.toml')
 # As the bridge uses it: with the deployed form's choices
 TEMPLATE = bridge.with_form(BASE, bridge.form_choices(fx.FORM))
-spec = importlib.util.spec_from_file_location('setup', Path(__file__).parent / 'espocrm-setup.py')
+spec = importlib.util.spec_from_file_location('setup', Path(__file__).parent.parent / 'setup.py')
 setup = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(setup)
 
@@ -393,7 +393,7 @@ class FollowupKobo(FakeKobo):
     def form(self, uid, version):
         return kpi_stored(fx.FOLLOWUP_FORM if uid == 'aFollow' else fx.FORM)
 
-    def replace_media(self, uid, filename, data):
+    def replace_media(self, uid, filename, data, description=None):
         self.media[(uid, filename)] = data
         self.deploys += 1
 

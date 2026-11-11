@@ -1,0 +1,12 @@
+Phone up: 13, KoboCollect-v2025.2.3.apk
+Phone up: 13, KoboCollect-v2025.2.3.apk
+PASS  accounts page: account made (303)
+PASS  accounts page: QR code 
+PASS  form deployed (aGBBiiEUMibtLXJPTtkEPZ)
+PASS  Collect: project from the QR code (server, username, password) (http://kc.kobo.local, e2ec1794383472one)
+PASS  Collect: Download form (All downloads succeeded!)
+PASS  Collect: form filled in on the phone
+PASS  Collect: sent (Finalize: Household visit e2ec1794383472 - Successful submission.)
+PASS  KPI: the submission, with the answers typed on the phone {"head": "Amina Kamara", "members": "5", "water": "yes", "_submitted_by": "e2ec1794383472one"}
+deleted: 49 rows in KPI, 2 accounts in KoboCAT
+0 failed

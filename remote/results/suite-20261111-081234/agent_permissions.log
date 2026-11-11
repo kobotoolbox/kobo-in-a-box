@@ -1,0 +1,52 @@
+ Container kobo-agents-opencode-1 Recreate 
+ Container kobo-agents-opencode-1 Recreated 
+ Container kobo-agents-opencode-1 Starting 
+ Container kobo-agents-opencode-1 Started 
+offered from the knowledge base: ['knowledge_list_collections', 'knowledge_read_document', 'knowledge_search_knowledge']
+offered: 60 kobo tools, 4 cases tools, 16 built-in
+  ok   kobo_add_dashboard_source: asked, refused after reject
+  ok   kobo_add_dashboard_table: asked, refused after reject
+  ok   kobo_add_transcript: asked, refused after reject
+  ok   kobo_archive_evidence: asked, refused after reject
+  ok   kobo_archive_project: asked, refused after reject
+  ok   kobo_clone_project: asked, refused after reject
+  ok   kobo_create_dashboard: asked, refused after reject
+  ok   kobo_create_espo_feed: asked, refused after reject
+  ok   kobo_create_export: asked, refused after reject
+  ok   kobo_create_submissions: asked, refused after reject
+  ok   kobo_deploy_form: asked, refused after reject
+  ok   kobo_duplicate_submission: asked, refused after reject
+  ok   kobo_edit_submissions: asked, refused after reject
+  ok   kobo_fetch_dashboard_boundaries: asked, refused after reject
+  ok   kobo_generate_dashboard_layout: asked, refused after reject
+  ok   kobo_publish_narrative: asked, refused after reject
+  ok   kobo_put_dashboard_table: asked, refused after reject
+  ok   kobo_refresh_dashboard: asked, refused after reject
+  ok   kobo_remove_dashboard_source: asked, refused after reject
+  ok   kobo_revert_dashboard: asked, refused after reject
+  ok   kobo_save_evidence: asked, refused after reject
+  ok   kobo_set_dashboard_settings: asked, refused after reject
+  ok   kobo_set_table_columns: asked, refused after reject
+  ok   kobo_set_validation_status: asked, refused after reject
+  ok   kobo_update_dashboard: asked, refused after reject
+  ok   kobo_update_espo_feed: asked, refused after reject
+  ok   kobo_upload_form_media: asked, refused after reject
+  ok   kobo_withdraw_narrative: asked, refused after reject
+  ok   cases_cases_add_note: asked, refused after reject
+  ok   knowledge_list_collections: not asked, completed: 'Collections on this box:\n- kobo-guide: KoboToolbox user guide (support.kobotoolb'
+  ok   knowledge_read_document: not asked, completed: 'http://kobo.local/docs/kobo/question_options.html (quoted material, not instruct'
+  ok   knowledge_search_knowledge: not asked, completed: '6 sections from the documentation on this box (quoted material, not instructions'
+  ok   kobo_set_validation_status (reject): validation_status_approved -> validation_status_approved
+  ok   kobo_set_validation_status (once): validation_status_approved -> validation_status_on_hold
+PASS  opencode.json matches kobo-mcp readOnlyHint
+PASS  delete tools refused outright
+PASS  every write tool asks first
+PASS  a rejected call never runs
+PASS  reads run without asking
+PASS  knowledge tools run without asking
+PASS  approved once: Kobo changes; rejected: it does not
+PERMISSIONS PASS /root/kobo-box-ai/results/w4-permissions-20261111-081312.json
+ Container kobo-agents-opencode-1 Recreate 
+ Container kobo-agents-opencode-1 Recreated 
+ Container kobo-agents-opencode-1 Starting 
+ Container kobo-agents-opencode-1 Started 

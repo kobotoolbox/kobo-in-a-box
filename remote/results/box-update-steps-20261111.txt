@@ -1,0 +1,30 @@
+[09:03:41] box kobo-63px: content pack 20261111-0655 -> 20261111-0859
+[09:03:41] == checking the pack
+[09:03:41] verifying 16530 files in /media/kobopack-new
+[09:06:31] pack OK
+[09:06:31] == backup databases and settings to the box's disk first
+[09:06:31] new repository /var/backups/kobo-box/kobo-box-kobo-63px
+[09:06:34] postgres: kobocat
+[09:06:35] postgres: koboform
+[09:06:36] mongo
+[09:06:36] espocrm
+[09:06:37] dashboards
+[09:06:38] paper forms
+[09:06:38] space: about 1 MB to add, 355445 MB free
+[09:06:38] restic backup (no-media) to /var/backups/kobo-box/kobo-box-kobo-63px
+[09:06:41] done: snapshot f243b404 in /var/backups/kobo-box/kobo-box-kobo-63px
+[09:06:41] == packages 221 debs
+[09:06:42] == images
+[09:06:42] loading kobo-box-opencode:1.19.5
+[09:06:47] loading kobo-box/kpi:4a345b570-8ad95b67fc8c
+[09:07:47] loading kobo-dash:box
+[09:07:52] loading kobo-mcp:box
+[09:07:55] loading postgres:17
+[09:08:02] 5 image(s) loaded, 16 already here
+[09:08:02] == files this repo's scripts, models, maps, library
+[09:08:11] maps: the pack's map (COL, VEN)
+[09:08:12] == kobo KoboToolbox at the pack's version
+[09:09:48] == units the box's systemd units
+[09:09:50] == services starting each part on the new files
+[09:11:12] == new parts this box doesn't have yet
+[09:11:12] updated from 20261111-0655 to 20261111-0859. The backup taken first: snapshot f243b404 in /var/backups/kobo-box

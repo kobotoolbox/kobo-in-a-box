@@ -4,7 +4,7 @@
 # DROPLET in /root/kobo-box-ai/espocrm.
 #
 #   ./espocrm.sh up [--demo-users]   start EspoCRM, set it up for the template, start the bridge
-#   ./espocrm.sh setup [--demo-users] re-run espocrm-setup.py (teams, roles, fields, layouts,
+#   ./espocrm.sh setup [--demo-users] re-run the bridge's setup.py (teams, roles, fields, layouts,
 #                                    options from the deployed Kobo form)
 #   ./espocrm.sh setup --if-form-changed   only if a form version or the template changed
 #                                    (box.sh's timer, every 10 min)
@@ -70,8 +70,10 @@ library_link() {  # on|off: the "Case management" link on http://kobo.local
     LIBRARY_DIR=$LIBRARY_DIR python3 -I ../library/render.py >/dev/null
 }
 
-setup() {
-    python3 -I espocrm-setup.py "$@"
+setup() {  # the shared bridge's setup, with the box's defaults (it has none of its own)
+    python3 -I kobo-espo-bridge/setup.py --template "kobo-espo-bridge/templates/$BRIDGE_TEMPLATE.toml" \
+        --url "http://127.0.0.1:$ESPO_PORT" --secrets "$ESPO_SECRETS" \
+        --kobo-url "${KOBO_SETUP_URL:-http://127.0.0.1}" --kobo-host "${KOBO_SETUP_HOST:-kf.kobo.local}" "$@"
     load_secrets
 }
 
@@ -104,7 +106,7 @@ case "${1:-}" in
     down) load_secrets; compose --profile bridge --profile assistant down; library_link off ;;
     logs) load_secrets; compose --profile bridge --profile assistant logs -f --tail 100 ;;
     status) load_secrets; compose --profile bridge --profile assistant ps ;;
-    failed) python3 -I bridge.py failed "$BRIDGE_STATE_DIR" ;;
+    failed) python3 -I kobo-espo-bridge/bridge.py failed "$BRIDGE_STATE_DIR" ;;
     backup)
         load_secrets
         umask 077  # the dump holds personal data

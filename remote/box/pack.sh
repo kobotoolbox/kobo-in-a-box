@@ -24,7 +24,9 @@
 #   kobo-box-ai/       this repo's remote/ folder (no results, no per-box files)
 #   kobo-install/      kobo-install and kobo-docker as git checkouts at the running commits
 #   kobo-docker/
-#   kpi-e2e/           the KPI local-AI backport (STATUS W2), mounted by kobo-setup.py
+#   kpi-box/           which KPI image (in images/) kobo-setup.py runs: kpi/build.sh's, with
+#                      local AI (STATUS W2)
+#   kpi-e2e/           or, before that image, the KPI local-AI backport, mounted by kobo-setup.py
 #   kobo-transfer/     kobo-transfer for syncing between kits (sync.py), with VERSION
 #   knowledge/         /opt/knowledge: the knowledge base's index of the library (knowledge.sh index)
 #
@@ -38,6 +40,7 @@ REMOTE=$(dirname "$HERE")
 
 KOBO_INSTALL=${KOBO_INSTALL:-/root/kobo-install}
 KOBO_DOCKER=${KOBO_DOCKER:-/root/kobo-docker}
+KPI_BOX=${KPI_BOX:-/root/kpi-box}
 KPI_E2E=${KPI_E2E:-/root/kpi-e2e}
 KOBO_TRANSFER=${KOBO_TRANSFER:-/root/kobo-transfer}
 MODELS_DIR=${MODELS_DIR:-/opt/models}
@@ -56,7 +59,7 @@ EXTRA_IMAGES=${EXTRA_IMAGES:-}
 # and only update from a plugged-in stick whose signature they check (box.sh update-drive)
 PACK_SIGNING_KEY=${PACK_SIGNING_KEY:-/root/kobo-pack-signing.key}
 # The folders install.sh and update.sh copy from: no file in them may be missing from SHA256SUMS
-PACK_DIRS='debs images models maps library kobo-box-ai kobo-install kobo-docker kpi-e2e kobo-transfer knowledge'
+PACK_DIRS='debs images models maps library kobo-box-ai kobo-install kobo-docker kpi-box kpi-e2e kobo-transfer knowledge'
 # Images on the build machine that aren't part of a box (test tooling)
 SKIP_IMAGES='^mcr\.microsoft\.com/playwright/'
 
@@ -64,7 +67,10 @@ log() { echo "[$(date +%H:%M:%S)] $*"; }
 die() { echo "pack: $*" >&2; exit 1; }
 
 images() {  # every image a container on this machine runs (stopped ones too), plus extras
-    { docker ps -a --format '{{.Image}}'; printf '%s\n' $EXTRA_IMAGES; } \
+    # and kobo-docker's own KPI image: kobo-install checks the databases with it on every
+    # start (a `run --rm kpi` without the custom yml), even when the box runs kpi-box's
+    { docker ps -a --format '{{.Image}}'; printf '%s\n' $EXTRA_IMAGES
+      grep -om1 'kobotoolbox/kpi:[^[:space:]]*' "$KOBO_DOCKER/docker-compose.frontend.yml" 2>/dev/null; } \
         | grep -v '^$' | grep -vE "$SKIP_IMAGES" | sort -u
 }
 
@@ -171,8 +177,16 @@ build_files() {
             git -C "$pack/$name" tag -f "$tag" >/dev/null
         done
     done
-    # kobo-setup.py mounts it into KPI when /root/kpi-e2e exists
-    if [[ -d "$KPI_E2E" ]]; then
+    # kobo-setup.py runs this image for KPI when /root/kpi-box exists; the image itself is
+    # in images/, as one this machine's containers run
+    rm -rf "$pack/kpi-box" "$pack/kpi-e2e"
+    if [[ -s "$KPI_BOX/KPI_IMAGE" ]]; then
+        local box_image; box_image=$(cat "$KPI_BOX/KPI_IMAGE")
+        log "KPI image $box_image ($KPI_BOX)"
+        grep -qx "$box_image" <(images) || die "$box_image ($KPI_BOX) isn't running here: kobo-setup.py --reconfigure first"
+        rsync -a --delete "$KPI_BOX/" "$pack/kpi-box/"
+    # Otherwise kobo-setup.py mounts the backport into KPI when /root/kpi-e2e exists
+    elif [[ -d "$KPI_E2E" ]]; then
         log "KPI local-AI backport ($KPI_E2E)"
         # Its files replace KPI's own, so they must be from the KPI release kobo-docker runs
         # (37d changed base.py, for a security fix the 37c copy would undo)
@@ -239,6 +253,8 @@ info = {
     'kobo_install': git('kobo-install', 'describe', '--tags', '--always'),
     'kobo_docker': git('kobo-docker', 'describe', '--tags', '--always'),
     'kpi_backport': os.path.isdir(os.path.join(pack, 'kpi-e2e')),
+    'kpi_image': (open(os.path.join(pack, 'kpi-box', 'KPI_IMAGE')).read().strip()
+                  if os.path.exists(os.path.join(pack, 'kpi-box', 'KPI_IMAGE')) else None),
     'kobo_transfer': (open(os.path.join(pack, 'kobo-transfer', 'VERSION')).read().strip()
                       if os.path.exists(os.path.join(pack, 'kobo-transfer', 'VERSION')) else
                       os.path.isdir(os.path.join(pack, 'kobo-transfer'))),

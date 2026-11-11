@@ -30,6 +30,8 @@ from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
+# The bridge's EspoCRM client: kobo-espo-bridge/ here, or /app in the container
+sys.path.insert(0, str(Path(__file__).resolve().parent / 'kobo-espo-bridge'))
 sys.path.insert(0, str(Path(__file__).resolve().parent))  # -I leaves it off
 from bridge import CLOSED, BridgeError, Espo  # noqa: E402
 

@@ -5,6 +5,7 @@
 #   espocrm         the web app, on 127.0.0.1:${ESPO_PORT} (edge: cases.kobo.local)
 #   espocrm-daemon  EspoCRM's scheduled jobs (notifications, cleanup)
 #   bridge          polls Kobo for new submissions of the template's form, creates cases
+#                   (kobo-espo-bridge/, the bridge shared with kobo-espo)
 #   cases-mcp       profile `assistant`: cases for the box's assistant (cases_mcp.py), on
 #                   the kobo-assistant network only OpenCode joins; not published
 
@@ -78,8 +79,8 @@ services:
     # -u: -I ignores PYTHONUNBUFFERED, and logs would sit in the buffer
     command: ["python3", "-I", "-u", "/app/bridge.py", "run"]
     volumes:
-      - ./bridge.py:/app/bridge.py:ro
-      - ./templates:/app/templates:ro
+      # kobo-espo-bridge, the bridge shared with kobo-espo (its VERSION), with its templates
+      - ./kobo-espo-bridge:/app:ro
       - ${KOBO_TOKEN_FILE:-/dev/null}:/run/kobo-token:ro
       # The ledger (cursor, failed submissions) and status.json, on the host so the box's
       # status page and backups can read them
@@ -97,7 +98,7 @@ services:
       CASES_MCP_TOKEN: ${CASES_MCP_TOKEN:-}
     command: ["python3", "-I", "-u", "/app/cases_mcp.py"]
     volumes:
-      - ./bridge.py:/app/bridge.py:ro
+      - ./kobo-espo-bridge/bridge.py:/app/bridge.py:ro
       - ./cases_mcp.py:/app/cases_mcp.py:ro
     networks: [default, kobo-assistant]
 

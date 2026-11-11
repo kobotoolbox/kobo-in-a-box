@@ -1,0 +1,39 @@
+deleted the previous copy acQ7tAP9Pvq4Si494MqxRj
+PASS  form created: at3ro82fNHDpR4LGTAXxyR
+PASS  form deployed: 200
+PASS  12 visits submitted
+PASS  9 cases from the first 12 visits: 9 after 32s
+PASS  V01 case: CS 187 Urgent, Referral coordinators
+PASS  V02 case: CS 188 High, Nutrition (OTP)
+PASS  V03 case: CS 189 Normal, Nutrition (OTP)
+PASS  V04 no case
+PASS  V05 case: CS 190 Urgent, Surveillance
+PASS  V06 case: CS 191 Urgent, Nutrition (OTP), Surveillance
+PASS  V07 case: CS 192 Urgent, Referral coordinators
+PASS  V08 no case
+PASS  V09 case: CS 193 High, Referral coordinators
+PASS  V10 no case
+PASS  V11 case: CS 194 Urgent, Nutrition (OTP), Referral coordinators
+PASS  V12 case: CS 195 Urgent, Referral coordinators
+PASS  later visit picked up: after 32s
+PASS  V13 case: CS 196 High, Nutrition (OTP), Referral coordinators
+PASS  no duplicates: 10
+PASS  coordinator sees only their team's cases: 6 of 10
+PASS  coordinator records an outcome
+PASS  coordinator can't edit another team's case
+PASS  coordinator can't delete
+PASS  bridge can't edit
+PASS  bridge can't delete
+PASS  supervisor sees all
+PASS  no external assets (http://127.0.0.1)
+
+-- edits and status back to Kobo
+PASS  visit edited in Kobo: 201
+PASS  the case has the new answers: ('zone_3', 'Z3-0777')
+PASS  and the new uuid
+PASS  priority, teams and status kept
+PASS  a note says what changed
+PASS  the edits user can't change status or priority
+PASS  closing the case approves the submission in Kobo: validation_status_approved
+
+34/34 passed; /root/kobo-box-ai/results/w11-e2e-20261111-073254.json

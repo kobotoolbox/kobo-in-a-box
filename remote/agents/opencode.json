@@ -37,6 +37,7 @@
     "kobo_list_dashboard_revisions": "allow",
     "kobo_list_dashboard_tables": "allow",
     "kobo_list_dashboards": "allow",
+    "kobo_list_espo_connections": "allow",
     "kobo_list_evidence": "allow",
     "kobo_list_exports": "allow",
     "kobo_list_form_media": "allow",

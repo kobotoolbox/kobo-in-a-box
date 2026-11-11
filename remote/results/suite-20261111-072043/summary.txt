@@ -1,0 +1,16 @@
+nlp                PASS  183s  E2E PASS
+signin             PASS   19s  deleted signin1794381826
+users              PASS   94s  0 failed
+cases              PASS  103s  27/27 passed; /root/kobo-box-ai/results/w11-e2e-20261111-072539.json
+cases_ledger       FAIL  332s  35/38 passed; /root/kobo-box-ai/results/w11-e2e-20261111-072722.json
+cases_edits        PASS  162s  34/34 passed; /root/kobo-box-ai/results/w11-e2e-20261111-073254.json
+cases_followup     FAIL  380s  41/42 passed; /root/kobo-box-ai/results/w11-e2e-20261111-073536.json
+cases_mcp          PASS    3s  ok   an unknown case is an error, not a crash
+dash               PASS   84s  0 failure(s)
+maps               PASS    3s  0 failure(s)
+maps_dash          FAIL    8s  2 failure(s)
+mcp                PASS    9s  MCP CHECK PASS
+agent_permissions  FAIL    0s  OpenCode is on http://agent-llm:8080/v1, not the stand-in: see the top of this file
+knowledge          PASS   11s  best similarity: answerable median 0.663 (min 0.555), no answer median 0.664 (max 0.772)
+paper              PASS  426s  e2e passed.
+collect            PASS   78s  0 failed

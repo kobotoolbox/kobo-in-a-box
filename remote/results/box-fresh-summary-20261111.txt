@@ -1,0 +1,7 @@
+nlp rc=0
+espo rc=1
+dash rc=0
+dash_espo rc=0
+knowledge          PASS   10s  best similarity: answerable median 0.663 (min 0.555), no answer median 0.664 (max 0.772)
+paper              PASS  404s  e2e passed.
+logs in /root/kobo-box-ai/results/suite-20261111-123523

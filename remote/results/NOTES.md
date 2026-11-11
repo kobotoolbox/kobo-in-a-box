@@ -518,3 +518,86 @@ same snapshot, with `box.sh install`: through the page, Lesotho added in 90 s an
 COL+LSO+VEN 1,032 MB), Lesotho taken off offline in 63 s. `e2e-maps.py --picker` 11/11,
 `--picker-offline` 9/9, `e2e-maps.py` 27 checks, 0 failures.
 
+
+## 2026-11-10: KPI `main` with the local backend, typed answers and photos, `kobo-box-nlp` (`s-8vcpu-32gb-amd`, from `kobo-box-ai-snapshot`)
+
+KPI built from kpi `main` 4a345b570 + `local-nlp-backend` rebased onto it
+(`local-nlp-backend-main`), in place of 2.026.37d and the backport; migrations ran on the
+snapshot's data. Gemma 4 E4B Q4_0 with its Q8_0 vision projector, Whisper large-v3-turbo,
+8 threads.
+
+- **Unit tests** (`kpi-test.sh`, `kobo/apps/subsequences/`): 438 passed (`testing`), 427
+  passed + 12 skipped (`testing_no_stripe`).
+- **`e2e-nlp.py` offline** (egress checked blocked, LLM restarted first):
+  `e2e-nlp-image-offline-20261110.txt`. PASS: text qual 3/3 (8–14 s), photo qual 3/3
+  (78 s for the first question, 9–13 s for the next two), translation 24 s, transcription
+  0% WER in 30 s. Online, before the branch sent the image first, the photo's 2nd and 3rd
+  questions also took ~100 s and two timed out (the KPI tests were running).
+- **Through the UI offline** (`site/nlp-shots.py`, a French typed answer and a photo):
+  Translate & analyze from the submission's … menu; automatic English translation in 26 s
+  (faithful); 4 questions on the typed answer with Generate with AI, 10–15 s each, all
+  right (Broken; cost of repairs, long walk, illness; 12000; spare part and training); 3 on
+  the photo, 81 s then 10 and 14 s, all right (Hand pump; animals at the water point; "a
+  concrete basin with a metal pump mechanism installed in the center").
+- **Image budget**, one question on the photo, idle CPU: the model's default ~990 image
+  tokens 74 s; `--image-max-tokens 560` 36 s; 280, 17 s ("Concrete water trough" for the
+  kind of water point, against "Hand pump station" at the default).
+- Deleted afterwards with its firewall.
+
+## 2026-11-11: the box's KPI image on the rig (`kobo-box-ai`, `s-8vcpu-32gb-amd`), CPU only
+
+KPI `kobo-box/kpi:4a345b570-8ad95b67fc8c` (`kpi/build.sh`), the vendored kobo-espo-bridge
+(e3408e4), kobo-dash `main` a2b86cd, kobo-mcp `w9-box-main`. Offline (egress checked blocked).
+
+- **Benchmark** (`smoke-test.py`, LLM restarted first): `log-cpu-20261111.txt`,
+  `20261111-083041-gemma-4-E4B-it-Q4_0.gguf.json`. Unchanged: Whisper 2.0% WER, chrF 59.4 text
+  / 57.5 pipeline, translation 2.6–3.8 s. Qual on a transcript 3/3 (6–11 s); **on a typed
+  answer** (French, KPI text-source prompts) 4/4 (7–11 s); **on a photo** (KPI image prompts,
+  image first) 3/3: 72 s for the first question with no prompt cache (1,240 prompt tokens),
+  then 8 and 11 s. GPU: none in stock in any region (all sizes polled every 5 min); not
+  measured.
+- **Suite** (`e2e-all.sh`): every test passes except `maps_dash` (COL/VEN ADM1 not on the
+  rig, known since 11-06): nlp, signin, users, cases 27/27, ledger 38/38, edits 34/34,
+  follow-up 42/42 (with `BRIDGE_LIST_MIN_SECONDS=20`), cases-mcp, dash, maps, mcp, agent
+  permissions (60 kobo tools, 4 cases tools), knowledge, paper, collect.
+- **EspoCRM feeds** (kobo-dash `main`, `dash/e2e-dash-espo.py`): 15/15 offline. An API user
+  reading the Nutrition (OTP) team's cases and 5 fields, its key saved in kobo-dash's admin
+  page with `http://cases.kobo.local`, a feed through kobo-mcp: 123 of 228 cases, no caregiver
+  columns, an edit in EspoCRM read again (version 2). A field the role can't read
+  (`cCaregiverPhone`) is accepted as an always-empty column instead of refused (kobo-dash
+  reads EspoCRM's metadata, which lists every field). The admin page's EspoCRM address
+  input is unstyled (`type=url`).
+- **Pack** `20261111-0859` (35 GB, signed, `kpi_image` `kobo-box/kpi:4a345b570-8ad95b67fc8c`),
+  built on a new volume in 8 min. First try stopped at its own check: the rig had empty
+  `espocrm/bridge.py` and `templates/` directories, left by Docker when the old compose
+  file's bind mounts lost their files during the switch to the vendored bridge.
+- **Update** (`kobo-box-clean`, installed offline from the 2.026.37d pack `20261111-0655`):
+  `update.sh` offline from the new pack, 7.5 min (`box-update-steps-20261111.txt`): all six
+  KPI services on the box's image, `ai-setup.py` applied (`ASR_MT_INVITEE_USERNAMES='*'`, 6
+  languages). Then, offline: `e2e-nlp.py` PASS (text qual 3/3, photo 3/3 with 81 s for the
+  first question, translation 32 s, transcription 0% WER); `e2e-espo.py --edge
+  --share-with cases-bridge` 28/28 (after `espocrm.sh up --demo-users`, which a box doesn't
+  have); `e2e-dash.py` 23 ok; `e2e-dash-espo.py` PASS (10 cases of the team); knowledge,
+  paper PASS. `e2e-users.sh` passed every account check up to the QR code, which needs
+  `rsvg-convert` and `zbarimg` (the rig's test tools, not on a box); `e2e-signin.sh` needs
+  its Playwright image (built online on the rig).
+- **Found: superusers can't submit** on KPI `main` (DEV-32, `ALLOW_SUPERUSER_SUBMISSIONS`
+  off by default): a superuser `e2e` got 403 "Access denied" from `/submission` after Digest
+  succeeded. The box's admin collects with an account from `users.py` (box/README.md).
+- **Fresh install from that pack failed** at first boot: kobo-install's start checks the
+  databases with `compose -f docker-compose.frontend.yml -f …override.yml run --rm kpi`
+  (`Upgrading.migrate_single_to_two_databases`), without the custom yml, so it needs
+  kobo-docker's own `kobotoolbox/kpi:2.026.37d`, which wasn't packed: only images a
+  container runs are, and the rig's all run the box's image now (the updated box still had
+  the stock one). `pack.sh` now always packs kobo-docker's KPI image. Pack `20261111-1117`:
+  36 GB, 22 images.
+- **Fresh install** (`kobo-box-fresh`, `s-8vcpu-32gb-amd`, offline) from pack `20261111-1117`:
+  19 min including first boot (`box-fresh-install-steps-20261111.txt`); KPI on the box's
+  image, `ai-setup.py` applied at first boot. Offline: `e2e-nlp.py` PASS (text qual 3/3,
+  photo 3/3 with 70 s for the first question, translation 26 s, transcription 0% WER);
+  `e2e-dash.py` 23 ok, 0 failures; `e2e-dash-espo.py` PASS (5 cases of the team); knowledge,
+  paper PASS; `e2e-espo.py --edge --share-with cases-bridge` 18/28 at first: no case within
+  its 3 min, as designed on a new box (EspoCRM gets the form's select fields only when a
+  form is shared with the bridge, by the 10-minute setup timer; the 10 visits waited in the
+  ledger and became cases at its next run). The test now runs `espocrm.sh setup
+  --if-form-changed` right after sharing, as the timer would: 28/28.

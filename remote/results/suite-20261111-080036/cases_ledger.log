@@ -1,0 +1,43 @@
+deleted the previous copy avWGynZ3yv6zUoGmvaxyfw
+PASS  form created: aVgE7viuwcTtWGcFmpb9br
+PASS  form deployed: 200
+PASS  12 visits submitted
+PASS  9 cases from the first 12 visits: 9 after 22s
+PASS  V01 case: CS 207 Urgent, Referral coordinators
+PASS  V02 case: CS 208 High, Nutrition (OTP)
+PASS  V03 case: CS 209 Normal, Nutrition (OTP)
+PASS  V04 no case
+PASS  V05 case: CS 210 Urgent, Surveillance
+PASS  V06 case: CS 211 Urgent, Nutrition (OTP), Surveillance
+PASS  V07 case: CS 212 Urgent, Referral coordinators
+PASS  V08 no case
+PASS  V09 case: CS 213 High, Referral coordinators
+PASS  V10 no case
+PASS  V11 case: CS 214 Urgent, Nutrition (OTP), Referral coordinators
+PASS  V12 case: CS 215 Urgent, Referral coordinators
+PASS  later visit picked up: after 27s
+PASS  V13 case: CS 216 High, Nutrition (OTP), Referral coordinators
+PASS  no duplicates: 10
+PASS  coordinator sees only their team's cases: 6 of 10
+PASS  coordinator records an outcome
+PASS  coordinator can't edit another team's case
+PASS  coordinator can't delete
+PASS  bridge can't edit
+PASS  bridge can't delete
+PASS  supervisor sees all
+PASS  no external assets (http://127.0.0.1)
+
+-- ledger
+PASS  the visit after a refused one still becomes a case: after 21s
+PASS  the refused visit has no case (yet)
+PASS  status.json counts it: 1
+PASS  status.json says why, without answers: POST /Case: HTTP 400 Field validation failure; entityType: Case, field: cZone, type: valid.
+PASS  zone added to the Kobo form and redeployed
+PASS  setup takes the option from the form: ['wrote ESPO_BRIDGE_API_KEY, ESPO_FOLLOWUP_API_KEY, ESPO_EDITS_API_KEY, ESPO_ASSISTANT_API_KEY to /root/espocrm.secrets']
+PASS  the refused visit becomes a case by itself: after 16s
+PASS  with the zone from the form
+PASS  and leaves the ledger
+PASS  setup again: nothing to do
+PASS  no duplicates: 12
+
+38/38 passed; /root/kobo-box-ai/results/w11-e2e-20261111-080036.json

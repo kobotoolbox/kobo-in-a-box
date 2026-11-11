@@ -1,0 +1,26 @@
+ok   dash.kobo.local answers through the edge (200)
+ok   mcp.kobo.local answers through the edge (200)
+ok   project W9 dashboard e2e 20261111-074202 deployed (aDPjgqXckez7FjRVNqx67Z)
+ok   kobo-dash sends the owner to kobo-mcp (mcp.kobo.local/sso/authorize)
+ok   the sign-in page offers only the box's Kobo (['kf.kobo.local'])
+ok   kobo-mcp sends the owner back to kobo-dash (303)
+ok   signed in to kobo-dash (('e2e', 'kf.kobo.local'))
+ok   dashboard account in place (dash.sh account)
+ok   kobo-mcp has the dashboard tools (61)
+ok   12 submissions in Kobo (12)
+ok   create_dashboard (dry run) uses the saved dashboard account (['share the project with e2e_dash, view-only', "create the dashboard 'W9 dashboard e2e 20261111-074202' (offline)", 'give it a first layout of 5 widgets'])
+ok   create_dashboard (exw3es9gxxu, 5 widgets)
+ok   project shared with e2e_dash, view only
+ok   offline at first: not open to the Wi-Fi (404)
+ok   the poller fetched the data ({'data_version': 1, 'status': 'ok', 'spec_revision': 12, 'narrative_version': 0})
+ok   get_dashboard_data counts 12 responses ({"format": "dashboard", "title": "W9 dashboard e2e 20261111-074202", "language": null, "languages": [null], "pages": [{"id": "overview", "title": "Overview"}], )
+ok   public: the viewer opens for anyone on the Wi-Fi (200)
+ok   the viewer loads nothing from outside the box
+ok   its CSP names no outside host (default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data: http://maps.kobo.local; font-src 'self'; c)
+ok   page data for the viewer (200)
+ok   the open page is told about the new submission (data after 70s)
+ok   now 13 responses
+ok   offline again: closed to the Wi-Fi (404)
+deleted the dashboard
+archived aDPjgqXckez7FjRVNqx67Z
+0 failure(s)

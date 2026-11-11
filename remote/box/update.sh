@@ -10,7 +10,7 @@
 # In order: check the pack (and that it's newer than the box's, unless --force); back up
 # the databases and settings to the box's disk (/var/backups/kobo-box, as the nightly
 # backup); the pack's debs and new images; its files (this repo's remote/, models,
-# library, the KPI backport); kobo-install and kobo-docker at the pack's commits, and
+# library, which KPI image or backport to run); kobo-install and kobo-docker at the pack's commits, and
 # Kobo restarted on them if they changed (kobo-setup.py --reconfigure, which runs KPI's
 # migrations); the box's units; then each part that runs on this box started again
 # from the new files (edge, AI, case management, dashboards, paper forms, knowledge base);
@@ -110,7 +110,10 @@ for repo in kobo-install kobo-docker; do
     [[ -z "$(git -C "$ROOT_DIR/$repo" status --porcelain --untracked-files=no)" ]] \
         || die "$ROOT_DIR/$repo has local changes to its files; they'd block the update"
 done
-if [[ -d "$PACK/kpi-e2e" ]]; then
+if [[ -s "$PACK/kpi-box/KPI_IMAGE" ]]; then
+    want=$(cat "$PACK/kpi-box/KPI_IMAGE")
+    cut -f1 "$PACK/images/IMAGES" | grep -qx "$want" || die "the pack's KPI image $want isn't in its images/"
+elif [[ -d "$PACK/kpi-e2e" ]]; then
     want=$(kpi_image "$PACK/kobo-docker")
     have=$(cat "$PACK/kpi-e2e/KPI_IMAGE" 2>/dev/null || echo unknown)
     [[ "$have" == "$want" ]] || die "the pack's KPI backport is for $have, its Kobo runs $want"
@@ -151,6 +154,12 @@ if [[ -d "$PACK/kobo-transfer" ]]; then   # sync.py; per-project settings live e
     rsync -a --delete --exclude __pycache__ "$PACK/kobo-transfer/" "$ROOT_DIR/kobo-transfer/"
 fi
 kobo_changed=false
+if [[ -d "$PACK/kpi-box" ]]; then   # the KPI image kobo-setup.py runs (it's in images/)
+    diff -rq "$PACK/kpi-box" "$ROOT_DIR/kpi-box" >/dev/null 2>&1 || kobo_changed=true
+    rsync -a --delete "$PACK/kpi-box/" "$ROOT_DIR/kpi-box/"
+elif [[ -d "$ROOT_DIR/kpi-box" ]]; then
+    rm -rf "$ROOT_DIR/kpi-box"; kobo_changed=true
+fi
 if [[ -d "$PACK/kpi-e2e" ]]; then
     diff -rq "$PACK/kpi-e2e" "$ROOT_DIR/kpi-e2e" >/dev/null 2>&1 || kobo_changed=true
     rsync -a --delete --exclude __pycache__ "$PACK/kpi-e2e/" "$ROOT_DIR/kpi-e2e/"

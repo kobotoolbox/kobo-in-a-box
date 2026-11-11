@@ -22,6 +22,7 @@ OpenCode (agents/) ────────────────────�
 | `dash.sh` | `build` (online), `up`, `account <user>`, `boundaries`, `tiles`, `down`/`logs`/`status`, `backup`/`restore` |
 | `mbtiles.py` | Unpacks a raster MBTiles file into `{z}/{x}/{y}.png` for the edge to serve (stdlib only) |
 | `e2e-dash.py` | End to end on the box, through the edge (below) |
+| `e2e-dash-espo.py` | The box's case management as a dashboard source: EspoCRM feeds (below) |
 
 The edge routes are in `../library/nginx/edge.conf` (`dash.*`, `mcp.*`, and `/tiles/` on
 `kobo.local`). `firstboot.sh` runs `dash.sh up` when the pack has kobo-dash's image; the
@@ -46,6 +47,15 @@ names only:
     its browser on the box, not on the user's laptop.
   - `PUBLIC_KOBO_SERVERS=false`. Only the box's Kobo, so the sign-in page doesn't offer
     Global and EU (unreachable offline), and a token with no server goes to the box's Kobo.
+
+  Since 2026-11-11 the box builds kobo-mcp from `w9-box-main`: those three commits rebased
+  onto kobo-mcp `main` 3398982 (local worktree `kobo-mcp-w9-main`; not pushed), which needs
+  kobo-dash `main` from 2026-11-03 or later (the role check on `/roles`).
+- kobo-dash (`main` a2b86cd, 2026-11-10): `LOCAL_ESPO_ORIGINS=http://cases.kobo.local`, so
+  the box's own EspoCRM can be a dashboard's source over plain http (EspoCRM feeds, kobo-dash
+  `/admin/espo`; kobo-mcp's `list_espo_connections`, `create_espo_feed`, `update_espo_feed`).
+  Its containers resolve `cases.kobo.local` to the host's edge. Tested by `e2e-dash-espo.py`
+  (below).
 
 **Owners and their dashboard accounts.** kobo-dash never holds an owner's own token. It
 reads each owner's projects through a second Kobo account of theirs, which only ever gets
@@ -119,6 +129,24 @@ project and goes through what an owner and the assistant do:
   most once a minute, and the poller's own interval is the dashboard's refresh setting.
 - **Footprint:** images 1.3 GB (Postgres 646 MB, kobo-dash 361 MB, kobo-mcp 311 MB); about
   255 MB of RAM idle; the database 50 MB after the tests.
+
+`e2e-dash-espo.py` (same image, plus EspoCRM's admin password: its docstring) does the
+EspoCRM feeds: an API user reading one team's cases and five of their fields (as
+kobo-espo-bridge's `create_dashboard_feed` makes it); its key saved in kobo-dash's admin page
+with `http://cases.kobo.local`; `list_espo_connections` (no key shown); a feed through
+`create_espo_feed`; a case edited in EspoCRM read again (`update_espo_feed`); then the
+table, connection, user and role removed.
+
+**2026-11-11, on the rig offline** (kobo-dash `main` a2b86cd, kobo-mcp `w9-box-main`):
+15/15. The feed had the team's 123 cases of 228, the asked-for columns and no caregiver
+details; the edit gave version 2. **Found:** asked for a field the API user's role can't
+read (`cCaregiverPhone`), kobo-dash makes the column anyway, since EspoCRM's metadata lists
+every field; EspoCRM withholds the values, so it stays empty (checked), but kobo-dash's
+"or the API user can't read it" refusal doesn't happen. For kobo-dash: check fields against
+a record the key reads, or EspoCRM's `/App/user` ACL (`fieldTable`). Also: the admin page's
+"EspoCRM address" input is unstyled (`type=url`, `site/static/dash/espo-card.jpg`). On a box
+updated offline from the older pack: PASS (10 cases of the team), and `e2e-dash.py` 23 ok.
+`--keep` leaves the connection and feed for `site/dash-espo-shots.py`.
 
 ## Not done yet
 

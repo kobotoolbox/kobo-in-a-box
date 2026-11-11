@@ -67,7 +67,10 @@ are in [PLAN.md](PLAN.md); per-run results are in [remote/results/NOTES.md](remo
    OpenWork, and a per-process DNS check offline.
 3. **W9:** done on the rig (2026-11-03, `remote/dash/`); the basemap for the pilot
    countries, Colombia and Venezuela, is done (2026-11-06, `remote/maps/`, section 3g); left: scoring the 11 dashboard tasks on the GPU rig, offline
-   `desk_review` (W10), proposing kobo-mcp's `w9-box` settings upstream.
+   `desk_review` (W10), proposing kobo-mcp's `w9-box` settings upstream. 2026-11-11: kobo-dash
+   `main` and kobo-mcp `w9-box-main` on the rig; the box's EspoCRM as a dashboard source
+   (EspoCRM feeds) works offline, `dash/e2e-dash-espo.py` 15/15 (dash/README.md, with a
+   kobo-dash finding: a field the key can't read gets an empty column instead of a refusal).
 3a. **W14 sync (kobo-transfer):** built into the box and working on kits installed from a pack,
    offline (2026-11-04): every box has a `sync` account (key on the card) and answers to
    `kf.<name>.local`; a field kit paired once with `box/sync.py hub <address> -` syncs to
@@ -100,8 +103,18 @@ are in [PLAN.md](PLAN.md); per-run results are in [remote/results/NOTES.md](remo
    scanning a code (the stand-in has no camera: a real phone, or an emulator with KVM), a box
    from a pack.
    User guide: `site/index.html#accounts`; box: `remote/box/README.md`.
-4. **W2 to finish:** a KPI image from the branch, the pilot languages' tables, and
-   proposing the change upstream (talk to the KPI team).
+4. **W2 to finish:** tested 2026-11-10 on a KPI image built from kpi `main` + the branch
+   (rebased: `local-nlp-backend-main` in `~/code/kpi`), offline on a CPU droplet: qual and
+   translation on **typed answers** through 2.026.43's new screens (Translate & analyze,
+   Generate with AI), and qual on **photos** (kpi `main` only, behind
+   `?ff_nlpImageActionsEnabled=true`), all answers right (NOTES, 2026-11-10). 2026-11-11:
+   the image (`kpi/build.sh`) runs on the rig, with `kpi/ai-setup.py` from `kobo-setup.py`;
+   the CPU benchmark has typed answers 4/4 and photos 3/3, and the full suite passes
+   (NOTES, 2026-11-11). A box updated offline from the 2.026.37d pack to one with this image
+   passes e2e-nlp, cases, dashboards and feeds, and so does a fresh install from the pack
+   (after packing kobo-docker's own KPI image too, which kobo-install still runs; NOTES).
+   Left: GPU numbers (no GPU droplet in stock), the pilot languages in `ai-setup.py`, and proposing the change
+   upstream (talk to the KPI team).
 5. **W10 knowledge base**, and the W12 steps that need the box: hotspot + local DNS,
    autoinstall USB with LUKS + TPM.
 6. **Decisions needed:** the pilot languages and partner, mock interviews recorded on field
@@ -138,9 +151,17 @@ After restoring a snapshot the droplet has a new IP. Snapshots from 2026-10-30 o
       (`testing`), 414 passed (`testing_no_stripe`), no failures
 - [x] E2E offline (2026-10-28, restored snapshot): with egress confirmed blocked, qual 3/3,
       translation via Celery and transcription (0% WER) all pass, same as online
-- [ ] Build a kpi image from the branch and run it instead of the backport
-- [ ] Seed language tables for the pilot languages
-- [ ] Deploy the branch to the CPU droplet and test through the UI while offline
+- [x] Build a kpi image from the branch (2026-11-10: kpi `main` 4a345b570 + the branch,
+      `docker build` on the droplet, ~6 min) — on a test droplet only; the rig still runs
+      the backport on 2.026.37d
+- [~] Seed language tables: `remote/kpi/ai-setup.py` adds English, French, Spanish,
+      Portuguese, Swahili and Arabic (Google as the listed service, as the screens expect)
+      and sets `ASR_MT_INVITEE_USERNAMES='*'`; the pilot languages still to add, and it
+      isn't run by `kobo-setup.py` yet
+- [x] Test through the UI while offline (2026-11-10, `site/nlp-shots.py`): Translate &
+      analyze on a typed French answer, automatic English translation (26 s), 4 analysis
+      questions with Generate with AI (10–15 s each), 3 on a photo (81 s for the first,
+      then 10–14 s), all right
 
 How KPI wires NLP (as of kpi `bb33f41a8`):
 - **Qual** (`actions/automatic_bedrock_qual.py`) runs synchronously inside the request,
@@ -174,8 +195,22 @@ Testing W2 on the CPU droplet (state kept in the snapshot):
   port 80, Kobo's nginx on 8080). Only one person runs `offline.sh` at a time, nothing
   runs during `kobo-setup.py --reconfigure`, and timings taken while their builds run
   aren't benchmarks.
-- **E2E:** `remote/e2e-nlp.py` covers qual, translation and transcription. Run it as
-  `e2e`, a regular user, password in `/root/e2e-user.pw`.
+- **E2E:** `remote/e2e-nlp.py` covers qual, translation and transcription, plus qual on a
+  photo (`eval/water-point.jpg`; SKIPPED on KPI releases without image qual, untested on
+  37d). Run it as `e2e`, a regular user, password in `/root/e2e-user.pw`.
+- **KPI `main` (2026-11-10):** qual on photos goes to the same local LLM (it needs
+  `LLM_MMPROJ`); the branch sends the image before the prompt, so llama-server reuses the
+  image's encoding for the next question on the same photo. On 8 vCPU the first question
+  on a photo takes ~75–90 s, against a 100 s read timeout and uWSGI's 120 s harakiri: a busy
+  CPU box can time out (it did once, while the KPI tests ran). `--image-max-tokens 560`
+  cut it to 36 s and 280 to 17 s, with vaguer answers at 280; not applied, as paper forms
+  (W13) read handwriting through the same projector. KPI `main` also asks every user for a
+  full name once after sign-in (a "Complete your profile details" page).
+- **Automatic transcription and translation were hidden in the UI** (found 2026-11-10):
+  Constance `ASR_MT_INVITEE_USERNAMES` is empty on the rig, so Processing only offered to
+  type a translation by hand, and the language picker found nothing (empty language
+  tables). The API worked, which is why `e2e-nlp.py` passed. `kpi/ai-setup.py` fixes both.
+  KoboToolbox's automatic translation screen still says the text goes to Google.
 - **Web sign-in failed offline for unverified emails (found 2026-10-30, fixed).** KPI runs with
   `ACCOUNT_EMAIL_VERIFICATION = mandatory`, so signing in as a user whose email isn't
   verified makes allauth send a confirmation mail; with no mail server the login POST
@@ -188,6 +223,7 @@ Testing W2 on the CPU droplet (state kept in the snapshot):
   (NOTES).
 - **Homepage screenshots:** `site/kobo-shots.py` runs in the Playwright image on the
   droplet (command in its docstring, plus `--add-host` for the four `*.kobo.local` names).
+  `site/nlp-shots.py` does the typed-answer and photo screens (KPI `main` only).
   The box's own pages (status page, label card) come from `site/box-shots.py`, which
   renders them on the laptop with the box's code and made-up values, so no real box's
   passwords end up in a screenshot.

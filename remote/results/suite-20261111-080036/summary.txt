@@ -1,0 +1,3 @@
+cases_ledger       PASS  153s  38/38 passed; /root/kobo-box-ai/results/w11-e2e-20261111-080036.json
+cases_followup     PASS  278s   Container kobo-cases-cases-mcp-1 Started 
+agent_permissions  PASS  128s  failed to solve: node:22-bookworm-slim: failed to resolve source metadata for docker.io/library/node:22-bookwo

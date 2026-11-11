@@ -1,0 +1,8 @@
+index: 1378 pages, 13043 chunks, /models/bge-m3-Q8_0.gguf; 45 answerable cases, 11 with no answer; 94 ms/query to embed
+mode        hit@1    hit@3    hit@5    hit@8      mrr same_language@1
+vector      0.511    0.689    0.822    0.867    0.629      1.0
+fts         0.378    0.622    0.667    0.733     0.51      1.0
+hybrid      0.489    0.733    0.844    0.889    0.624      1.0
+misses (hybrid, not in the first k): box-stuck-pending, box-row-level, qgis-csv-points, formbuilder-cascading-select, data-edit-submission
+search as the agent gets it (hybrid): 206 ms a question, embedding included
+best similarity: answerable median 0.663 (min 0.555), no answer median 0.664 (max 0.772)

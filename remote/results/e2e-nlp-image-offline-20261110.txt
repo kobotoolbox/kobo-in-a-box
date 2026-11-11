@@ -1,0 +1,13 @@
+asset auX9jtLvKxkeauLNcKe7GK version vxRFvJgFdwDcehjVAtmPjv
+submission dad58974-99be-4275-aa0b-22865c09d355
+q1 qualSelectOne: CORRECT in 13.9s  {'uuid': '2d19755d-8b45-49c7-994b-71ff9d8d9a13', 'value': 'a64dff48-35ee-451c-aa21-16fa7005e5a3', 'status': 'complete'}
+q1 qualSelectMultiple: CORRECT in 11.2s  {'uuid': 'f2d7d427-6a0b-47b0-9a1e-d38559726728', 'value': ['92afbb29-24e9-410f-9985-c2e8a9830b61', '97be94f4-1867-4460-
+q1 qualInteger: CORRECT in 7.9s  {'uuid': '7a1e92ba-4fa5-4e83-a51c-8b008aab5014', 'value': 5, 'status': 'complete'}
+p1 qualSelectOne: CORRECT in 78.1s  {'uuid': '30758c86-7e65-46f2-b7bd-519c3d7e6f55', 'value': 'a53c508d-ce3e-456f-83f7-655c880143f3', 'status': 'complete'}
+p1 qualSelectMultiple: CORRECT in 9.3s  {'uuid': 'eebc6aab-c74f-4b89-bae1-003992bdc941', 'value': ['b333e5ef-75ff-4771-91f9-324ce4e346f5'], 'status': 'complete'
+p1 qualText: CORRECT in 13.1s  {'uuid': '08b7d561-9f20-44bd-890f-805a55cc5691', 'value': 'The water point consists of a concrete basin with a metal pump mechani
+translation: first response in_progress
+translation: CORRECT in 24.0s  {'value': 'Solíamos sacar agua del pozo cerca de la escuela, pero se rompió en marzo y nadie ha venido a arreglarlo. Ahora mis 
+transcription: first response in_progress
+transcription: CORRECT (WER 0%) in 30.1s  {'value': 'Al día de hoy no se ha demostrado a ciencia cierta que algún fármaco sea adecuado para tratar la infecci
+E2E PASS
