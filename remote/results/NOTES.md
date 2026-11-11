@@ -601,3 +601,13 @@ KPI `kobo-box/kpi:4a345b570-8ad95b67fc8c` (`kpi/build.sh`), the vendored kobo-es
   form is shared with the bridge, by the 10-minute setup timer; the 10 visits waited in the
   ledger and became cases at its next run). The test now runs `espocrm.sh setup
   --if-form-changed` right after sharing, as the timer would: 28/28.
+
+## 2026-11-11 (later): `gpu-6000adax1-48gb` (RTX 6000 Ada 48 GB, 8 vCPU, tor1), E4B tier
+
+The GPU poller got one on its third round of a second try. `gpu-tiers.sh e4b`, offline
+(egress checked blocked): `log-rtx6000ada-e4b-20261111.txt`,
+`20261111-144342-rtx6000ada-gemma-4-E4B-it-Q4_0.gguf.json`, `vram-rtx6000ada-e4b-20261111.txt`.
+All correct: qual on a transcript 3/3 (0.1 s each), on a typed answer 4/4 (0.1–0.2 s), on a
+photo 3/3 (0.4 s for the first question with no prompt cache, then 0.2 s). Whisper 2.0% WER
+at a median 93× real time (48–98×), translation 0.1–0.2 s, chrF 59.3 / 57.8. 6.0 GB of VRAM in
+use; 179 W average (221 W peak) over the 19 s of tests. Kept up after the run (hard to get).

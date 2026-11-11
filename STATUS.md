@@ -113,7 +113,7 @@ are in [PLAN.md](PLAN.md); per-run results are in [remote/results/NOTES.md](remo
    (NOTES, 2026-11-11). A box updated offline from the 2.026.37d pack to one with this image
    passes e2e-nlp, cases, dashboards and feeds, and so does a fresh install from the pack
    (after packing kobo-docker's own KPI image too, which kobo-install still runs; NOTES).
-   Left: GPU numbers (no GPU droplet in stock), the pilot languages in `ai-setup.py`, and proposing the change
+   GPU numbers: an RTX 6000 Ada, all correct, 0.1–0.4 s a question (NOTES). Left: the pilot languages in `ai-setup.py`, and proposing the change
    upstream (talk to the KPI team).
 5. **W10 knowledge base**, and the W12 steps that need the box: hotspot + local DNS,
    autoinstall USB with LUKS + TPM.

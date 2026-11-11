@@ -446,16 +446,16 @@
 
 <h3>Qualitative analysis</h3>
 <p>Three analysis questions on an interview answer, asked through KoboToolbox with its own prompts and parser: a single choice (the main water source), multiple choices (the needs mentioned) and a number (how many children). Every model answered <strong>3 of 3</strong> correctly in KoboToolbox's format: 6–10 seconds each on the CPU, under a second on the H100.</p>
-<p>The same kinds of question on a typed answer (French, with questions in English) and on a photo of a water point, with KoboToolbox's prompts for those sources. Gemma 4 E4B on the CPU-only rig, offline, 11 November 2026:</p>
+<p>The same kinds of question on a typed answer (French, with questions in English) and on a photo of a water point, with KoboToolbox's prompts for those sources. Gemma 4 E4B, offline, 11 November 2026, on the CPU-only rig and on an NVIDIA RTX 6000 Ada (48 GB, a workstation card), where it used 6 GB:</p>
 <div class="table-scroll"><table>
-  <thead><tr><th>Source</th><th>Questions</th><th>Correct</th><th>Per question, CPU only</th><th>Per question, GPU</th></tr></thead>
+  <thead><tr><th>Source</th><th>Questions</th><th>Correct</th><th>Per question, CPU only</th><th>Per question, RTX 6000 Ada</th></tr></thead>
   <tbody>
-    <tr><td>Interview transcript</td><td>single choice, multiple choice, number</td><td><strong>3 of 3</strong></td><td>6–11 s</td><td>under 1 s (H100)</td></tr>
-    <tr><td>Typed answer, in French</td><td>single choice, multiple choice, number, text</td><td><strong>4 of 4</strong></td><td>7–11 s</td><td>not measured yet</td></tr>
-    <tr><td>Photo</td><td>single choice, multiple choice, text</td><td><strong>3 of 3</strong></td><td>72 s for the first question on a photo, then 8–11 s</td><td>not measured yet</td></tr>
+    <tr><td>Interview transcript</td><td>single choice, multiple choice, number</td><td><strong>3 of 3</strong></td><td>6–11 s</td><td>0.1 s</td></tr>
+    <tr><td>Typed answer, in French</td><td>single choice, multiple choice, number, text</td><td><strong>4 of 4</strong></td><td>7–11 s</td><td>0.1–0.2 s</td></tr>
+    <tr><td>Photo</td><td>single choice, multiple choice, text</td><td><strong>3 of 3</strong></td><td>72 s for the first question on a photo, then 8–11 s</td><td>0.4 s for the first, then 0.2 s</td></tr>
   </tbody>
 </table></div>
-<p>The first question on a photo is slow because the model has to read the picture (about 1,200 tokens of it); the box sends the photo first, so later questions on the same photo reuse that work. No GPU droplet was available to measure these on; the numbers will be added when one is.</p>
+<p>The first question on a photo is slow because the model has to read the picture (about 1,200 tokens of it); the box sends the photo first, so later questions on the same photo reuse that work. On the GPU that reading is part of the 0.4 seconds.</p>
 <p>One setting matters: Gemma 4 must run with its thinking turned off. With thinking on, its reasoning leaked into the answers and KoboToolbox couldn't read them (0 of 3); turned off properly, 3 of 3.</p>
 
 <h3 id="memory">Memory per tier</h3>
