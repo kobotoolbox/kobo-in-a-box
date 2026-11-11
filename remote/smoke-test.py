@@ -249,7 +249,29 @@ def chat(content, max_tokens=1000):
     return body['choices'][0]['message']['content'].strip(), secs, body.get('usage', {})
 
 
+LANG_NAMES = {'en': 'English', 'es': 'Spanish', 'fr': 'French', 'pt': 'Portuguese', 'sw': 'Swahili',
+              'ar': 'Arabic', 'ha': 'Hausa', 'am': 'Amharic'}
+TRANSLATEGEMMA = False  # set in main() from the model's name
+
+
+def translategemma(src, tgt, text):
+    """TranslateGemma's own prompt, as its chat template writes it. llama-server drops the
+    template's source_lang_code / target_lang_code fields (its template then falls back to
+    English to English), so the prompt goes to /completion as text."""
+    s, t = LANG_NAMES.get(src, src), LANG_NAMES.get(tgt, tgt)
+    prompt = (f'<start_of_turn>user\nYou are a professional {s} ({src}) to {t} ({tgt}) translator. '
+              f'Your goal is to accurately convey the meaning and nuances of the original {s} text while '
+              f'adhering to {t} grammar, vocabulary, and cultural sensitivities.\n'
+              f'Produce only the {t} translation, without any additional explanations or commentary. '
+              f'Please translate the following {s} text into {t}:\n\n\n{text}<end_of_turn>\n'
+              '<start_of_turn>model\n')
+    body, secs = post_json(f'{LLM}/completion', {'prompt': prompt, 'temperature': 0, 'n_predict': 1000})
+    return body['content'].strip(), secs
+
+
 def translate(lang, text, to='English'):
+    if TRANSLATEGEMMA:
+        return translategemma(lang, 'en' if to == 'English' else to, text)
     out, secs, _ = chat(
         f'Translate the following text from language code "{lang}" to {to}. '
         f'Respond with the translation only.\n\n{text}'
@@ -259,6 +281,8 @@ def translate(lang, text, to='English'):
 
 def translate_from_english(lang, text):
     """English into the language (questions and messages out to respondents)"""
+    if TRANSLATEGEMMA:
+        return translategemma('en', lang, text)
     return translate('en', text, to=f'the language with code "{lang}"')
 
 
@@ -431,6 +455,9 @@ def main():
         print(f'LLM not reachable on {LLM}: {e}')
         raise SystemExit(1)
     results['llm_model'] = Path(props.get('model_path', '?')).name
+    global TRANSLATEGEMMA
+    TRANSLATEGEMMA = 'translategemma' in results['llm_model'].lower()
+    results['translation_prompt'] = 'translategemma' if TRANSLATEGEMMA else 'generic'
     results['settings'] = ai_settings()
     results['recipe'] = os.environ.get('BENCH_RECIPE')
     results['egress'] = check_egress()
