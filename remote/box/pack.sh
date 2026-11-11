@@ -67,7 +67,10 @@ log() { echo "[$(date +%H:%M:%S)] $*"; }
 die() { echo "pack: $*" >&2; exit 1; }
 
 images() {  # every image a container on this machine runs (stopped ones too), plus extras
-    { docker ps -a --format '{{.Image}}'; printf '%s\n' $EXTRA_IMAGES; } \
+    # and kobo-docker's own KPI image: kobo-install checks the databases with it on every
+    # start (a `run --rm kpi` without the custom yml), even when the box runs kpi-box's
+    { docker ps -a --format '{{.Image}}'; printf '%s\n' $EXTRA_IMAGES
+      grep -om1 'kobotoolbox/kpi:[^[:space:]]*' "$KOBO_DOCKER/docker-compose.frontend.yml" 2>/dev/null; } \
         | grep -v '^$' | grep -vE "$SKIP_IMAGES" | sort -u
 }
 

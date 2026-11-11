@@ -560,3 +560,44 @@ KPI `kobo-box/kpi:4a345b570-8ad95b67fc8c` (`kpi/build.sh`), the vendored kobo-es
   rig, known since 11-06): nlp, signin, users, cases 27/27, ledger 38/38, edits 34/34,
   follow-up 42/42 (with `BRIDGE_LIST_MIN_SECONDS=20`), cases-mcp, dash, maps, mcp, agent
   permissions (60 kobo tools, 4 cases tools), knowledge, paper, collect.
+- **EspoCRM feeds** (kobo-dash `main`, `dash/e2e-dash-espo.py`): 15/15 offline. An API user
+  reading the Nutrition (OTP) team's cases and 5 fields, its key saved in kobo-dash's admin
+  page with `http://cases.kobo.local`, a feed through kobo-mcp: 123 of 228 cases, no caregiver
+  columns, an edit in EspoCRM read again (version 2). A field the role can't read
+  (`cCaregiverPhone`) is accepted as an always-empty column instead of refused (kobo-dash
+  reads EspoCRM's metadata, which lists every field). The admin page's EspoCRM address
+  input is unstyled (`type=url`).
+- **Pack** `20261111-0859` (35 GB, signed, `kpi_image` `kobo-box/kpi:4a345b570-8ad95b67fc8c`),
+  built on a new volume in 8 min. First try stopped at its own check: the rig had empty
+  `espocrm/bridge.py` and `templates/` directories, left by Docker when the old compose
+  file's bind mounts lost their files during the switch to the vendored bridge.
+- **Update** (`kobo-box-clean`, installed offline from the 2.026.37d pack `20261111-0655`):
+  `update.sh` offline from the new pack, 7.5 min (`box-update-steps-20261111.txt`): all six
+  KPI services on the box's image, `ai-setup.py` applied (`ASR_MT_INVITEE_USERNAMES='*'`, 6
+  languages). Then, offline: `e2e-nlp.py` PASS (text qual 3/3, photo 3/3 with 81 s for the
+  first question, translation 32 s, transcription 0% WER); `e2e-espo.py --edge
+  --share-with cases-bridge` 28/28 (after `espocrm.sh up --demo-users`, which a box doesn't
+  have); `e2e-dash.py` 23 ok; `e2e-dash-espo.py` PASS (10 cases of the team); knowledge,
+  paper PASS. `e2e-users.sh` passed every account check up to the QR code, which needs
+  `rsvg-convert` and `zbarimg` (the rig's test tools, not on a box); `e2e-signin.sh` needs
+  its Playwright image (built online on the rig).
+- **Found: superusers can't submit** on KPI `main` (DEV-32, `ALLOW_SUPERUSER_SUBMISSIONS`
+  off by default): a superuser `e2e` got 403 "Access denied" from `/submission` after Digest
+  succeeded. The box's admin collects with an account from `users.py` (box/README.md).
+- **Fresh install from that pack failed** at first boot: kobo-install's start checks the
+  databases with `compose -f docker-compose.frontend.yml -f …override.yml run --rm kpi`
+  (`Upgrading.migrate_single_to_two_databases`), without the custom yml, so it needs
+  kobo-docker's own `kobotoolbox/kpi:2.026.37d`, which wasn't packed: only images a
+  container runs are, and the rig's all run the box's image now (the updated box still had
+  the stock one). `pack.sh` now always packs kobo-docker's KPI image. Pack `20261111-1117`:
+  36 GB, 22 images.
+- **Fresh install** (`kobo-box-fresh`, `s-8vcpu-32gb-amd`, offline) from pack `20261111-1117`:
+  19 min including first boot (`box-fresh-install-steps-20261111.txt`); KPI on the box's
+  image, `ai-setup.py` applied at first boot. Offline: `e2e-nlp.py` PASS (text qual 3/3,
+  photo 3/3 with 70 s for the first question, translation 26 s, transcription 0% WER);
+  `e2e-dash.py` 23 ok, 0 failures; `e2e-dash-espo.py` PASS (5 cases of the team); knowledge,
+  paper PASS; `e2e-espo.py --edge --share-with cases-bridge` 18/28 at first: no case within
+  its 3 min, as designed on a new box (EspoCRM gets the form's select fields only when a
+  form is shared with the bridge, by the 10-minute setup timer; the 10 visits waited in the
+  ledger and became cases at its next run). The test now runs `espocrm.sh setup
+  --if-form-changed` right after sharing, as the timer would: 28/28.

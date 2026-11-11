@@ -1,0 +1,37 @@
+[11:20:48] content pack 20261111-1117 built 2026-11-11T11:17:09+0000 on kobo-box-ai
+[11:20:48] == checking the pack
+[11:20:48] verifying 16533 files in /media/kobopack
+[11:23:43] pack OK
+[11:23:43] == packages (local apt repository, 221 debs)
+[11:24:17] == images
+[11:24:17] loading d880b2a0e478
+[11:24:28] loading espocrm/espocrm:9.3.11
+[11:24:39] loading ghcr.io/ggml-org/llama.cpp:server
+[11:24:50] loading ghcr.io/ggml-org/whisper.cpp:main
+[11:25:05] loading kobo-box-opencode:1.19.5
+[11:25:30] loading kobo-box/kpi:4a345b570-8ad95b67fc8c
+[11:26:26] loading kobo-dash:box
+[11:26:30] loading kobo-field-forms:66d4c97
+[11:26:37] loading kobo-knowledge:box
+[11:26:40] loading kobo-mcp:box
+[11:26:43] loading kobotoolbox/enketo-express-extra-widgets:7.6.3
+[11:27:51] loading kobotoolbox/kpi:2.026.37d
+[11:28:44] loading maptiler/tileserver-gl:v5.7.0
+[11:28:57] loading mariadb:11.4
+[11:29:01] loading mongo:8.0
+[11:29:10] loading nginx:1.27
+[11:29:13] loading nginx:1.30-alpine
+[11:29:14] loading postgis/postgis:14-3.2
+[11:29:22] loading postgres:17
+[11:29:28] loading python:3.13-slim
+[11:29:29] loading redis:7.2
+[11:29:31] loading redroid/redroid:13.0.0_64only-latest
+[11:29:49] 22 image(s) loaded, 0 already here
+[11:29:49] == files
+[11:29:49] models (21G)
+[11:31:30] library (5.4G)
+[11:32:07] update sticks: signed with 4ba6b0b31fb9350e
+[11:32:07] == the box: fixed address 10.254.254.254, backup and status units
+[11:32:08] == library and status page
+[11:32:10] == first-boot setup
+[11:39:29] Installed and set up. Log: /var/log/kobo-box-install.log; first boot: journalctl -u kobo-box-firstboot

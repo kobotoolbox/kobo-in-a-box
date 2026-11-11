@@ -1,0 +1,13 @@
+asset auyHGx9EEXRVXhVhnyAsyv version v5VhDbyL2Cj5gYRewUNAXW
+submission 3e5df28c-a94b-4810-bdef-bcec453d6b39
+q1 qualSelectOne: CORRECT in 12.6s  {'uuid': '6a99c2d2-c488-4cea-8d52-aa675fc1afea', 'value': '2a2a0309-68fb-4374-8ef7-63fb0be30eab', 'status': 'complete'}
+q1 qualSelectMultiple: CORRECT in 10.8s  {'uuid': 'e538f8c1-0b70-4813-8b97-f9b85376b73f', 'value': ['f0f53534-5f96-46f0-819a-32ddc4c95f72', 'a9903997-f9d6-4639-80eb-5389704faf7c'], 'status': 'complete'}
+q1 qualInteger: CORRECT in 7.5s  {'uuid': '8d231181-9c3a-4139-b991-98a5f5aa4276', 'value': 5, 'status': 'complete'}
+p1 qualSelectOne: CORRECT in 81.4s  {'uuid': '200dfdb5-cd96-45ae-9315-57b77ca97d72', 'value': '0cfb6993-2b17-4894-aebd-a177f2a7b1b3', 'status': 'complete'}
+p1 qualSelectMultiple: CORRECT in 8.7s  {'uuid': '106818bc-e5a6-4bfc-bdbc-3cccd336fdf4', 'value': ['6b55fe6b-9eda-48bc-b0e9-3ca39eb49278'], 'status': 'complete'}
+p1 qualText: CORRECT in 14.2s  {'uuid': '4aa26031-6408-41b9-8bb3-b6d50debc87c', 'value': 'The water point consists of a concrete basin with a metal pump mechanism installed in the center.', 'status': 'complete'}
+translation: first response in_progress
+translation: CORRECT in 31.6s  {'value': 'Solíamos sacar agua del pozo cerca de la escuela, pero se rompió en marzo y nadie ha venido a arreglarlo. Ahora mis hijas caminan unas dos horas cada día hasta el río. Tenemos cinco niños en total. Nos gustaría que repararan el pozo y algo de ayuda con las cuotas escolares.', 'status': 'complete', 'language': 'es'}
+transcription: first response in_progress
+transcription: CORRECT (WER 0%) in 30.1s  {'value': 'Al día de hoy no se ha demostrado a ciencia cierta que algún fármaco sea adecuado para tratar la infección existente causada por ébola, aun cuando existe una vacuna experimental que pareciera ser capaz de disminuir la mortalidad causada por esa enfermedad.', 'status': 'complete', 'language': 'es'}
+E2E PASS

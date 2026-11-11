@@ -188,6 +188,14 @@ restore` does this as part of a whole-box restore.
 
 ## Tested
 
+**The vendored kobo-espo-bridge (2026-11-11):** e3408e4 in place of the box's own bridge,
+setup and template, on the rig offline with the box's KPI image (`e2e-all.sh`, NOTES
+2026-11-11): `--edge` 27/27, `--ledger` 38/38 (the ledger check now counts against what was
+already failing, since the rig's ledger keeps an older follow-up), `--edits` 34/34,
+`--followup` 42/42 (with `BRIDGE_LIST_MIN_SECONDS=20`), `cases-mcp-check.py` PASS. A box
+updated offline from the older pack: `--edge --share-with cases-bridge` 28/28. The box's
+EspoCRM as a dashboards source (kobo-dash's EspoCRM feeds): `../dash/e2e-dash-espo.py`.
+
 **The ledger (2026-11-03):** 16 unit tests (a refused visit between good ones, backoff,
 retry on a template or form change, deleted in Kobo, template errors quoting no answer,
 missing team, a project no longer visible, status.json without answers). `e2e-espo.py

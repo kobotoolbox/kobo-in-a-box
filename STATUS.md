@@ -67,7 +67,10 @@ are in [PLAN.md](PLAN.md); per-run results are in [remote/results/NOTES.md](remo
    OpenWork, and a per-process DNS check offline.
 3. **W9:** done on the rig (2026-11-03, `remote/dash/`); the basemap for the pilot
    countries, Colombia and Venezuela, is done (2026-11-06, `remote/maps/`, section 3g); left: scoring the 11 dashboard tasks on the GPU rig, offline
-   `desk_review` (W10), proposing kobo-mcp's `w9-box` settings upstream.
+   `desk_review` (W10), proposing kobo-mcp's `w9-box` settings upstream. 2026-11-11: kobo-dash
+   `main` and kobo-mcp `w9-box-main` on the rig; the box's EspoCRM as a dashboard source
+   (EspoCRM feeds) works offline, `dash/e2e-dash-espo.py` 15/15 (dash/README.md, with a
+   kobo-dash finding: a field the key can't read gets an empty column instead of a refusal).
 3a. **W14 sync (kobo-transfer):** built into the box and working on kits installed from a pack,
    offline (2026-11-04): every box has a `sync` account (key on the card) and answers to
    `kf.<name>.local`; a field kit paired once with `box/sync.py hub <address> -` syncs to
@@ -107,8 +110,10 @@ are in [PLAN.md](PLAN.md); per-run results are in [remote/results/NOTES.md](remo
    `?ff_nlpImageActionsEnabled=true`), all answers right (NOTES, 2026-11-10). 2026-11-11:
    the image (`kpi/build.sh`) runs on the rig, with `kpi/ai-setup.py` from `kobo-setup.py`;
    the CPU benchmark has typed answers 4/4 and photos 3/3, and the full suite passes
-   (NOTES, 2026-11-11). Left: the pack with it (install and update), GPU numbers (no GPU
-   droplet in stock), the pilot languages in `ai-setup.py`, and proposing the change
+   (NOTES, 2026-11-11). A box updated offline from the 2.026.37d pack to one with this image
+   passes e2e-nlp, cases, dashboards and feeds, and so does a fresh install from the pack
+   (after packing kobo-docker's own KPI image too, which kobo-install still runs; NOTES).
+   Left: GPU numbers (no GPU droplet in stock), the pilot languages in `ai-setup.py`, and proposing the change
    upstream (talk to the KPI team).
 5. **W10 knowledge base**, and the W12 steps that need the box: hotspot + local DNS,
    autoinstall USB with LUKS + TPM.

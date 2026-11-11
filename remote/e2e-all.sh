@@ -41,6 +41,11 @@ t_cases_mcp()  { set -a; source /root/espocrm.secrets; set +a
                  docker run --rm --network kobo-assistant -e CASES_MCP_TOKEN -v "$HERE/espocrm/cases-mcp-check.py:/c.py:ro" \
                      --entrypoint python kobo-mcp:box /c.py http://cases-mcp:8090/mcp; }
 t_dash()       { in_mcp "$HERE/dash/e2e-dash.py"; }
+t_dash_espo()  {  # the dashboards' EspoCRM feeds: an API user made with EspoCRM's admin password
+    set -a; source /root/espocrm.secrets; set +a
+    docker run --rm --network host -e KOBO_TOKEN="$(cat /root/e2e-token)" -e ESPO_ADMIN_PASSWORD "${HOSTS[@]}" \
+        -v "$HERE/dash:/dash:ro" --entrypoint python kobo-mcp:box /dash/e2e-dash-espo.py
+}
 t_maps()       { in_mcp "$HERE/maps/e2e-maps.py"; }
 t_maps_dash()  { in_mcp "$HERE/maps/e2e-maps.py" --dashboard; }
 t_mcp()        { bash "$HERE/agents/run-mcp-check.sh" /root/kobo-mcp-src /root/e2e-token; }
@@ -55,7 +60,7 @@ t_knowledge()  { "$HERE/knowledge/knowledge.sh" eval; }
 t_paper()      { "$HERE/paper/paper.sh" e2e; }
 t_collect()    { "$HERE/phone.sh" up && "$HERE/e2e-collect.sh"; }
 
-ALL=(nlp signin users cases cases_ledger cases_edits cases_followup cases_mcp dash maps maps_dash
+ALL=(nlp signin users cases cases_ledger cases_edits cases_followup cases_mcp dash dash_espo maps maps_dash
      mcp agent_permissions knowledge paper collect)
 for t in "${@:-${ALL[@]}}"; do
     start=$(date +%s)

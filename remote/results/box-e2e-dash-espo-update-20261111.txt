@@ -1,0 +1,16 @@
+ok   EspoCRM API user dash-e2e-20261111104130: reads Nutrition (OTP) cases, 5 fields
+ok   kobo-dash sends the owner to kobo-mcp (mcp.kobo.local/sso/authorize)
+ok   the sign-in page offers only the box's Kobo (['kf.kobo.local'])
+ok   kobo-mcp sends the owner back to kobo-dash (303)
+ok   signed in to kobo-dash (('e2e', 'kf.kobo.local'))
+ok   dashboard account in place (dash.sh account)
+ok   connection saved in kobo-dash's admin page with http://cases.kobo.local
+ok   kobo-mcp has the feed tools
+ok   list_espo_connections: the connection, ok, no key ({'name': 'Box cases 20261111104130', 'url': 'http://cases.kobo.local', 'api_user': 'dash-e2e-20261111104130', 'status': 'ok', 'error': None, 'checked_at': '2026-11-11T10:41:33.013612+00:00'})
+ok   cCaregiverPhone, which the API user can't read, stays empty (kobo-dash makes the column) (column c_caregiver_phone, filled in 0 of 5 sample rows)
+ok   feed read: 10 cases of the team (ok, 10)
+ok   its columns: the fields asked for, no names or phones (['id', 'status', 'priority', 'c_zone', 'c_referral_reasons', 'c_muac_mm', 'modified_at'])
+ok   rows carry no caregiver details (['c_muac_mm', 'c_referral_reasons', 'c_zone', 'id', 'modified_at', 'priority', 'status'])
+ok   a case edited in EspoCRM: the feed reads again, a new version (v1 -> v2)
+ok   feed table and connection removed (200)
+E2E PASS: 0 failures

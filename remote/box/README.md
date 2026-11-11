@@ -96,6 +96,9 @@ box/backup.sh status                    # last result, as JSON (for the status p
 `http://kobo.local/users/`, linked from the landing page, for the box's admins (any Kobo
 superuser, signed in with their Kobo password). `users.py`, run by `kobo-box-users.service`
 (`box.sh install`) on `127.0.0.1:8089` behind the edge nginx. User guide: `site/index.html#accounts`.
+Since the box's own KPI image (kpi `main`, 2026-11-10), superusers can't send submissions
+(KPI's DEV-32, `ALLOW_SUPERUSER_SUBMISSIONS` off): the admin collects with an account made
+here, like everyone else.
 
 - **Making accounts** goes through KPI's endpoint for registered applications
   (`POST /api/v2/authorized_application/users/`; the old `/authorized_application/users/`

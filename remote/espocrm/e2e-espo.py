@@ -118,6 +118,11 @@ class RealKobo:
                 for p in ('view_asset', 'view_submissions')])
             if not check(f'form shared with {self.share_with}', s in (200, 201), s):
                 raise SystemExit(out)
+            # What kobo-box-cases-setup.timer does within 10 min: on a new box EspoCRM gets
+            # the form's select fields only once the bridge can see a form, and no case is
+            # opened before (the visits wait in the ledger)
+            subprocess.run([str(HERE / 'espocrm.sh'), 'setup', '--if-form-changed'],
+                           capture_output=True, text=True)
         return self.uid
 
     def add_choice(self, list_name, name, label):
