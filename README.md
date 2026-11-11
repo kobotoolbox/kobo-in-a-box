@@ -16,7 +16,10 @@ a replacement and update themselves from a newer pack, all tested on DigitalOcea
 left for a pilot mostly needs the recommended computer (W5): its Wi-Fi hotspot, the
 encrypted autoinstall USB, power measurements. The site's user guides: `site/index.html` (the overview),
 `site/cases.html` (case management in detail), `site/dashboards.html` (dashboards) and `site/sync.html` (syncing kits to a hub and to KoboToolbox online) and `site/maps.html` (offline maps). [docs/concept-note.md](docs/concept-note.md) is the
-non-technical overview for partners and donors.
+non-technical overview for partners and donors. [HOT-PLAN.md](HOT-PLAN.md) is the plan for HOT's
+tools on the box and joint work with HOT; [docs/hot-collaboration.md](docs/hot-collaboration.md)
+is the note to share with them. [ARM-PLAN.md](ARM-PLAN.md) is the plan for a light kit
+(Kobo without AI) on a Raspberry Pi 5 or another ARM board.
 
 ## Layout
 
