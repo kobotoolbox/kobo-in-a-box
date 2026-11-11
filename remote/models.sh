@@ -67,7 +67,8 @@ check() {
         elif ! grep -q "  $file\$" "$SUMS" 2>/dev/null; then echo "no recorded sum: $file"; bad=1
         fi
     done < <(entries "$@")
-    (cd "$MODELS_DIR" && entries "$@" | awk '{print $2}' | grep -Fxf - <(awk '{print $2}' SHA256SUMS) \
+    local listed; listed=$(entries "$@" | awk '{print $2}')  # before the cd: the lists are relative paths
+    (cd "$MODELS_DIR" && grep -Fx -f <(echo "$listed") <(awk '{print $2}' SHA256SUMS) \
         | while read -r f; do grep "  $f\$" SHA256SUMS; done | sha256sum -c --quiet) || bad=1
     [[ $bad == 0 ]] && echo "all listed models present and as recorded"
     return $bad
