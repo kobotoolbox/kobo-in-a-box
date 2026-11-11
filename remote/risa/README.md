@@ -80,6 +80,11 @@ printed in about 6 s, the app on the box's map and fonts.
 
 ## Not done yet
 
+- **Next time a rig is up:** move `RISA_IMAGE` to risa-dashboard `8fdd30f` or later, which has
+  `MAP_FONT`/`MAP_FONT_BOLD`. Set `MAP_FONT_BOLD=Noto Sans Medium` in the compose file, point
+  `RISA_GLYPHS_URL` at `maps.kobo.local/fonts/…`, and drop the `/fonts/` rewrite from the
+  `risa.*` route in `edge.conf`. Then re-test with `offline.sh on`: labels on the map and on page 1.
+
 - `firstboot.sh`, `pack.sh`, `update.sh`, `box/backup.sh` and the status page don't know about
   it yet: on a box made from a pack, RISA isn't there.
 - Kobo tokens are pasted by hand, per response. The dashboards' approach (`dash.sh account`:
