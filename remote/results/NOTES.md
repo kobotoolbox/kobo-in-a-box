@@ -518,3 +518,28 @@ same snapshot, with `box.sh install`: through the page, Lesotho added in 90 s an
 COL+LSO+VEN 1,032 MB), Lesotho taken off offline in 63 s. `e2e-maps.py --picker` 11/11,
 `--picker-offline` 9/9, `e2e-maps.py` 27 checks, 0 failures.
 
+
+## 2026-11-10: KPI `main` with the local backend, typed answers and photos, `kobo-box-nlp` (`s-8vcpu-32gb-amd`, from `kobo-box-ai-snapshot`)
+
+KPI built from kpi `main` 4a345b570 + `local-nlp-backend` rebased onto it
+(`local-nlp-backend-main`), in place of 2.026.37d and the backport; migrations ran on the
+snapshot's data. Gemma 4 E4B Q4_0 with its Q8_0 vision projector, Whisper large-v3-turbo,
+8 threads.
+
+- **Unit tests** (`kpi-test.sh`, `kobo/apps/subsequences/`): 438 passed (`testing`), 427
+  passed + 12 skipped (`testing_no_stripe`).
+- **`e2e-nlp.py` offline** (egress checked blocked, LLM restarted first):
+  `e2e-nlp-image-offline-20261110.txt`. PASS: text qual 3/3 (8–14 s), photo qual 3/3
+  (78 s for the first question, 9–13 s for the next two), translation 24 s, transcription
+  0% WER in 30 s. Online, before the branch sent the image first, the photo's 2nd and 3rd
+  questions also took ~100 s and two timed out (the KPI tests were running).
+- **Through the UI offline** (`site/nlp-shots.py`, a French typed answer and a photo):
+  Translate & analyze from the submission's … menu; automatic English translation in 26 s
+  (faithful); 4 questions on the typed answer with Generate with AI, 10–15 s each, all
+  right (Broken; cost of repairs, long walk, illness; 12000; spare part and training); 3 on
+  the photo, 81 s then 10 and 14 s, all right (Hand pump; animals at the water point; "a
+  concrete basin with a metal pump mechanism installed in the center").
+- **Image budget**, one question on the photo, idle CPU: the model's default ~990 image
+  tokens 74 s; `--image-max-tokens 560` 36 s; 280, 17 s ("Concrete water trough" for the
+  kind of water point, against "Hand pump station" at the default).
+- Deleted afterwards with its firewall.

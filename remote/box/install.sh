@@ -72,6 +72,7 @@ step "files"
 cp -a "$PACK/kobo-box-ai" "$BOX_DIR"
 cp -a "$PACK/kobo-install" "$ROOT_DIR/kobo-install"
 cp -a "$PACK/kobo-docker" "$ROOT_DIR/kobo-docker"
+[[ -d "$PACK/kpi-box" ]] && cp -a "$PACK/kpi-box" "$ROOT_DIR/kpi-box"   # the KPI image to run
 [[ -d "$PACK/kpi-e2e" ]] && cp -a "$PACK/kpi-e2e" "$ROOT_DIR/kpi-e2e"
 [[ -d "$PACK/kobo-transfer" ]] && cp -a "$PACK/kobo-transfer" "$ROOT_DIR/kobo-transfer"   # sync.py
 mkdir -p "$MODELS_DIR" "$LIBRARY_DIR" "$BOX_DIR/results"

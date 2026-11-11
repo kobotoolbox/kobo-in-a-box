@@ -30,10 +30,15 @@ extra compose settings) and turns it on:
   matches its requirements (checked: `uv pip freeze` identical before and after a sync), so
   the image's own requirements.txt is mounted as the marker. Without it a box installed
   offline never starts KPI.
-- With `/root/kpi-e2e` present, the KPI local-AI backport (STATUS W2) is mounted in, with the
-  supplement import endpoint that sync uses (`sync/README.md`), until a
-  KPI image built from the branch replaces it. Its `KPI_IMAGE` file names the KPI image its
+- With `/root/kpi-box` present (made by `kpi/build.sh`), every KPI service runs the image
+  it names, built from kpi with local qual, translation and transcription and the
+  supplement import endpoint that sync uses (STATUS W2, `sync/README.md`), with
+  NLP_BACKEND=local. Its pip marker comes from that image.
+- Otherwise, with `/root/kpi-e2e` present, the older backport of the same changes is
+  mounted into kobo-docker's KPI release. Its `KPI_IMAGE` file names the KPI image its
   files were taken from; any other image is refused (its files would replace newer ones).
+- With either, once Kobo is up, `kpi/ai-setup.py` turns on what KPI's screens need to
+  offer the AI (automatic transcription and translation for everyone, the languages).
 
 `--reconfigure` re-applies these answers to an existing install (keeping its
 passwords) and restarts Kobo. Otherwise use run.py as normal
@@ -46,7 +51,8 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 KOBO_INSTALL = '/root/kobo-install'
-KPI_E2E = '/root/kpi-e2e'  # the local-AI backport's files, if any
+KPI_BOX = '/root/kpi-box'  # the KPI image built by kpi/build.sh, if any
+KPI_E2E = '/root/kpi-e2e'  # the older local-AI backport's files, if any
 sys.path.insert(0, KOBO_INSTALL)
 os.chdir(KOBO_INSTALL)
 
@@ -140,20 +146,54 @@ def offline_mail():
 
 
 def custom_yml():
-    """docker-compose.frontend.custom.yml: the pip marker, and the backport if present."""
+    """docker-compose.frontend.custom.yml: the pip marker, and local AI (the box's KPI image,
+    or the backport) if present. Returns whether local AI is on."""
     kobo_docker = dict_['kobodocker_path'].rstrip('/')
     with open(os.path.join(kobo_docker, 'docker-compose.frontend.yml')) as f:
         image = re.search(r'image:\s*(kobotoolbox/kpi:\S+)', f.read()).group(1)
+    box_image = None
+    if os.path.isfile(os.path.join(KPI_BOX, 'KPI_IMAGE')):
+        box_image = open(os.path.join(KPI_BOX, 'KPI_IMAGE')).read().strip()
+        if subprocess.run(['docker', 'image', 'inspect', box_image], capture_output=True).returncode:
+            sys.exit(f'{KPI_BOX} names {box_image}, which Docker does not have: run kpi/build.sh '
+                     '(online) or load the image from the pack')
+        if os.path.isdir(KPI_E2E):
+            print(f'{KPI_BOX} is set: {KPI_E2E} (the backport) is not used')
     marker = os.path.join(kobo_docker, 'box', 'kpi-pip-dependencies.txt')
     os.makedirs(os.path.dirname(marker), exist_ok=True)
     with open(marker, 'w') as f:
-        subprocess.run(['docker', 'run', '--rm', '--entrypoint', 'cat', image,
+        subprocess.run(['docker', 'run', '--rm', '--entrypoint', 'cat', box_image or image,
                         '/srv/src/kpi/dependencies/pip/requirements.txt'], stdout=f, check=True)
     lines = [
         '# Written by kobo-in-a-box kobo-setup.py on every run; edit that, not this.',
         "# KPI's marker that its pip dependencies are synced (see kobo-setup.py), so a new",
         "# container doesn't go to PyPI.",
     ]
+    marker_line = f'      - {marker}:/srv/tmp/pip_dependencies.txt:ro'
+    if box_image:
+        lines += [
+            f'# KPI built by kpi/build.sh ({KPI_BOX}) with local qual, translation and',
+            '# transcription (STATUS.md, W2), in every KPI service. Remove the folder and re-run',
+            f'# for kobo-docker\'s own {image}.',
+            'x-local-nlp: &local-nlp',
+            f'  image: {box_image}',
+            '  environment:',
+            '    - NLP_BACKEND=local',
+            '    - LOCAL_LLM_URL=http://llm:8080',
+            '    - LOCAL_WHISPER_URL=http://whisper:8080',
+            '',
+            'services:',
+            '  kpi:',
+            '    <<: *local-nlp',
+            '    volumes:',
+            marker_line,
+        ]
+        lines += [f'  {name}: *local-nlp' for name in (
+            'worker', 'worker_low_priority', 'worker_long_running_tasks', 'worker_kobocat', 'beat')]
+        with open(os.path.join(kobo_docker, 'docker-compose.frontend.custom.yml'), 'w') as f:
+            f.write('\n'.join(lines) + '\n')
+        print(f'Wrote docker-compose.frontend.custom.yml (pip marker, KPI image {box_image})')
+        return True
     backport = os.path.isdir(KPI_E2E)
     if backport:
         # Its files replace KPI's own (base.py included), so they must be for this release
@@ -188,21 +228,39 @@ def custom_yml():
         lines += [line.replace('    - ', '      - ', 1) for line in lines if line.startswith(f'    - {KPI_E2E}/')]
     else:
         lines += ['    volumes:']
-    lines += [f'      - {marker}:/srv/tmp/pip_dependencies.txt:ro']
+    lines += [marker_line]
     if backport:
         lines += ['  worker: *local-nlp', '  worker_low_priority: *local-nlp']
     with open(os.path.join(kobo_docker, 'docker-compose.frontend.custom.yml'), 'w') as f:
         f.write('\n'.join(lines) + '\n')
     print('Wrote docker-compose.frontend.custom.yml (pip marker' + (', local-AI backport)' if backport else ')'))
+    return backport
 
+
+def ai_setup():
+    """kpi/ai-setup.py in the running KPI: automatic transcription and translation for
+    everyone, and the languages, without which KPI's screens don't offer the AI"""
+    kpi = subprocess.run(['docker', 'ps', '-q', '--filter', 'label=com.docker.compose.project=kobofe',
+                          '--filter', 'label=com.docker.compose.service=kpi'],
+                         capture_output=True, text=True).stdout.split()
+    if not kpi:
+        print('WARNING: no running KPI container: run kpi/ai-setup.py by hand', file=sys.stderr)
+        return
+    with open(os.path.join(HERE, 'kpi', 'ai-setup.py')) as f:
+        if subprocess.run(['docker', 'exec', '-i', kpi[0], 'python', 'manage.py', 'shell'],
+                          stdin=f).returncode:
+            print('WARNING: kpi/ai-setup.py failed: KPI may only offer typed transcripts and '
+                  'translations', file=sys.stderr)
 
 offline_mail()
-custom_yml()
+local_ai = custom_yml()
 Setup.update_hosts(dict_)
 config.validate_passwords()
 # kobo-install waits for Kobo on port 80, which the edge nginx serves
 subprocess.run([os.path.join(HERE, 'library', 'library.sh'), 'up'], check=True)
 Command.start(force_setup=True)
+if local_ai:
+    ai_setup()
 
 print(f'\nKobo is up on http://kf.kobo.local (IP {ip}), behind the edge nginx.')
 print(f"Superuser: {dict_['super_user_username']} / password in {KOBO_INSTALL}/.run.conf")

@@ -282,7 +282,7 @@
 <ul class="features">
   <li><strong>Transcription</strong>A recorded interview from a KoboCollect audio question becomes text, in the language spoken. Whisper large-v3-turbo.</li>
   <li><strong>Translation</strong>Transcripts and open-text answers translated into a working language. Gemma 4.</li>
-  <li><strong>Qualitative analysis</strong>Analysis questions you define ("Which water sources does the respondent mention?") get a suggested answer for staff to accept or change. Gemma 4, with KoboToolbox's own prompts.</li>
+  <li><strong>Qualitative analysis</strong>Analysis questions you define ("Which water sources does the respondent mention?") get a suggested answer for staff to accept or change, from a transcript, a typed answer or a photo. Gemma 4, with KoboToolbox's own prompts.</li>
   <li><strong>Background jobs</strong>Long recordings run in the background, so a slow kit doesn't time out; results appear when they're done, and can run overnight on mains or solar.</li>
 </ul>
 <figure><a href="static/home/kobo-transcript.jpg"><img src="static/home/kobo-transcript.jpg" width="1440" height="497" alt="KoboToolbox's processing screen for an audio answer, Transcript tab: a Spanish transcript generated on the box, with Discard and Save buttons, next to the 18-second recording and the respondent's written answer."></a><figcaption><strong>Transcription.</strong> An 18-second Spanish recording (a test clip from FLEURS) transcribed by Whisper on the box. Staff can edit the text, then save or discard it.</figcaption></figure>
@@ -294,6 +294,20 @@
 <p>Each answer stays marked <em>AI generated</em>, with "Please verify if correct", until someone ticks <strong>Verified</strong> or changes it.</p>
 </div>
 </div>
+<h3>Typed answers and photos</h3>
+<p>Translation and analysis also work on typed answers, with no recording or transcript needed, and analysis works on photos. In a submission, the <strong>…</strong> menu next to a typed answer offers <strong>Translate &amp; analyze</strong>, which opens the same processing screen as for a recording.</p>
+<figure><a href="static/home/kobo-text-menu.jpg"><img src="static/home/kobo-text-menu.jpg" width="1440" height="379" alt="A submission record: the answer to What did the water committee say?, typed in French, with its … menu open on Translate &amp; analyze."></a><figcaption><strong>Translate &amp; analyze</strong> on a typed answer, here in French.</figcaption></figure>
+<figure><a href="static/home/kobo-text-translation.jpg"><img src="static/home/kobo-text-translation.jpg" width="1440" height="340" alt="The Translations tab for the typed answer: an English translation generated on the box, about a pump broken since March, 12,000 francs collected, an hour's walk to the river, children with diarrhea, and a request for a spare part and training for the village repairman; the French original is on the right."></a><figcaption><strong>Translation of a typed answer.</strong> French to English on the box, in about 25 seconds on a CPU.</figcaption></figure>
+<div class="figures figures--half">
+<figure><a href="static/home/kobo-text-analysis.jpg"><img src="static/home/kobo-text-analysis.jpg" width="1220" height="1306" alt="The Analysis tab for the typed answer, four questions marked AI generated, Please verify if correct: the water point is Broken; problems mentioned are Cost of repairs, Long walk to water and Illness; the committee collected 12000 francs; the community asks for a replacement part and training for the village repairman."></a><figcaption><strong>Analysis of a typed answer</strong>, in French, with questions in English.</figcaption></figure>
+<div>
+<p>Each analysis question has a <strong>Generate with AI</strong> button. Here the box read the committee's answer in French and got all four right: the pump is broken; the problems are the cost of repairs, the walk to the river and illness; 12,000 francs collected; and a request for a spare part and training for the village repairman.</p>
+<p>On a CPU-only kit, each question on a typed answer takes 10–15 seconds.</p>
+</div>
+</div>
+<figure><a href="static/home/kobo-photo-analysis.jpg"><img src="static/home/kobo-photo-analysis.jpg" width="1440" height="818" alt="The Analysis tab for a photo of a hand pump on a concrete slab with sheep around it, three questions marked AI generated: the kind of water point is Hand pump; Animals at the water point is ticked, People queuing and Vehicles are not; the condition: a concrete basin with a metal pump mechanism installed in the center."></a><figcaption><strong>Analysis of a photo.</strong> Gemma 4 looks at the picture itself: a hand pump, with animals at the water point. Photo: Suglo20, <a href="https://commons.wikimedia.org/wiki/File:Community_hand_pump_(Boreholel).jpg">CC BY-SA 4.0</a>.</figcaption></figure>
+<p>The same three kinds of question work on a photo question. The first question on a photo takes about 80 seconds on a CPU-only kit, because the model has to read the picture; later questions on the same photo take 10–15 seconds. All the answers on this page were right, with the box offline.</p>
+<p class="note">These screens come from KoboToolbox's next release (2.026.43) and are not yet in the kit's KoboToolbox, which is 2.026.37d. Photo analysis is still a preview in KoboToolbox: it only shows up after adding <code>?ff_nlpImageActionsEnabled=true</code> to the address of the data table. The translation screen says the text goes to Google; on the kit it goes to the model on the box.</p>
 <p class="note">AI output is always a suggestion. Staff see it next to the source, correct it, and decide what is kept. How well it works depends on the language: <a href="#results">see the results</a>, and test each deployment's languages before relying on it.</p>
 </section>
 

@@ -13,7 +13,11 @@ Checks:
     reference text (MT only) and from whisper's output (the full KPI pipeline)
   * LLM qual analysis using KPI's own prompt templates and response parsers
     (kobo/apps/subsequences/prompts.py on kpi main), so a pass here means KPI
-    would accept the answer
+    would accept the answer: on an interview transcript, on a typed answer in French
+    (kpi/prompts.py, KPI's text-source prompts) and on a photo (eval/water-point.jpg,
+    KPI's image prompts, sent image first as the box's KPI does; the first question
+    with the prompt cache off, so it costs what a new photo does), if a vision
+    projector is loaded
   * optional: Gemma audio input (ASR via the LLM), if an mmproj is loaded
   * GPU power draw / VRAM, if nvidia-smi exists
 
@@ -26,6 +30,7 @@ import re
 import shutil
 import socket
 import subprocess
+import sys
 import time
 import unicodedata
 import urllib.request
@@ -37,6 +42,8 @@ from pathlib import Path
 LLM = 'http://localhost:8081'
 WHISPER = 'http://localhost:8082'
 HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(HERE / 'kpi'))
+import prompts as kpi_prompts  # noqa: E402  (kpi/prompts.py, KPI's own)
 
 # --- Copied from kpi main: kobo/apps/subsequences/prompts.py ----------------
 INJECTION_GUARD = (
@@ -132,6 +139,34 @@ QUAL_CASES = [
         'question': 'How many children does the respondent have?',
         'expect': 5,
     },
+]
+# A typed answer, in French, with questions in English (as in site/nlp-shots.py)
+TYPED_ANSWER = (
+    "La pompe près de l'école est en panne depuis mars. Le comité a collecté 12 000 francs, "
+    "mais la pièce coûte plus cher. En attendant, les femmes vont chercher l'eau à la rivière, "
+    "à une heure de marche, et beaucoup d'enfants ont la diarrhée. Nous demandons une pièce de "
+    "rechange et une formation pour le réparateur du village."
+)
+TYPED_CASES = [
+    {'type': 'qualSelectOne', 'question': 'Is the water point working?',
+     'choices': ['Working', 'Broken', 'Working, but the water is unsafe'], 'expect': [1]},
+    {'type': 'qualSelectMultiple', 'question': 'Which problems are mentioned?',
+     'choices': ['Cost of repairs', 'Long walk to water', 'Illness', 'Queues at the water point'],
+     'expect': [0, 1, 2]},
+    {'type': 'qualInteger', 'question': 'How much has the committee collected, in francs?',
+     'expect': 12000},
+    {'type': 'qualText', 'question': 'What does the community ask for?',
+     'expect_words': [('part',), ('training', 'train')]},
+]
+# A hand pump on a concrete slab, sheep and goats around it, no people (water-point.txt)
+PHOTO = HERE / 'eval' / 'water-point.jpg'
+PHOTO_CASES = [
+    {'type': 'qualSelectOne', 'question': 'What kind of water point is this?',
+     'choices': ['Hand pump', 'Open well', 'Tap stand', 'River or stream'], 'expect': [0]},
+    {'type': 'qualSelectMultiple', 'question': 'What can you see at the water point?',
+     'choices': ['Animals at the water point', 'People queuing', 'Vehicles'], 'expect': [0]},
+    {'type': 'qualText', 'question': 'Describe the condition of the water point in one sentence.',
+     'expect_words': [('pump', 'slab', 'concrete')]},
 ]
 TRANSLATIONS = [
     ('fr', 'Nous avons besoin d\'eau potable et de médicaments pour les enfants.'),
@@ -294,6 +329,47 @@ class PowerSampler:
                 'gpu_wh': round(avg * secs / 3600, 2)}
 
 
+def qual_case(source, case, response='', image=None, cache=True):
+    """One analysis question with KPI's prompt for `source` ('text' or 'image') and its
+    parsers; a qualText answer passes if it has a word from each of `expect_words`"""
+    p = kpi_prompts
+    qtype = case['type']
+    prompt = (p.get_prompt_template(source, qtype)
+              .replace(p.response_placeholder, response)
+              .replace(p.analysis_question_placeholder, case['question'])
+              .replace(p.hint_placeholder, ''))
+    if 'choices' in case:
+        n = len(case['choices'])
+        prompt = (prompt.replace(p.num_choice_placeholder, str(n))
+                  .replace(p.example_format_placeholder, p.get_example_format(qtype, n))
+                  .replace(p.choices_list_placeholder,
+                           p.format_choices([{'label': c} for c in case['choices']])))
+    content = [image, {'type': 'text', 'text': prompt}] if image else prompt
+    body, secs = post_json(f'{LLM}/v1/chat/completions', {
+        'messages': [{'role': 'user', 'content': content}],
+        'temperature': p.MODEL_TEMPERATURE, 'max_tokens': p.MAX_TOKENS, 'cache_prompt': cache,
+    })
+    out = body['choices'][0]['message']['content'].strip()
+    usage = body.get('usage', {})
+    try:
+        if qtype == 'qualInteger':
+            value = p.parse_integer_response(out)
+            good = value == case['expect']
+        elif qtype == 'qualText':
+            value = p.parse_text_response(out)
+            good = all(any(w in value.lower() for w in group) for group in case['expect_words'])
+        else:
+            value = p.parse_choices_response(out, len(case['choices']), qtype == 'qualSelectMultiple')
+            good = value == case['expect']
+        status = 'CORRECT' if good else 'WRONG'
+    except p.InvalidResponseFromLLMException as e:
+        value, status = None, f'PARSE FAIL ({e})'
+    print(f'{qtype}: {status} in {secs:.1f}s' + ('' if cache else ' (no prompt cache)')
+          + f'  raw={out[:120]!r}  prompt_tokens={usage.get("prompt_tokens")}')
+    return {'type': qtype, 'raw': out, 'value': value, 'status': status, 'secs': secs,
+            'cached': cache, 'usage': usage}
+
+
 def check_egress():
     try:
         socket.create_connection(('1.1.1.1', 443), timeout=5).close()
@@ -409,6 +485,16 @@ def main():
               f'prompt_tokens={usage.get("prompt_tokens")}')
         results['qual'].append({'type': qtype, 'raw': out, 'value': value,
                                 'status': status, 'secs': secs, 'usage': usage})
+
+    section('Qual on a typed answer (French; KPI text-source prompts)')
+    results['typed_qual'] = [qual_case('text', case, TYPED_ANSWER) for case in TYPED_CASES]
+
+    if props.get('modalities', {}).get('vision') and PHOTO.exists():
+        section('Qual on a photo (KPI image prompts, image first)')
+        image = {'type': 'image_url', 'image_url': {
+            'url': 'data:image/jpeg;base64,' + base64.b64encode(PHOTO.read_bytes()).decode()}}
+        results['photo_qual'] = [qual_case('image', case, image=image, cache=i > 0)
+                                 for i, case in enumerate(PHOTO_CASES)]
 
     if props.get('modalities', {}).get('audio') and clips and not args.skip_gemma_audio:
         section('Transcription via Gemma audio input (first 30s of each clip)')

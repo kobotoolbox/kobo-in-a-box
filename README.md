@@ -36,7 +36,9 @@ remote/
   smoke-test.py         transcription / translation / qual benchmark using KPI's prompts
   gpu-tiers.sh          the GPU tier recipes below, one after another, with VRAM per run
   eval/fleurs-*.tsv     reference clips (transcript + English) fetched by bootstrap.sh
-  e2e-nlp.py            KPI's automatic qual, translation and transcription through its real API
+  eval/water-point.jpg  a photo for image qual (CC BY-SA 4.0, credit in water-point.txt)
+  e2e-nlp.py            KPI's automatic qual (typed answer and photo), translation and
+                        transcription through its real API
   e2e-signin.sh         web sign-up and sign-in in a browser for a user whose email isn't verified
   e2e-users.sh          the Kobo accounts page (box/users.py): accounts, CSV lists, KoboCollect
                         QR codes, deactivating; kpi-delete-users.sh removes test accounts
@@ -45,6 +47,9 @@ remote/
   e2e-collect.sh        KoboCollect itself on that phone: a new account's project, Download
                         form, fill in, send, read back from KPI (e2e-collect.py drives the app)
   kpi-test.sh           KPI's test suite against a KPI branch, set up like KPI's CI
+  kpi/build.sh          the box's KPI image: kpi with local-nlp-backend.patch (local AI, sync's
+                        supplement import), run by kobo-setup.py and packed by pack.sh;
+                        kpi/ai-setup.py turns on what KPI's screens need to offer the AI
   results/              JSON per run, for comparing tiers; NOTES.md maps runs to settings
   agents/               W4: agent model, kobo-mcp and OpenCode; test data, 30 tasks, runner
                         (agents/README.md)

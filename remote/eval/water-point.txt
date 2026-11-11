@@ -1,0 +1,4 @@
+water-point.jpg: "Community hand pump (Boreholel)" by Suglo20, CC BY-SA 4.0, from Wikimedia Commons:
+https://commons.wikimedia.org/wiki/File:Community_hand_pump_(Boreholel).jpg (the 1280 px rendering).
+A hand pump borehole on a concrete slab, with sheep and goats around it and standing water
+behind; no people. e2e-nlp.py submits it to an image question for automatic qual.
