@@ -204,6 +204,17 @@ assistant:
   reference material, not personal data: survey responses stay in KoboToolbox, where the
   assistant reaches them only with the user's own permissions.
 
+### RISA dashboard (in development)
+
+For RISA (Rapid Infrastructure and Service Assessment) responses, the kit is planned to
+carry the RISA dashboard, an early-draft open-source tool. It puts drone or satellite
+imagery, KoboCollect observations from the kit's KoboToolbox and drawn routes and areas
+on one map, and prints RISA page 1 (the Common Operational Picture) to PDF, so the team
+lead and camp management can see the first picture the same evening, before anything
+reaches the internet. It has run on the test environment with no internet: imagery
+prepared on the kit, a KoboToolbox project connected, page 1 printed. It is not yet part
+of the kit itself, and the dashboard's own AI imagery analysis is simulated so far.
+
 ### Case management (optional)
 
 Many responses don't end with collecting data: a screening finds a child who needs
@@ -723,6 +734,7 @@ confirm speed, power draw and heat before buying pilot kits.
 | **Knowledge base** | Guides indexed on the box and searchable by the assistant, across languages; the deployment's own documents added before or during a mission; tested with the support chatbot's question set | 2–3 weeks; can start now |
 | **Case management (optional)** | EspoCRM on the kit with a bridge that opens cases from KoboToolbox submissions, routed by rules per form: working online and offline in testing, with a health referral scenario: follow-up visits that pick the case from a list and update it, edits and case status both ways with KoboToolbox, the assistant reading cases. Next: follow-ups on a phone with the kit's Wi-Fi, interface languages for the pilot, encrypted logins | ✅ Working in testing |
 | **Paper forms (optional)** | KoboToolbox Paper Forms on the kit: sheets printed from any shared form, scanned or photographed, read on the kit with its AI model, checked and submitted to its KoboToolbox: working offline in testing on synthetic sheets. Next: real handwriting and phone photos over the kit's Wi-Fi on the recommended computer, then signing in with each user's own KoboToolbox account | ✅ Working in testing |
+| **RISA dashboard (future)** | The RISA dashboard on the kit: imagery, KoboCollect observations and RISA page 1 printed with no internet. Working offline on the test environment as an early draft. Next: include it in the kit's installation and backups, measure it alongside the AI models on the recommended computer, and follow the dashboard's own roadmap (pages 2 and 3, imagery analysis) | Early draft; pending |
 | **Hardware** | Buy and test one recommended unit; measure speed, power and heat, re-running the same AI and assistant tests; test how many phones and users one kit supports at once; time a full restore from a backup drive | Next |
 | **Multi-site sync** | Kit-to-hub and hub-to-cloud syncing with kobo-transfer, automated and shown on the kit's status page; identical forms on every kit | Kit to hub working in testing: automatic, on the status page, with AI results and edits. Next: hub to KoboToolbox's servers online (by hand so far), and finding the hub on a bare cable on the recommended computer |
 | **Packaging** | Kits that arrive ready to switch on: one-USB installation before shipping; per-kit passwords and keys made on first start; AI settings chosen from the hardware; backups by plugging in a drive; status page; quick-start guide. Backups, restore onto a replacement kit, the self-adjusting AI and network settings, the status page, installing a kit from its content with no internet, the first start that makes each kit's own passwords and label card, and updates from a signed stick are working in testing (11 minutes at the factory and 6 at first start on a fresh computer). Next: the kit's own Wi-Fi and the bootable USB stick, on the recommended computer | Started; 3–5 weeks, partly on the recommended hardware |

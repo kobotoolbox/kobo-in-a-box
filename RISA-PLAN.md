@@ -4,6 +4,11 @@ Draft 2026-10-29. Companion to [PLAN.md](PLAN.md), [STATUS.md](STATUS.md) and
 [docs/concept-note.md](docs/concept-note.md). Written for the RISA Workshop #1 (Lyon, 29-30 October)
 and the Toolbox v1 / pilot / HNPW 2027 roadmap that follows it.
 
+**Update 2026-11-11:** the RISA dashboard (`~/code/risa-dashboard`) now covers much of R4
+(imagery uploaded, made into COGs and served) and R5 (a live RISA map, plus page 1 printed)
+as its own app, instead of a kobo-dash layout. It runs on the rig offline as an optional
+component, early draft: [remote/risa/README.md](remote/risa/README.md).
+
 **Question:** how can the offline server we are building support a complete RISA deployment
 (mission prep, field collection, drone/satellite imagery, GIS, dissemination, updates) with no
 internet?

@@ -64,6 +64,7 @@
     <li><a href="#dashboards">Dashboards</a></li>
     <li><a href="#maps">Maps</a></li>
     <li><a href="#paper">Paper forms</a></li>
+    <li><a href="#risa">RISA dashboard</a></li>
     <li><a href="#results">Results</a></li>
     <li><a href="#models">Models</a></li>
     <li><a href="#hardware">Hardware</a></li>
@@ -407,6 +408,24 @@
 </div>
 <figure><a href="static/paper/review.jpg"><img src="static/paper/review.jpg" width="1440" height="1100" alt="Reviewing a sheet: each question with its scan and the value read. A handwritten comment, Moved last year, is flagged for checking. Below: the full name read by the AI model, the age 53 and income 888.98 read as digits, and choices read from filled bubbles."></a><figcaption>Checking a sheet before it goes to KoboToolbox. Here the AI model read the name as ODHLAMBO, not ODHIAMBO, without flagging it: reviewers check every answer, not only flagged ones.</figcaption></figure>
 <p>Tested on the test environment with all internet traffic blocked: synthetic filled-in sheets in four print layouts (A4 and A5, Letter double-sided, English and Arabic) were scanned, read with the kit's AI model and submitted to the kit's KoboToolbox. 93.7–95.2% of answers were read with no one typing, every value KoboToolbox stored matched what was sent, and in that test no wrong reading went unflagged. Written words are the weak point: 73–87% read right. Real handwriting reads less well than synthetic, so it still needs testing on real paper.</p>
+</section>
+
+<section id="risa">
+<h2>RISA dashboard (in development)</h2>
+<p class="note">An early draft, not yet part of the kit. It runs on the test environment; kits made from the content pack don't include it yet.</p>
+<p>For a RISA (Rapid Infrastructure and Service Assessment) response, the kit can run the <a href="https://github.com/joshuaberetta/risa-dash">RISA dashboard</a> at <code>risa.kobo.local</code>, with no internet. It puts drone or satellite imagery, the observations teams send from KoboCollect to the kit's KoboToolbox, and drawn routes, blocks and areas on one map, and prints RISA page 1 (the Common Operational Picture) to PDF.</p>
+<ul>
+  <li><strong>Imagery from the drone, straight onto the map.</strong> An orthomosaic is uploaded from a laptop on the kit's Wi-Fi and prepared on the kit. Uploads resume after a dropped connection. The background is the <a href="#maps">kit's own map</a>.</li>
+  <li><strong>KoboCollect observations.</strong> A project on the kit's KoboToolbox is connected once and syncs every 10 minutes. Each point's type and status (working, partly working, not working) is matched to RISA's categories and can be adjusted.</li>
+  <li><strong>Page 1, printed on the kit.</strong> Title, key message and figures at a glance (computed from the data, or typed in), the legend, a locator map and a QR code to the live map. Each print is kept as a version. The data exports as a GeoPackage for QGIS and ArcGIS.</li>
+  <li><strong>An edit key per response.</strong> Starting a response needs the kit's create key. Anyone on the Wi-Fi can view; editing needs the response's key. There are no kit accounts in it yet.</li>
+</ul>
+<div class="figures figures--half">
+<figure><a href="static/risa/site.jpg"><img src="static/risa/site.jpg" width="1440" height="900" alt="A RISA site at risa.kobo.local: layers on the left (a KoboToolbox project with 13 features, two vector layers, and a drone orthomosaic over the kit's offline OpenStreetMap), the map with routes, shelter blocks, a flooded canal and service points coloured by status, and on the right figures at a glance, which services still work and which routes are open."></a><figcaption>A site on the kit: real 2012 drone imagery of a camp in Port-au-Prince, with fictional data.</figcaption></figure>
+<figure><a href="static/risa/table.jpg"><img src="static/risa/table.jpg" width="1440" height="900" alt="The data table under the map, on the KoboToolbox layer: 13 records with photo, label, type, status and the enumerator's note, such as Canal debris, not assessed, blocking the drain by Block D."></a><figcaption>Observations from the kit's KoboToolbox, in the data table.</figcaption></figure>
+</div>
+<figure><a href="static/risa/page1.jpg"><img src="static/risa/page1.jpg" width="1489" height="1053" alt="RISA page 1 as printed on the kit, A3 landscape: the title, map code and version in a dark header; the map with the orthomosaic, routes, blocks and service symbols; a locator map of Port-au-Prince; key message, figures such as 4 of 9 water points working and 1 of 4 access routes open; the legend; sources and a QR code."></a><figcaption>Page 1 printed on the kit with the internet cut off, in about 6 seconds. Test data.</figcaption></figure>
+<p>Tested on the test environment with all internet traffic blocked: a 66 MB orthomosaic prepared on the kit, a KoboToolbox project on the kit with 13 submissions connected and synced, and page 1 printed. Still to come in the dashboard: pages 2 and 3, the AI analysis of imagery (simulated so far), and moving a response between kits. Not yet measured on the recommended computer or alongside the AI models.</p>
 </section>
 
 <section id="results">

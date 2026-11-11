@@ -22,6 +22,7 @@
 # Settings are in maps.env (maps.local.env, not in git, overrides them).
 set -euo pipefail
 cd "$(dirname "$0")"
+SELF=$PWD/$(basename "$0")  # it calls itself; $0 may be relative to where it was started
 set -a; source maps.env; [[ -f maps.local.env ]] && source maps.local.env; set +a
 LIBRARY_DIR=${LIBRARY_DIR:-/srv/library}
 PMTILES=$MAPS_DIR/bin/pmtiles
@@ -107,7 +108,7 @@ info() {  # info <build> <ISO3...>: countries.json, marked as changed on this bo
 }
 
 restart() {  # the tile server opens the map at start: after a new one, start it again
-    if running; then "$0" up; else files; fi
+    if running; then "$SELF" up; else files; fi
 }
 
 case "${1:-}" in
@@ -148,12 +149,12 @@ case "${1:-}" in
         [[ -x "$PMTILES" ]] || die "no pmtiles CLI: ./maps.sh build (online)"
         for iso in "$@"; do [[ $iso =~ ^[A-Z]{3}$ ]] || die "not an ISO 3166 alpha-3 code: $iso"; done
         mapfile -t all < <({ countries; printf '%s\n' "$@"; } | sort -u)
-        "$0" fetch "${all[@]}"
+        "$SELF" fetch "${all[@]}"
         ;;
     refresh)
         mapfile -t all < <(countries)
         [[ ${#all[@]} -gt 0 ]] || die "no countries on this box to bring up to date"
-        "$0" fetch "${all[@]}"
+        "$SELF" fetch "${all[@]}"
         ;;
     fetch)  # fetch ISO3...: the map of exactly these countries, from the newest build
         shift
@@ -165,7 +166,7 @@ case "${1:-}" in
         extract_map "$PROTOMAPS_URL/$build" "$@"
         info "$build" "$MAX_ZOOM" "$@"
         restart
-        running || "$0" list   # up says it otherwise
+        running || "$SELF" list   # up says it otherwise
         ;;
     remove)
         shift
@@ -182,7 +183,7 @@ case "${1:-}" in
         extract_map "$BASEMAP_DIR/basemap.pmtiles" "${keep[@]}"
         info "$build" "$MAX_ZOOM" "${keep[@]}"
         restart
-        running || "$0" list   # up says it otherwise
+        running || "$SELF" list   # up says it otherwise
         ;;
     list)
         [[ -s "$BASEMAP_DIR/countries.json" ]] || { echo "no basemap on this box (./maps.sh add <ISO3>...)"; exit 0; }
@@ -202,7 +203,7 @@ case "${1:-}" in
         library_link on
         # Dashboards take their basemap from here (dash.sh basemap), if they run
         if [[ -n "$(docker compose -p kobo-dash ps -q dash 2>/dev/null)" ]]; then ../dash/dash.sh up >/dev/null 2>&1 || die "dashboards did not restart (../dash/dash.sh up)"; fi
-        echo "Maps on http://maps.kobo.local: $("$0" list)"
+        echo "Maps on http://maps.kobo.local: $("$SELF" list)"
         ;;
     job)
         shift
@@ -222,7 +223,7 @@ case "${1:-}" in
         }
         isos=("$@"); started=$(date +%Y-%m-%dT%H:%M:%S%z)
         state true
-        if MAPS_ON_BOX=1 "$0" "$action" "$@" > "$JOB_LOG" 2>&1; then
+        if MAPS_ON_BOX=1 "$SELF" "$action" "$@" > "$JOB_LOG" 2>&1; then
             state false true
         else
             state false false "$(grep -E '^maps: ' "$JOB_LOG" | tail -1 | sed 's/^maps: //')"
@@ -250,5 +251,5 @@ print(int((lon + 180) / 360 * n), int((1 - math.asinh(math.tan(r)) / math.pi) / 
             echo "$iso: vector and image tiles at zoom 8 answer"
         done
         ;;
-    *) sed -n '2,17p' "$0" | sed 's/^# \{0,1\}//' >&2; exit 1 ;;
+    *) sed -n '2,17p' "$SELF" | sed 's/^# \{0,1\}//' >&2; exit 1 ;;
 esac

@@ -38,6 +38,10 @@ apt install -y git python3 jq ffmpeg restic qrencode   # restic: box/backup.sh; 
 if ! docker compose version >/dev/null 2>&1; then
     apt install -y docker-compose-v2 || apt install -y docker-compose-plugin
 fi
+# ...and without buildx, which kpi/build.sh needs (KPI's Dockerfile uses COPY --parents)
+if ! docker buildx version >/dev/null 2>&1; then
+    apt install -y docker-buildx || apt install -y docker-buildx-plugin
+fi
 
 # --- kobo-install (run interactively afterwards, see README) ---------------
 if [[ ! -d /root/kobo-install ]]; then

@@ -213,6 +213,14 @@ def main():
             '<p class="hint">Print sheets from a Kobo form, then scan or photograph the '
             'filled-in sheets and send their answers to Kobo. Password on the label card.</p>',
         ]
+    # risa.sh up/down
+    if (LIBRARY_DIR / '.services' / 'risa').exists():
+        body += [
+            '<h2>RISA dashboard</h2>',
+            f'<p><a class="big" href="http://risa.{DOMAIN}/">Open the RISA dashboard</a></p>',
+            '<p class="hint">Drone and satellite imagery, Kobo observations and drawn layers on '
+            'one map, and RISA page 1 printed to PDF. Early draft.</p>',
+        ]
     # maps.sh up/down
     if (LIBRARY_DIR / '.services' / 'maps').exists():
         body += maps_card()

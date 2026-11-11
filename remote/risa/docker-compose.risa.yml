@@ -1,0 +1,76 @@
+# RISA dashboard on the box (optional, early draft): risa-dashboard's image in its two
+# roles, and its own PostGIS. Started by risa.sh, which sets the env.
+#
+#   db      PostGIS (data and Procrastinate's job queue), in $RISA_DATA_DIR/db
+#   web     the API, the app and its guide, on 127.0.0.1:${RISA_PORT} (edge: risa.kobo.local);
+#           migrates on start
+#   worker  the jobs: orthomosaics to COGs (GDAL), page 1 printed in headless Chromium,
+#           Kobo syncs every 10 minutes
+#
+# Kobo, the map's fonts and the basemap are reached by their box names through the edge
+# nginx (host-gateway), as a browser on the Wi-Fi does: the worker's Chromium opens
+# risa.kobo.local's print route with the same basemap and font URLs as a browser.
+
+x-app: &app
+  image: ${RISA_IMAGE}
+  restart: unless-stopped
+  environment: &app-env
+    SECRET_KEY: ${RISA_SECRET_KEY}
+    TOKEN_KEY: ${RISA_TOKEN_KEY}
+    CREATE_KEY: ${RISA_CREATE_KEY}
+    DATABASE_URL: postgis://risa:${RISA_DB_PASSWORD}@db:5432/risa
+    PUBLIC_URL: http://${RISA_HOST}
+    ALLOWED_HOSTS: "*"
+    ALLOWED_SERVERS: ${RISA_ALLOWED_SERVERS}
+    ONLINE_BASEMAPS: ${RISA_ONLINE_BASEMAPS}
+    GLYPHS_URL: ${RISA_GLYPHS_URL}
+    STORAGE: filesystem
+    MEDIA_ROOT: /data/media
+    # The worker prints by opening the app inside this network
+    PRINT_BASE_URL: http://web:8000
+    WEB_CONCURRENCY: ${RISA_WEB_CONCURRENCY}
+    WORKER_CONCURRENCY: ${RISA_WORKER_CONCURRENCY}
+  volumes:
+    - ${RISA_DATA_DIR}/media:/data/media
+    # The box's map (maps.sh add) as an offline basemap, read-only: one copy on the box.
+    # risa.sh links media/basemaps/<name>.pmtiles to it; a folder, not the file, so a
+    # refreshed map (a new file) shows without a restart
+    - ${MAPS_DIR}/basemap:/data/maps:ro
+  extra_hosts:
+    - "kf.kobo.local:host-gateway"
+    - "risa.kobo.local:host-gateway"
+  depends_on:
+    db: { condition: service_healthy }
+
+services:
+  db:
+    image: ${RISA_DB_IMAGE}
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: risa
+      POSTGRES_DB: risa
+      POSTGRES_PASSWORD: ${RISA_DB_PASSWORD}
+    volumes:
+      - ${RISA_DATA_DIR}/db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U risa"]
+      interval: 5s
+      retries: 20
+
+  web:
+    <<: *app
+    command: ["start", "web"]
+    ports: ["127.0.0.1:${RISA_PORT}:8000"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request as u; u.urlopen('http://127.0.0.1:8000/api/config', timeout=5)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    # A hung app is restarted by box/watchdog.sh, like the model servers
+    labels:
+      kobo-box.watchdog: restart
+
+  worker:
+    <<: *app
+    command: ["start", "worker"]
