@@ -462,6 +462,12 @@ def main():
     TRANSLATEGEMMA = 'translategemma' in results['llm_model'].lower()
     results['translation_prompt'] = 'translategemma' if TRANSLATEGEMMA else 'generic'
     results['settings'] = ai_settings()
+    if results['settings'].get('LLM_THINKING', '').strip('"') == 'true':
+        # thinking is about the analysis questions (and agents): one language of clips and no
+        # Gemma audio, or a run takes hours
+        args.langs = args.langs or 'es'
+        args.skip_gemma_audio = True
+        results['thinking_run'] = {'langs': args.langs, 'gemma_audio': False}
     results['recipe'] = os.environ.get('BENCH_RECIPE')
     results['egress'] = check_egress()
     section('Environment')
