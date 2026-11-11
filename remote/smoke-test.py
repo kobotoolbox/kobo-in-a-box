@@ -606,8 +606,9 @@ def main():
                  '-ar', '16000', '-f', 'wav', '-'], capture_output=True,
             ).stdout
             try:
+                # 30 s of speech is well under 400 tokens; some models loop without a cap
                 body, secs = post_json(f'{LLM}/v1/chat/completions', {
-                    'temperature': 0,
+                    'temperature': 0, 'max_tokens': 400,
                     'messages': [{'role': 'user', 'content': [
                         {'type': 'input_audio', 'input_audio': {
                             'data': base64.b64encode(wav).decode(), 'format': 'wav'}},
@@ -616,6 +617,7 @@ def main():
                     ]}],
                 })
                 text = body['choices'][0]['message']['content'].strip()
+                hit_cap = body['choices'][0].get('finish_reason') == 'length'
                 ref = refs.get(clip.name)
                 # Only scored when the clip fits in the 30s cut
                 score = (wer(text, ref['transcript'])
@@ -624,7 +626,7 @@ def main():
                       + (f'  WER {score:.0%}' if score is not None else '') + f'\n  {text[:200]}')
                 results['gemma_audio'].append(
                     {'clip': clip.name, 'secs': secs, 'text': text, 'wer': score,
-                     'lang': ref['lang'] if ref else None})
+                     'lang': ref['lang'] if ref else None, 'hit_cap': hit_cap})
             except Exception as e:  # noqa
                 print(f'{clip.name}: FAILED {e}')
                 results['gemma_audio'].append({'clip': clip.name, 'error': str(e)})
