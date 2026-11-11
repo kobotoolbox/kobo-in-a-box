@@ -1,0 +1,182 @@
+{
+  "started": "2026-11-11T07:32:54.330325+00:00",
+  "kobo": "box",
+  "uid": "at3ro82fNHDpR4LGTAXxyR",
+  "passed": 34,
+  "total": 34,
+  "checks": [
+    {
+      "check": "form created",
+      "ok": true,
+      "detail": "at3ro82fNHDpR4LGTAXxyR"
+    },
+    {
+      "check": "form deployed",
+      "ok": true,
+      "detail": 200
+    },
+    {
+      "check": "12 visits submitted",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "9 cases from the first 12 visits",
+      "ok": true,
+      "detail": "9 after 32s"
+    },
+    {
+      "check": "V01 case",
+      "ok": true,
+      "detail": "CS 187 Urgent, Referral coordinators"
+    },
+    {
+      "check": "V02 case",
+      "ok": true,
+      "detail": "CS 188 High, Nutrition (OTP)"
+    },
+    {
+      "check": "V03 case",
+      "ok": true,
+      "detail": "CS 189 Normal, Nutrition (OTP)"
+    },
+    {
+      "check": "V04 no case",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "V05 case",
+      "ok": true,
+      "detail": "CS 190 Urgent, Surveillance"
+    },
+    {
+      "check": "V06 case",
+      "ok": true,
+      "detail": "CS 191 Urgent, Nutrition (OTP), Surveillance"
+    },
+    {
+      "check": "V07 case",
+      "ok": true,
+      "detail": "CS 192 Urgent, Referral coordinators"
+    },
+    {
+      "check": "V08 no case",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "V09 case",
+      "ok": true,
+      "detail": "CS 193 High, Referral coordinators"
+    },
+    {
+      "check": "V10 no case",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "V11 case",
+      "ok": true,
+      "detail": "CS 194 Urgent, Nutrition (OTP), Referral coordinators"
+    },
+    {
+      "check": "V12 case",
+      "ok": true,
+      "detail": "CS 195 Urgent, Referral coordinators"
+    },
+    {
+      "check": "later visit picked up",
+      "ok": true,
+      "detail": "after 32s"
+    },
+    {
+      "check": "V13 case",
+      "ok": true,
+      "detail": "CS 196 High, Nutrition (OTP), Referral coordinators"
+    },
+    {
+      "check": "no duplicates",
+      "ok": true,
+      "detail": 10
+    },
+    {
+      "check": "coordinator sees only their team's cases",
+      "ok": true,
+      "detail": "6 of 10"
+    },
+    {
+      "check": "coordinator records an outcome",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "coordinator can't edit another team's case",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "coordinator can't delete",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "bridge can't edit",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "bridge can't delete",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "supervisor sees all",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "no external assets (http://127.0.0.1)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "visit edited in Kobo",
+      "ok": true,
+      "detail": 201
+    },
+    {
+      "check": "the case has the new answers",
+      "ok": true,
+      "detail": [
+        "zone_3",
+        "Z3-0777"
+      ]
+    },
+    {
+      "check": "and the new uuid",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "priority, teams and status kept",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "a note says what changed",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "the edits user can't change status or priority",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "check": "closing the case approves the submission in Kobo",
+      "ok": true,
+      "detail": "validation_status_approved"
+    }
+  ]
+}

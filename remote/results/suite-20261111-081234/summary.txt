@@ -1,0 +1,1 @@
+agent_permissions  PASS   52s   Container kobo-agents-opencode-1 Started 

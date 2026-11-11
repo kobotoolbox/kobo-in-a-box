@@ -1,0 +1,14 @@
+KPI: ACCOUNT_EMAIL_VERIFICATION=none, EMAIL_BACKEND=django.core.mail.backends.filebased.EmailBackend
+PASS  sign-up: no server error  
+PASS  sign-up: not sent to "verify your email"  http://kf.kobo.local/#/projects/home
+PASS  sign-up: signed in as the new user  /me/ 200 signin1794381826
+PASS  signed out after clearing cookies  /me/ 401 None
+PASS  sign-in: no server error  
+PASS  sign-in: signed in, email still unverified  /me/ 200 signin1794381826 at http://kf.kobo.local/#/projects/home
+{"user": "signin1794381826", "results": [{"check": "sign-up: no server error", "ok": true, "detail": ""}, {"check": "sign-up: not sent to \"verify your email\"", "ok": true, "detail": "http://kf.kobo.local/#/projects/home"}, {"check": "sign-up: signed in as the new user", "ok": true, "detail": "/me/ 200 signin1794381826"}, {"check": "signed out after clearing cookies", "ok": true, "detail": "/me/ 401 None"}, {"check": "sign-in: no server error", "ok": true, "detail": ""}, {"check": "sign-in: signed in, email still unverified", "ok": true, "detail": "/me/ 200 signin1794381826 at http://kf.kobo.local/#/projects/home"}]}
+134 objects imported automatically (use -v 2 for details).
+
+PASS   user exists
+PASS   email unverified [('signin1794381826@example.org', False)]
+PASS  no mail written (0 files)
+deleted signin1794381826
