@@ -17,8 +17,8 @@ cd "$(dirname "$0")"
 MODE=${MODE:-gpu}
 [[ -e ai.env.base ]] || cp ai.env ai.env.base
 
-setting() {  # setting KEY=VALUE: change one line of ai.env
-    sed -i "s|^${1%%=*}=.*|$1|" ai.env
+setting() {  # setting KEY=VALUE: change one line of ai.env, quoted (values may have spaces)
+    sed -i "s|^${1%%=*}=.*|${1%%=*}=\"${1#*=}\"|" ai.env
 }
 
 run() {
