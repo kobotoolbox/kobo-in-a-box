@@ -247,7 +247,18 @@ carries one photo and a GPS point, which is exactly eye-level, georeferenced ima
 - **Optional, later:** walk-through captures of camp access routes with a 360 or action camera and a
   self-hosted Panoramax on the box, for the form's access-constraint and road-hotspot topics.
   Whether Panoramax can be self-hosted fully offline needs checking; keep it out of scope unless a
-  partner asks.
+  partner asks. **Update 2026-11-12:** HeiGIT may be that partner. Their pipeline reads from and
+  writes back to Panoramax, so a local instance would let it run on the box largely as built.
+  It is a full stack (API, background workers, PostGIS, website, Keycloak or OAuth sign-in,
+  blurring service) and RISA's single photos already live in Kobo, so it only pays off if RISA
+  adds walk-through captures or HeiGIT runs its pipeline here. To check offline: sign-in, the
+  viewer's basemap (point it at the box's map), and whether blurring fetches model weights on
+  first run. The old blurring repo on GitLab is archived; confirm the current service and its
+  model licence. Nothing is sent to another Panoramax instance (federation) without the R8
+  outbox and a person's approval. If HeiGIT says yes (questions below), spike it on the rig
+  with `offline.sh on` (2-3 days: up in Docker, upload a sequence, blur, view on the box's map),
+  then package it as an optional module the way IMAGERY-PLAN.md treats WebODM. If they share
+  models but not the Panoramax workflow, run the models on Kobo photos directly instead.
 
 **Track B: drone orthomosaics (nadir view; needs different models and a spike).**
 Tasks, in order of operational value:
@@ -307,6 +318,9 @@ fifth: ground-photo and nadir analysis on RISA data. Questions: are model weight
 pipeline released or shareable; accuracy on the AILAS imagery; any work on drone or nadir imagery
 (their page links a UAV waste-mapping article but does not say how it relates); can Panoramax and the
 models run offline; and handling of sensitive mission data (already on their "to clarify" list).
+On Panoramax specifically (Track A above): would they run their pipeline against a local
+Panoramax on the box; do they want RISA walk-through captures (360 or action camera along access
+routes); which blurring service and models they use, and whether it runs offline.
 Contact: humanitarian_gi@heigit.org.
 
 ---
