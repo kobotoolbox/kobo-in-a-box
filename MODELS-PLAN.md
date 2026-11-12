@@ -153,6 +153,20 @@ apart (chrF 18) while translation of the reference text holds (40-60): transcrip
 translation, is the gap for those languages; Gemma's own audio input is the comparison to
 watch.
 
+**Phase 1, done 2026-11-12** (RTX 6000 Ada, offline; NOTES.md and `remote/results/gemma-phase1/`):
+what it says so far, for the kit:
+- **E4B Q4_0 stays the kit's model:** 67/75 extended cases, no better at Q8_0 or BF16, 6.5 GB
+  with Whisper, and the best Gemma audio for Swahili, Hausa and Amharic.
+- **Above it, 26B-A4B Q4_0** (70/75, 18.6 GB, faster than 12B and 31B) for a 24 GB card;
+  31B scores the same, slower. **12B is not a pick:** its audio loops in three languages and
+  its Hausa translation from English fails.
+- **Transcription by language:** Whisper for Spanish, French, Portuguese (and Arabic, close);
+  Gemma audio for Swahili, Hausa, Amharic. Hausa and Amharic are still weak either way (WER
+  25–56%), and from English poor at every size: to be judged by native speakers.
+- **Settings:** image budget 560 is safe (280 isn't); thinking helps E4B on photos only, at 20×
+  the time; projector BF16, TranslateGemma and drafts on a GPU add nothing.
+- Left for phase 2 (CPU rig): whether the MTP drafts speed up E2B/E4B/12B on a CPU.
+
 ## 7. Open decisions
 
 - **Languages:** the provisional set above, or the pilot's own once chosen (each one is a

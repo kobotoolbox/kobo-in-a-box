@@ -611,3 +611,48 @@ All correct: qual on a transcript 3/3 (0.1 s each), on a typed answer 4/4 (0.1�
 photo 3/3 (0.4 s for the first question with no prompt cache, then 0.2 s). Whisper 2.0% WER
 at a median 93× real time (48–98×), translation 0.1–0.2 s, chrF 59.3 / 57.8. 6.0 GB of VRAM in
 use; 179 W average (221 W peak) over the 19 s of tests. Kept up after the run (hard to get).
+
+## 2026-11-11/12: the Gemma benchmark, phase 1 (`kobo-box-gpu2`, RTX 6000 Ada 48 GB, tor1, offline)
+
+MODELS-PLAN.md. 31 recipes (`gpu-tiers.sh`), the extended test set (7 languages of FLEURS,
+39 text and 36 photo qual cases): `gemma-phase1/` (`bench-phase1.md`, `by-language.txt`,
+every run's JSON and log). Extended qual (75 cases) and speed per question on this GPU:
+
+| Model | Q4_0 | Q8_0 | BF16 | VRAM (Q4, with Whisper) | s / question |
+|---|---|---|---|---|---|
+| E2B | 54 | 51 | 49 | 4.9 GB | 0.07 |
+| E4B | 67 | 66 | 66 | 6.5 GB | 0.10 |
+| 12B | 69 | 69 | - | 11.2 GB | 0.37 |
+| 26B-A4B | 70 | 71 | - | 18.6 GB | 0.16 |
+| 31B | 70 | 70 | - | 25.5 GB | 0.60 |
+
+- **Quantization costs nothing measurable** from E4B up (Q4_0 = Q8_0 = BF16 within a case);
+  E2B moves 49–54 between quants, i.e. it's near its limit on these cases.
+- **Size:** E4B → 12B/26B/31B adds 2–4 cases, mostly photos (29 → 30–33 of 36). Text qual is
+  37–39/39 from E4B up. 26B-A4B is the best value above E4B: 12B's score, half its time.
+- **Thinking on:** E4B 69 (from 67, on photos); 12B 69 and 31B 70, the same as without. At
+  20× the time (2–7 s a question), and translation got worse with it.
+- **Image budget** (E4B): 560 tokens as good as the default (67), 280 loses 4 photo cases.
+  Projector BF16 against Q8_0: no gain (66).
+- **Speculative decoding** (MTP / DFlash drafts): same answers, no speed-up on this GPU
+  (0.15 vs 0.16 s for 26B); the CPU rig is where it could matter (phase 2).
+- **Transcription:** Gemma's audio (E2B/E4B; 26B and 31B have none) beats Whisper turbo on
+  Swahili (E4B 27% vs 41%), Hausa (25–37% vs 104%) and Amharic (51–56% vs 124%); Whisper
+  stays best on Spanish, French, Portuguese (2%). **12B's audio is broken** on those three
+  languages: it loops (11–18 of 113 clips hit the 400-token cap; WER 130–1000%), and 12B
+  also emits empty thought markers with thinking off. Not a kit model for audio.
+- **Translation into English** (chrF, reference text): Spanish/French/Portuguese/Arabic all
+  58–74 from E2B up; Swahili 59–68; Amharic 56–63; **Hausa the weak one** (E4B 40, 31B 53).
+  **From English:** Hausa and Amharic are poor at every size (E4B 40/39, 31B 52/42), and 12B
+  produced almost nothing usable in Hausa (chrF 2).
+- **TranslateGemma** (with its own prompt): no better than the instruct model of the same
+  size, often worse (from English: tg27 below 31B in all 7 languages; into English within
+  ±3 except Hausa, where tg27-q8 reaches 56 against 31B's 53). Its qual scores are
+  meaningless (a translation model). Not worth a place in the kit.
+- Found on the way: llama-server drops TranslateGemma's language fields (fixed: the prompt is
+  built by hand); `ai.env` values with spaces need quoting; a thinking run's log grows in
+  bursts (Python's buffering through tee: fixed), and the watchdog wrongly stopped two
+  thinking runs before that (rerun). Whisper turbo is 0.406 overall because of Hausa and
+  Amharic.
+- Weights deleted before parking (re-fetch with `models.sh fetch`, ~25 min); parked as
+  `kobo-box-gpu2-snapshot`.
