@@ -1,0 +1,583 @@
+
+=== Environment
+egress: OFFLINE   llm: gemma-4-E4B-it-Q4_0.gguf
+gpu: None
+
+=== Transcription (whisper)
+10145345127432001964.wav: 13s audio in 27.8s (0.5x real time)  WER 100%
+  ጠላትት መሎዳ ተ ስስክ � законч�ለለ የ ነዳጉ መለን አባቸግን አጭቀል
+11526202601547880626.wav: 19s audio in 12.4s (1.5x real time)  WER 79%
+  Asi bitin tabi ka idoji nnaukula da ka mwadi chuta taareeda raba masu jia da gasowran jamaa duomanghana yaadwaru chuta.
+11557638029465577385.wav: 11s audio in 11.8s (0.9x real time)  WER 0%
+  Se acoge a los niños en hogares de guarda por una amplia variedad de motivos,
+ desde negligencia hasta abuso e incluso extorsión.
+11578086792063916521.wav: 8s audio in 11.1s (0.8x real time)  WER 54%
+  Tamasha kathazi na maenyo malumu ya kukita kambi kwa familia zinyo watoto wa dogo
+11747975189179552522.wav: 15s audio in 14.8s (1.0x real time)  WER 93%
+  Maogunsaan yankin su naa gargat nmazauna yankin dake gusada masa antaar ddossu kasan si ee chiklingidaa jansu aqashena uroori saan yagyakik kumaa kada ašaarwaan pampu
+11758923080825846229.wav: 24s audio in 15.0s (1.6x real time)  WER 115%
+  Baya ngina madasa uruwa a shikara dubu dia da alibda ritara da siktin da uku amba liya uruwa de ki zuwa akay akay kuma yada kasa zuwa kuji yetaya.
+1176822222171573098.wav: 9s audio in 13.1s (0.7x real time)  WER 40%
+  Katika baadhi ya maeneo mengine kuchemusha maji kwa dakika moja kunatosha kuingine kwa dakika kathaazi na itajika.
+12441597728222908954.wav: 15s audio in 11.7s (1.3x real time)  WER 33%
+  Huwenda watoto wasio tagu sana walipitia unyanyasaji mkuu au kiwewe utotoni mwao kabla kuachiliwa au kutoroka.
+12880267863770860494.wav: 12s audio in 31.5s (0.4x real time)  WER 188%
+  እክ � кадbiትስ የ ኬነጋመሽ እ አካውፍፍፍ፝ፍፍ እንፕ48 ን እንክሳ አኛመ ኢዮጵያሞ እንogen አነታክ መ� elig salvage m weg invers
+ አስልፍ አንኳት ረ አምያው የ አጢያዊ ተ� lion savっぽ inhaleቻ ሰን
+12950053679025357827.wav: 13s audio in 13.0s (1.0x real time)  WER 0%
+  Es posible que los niños salvajes hayan sufrido situaciones traumáticas o abuso infantil grave antes de ser abandonados o de que huyeran
+13434171186194313293.wav: 13s audio in 32.3s (0.4x real time)  WER 161%
+  እክ � favored in�ብክ በ እን ንጉች በ ጉራደ የ ችዳ ከቅት ኮግግኆን ማያ እዳ ካካድል የ ተራ 가� façonሩ አ በብባች መ� sib lö my audience connected only
+13585206539593086808.wav: 21s audio in 12.8s (1.6x real time)  WER 32%
+  Alifikia hitimisho hili kutokana na wingi wamaoni chanya na kutiwa moyo kwake na wake kwa wawume walio muhimiza kuwa matibabu ya uzazi ya chukuliwe kuwa mahitaji muhimu waki matibabu.
+1389913612336209430.wav: 12s audio in 12.7s (1.0x real time)  WER 16%
+  Watoto huwekwa kwenye huduma ya malezi kwa sababu nyingine nyingi ambazo huanzia kutekelezwa hadi kudhulumiwa na hata unyangani.
+1432166472202574787.wav: 12s audio in 12.5s (1.0x real time)  WER 4%
+  En 2002, la lava del volcán Niragongo destruyó goma y dejó gran parte de sus calles sumergidas, especialmente en el centro de la ciudad.
+14853412566998329397.wav: 15s audio in 11.6s (1.2x real time)  WER 6%
+  Si bien existen informes que señalan que el número oficial de muertos es 8 y las autoridades han confirmado que cerca de 30 personas resultaron heridas, aún se desconocen las cifras oficiales.
+15666012997546634223.wav: 7s audio in 26.7s (0.3x real time)  WER 162%
+  አራብር ም ንእነቱ ደሚ ካዱውብ ንዲ ያመን ያልፈይ ባገግር ሪግዳንዳብ ነዳስ መሀዚሪውን ን
+15807428913594410550.wav: 10s audio in 12.5s (0.8x real time)  WER 10%
+  Sehemu kubwa ya maisha ya familia ya Kiebrania ilifanyikia indi.
+16057556102600269348.wav: 10s audio in 12.3s (0.8x real time)  WER 8%
+  Sisi utengeneza nyumba zetu kwa mimea na kutengeneza nguo zetu kwa mimea
+ Chakula kingi ambacho sisi hula ni mimea bila mimea wanyama hawezi kuishi
+16164459367840058607.wav: 10s audio in 21.2s (0.5x real time)  WER 158%
+  የ መለዳል ህንስያስያ የለልን መንድ የ መንድ መንድ አለል ማለል አለል አለል መስያ የ መለል መለል የ እንደህች መል
+16249738938342617642.wav: 15s audio in 12.4s (1.2x real time)  WER 44%
+  Wadudu ndio walio kuwa wanyama wakwanza kupaa angani.
+ Uwezo wao wakupaa uliwasaidia kuwa kwepa madui kwa uraisi na kupata chakula na wenzi wao kwa uraisi.
+16307256007562964111.wav: 10s audio in 11.8s (0.8x real time)  WER 83%
+  Ngonjwa alikuwa njiria mpako badia matokiwa ya jirisi ya Ebola ya metokea
+1667929616259658346.wav: 9s audio in 11.4s (0.8x real time)  WER 67%
+  Kezi za kwanza za kwanjo huwa msima huwa zile ripotiwa mishoni mwa julai.
+17061816507041662463.wav: 14s audio in 11.8s (1.2x real time)  WER 32%
+  Mamlaka ya ndani inaonya wakaaji walio karibu na mmea huo kukaa ndani kuzima biyo yozi na kutokumi wa majin ya pomba.
+1717567987938286759.wav: 15s audio in 13.6s (1.1x real time)  WER 96%
+  Wasrahu tanni sın kay adadin mutuwa nswa taqwas. Kuma tabba taçyya rahuutna tabba taçyya rahuutna tabba taçyya raçyya wa mutin tadatin skaji raunni. Amaa baasani na adadin kashanbaa.
+1724611097249667814.wav: 13s audio in 11.6s (1.1x real time)  WER 86%
+  Amazon Kumashini kujima fi fadi adunya awosidu kutan nisa milshida.
+17400442117501112485.wav: 11s audio in 31.3s (0.4x real time)  WER 112%
+  ላስጃ ነርሮ ከ ነዜሚ አነዮጣቶ ና የንን ገመረጤ መር ወሆት አባለጣኝን አስለ ግሁህ እሲተደ ከ ችዚንዳዎ ረ ኡን የተባግ
+17446992767794258789.wav: 11s audio in 21.4s (0.5x real time)  WER 120%
+  �로, classy了, cabajita, jean neo Crнул, sn terms ea gua dri
+ Passonsguir
+17639488747956788157.wav: 7s audio in 32.0s (0.2x real time)  WER 100%
+  እውእንኘፍ�ፍፃ mrroportion быв ካሠ� FAR
+17795496440729368205.wav: 18s audio in 12.6s (1.4x real time)  WER 0%
+  Al día de hoy no se ha demostrado a ciencia cierta que algún fármaco sea adecuado para tratar la infección existente causada por ébola aun cuando existe una vacuna experimental que pareciera ser capaz
+17957000333653026721.wav: 10s audio in 11.8s (0.8x real time)  WER 0%
+  Los cerdos son los portadores de la enfermedad que luego migra a los humanos mediante los mosquitos.
+18303377146733332968.wav: 20s audio in 11.9s (1.7x real time)  WER 94%
+  Takai, gawana matai, nasabode yao ntufa albarkatum bake matani, tarida kwarengwiwa, wandamaza na mata kibu kechiwa amfani dama onguna hanahai huwa senza maduli.
+18396337411365141191.wav: 14s audio in 33.4s (0.4x real time)  WER 109%
+  ተክ � Ensuite ሁራጋው ችይ የ ቤውከፋሪ የ እችዳ ከቛሎ እውፎታ ድማያ እድ እነውል የ ተራዲሉ ዝገሪሰዎቱ野 ላዳው ብሪትዳ ላሁሆብው እለሎችው ምምች የ ተ አጃዛሶኞ�
+2002756695914994355.wav: 12s audio in 11.3s (1.1x real time)  WER 33%
+  Hospitali imefuata itifaki ya kuthibiti maambukizi.
+ Ikiwa ni pamoza na kutenga magonjo kutoka kwa wengine ili kuzuhia wezekano na kuambukiza wengine.
+2027861869427386864.wav: 12s audio in 11.0s (1.1x real time)  WER 4%
+  Según estimaciones realizadas por el cuerpo de ingenieros de los Estados Unidos hasta seis pulgadas de lluvia podrían filtrarse por los diques anteriormente dañados
+2370326377257659667.wav: 14s audio in 31.9s (0.4x real time)  WER 127%
+  ተክ �办tiላለ የ ኊነጋመህ እ አካንፍዲ አጭቀል ኩውፕ እንች የ ብዳ ኮካድል የ ተራ እለጓገራሳ ውያ የ አሞገስኑቃ የ ተስቱም ያጥስ ና ም ኢራ ህውት� Krankenh doubles ጫይህክ�
+2899380414631046202.wav: 17s audio in 10.7s (1.6x real time)  WER 90%
+  Anasanyayara agidanrenu sabode deli lai masu yewa.
+ Dasuka hadada sakachi chunzarefi haruma zuwa kwachi.
+309526251150245303.wav: 15s audio in 10.9s (1.3x real time)  WER 73%
+  Mara lafiya yeje na jiria inda aka samu wa susu sumka muda chutar ta eboola.
+3165183570881615798.wav: 20s audio in 11.0s (1.8x real time)  WER 2%
+  La cuestión que dio origen al debate fue la controversia en torno al presupuesto destinado al socorro y reconstrucción posteriores al huracán Katrina, medida que algunos conservadores fiscales etiquet
+3305569645117485833.wav: 13s audio in 17.4s (0.7x real time)  WER 87%
+  I am badarokotan kamua dechutar nafaroku awenna kakar akarishan yuli.
+3327916977671284207.wav: 13s audio in 11.3s (1.1x real time)  WER 3%
+  El gobierno local advierte a quienes residen en las cercanías de la planta que no salgan de sus hogares, manténgase apagados los aires acondicionados y no consuman agua del grifo.
+3433014114430458416.wav: 22s audio in 11.5s (1.9x real time)  WER 77%
+  Loka chenda fada ya bariki,
+ bayang ankayi wadanda suka jira uni zuwa asibiti.
+ Musa nsaura mfirusu nuoni,
+ arabain da suka reji,
+ sunzauna afarufajir,
+ kumasinki kumawa,
+ dakinusu.
+3703943947303327274.wav: 12s audio in 11.5s (1.0x real time)  WER 43%
+  Wakati mapigano ya lipokoma na majerui kupeleko hospitalini takriban arubaini wa wafungo, olio baki walikaa kwenye yadi na kukata kurudi kwenye seli zao.
+3729119627411807659.wav: 17s audio in 11.6s (1.5x real time)  WER 25%
+  Baati ya ripoti zilionyesha idadi rasmi ya vifo kuwa venani na ripoti rasmi zinadipitisha kulikuwa na majiruhi haditha lathini lakini idadi kamili bado hazijajulikana
+416124317841544182.wav: 11s audio in 11.8s (1.0x real time)  WER 0%
+  El hospital ha respetado el protocolo de control de infecciones, incluido el distanciamiento
+ del paciente de los demás para prevenir posibles infecciones.
+4226346570515120504.wav: 10s audio in 29.4s (0.3x real time)  WER 150%
+  � собир到 heirişinois 16:30C,იტ ანღყმ რკყუ ჩაცანდ აღ ზარაძა 6:30
+ რმ აე წარს, ლვეbaციისტという ხასთ გარლანა ყიეცალორილა �我想გუა რდლოთ
+4495752777350300965.wav: 21s audio in 11.8s (1.8x real time)  WER 87%
+  ndajaji.
+ Yara marazuchia,
+ sunji suru,
+ na ia fiskantaro,
+ mumunanchin zarafi,
+ yara kura unyikafi awatza ddasu,
+ koso gudu.
+4593179416611162319.wav: 10s audio in 12.6s (0.8x real time)  WER 31%
+  Amazon pia ni mtuo pana zaidi duniani wakati mungine maili sita kwa mpana
+4645007359104857933.wav: 9s audio in 29.3s (0.3x real time)  WER 100%
+  ማረጣልር የለተቸያትያይንኞስት ግህላነት እያፕድ የቡታ ወርለች ሆቱሰ የጋራርዳረርና አሆጡይ አሽኖህቶ ሆክቸው
+4963359825952343829.wav: 13s audio in 11.9s (1.1x real time)  WER 0%
+  Construimos nuestras casas a partir de las plantas y con ellas también fabricamos ropa.
+ La mayoría de los alimentos que ingerimos son plantas. Sin ellas los animales no sobrevivirían.
+5461838345498121315.wav: 27s audio in 12.2s (2.2x real time)  WER 9%
+  Pasados 5 minutos del inicio del espectáculo, se desató un viento que, aproximadamente un minuto después, había alcanzado los 70 km/h.
+ Luego llegó la lluvia, pero tan fuerte y tan densa que porforaba
+5757009952877666440.wav: 12s audio in 12.7s (0.9x real time)  WER 75%
+  Awasu urari minti daya ya isaruwa ya tafasa ama awasu urari kumaya nabukata mintuwa daya wa.
+6171923028225215153.wav: 7s audio in 27.8s (0.3x real time)  WER 114%
+  አ ዱናሮቴጓ አራቦሞ በ ኛነኳ እን በ እዳጋተ አን የ መን ደሉፈአሩ የግሞ ባግን ኞንተና የስል
+6508274349443622093.wav: 7s audio in 28.9s (0.2x real time)  WER 145%
+  የ ዚዶዮሠ፡ ከ � Ihre� ratio ወተሰሽፕ ን ባስር ምቸወነ ቦው መ እወፕኳ ንhe በ በብው እን
+6681482295854461262.wav: 15s audio in 30.2s (0.5x real time)  WER 114%
+  ተክ ᔔ어ሀሪግግት ዛና ኢዮ�ациюፍ ሰኒ የ ቸዋ ከቋመ ነጋፕ እንመጽ ኢጇ ካባዮሊዮያ ሮጸላግግ ብስዘኪ የ አሞገታኒቅ ጣተሮትር የጷስት ም ኢራስዮያ�్�ጵይስ ይ�
+6861356578246274326.wav: 11s audio in 11.0s (1.0x real time)  WER 0%
+  En algunos lugares basta con hervir agua durante un minuto, en otros son necesarios varios más.
+705534160794720130.wav: 13s audio in 12.0s (1.1x real time)  WER 3%
+  El Dr. Moll cree que algunos pacientes podrían haber contraído el virus dentro del hospital y que al menos dos de los infectados eran trabajadores de salud de ese nosocomio.
+7220161187555486870.wav: 7s audio in 22.3s (0.3x real time)  WER 211%
+  ገመልርት ሞን በ መልም ልጥት ተልጣህባት እን ም መትር መሚግ እንቸ አም አርት የ ተንርት በርት ታርት ም መልጣህን
+7328344135348040999.wav: 13s audio in 31.4s (0.4x real time)  WER 100%
+  ሆስ ወጋረ ወንዲ ባስሔ ስሾንን ወራያው አላፒያ ወና የተኖው መርለል ፕ ባሴቈም እመ ንዲል በገሪያ የ መደኤክል
+7661334745492112123.wav: 18s audio in 13.3s (1.4x real time)  WER 0%
+  Uno de los mecanismos más comúnmente usados para graficar la importancia de sociabilizar es analizar los pocos y lamentables casos de niños que, por negligencia, desgracia o abuso intencional, no fuer
+8011364361899401277.wav: 18s audio in 24.5s (0.7x real time)  WER 130%
+  Č axe te privately die nga kylpo tas ath канале nga sa aink sorta
+ Iyaa thash hear nga suose
+ Iya sa maka maso笑@gwa jnソ笑
+ give shkasw@gwa jjjyo kooa jit trad Fighting
+ or bags punam Boong
+ o baga
+849705952634498514.wav: 16s audio in 16.6s (1.0x real time)  WER 122%
+  - Mún agi nagi da jamun nii daga itaato wa. Kuma mún agi nsitirun muun daga itaato wa. Bafi yawar abinchi ndamuk echi daga itaato wa. Bafi yawar abinchi ndamuk echi daga itaato wa. Idaan babu tiraayn,
+9283353535346300316.wav: 13s audio in 12.3s (1.1x real time)  WER 93%
+  Wadansu buku kuwan naadaw wirung sansani.
+ Namma sama doome iyalay daikyeda kana na nyara.
+9756970688789077272.wav: 14s audio in 12.5s (1.1x real time)  WER 107%
+  Paada ya mabuwa wa kujengwa mwaka wa ilfu moja mia tisa siti na tatu mafuriko ya misimu ambayo ya ngeenia kote ya lisimamishwa.
+987988606766880060.wav: 14s audio in 11.8s (1.2x real time)  WER 0%
+  Con la construcción de la presa en 1963 se frenaron las inundaciones estacionales que
+ dejaban sedimentos a lo largo del río.
+jfk.wav: 11s audio in 21.6s (0.5x real time)
+  And so, my fellow Americans, ask not what your country can do for you, ask what you can do for your country.
+
+=== Translation (LLM)
+[fr] 1.8s  We need drinking water and medicine for the children.
+[es] 1.8s  The road has been blocked since last week's floods.
+[sw] 2.0s  We need food aid because the harvest has been destroyed.
+[pt] 1.8s  The nearest clinic is a three-hour walk away.
+
+=== Translation of reference clips (chrF vs reference English)
+10145345127432001964.wav: MT chrF 67, pipeline chrF 9, from English chrF 47  (4.7s + 2.4s + 6.1s)
+  The enemy is coming, please cut the fuel supply.
+11526202601547880626.wav: MT chrF 24, pipeline chrF 16, from English chrF 34  (3.2s + 3.3s + 4.7s)
+  As a person, you are not a fool who eats and drinks with the people of the city, but you are a good person.
+11557638029465577385.wav: MT chrF 68, pipeline chrF 68, from English chrF 51  (2.8s + 2.8s + 3.5s)
+  Children are placed in foster homes for a wide variety of reasons, from neglect to abuse and even extortion.
+11578086792063916521.wav: MT chrF 70, pipeline chrF 57, from English chrF 64  (2.3s + 2.1s + 2.7s)
+  A festival of joy and beautiful sights for families with young children.
+11747975189179552522.wav: MT chrF 29, pipeline chrF 22, from English chrF 9  (3.8s + 4.8s + 77.7s)
+  The language code "ha" is not recognized, and the provided text appears to be in a language that is not standard Hausa or another widely recognized language. Therefore, I cannot provide an accurate tr
+11758923080825846229.wav: MT chrF 32, pipeline chrF 20, from English chrF 34  (3.6s + 3.7s + 3.8s)
+  The birds flew high in the sky, and the birds flew to the place and spread the news to the people.
+1176822222171573098.wav: MT chrF 72, pipeline chrF 54, from English chrF 66  (3.0s + 3.1s + 3.5s)
+  In some other areas, boiling water for one minute is enough, while in others it takes longer and will boil.
+12441597728222908954.wav: MT chrF 63, pipeline chrF 57, from English chrF 45  (2.8s + 2.9s + 4.0s)
+  Some children who were not very well might have experienced severe abuse or childhood trauma before being released or escaping.
+12880267863770860494.wav: MT chrF 73, pipeline chrF 20, from English chrF 26  (3.3s + 4.4s + 4.5s)
+  I cannot translate this text because it appears to be heavily corrupted or contains non-standard characters that do not form recognizable Amharic words.
+12950053679025357827.wav: MT chrF 71, pipeline chrF 71, from English chrF 42  (2.5s + 2.7s + 3.0s)
+  Wild children may have experienced traumatic situations or severe child abuse before being abandoned or fleeing.
+13434171186194313293.wav: MT chrF 72, pipeline chrF 22, from English chrF 72  (4.0s + 5.3s + 6.3s)
+  I am not able to translate this text because the language code "am" does not correspond to a recognizable language, and the text provided appears to be a mix of characters and possibly corrupted data.
+13585206539593086808.wav: MT chrF 12, pipeline chrF 12, from English chrF 42  (5.9s + 6.0s + 5.4s)
+  Alifikia hitimisho hili kutokana na wingi wa maoni chanya na kutia moyo kwake na wake kwa wanaume walimhimiza kuwa matibabu ya uzazi ya chukuliwe kuwa mahitaji muhimu wakati wa matibabu.
+1389913612336209430.wav: MT chrF 44, pipeline chrF 50, from English chrF 37  (2.9s + 2.8s + 4.5s)
+  Children are placed in care for many reasons ranging from neglect to abuse and even abduction.
+1432166472202574787.wav: MT chrF 49, pipeline chrF 45, from English chrF 52  (4.1s + 3.8s + 4.3s)
+  In 2002, the lava from the Niragongo volcano destroyed rubber and left large parts of its streets submerged, especially in the city center.
+14853412566998329397.wav: MT chrF 48, pipeline chrF 47, from English chrF 48  (4.0s + 4.4s + 5.6s)
+  Although there are reports indicating that the official death toll is 8 and the authorities have confirmed that around 30 people were injured, the official figures are still unknown.
+15666012997546634223.wav: MT chrF 51, pipeline chrF 15, from English chrF 34  (2.8s + 4.7s + 4.0s)
+  I cannot translate this text as it appears to be written in a highly garbled or non-standard form of Amharic, making it unintelligible.
+15807428913594410550.wav: MT chrF 40, pipeline chrF 39, from English chrF 44  (2.5s + 2.5s + 2.9s)
+  A large part of the life of the Jewish family was made.
+16057556102600269348.wav: MT chrF 78, pipeline chrF 71, from English chrF 61  (4.8s + 4.4s + 5.1s)
+  We make our houses from plants and make our clothes from plants. Most of the food we eat is plants; without plants, animals cannot live.
+16164459367840058607.wav: MT chrF 44, pipeline chrF 20, from English chrF 32  (3.5s + 4.7s + 4.2s)
+  The translation is not clear or coherent in Amharic, and the provided text appears to be a string of repeated or nonsensical words. Therefore, a meaningful English translation cannot be provided.
+16249738938342617642.wav: MT chrF 67, pipeline chrF 63, from English chrF 65  (4.4s + 4.9s + 6.4s)
+  Insects were the first animals to fly in the sky.
+Their ability to fly helped them escape enemies by air and find food and their partners by air.
+16307256007562964111.wav: MT chrF 68, pipeline chrF 30, from English chrF 63  (2.6s + 2.6s + 3.6s)
+  The patient was on the way to your house after the Ebola outbreak.
+1667929616259658346.wav: MT chrF 85, pipeline chrF 39, from English chrF 73  (2.6s + 2.4s + 3.2s)
+  The first sightings of the leopard are usually reported in mid-July.
+17061816507041662463.wav: MT chrF 69, pipeline chrF 53, from English chrF 61  (3.3s + 3.5s + 4.2s)
+  The local authority warns residents near the plant to stay indoors, turn off the bio-waste, and not use tap water.
+1717567987938286759.wav: MT chrF 56, pipeline chrF 19, from English chrF 39  (4.3s + 6.6s + 5.4s)
+  I will not be able to count the number of times. And the same thing will happen to us, the same thing will happen to us, the same thing will happen to us, and I will not be able to count the number of
+1724611097249667814.wav: MT chrF 33, pipeline chrF 22, from English chrF 33  (2.4s + 2.3s + 2.7s)
+  Amazon Kumashini is a place in the world where people live in peace.
+17400442117501112485.wav: MT chrF 50, pipeline chrF 8, from English chrF 28  (3.7s + 2.9s + 4.3s)
+  I don't understand this text.
+17446992767794258789.wav: MT chrF 46, pipeline chrF 9, from English chrF 24  (2.1s + 2.9s + 2.4s)
+  By, classy, cabajita, jean neo Crнул, sn terms ea gua dri
+Passonsguir
+17639488747956788157.wav: MT chrF 76, pipeline chrF 21, from English chrF 69  (2.7s + 3.7s + 3.2s)
+  I cannot translate this text because the characters provided do not appear to be in the Amharic language (am) or any recognizable language. They look like a mix of random characters and symbols.
+17795496440729368205.wav: MT chrF 50, pipeline chrF 50, from English chrF 52  (4.8s + 4.6s + 3.7s)
+  As of today, it has not been scientifically proven that any drug is suitable for treating the existing infection caused by Ebola, even though there is an experimental vaccine that seems capable of red
+17957000333653026721.wav: MT chrF 75, pipeline chrF 67, from English chrF 65  (2.5s + 2.4s + 2.9s)
+  Pigs are the carriers of the disease that then migrates to humans through mosquitoes.
+18303377146733332968.wav: MT chrF 28, pipeline chrF 17, from English chrF 38  (3.9s + 4.8s + 6.0s)
+  High, it is not easy, they are blessed with good things, they are well-cared for, they are quiet and the women are given good things, those who do not live are without care.
+18396337411365141191.wav: MT chrF 61, pipeline chrF 22, from English chrF 44  (4.9s + 10.3s + 4.5s)
+  The provided text appears to be heavily corrupted or written in a highly stylized/non-standard form of Amharic, making a direct, coherent translation extremely difficult. It contains many characters t
+2002756695914994355.wav: MT chrF 71, pipeline chrF 67, from English chrF 74  (3.2s + 3.7s + 4.6s)
+  The hospital has followed infection control protocols.
+If it is to isolate and separate patients from others to prevent the possibility of infecting others.
+2027861869427386864.wav: MT chrF 62, pipeline chrF 51, from English chrF 49  (3.4s + 3.1s + 3.4s)
+  According to estimates made by the United States engineering corps, up to six inches of rain could leak through the previously damaged dams.
+2370326377257659667.wav: MT chrF 32, pipeline chrF 26, from English chrF 26  (3.9s + 7.5s + 7.6s)
+  The text provided appears to be a mix of Amharic script and possibly garbled or non-standard characters, making a direct, coherent translation difficult. Some parts resemble Amharic words, but the ove
+2899380414631046202.wav: MT chrF 12, pipeline chrF 17, from English chrF 41  (4.4s + 3.1s + 3.9s)
+  The people are sending messages to the government.
+The people are coming to the city with their belongings.
+309526251150245303.wav: MT chrF 53, pipeline chrF 18, from English chrF 47  (2.3s + 2.6s + 2.8s)
+  The health is good, he came and got milk, and he was sick for a while with Ebola.
+3165183570881615798.wav: MT chrF 59, pipeline chrF 58, from English chrF 51  (4.4s + 4.3s + 4.8s)
+  The issue that gave rise to the debate was the controversy surrounding the budget for relief and reconstruction after Hurricane Katrina, a measure that some fiscal conservatives jokingly labeled the B
+3305569645117485833.wav: MT chrF 52, pipeline chrF 10, from English chrF 40  (2.7s + 2.9s + 2.9s)
+  I am badarokotan kamua dechutar nafaroku awenna kakar akarishan yuli.
+3327916977671284207.wav: MT chrF 43, pipeline chrF 40, from English chrF 60  (3.7s + 3.7s + 4.0s)
+  The local government warns those who reside near the plant not to leave their homes, to keep air conditioners off, and not to consume tap water.
+3433014114430458416.wav: MT chrF 53, pipeline chrF 29, from English chrF 52  (4.0s + 7.0s + 6.3s)
+  The local drum beat is blessed,
+the shadows are coming and they will go to the hospital.
+Musa is shouting a virus,
+the Arabs who registered,
+they are making a fuss,
+it is not good for you,
+the house.
+3703943947303327274.wav: MT chrF 70, pipeline chrF 54, from English chrF 64  (4.6s + 4.5s + 5.4s)
+  When the fights between the inmates and the guards led to about forty prisoners being taken to the hospital, the remaining ones stayed in the yard and cut their way back to their cells.
+3729119627411807659.wav: MT chrF 72, pipeline chrF 52, from English chrF 56  (4.2s + 4.0s + 5.0s)
+  The report figures showed the official death toll to be twenty, and official reports indicate there were dozens of accident victims, but the exact number is not yet known.
+416124317841544182.wav: MT chrF 71, pipeline chrF 71, from English chrF 65  (2.8s + 2.8s + 3.0s)
+  The hospital has respected the infection control protocol, including keeping the patient at a distance from others to prevent possible infections.
+4226346570515120504.wav: MT chrF 42, pipeline chrF 10, from English chrF 37  (2.7s + 5.5s + 4.5s)
+  Gather to Heirişinois 16:30C, it is not possible to get to Saradza at 6:30. I want to go to the past, I want to be a good girl.
+4495752777350300965.wav: MT chrF 32, pipeline chrF 20, from English chrF 35  (3.3s + 5.3s + 3.6s)
+  Giver.
+The sickness is gone,
+the fever is gone,
+and the fever is gone,
+the child's suffering is gone,
+the child is well and strong,
+go.
+4593179416611162319.wav: MT chrF 74, pipeline chrF 51, from English chrF 71  (2.4s + 2.3s + 2.9s)
+  Amazon is also the largest store in the world, while another is six miles wide
+4645007359104857933.wav: MT chrF 66, pipeline chrF 19, from English chrF 34  (2.4s + 4.3s + 2.6s)
+  I cannot translate this text because it appears to be written in a language that is not standard Amharic or a recognizable language, and it contains many characters that do not form coherent words.
+4963359825952343829.wav: MT chrF 61, pipeline chrF 61, from English chrF 60  (3.7s + 3.8s + 3.7s)
+  We build our houses from plants and with them we also make clothes. Most of the food we eat is plants. Without them, animals would not survive.
+5461838345498121315.wav: MT chrF 52, pipeline chrF 52, from English chrF 54  (7.1s + 7.2s + 8.6s)
+  Five minutes after the start of the show, a wind broke out that, about a minute later, had reached 70 km/h.
+Then the rain came, but so heavy and dense that it pierced your skin like a needle.
+Next, ha
+5757009952877666440.wav: MT chrF 33, pipeline chrF 17, from English chrF 52  (3.4s + 2.5s + 3.8s)
+  Beware of a single deceptive word or a single deceptive word that changes things.
+6171923028225215153.wav: MT chrF 71, pipeline chrF 17, from English chrF 38  (2.7s + 5.2s + 3.3s)
+  I cannot translate this text because the language code "am" (Amharic) does not match the characters provided, which appear to be a mix of characters that do not form recognizable words in any standard
+6508274349443622093.wav: MT chrF 79, pipeline chrF 10, from English chrF 6  (2.4s + 2.9s + 2.4s)
+  Zidoyos: I don't know how to make a ratio from your input.
+6681482295854461262.wav: MT chrF 62, pipeline chrF 19, from English chrF 40  (4.5s + 4.9s + 5.8s)
+  I cannot translate this text because the characters provided do not form recognizable words in Amharic or any language I can process. It appears to be a mix of characters or corrupted text.
+6861356578246274326.wav: MT chrF 71, pipeline chrF 69, from English chrF 52  (2.5s + 2.4s + 2.5s)
+  In some places, boiling water for one minute is enough, in others several more are necessary.
+705534160794720130.wav: MT chrF 59, pipeline chrF 59, from English chrF 57  (3.7s + 4.1s + 3.7s)
+  Dr. Moll believes that some patients may have contracted the virus inside the hospital and that at least two of the infected were healthcare workers from that hospital.
+7220161187555486870.wav: MT chrF 32, pipeline chrF 24, from English chrF 38  (2.2s + 3.6s + 2.7s)
+  Camelart Mon in the name of the fall, I am the meter, the one who is in the art, the one who is in the fall.
+7328344135348040999.wav: MT chrF 68, pipeline chrF 15, from English chrF 55  (3.4s + 4.0s + 4.8s)
+  Hos wager wendi bashen shishonon werayaw alapiya wena yetenow merlel p basheqom emedeel begariya mededeeki
+7661334745492112123.wav: MT chrF 59, pipeline chrF 59, from English chrF 58  (4.7s + 3.1s + 5.8s)
+  One of the most commonly used mechanisms to graph the importance of socializing is to analyze the few and regrettable cases of children who, due to neglect, misfortune, or intentional abuse, were not 
+8011364361899401277.wav: MT chrF 46, pipeline chrF 20, from English chrF 47  (3.6s + 4.8s + 6.5s)
+  I don't understand this text. It appears to be written in a language or dialect that I am not familiar with, and it contains many non-standard characters and symbols.
+849705952634498514.wav: MT chrF 49, pipeline chrF 14, from English chrF 41  (5.4s + 6.3s + 5.0s)
+  If you don't eat, you will die. If you don't eat, you will die. Don't waste food, don't waste food. If there is no food, people will die.
+9283353535346300316.wav: MT chrF 60, pipeline chrF 14, from English chrF 19  (2.2s + 2.8s + 2.7s)
+  My book is very beautiful.
+We are together in the world, and we are looking.
+9756970688789077272.wav: MT chrF 61, pipeline chrF 28, from English chrF 63  (3.0s + 3.0s + 4.0s)
+  The construction of the year one thousand nine hundred and three floods of the seasons that are everywhere stopped.
+987988606766880060.wav: MT chrF 54, pipeline chrF 54, from English chrF 58  (3.1s + 3.1s + 3.8s)
+  With the construction of the dam in 1963, the seasonal floods that left sediment along the river were stopped.
+
+=== Qual analysis (LLM, KPI prompts + parsers)
+qualSelectOne: CORRECT in 9.0s  raw='FALSE,TRUE,FALSE,FALSE'  prompt_tokens=367
+qualSelectMultiple: CORRECT in 8.2s  raw='TRUE,FALSE,TRUE,FALSE'  prompt_tokens=336
+qualInteger: CORRECT in 6.4s  raw='5'  prompt_tokens=224
+
+=== Qual on a typed answer (French; KPI text-source prompts)
+qualSelectOne: CORRECT in 9.3s  raw='FALSE,TRUE,FALSE'  prompt_tokens=358
+qualSelectMultiple: CORRECT in 8.7s  raw='TRUE,TRUE,TRUE,FALSE'  prompt_tokens=343
+qualInteger: CORRECT in 5.6s  raw='12000'  prompt_tokens=228
+qualText: CORRECT in 9.8s  raw='The community asks for a replacement part and training for the village repairman.'  prompt_tokens=388
+
+=== Qual on a photo (KPI image prompts, image first)
+qualSelectOne: CORRECT in 58.8s (no prompt cache)  raw='TRUE,FALSE,FALSE,FALSE'  prompt_tokens=1240
+qualSelectMultiple: CORRECT in 5.9s  raw='TRUE,FALSE,FALSE'  prompt_tokens=1211
+qualText: CORRECT in 8.7s  raw='The water point consists of a concrete basin with a metal pump mechanism installed in the center.'  prompt_tokens=1274
+
+=== Qual, extended set (eval/qual-cases.json)
+-- en-two-speakers (en, transcript)
+qualInteger: CORRECT in 5.6s  raw='7'  prompt_tokens=242
+qualSelectOne: CORRECT in 10.2s  raw='FALSE,TRUE,FALSE,FALSE'  prompt_tokens=377
+qualSelectOne: CORRECT in 9.1s  raw='FALSE,TRUE,FALSE,FALSE'  prompt_tokens=374
+qualSelectMultiple: CORRECT in 8.6s  raw='TRUE,TRUE,FALSE,FALSE'  prompt_tokens=366
+qualText: CORRECT in 10.9s  raw='The respondent states that the tap stand has been dry since the rains stopped, and they buy water from a truck which cos'  prompt_tokens=402
+-- en-negations (en, transcript)
+qualSelectMultiple: CORRECT in 7.9s  raw='FALSE,TRUE,FALSE,FALSE'  prompt_tokens=330
+qualSelectOne: CORRECT in 8.3s  raw='FALSE,TRUE,FALSE'  prompt_tokens=344
+qualInteger: CORRECT in 4.9s  raw='23'  prompt_tokens=219
+qualSelectOne: CORRECT in 9.1s  raw='FALSE,FALSE,TRUE'  prompt_tokens=348
+qualText: CORRECT in 9.2s  raw='The tent leaks and the nights are cold.'  prompt_tokens=378
+-- es-numbers-in-words (es, typed)
+qualInteger: CORRECT in 4.9s  raw='12'  prompt_tokens=206
+qualInteger: CORRECT in 4.8s  raw='3'  prompt_tokens=210
+qualSelectMultiple: CORRECT in 8.0s  raw='TRUE,FALSE,TRUE,FALSE'  prompt_tokens=324
+qualSelectOne: CORRECT in 8.0s  raw='FALSE,FALSE,TRUE'  prompt_tokens=341
+qualText: CORRECT in 9.0s  raw='Vendimos dos cabras para pagar la escuela.'  prompt_tokens=370
+-- es-mentioned-not-chosen (es, transcript)
+qualSelectOne: CORRECT in 8.1s  raw='FALSE,FALSE,TRUE,FALSE'  prompt_tokens=343
+qualSelectMultiple: CORRECT in 9.1s  raw='TRUE,TRUE,FALSE,FALSE'  prompt_tokens=324
+qualSelectOne: CORRECT in 8.8s  raw='FALSE,TRUE,FALSE,FALSE'  prompt_tokens=342
+qualText: CORRECT in 9.7s  raw='The interview response states that the pharmacy is expensive.'  prompt_tokens=370
+-- fr-water-committee (fr, typed)
+qualSelectOne: WRONG in 8.5s  raw='TRUE,FALSE,FALSE'  prompt_tokens=349
+qualInteger: CORRECT in 5.1s  raw='0'  prompt_tokens=217
+qualInteger: CORRECT in 5.1s  raw='500'  prompt_tokens=218
+qualSelectMultiple: CORRECT in 8.4s  raw='TRUE,FALSE,TRUE,FALSE'  prompt_tokens=338
+qualText: CORRECT in 10.3s  raw='An NGO visited in May and promised to return, but they have not returned yet.'  prompt_tokens=376
+-- pt-livelihoods (pt, transcript)
+qualSelectMultiple: CORRECT in 9.7s  raw='FALSE,FALSE,TRUE,TRUE'  prompt_tokens=347
+qualSelectOne: CORRECT in 9.7s  raw='FALSE,FALSE,TRUE,FALSE'  prompt_tokens=371
+qualInteger: CORRECT in 5.5s  raw='14'  prompt_tokens=234
+qualInteger: CORRECT in 5.7s  raw='40'  prompt_tokens=231
+qualText: CORRECT in 9.6s  raw='A roça acabou, o rio levou tudo.'  prompt_tokens=393
+-- sw-clinic (sw, typed)
+qualInteger: CORRECT in 5.0s  raw='3'  prompt_tokens=212
+qualInteger: CORRECT in 4.9s  raw='4'  prompt_tokens=213
+qualSelectOne: CORRECT in 8.7s  raw='FALSE,TRUE,FALSE'  prompt_tokens=340
+qualSelectOne: CORRECT in 9.2s  raw='FALSE,TRUE,FALSE,FALSE'  prompt_tokens=351
+qualText: CORRECT in 10.4s  raw="The household's biggest problem is that they do not have a toilet and are using the neighbor's."  prompt_tokens=375
+-- ar-shelter (ar, typed)
+qualSelectOne: CORRECT in 8.5s  raw='FALSE,TRUE,FALSE,FALSE'  prompt_tokens=352
+qualInteger: CORRECT in 4.9s  raw='50'  prompt_tokens=209
+qualInteger: CORRECT in 4.8s  raw='2'  prompt_tokens=211
+qualSelectMultiple: CORRECT in 7.9s  raw='TRUE,TRUE,TRUE,FALSE'  prompt_tokens=332
+qualText: CORRECT in 9.2s  raw="The respondent's husband works in agriculture two or three days a week."  prompt_tokens=372
+
+=== Qual on photos, extended set (eval/photos.json)
+-- flood-damaged-house.jpg (damage)
+qualSelectOne: WRONG in 31.4s (no prompt cache)  raw='TRUE,FALSE,FALSE,FALSE'  prompt_tokens=809
+qualSelectMultiple: CORRECT in 5.9s  raw='TRUE,FALSE,FALSE,TRUE'  prompt_tokens=784
+qualText: CORRECT in 8.8s  raw='The house shows significant structural damage, with parts of the roof and walls appearing collapsed or severely compromi'  prompt_tokens=841
+-- clinic-weighing.jpg (health)
+qualSelectOne: CORRECT in 30.1s (no prompt cache)  raw='TRUE,FALSE,FALSE,FALSE'  prompt_tokens=784
+qualSelectMultiple: CORRECT in 6.0s  raw='TRUE,TRUE,FALSE,FALSE'  prompt_tokens=762
+qualSelectOne: CORRECT in 5.6s  raw='FALSE,TRUE'  prompt_tokens=764
+qualText: WRONG in 9.1s  raw='The health worker on the right is standing and appears to be attending to or holding an object on a low table in front o'  prompt_tokens=814
+-- ward-mosquito-nets.jpg (health)
+qualSelectOne: CORRECT in 27.2s (no prompt cache)  raw='TRUE,FALSE,FALSE,FALSE'  prompt_tokens=756
+qualSelectMultiple: CORRECT in 27.3s  raw='TRUE,TRUE,FALSE,TRUE'  prompt_tokens=727
+qualSelectOne: WRONG in 27.8s  raw='TRUE,FALSE,FALSE'  prompt_tokens=761
+-- mnch-building.jpg (health)
+qualSelectOne: CORRECT in 30.8s (no prompt cache)  raw='TRUE,FALSE,FALSE,FALSE'  prompt_tokens=755
+qualSelectMultiple: CORRECT in 28.0s  raw='TRUE,FALSE,TRUE,FALSE'  prompt_tokens=729
+qualText: CORRECT in 31.4s  raw='Maternal and Child Health (MCH) Dept'  prompt_tokens=786
+-- computer-classroom.jpg (education)
+qualSelectOne: CORRECT in 32.4s (no prompt cache)  raw='TRUE,FALSE,FALSE,FALSE'  prompt_tokens=809
+qualSelectOne: WRONG in 4.6s  raw='FALSE,FALSE'  prompt_tokens=802
+qualSelectMultiple: CORRECT in 6.7s  raw='TRUE,TRUE,FALSE,FALSE'  prompt_tokens=791
+-- latrine-raised.jpg (sanitation)
+qualSelectOne: WRONG in 59.7s (no prompt cache)  raw='FALSE,FALSE,FALSE,FALSE'  prompt_tokens=1241
+qualSelectMultiple: CORRECT in 6.3s  raw='TRUE,TRUE,FALSE,FALSE'  prompt_tokens=1217
+qualText: CORRECT in 7.8s  raw='People get up to the doors using a wooden ladder.'  prompt_tokens=1272
+-- water-queue-jerrycans.jpg (water)
+qualSelectOne: CORRECT in 41.6s (no prompt cache)  raw='TRUE,FALSE,FALSE,FALSE'  prompt_tokens=992
+qualSelectOne: CORRECT in 4.3s  raw='TRUE,FALSE,FALSE,FALSE'  prompt_tokens=992
+qualSelectMultiple: CORRECT in 5.8s  raw='TRUE,TRUE,FALSE,FALSE'  prompt_tokens=975
+-- earthquake-roof-blurred.jpg (damage)
+qualSelectOne: CORRECT in 29.5s (no prompt cache)  raw='FALSE,TRUE,FALSE'  prompt_tokens=807
+qualSelectOne: WRONG in 3.3s  raw='TRUE,FALSE'  prompt_tokens=790
+qualText: CORRECT in 9.1s  raw='The structure shows significant damage to the roof, which is partially collapsed and appears to be made of corrugated me'  prompt_tokens=838
+-- tapstand-sign.jpg (water)
+qualInteger: CORRECT in 19.0s (no prompt cache)  raw='3'  prompt_tokens=468
+qualSelectMultiple: CORRECT in 19.9s  raw='TRUE,TRUE,TRUE,FALSE'  prompt_tokens=579
+qualText: CORRECT in 21.0s  raw='6h00-9h00'  prompt_tokens=637
+-- well-cattle-carts.jpg (water)
+qualSelectOne: WRONG in 29.0s (no prompt cache)  raw='FALSE,FALSE,FALSE,FALSE'  prompt_tokens=755
+qualSelectMultiple: CORRECT in 26.9s  raw='TRUE,TRUE,TRUE,FALSE'  prompt_tokens=730
+-- latrine-ramp.jpg (sanitation)
+qualSelectOne: CORRECT in 31.2s (no prompt cache)  raw='TRUE,FALSE,FALSE,FALSE'  prompt_tokens=806
+qualSelectMultiple: CORRECT in 5.9s  raw='TRUE,TRUE,FALSE,FALSE'  prompt_tokens=784
+qualSelectOne: CORRECT in 5.8s  raw='TRUE,FALSE'  prompt_tokens=797
+-- distribution-tent.jpg (distribution)
+qualSelectOne: CORRECT in 28.8s (no prompt cache)  raw='TRUE,FALSE,FALSE,FALSE'  prompt_tokens=756
+qualSelectMultiple: WRONG in 27.0s  raw='TRUE,TRUE,FALSE,FALSE'  prompt_tokens=728
+qualText: CORRECT in 29.3s  raw='The banner is written in French.'  prompt_tokens=785
+
+=== Extended set: correct by language (image = photos) and by question type
+{'by_lang': {'ar': '5/5', 'en': '10/10', 'es': '9/9', 'fr': '4/5', 'image': '28/36', 'pt': '5/5', 'sw': '5/5'}, 'by_type': {'qualInteger': '13/13', 'qualSelectMultiple': '17/18', 'qualSelectOne': '22/29', 'qualText': '14/15'}, 'all': '66/75'}
+
+=== Transcription via Gemma audio input (first 30s of each clip)
+10145345127432001964.wav: 14.3s  WER 29%
+  ቤቶቻችንን ከእጽዋት እናደርጋለን እንዲሁም ከእጽዋት ልብሶችን እንሰራለን የምንበላቸው አትክልት አብዛኞቹ ምግቦች እጽዋቶች ናቸው ያለእጽዋት እንስሳት መኖር አይችሉም
+11526202601547880626.wav: 15.3s  WER 33%
+  Asibitin tabi ka ido ji na kula da kamwa da cutar tare da raba masu jiya daga sauran jama'a domin hana yaduwar cutan.
+11557638029465577385.wav: 9.7s  WER 9%
+  Se acogen los niños en hogares de guarda por una amplia variedad de motivos, desde negligencia hasta abuso e incluso extorsión.
+11578086792063916521.wav: 7.7s  WER 8%
+  Tamasha kadhaa zina maeneo maalum ya kukita kambi kwa familia zenye watoto wadogo.
+11747975189179552522.wav: 15.6s  WER 48%
+  Muna kunnatin sunan gaggadin mazumai yankin da ke fuskanta da masa intar da su kasance cikin gidajen su, akashe na urorin cinyar daki kuma kada a sha ruwan pampom.
+11758923080825846229.wav: 22.8s  WER 65%
+  Bayan girma da tsaron ruwa a shekara dubu daya da alif 1963, ambaliyar ruwa da ke zuwa akai-akai kuma yadda ƙasa zuwa kogi yatsaya.
+1176822222171573098.wav: 9.0s  WER 33%
+  Katikati baadhi ya maeneo mengine kuchomsha maji kwa dakika moja kunatosha, kwingine kwa dakika kadhaa inahitajika.
+12441597728222908954.wav: 13.8s  WER 13%
+  Huenda watoto wasiosiri tagusana walipitia unyanyasaji mkuu au kiwewe utotoni mwao kabla ya kuachiliwa au kutoroka.
+12880267863770860494.wav: 13.2s  WER 50%
+  ሆስፒታሉ የኢንፌክሽን ቁጥጥራን ለመከላከል ለተከስተው የሚችሉ ኢንፌክሽኖችን ለመከላከል በተለያዩ ገለል ያሉ ስንጨምሮ ፕሮቶኮል የተከተለ ነበር።
+12950053679025357827.wav: 11.7s  WER 0%
+  Es posible que los niños salvajes hayan sufrido situaciones traumáticas o abuso infantil grave antes de ser abandonados o de que huyeran.
+13434171186194313293.wav: 14.0s  WER 44%
+  የአካባቢው ባለሥልጣናት በፋብሪካው አክካቢ የሚገኙ ነዋሪዎችን በቤት ውስጥ እንዲቆዩ ያደረጉ ማቅስቀሻዎችን እንዳጣፉ እና የባንቧ ውሃ እንዳይጠጡ ያስጠነቅቀውና
+13585206539593086808.wav: 17.7s  WER 21%
+  Alifikia hitimisho hili kutokana na wingi wa maoni chanya na kutima moyo kwake na wake kwa waume walio walimhimiza kuwa matibabu ya uzazi ya kuchukuliwe kwa mahitaji muhimu ya kimatibabu.
+1389913612336209430.wav: 11.1s  WER 16%
+  Watoto huwekwa kwenye huduma ya malezi kwa sababu nyingine nyingi ambazo huanzia kutekelezwa hadi kudhulumiwa na hata unyanyasi.
+1432166472202574787.wav: 12.0s  WER 4%
+  En 2002, la lava del volcán Niragongo destruyó Goma y dejó gran parte de sus calles sumergidas, especialmente en el centro de la ciudad.
+14853412566998329397.wav: 12.6s  WER 3%
+  Si bien existen informes que señalan que el número oficial de muertos es ocho y las autoridades han confirmado que cerca de 30 personas resultaron heridas, aún se desconocen las cifras oficiales.
+15666012997546634223.wav: 6.9s  WER 62%
+  በአሁኑ ጊዜ በናይጄሪያ ነበር አንድ እንደ ኢቦላ ቫይረስ የተከሰተበት ስፍራ።
+15807428913594410550.wav: 7.9s  WER 20%
+  Sehemu kubwa ya maisha ya familia ya Kiibrania ilifanyikia injili.
+16057556102600269348.wav: 10.4s  WER 4%
+  Sisi hutengeneza nyumba zetu kwa mimea na kutengeneza nguo zetu kwa mimea chakula kingi ambacho sisi hula ni mimea bila mimea wanyama hauwezi kuishi
+16164459367840058607.wav: 9.6s  WER 117%
+  Gedduwa 1963 ketegena bahaala, bey'amatu be'nzun Abwara yemi'zeraun yegorf metlaklak akoma.
+16249738938342617642.wav: 15.3s  WER 24%
+  Wadudu ndio walikuwa wanyama wa kwanza kupaa angani. Uwezo wao wa kupaa uliowasaidia kuepuka maadui kwa urahisi na kupata chakula na wazi na wenzio wao kwa urahisi.
+16307256007562964111.wav: 8.6s  WER 58%
+  Mungonjwa alikuwaje nchini Nigeria mpaka hadi matukio ya virusi vya Ebola yamezekana?
+1667929616259658346.wav: 7.8s  WER 83%
+  Kazi ya kwanza za kijamii hivi nilipopitia miongo mingine majirani.
+17061816507041662463.wav: 12.1s  WER 58%
+  Mnamo ya ng'ani inaonyesha wakaaji waliokaribu na Mmea huo kukaanana kuzima vileozi na kutokundwa maji ya pomba.
+1717567987938286759.wav: 13.2s  WER 41%
+  Wace rahoton sun kai adadin mutum zuwa takwas kuma tabbatar cewa rahoton ya tabbatar da cewa mutum tarantun suka ji rawani amma ba a sanya adadin ƙarshin ba?
+1724611097249667814.wav: 11.5s  WER 21%
+  Amazon kuma shine kogi mafi fadi a duniya a wasu lokutan misan 1,600.
+17400442117501112485.wav: 11.1s  WER 47%
+  ትክክለ ባላማግነት በጥቃተ እና አልፎ ተርፎም እስከ ስርቆት ድረስ ያሉ የተለያየ ምክንያቶች ለጆጭ በማደጎን ክብካቤ ውስጥ ይቀመጣሉ
+17446992767794258789.wav: 9.3s  WER 20%
+  Yawancin rayuwar dangin Ibrani ce sun faru ne a sararin sama.
+17639488747956788157.wav: 6.9s  WER 75%
+  ባናና ከወዎቹ ዋላ እንደጋ ማፍላበቂ ነው በሌሎች በርካታ ደቂቃዎች ነው አስፈላጊው
+17795496440729368205.wav: 14.9s  WER 2%
+  Al día de hoy no se ha demostrado ciencia cierta que algún fármaco sea adecuado para tratar la infección existente causada por ébola, aun cuando existe una vacuna experimental que pareciera ser capaz 
+17957000333653026721.wav: 8.0s  WER 0%
+  Los cerdos son los portadores de la enfermedad que luego migra a los humanos mediante los mosquitos.
+18303377146733332968.wav: 19.2s  WER 45%
+  Taka ga wannan matsayin saboda yawun tufa albarctun baki mataine, tare da kwangwiwa wanda maza da mata ke boccewa amfani da makonguna hana haihuwa san zama dole.
+18396337411365141191.wav: 14.6s  WER 32%
+  ቁስለኞቹ ወደ ሆስፒታል ከተወሰዱ በኋላ በጋ ሲቆም ከሌሎች ስረኞች መካከላቸው ስራኞች መካከላቸው 40 የሚሆኑት በ깁ብ ውስጥ ቆዩ እና ወደ ክፍላቸው ለመመለስ ፈቃደኛ አልሆኑም
+2002756695914994355.wav: 11.5s  WER 10%
+  Hospitali imefuata itifaki ya kudhibiti maambukizi, ikiwa ni pamoja na kutenga wagonjwa kutoka kwa wengine ili kuzuia uwezekano wa kuambukiza wengine.
+2027861869427386864.wav: 11.0s  WER 4%
+  Según estimaciones realizadas por el Cuerpo de Ingenieros de los Estados Unidos, hasta seis pulgadas de lluvia podrían filtrarse por los diques anteriormente dañados.
+2370326377257659667.wav: 16.1s  WER 73%
+  ወደዚህ ለምዳሜ የጠጣችሁ በሚሰጧት ጥሩ አስተያየቶች እና ከሁለቱም ሳይትና ወንዶገኖች የውልድ መቆጣጥሪያ ህግ እና አስፈጻጊ ህግ እና እንደሆን ማብራርታችሁን ስላላክላችሁ
+2899380414631046202.wav: 14.5s  WER 19%
+  Pan sanya yara a gidan Reno saboda dalilai masu yawa da suka haɗa da sakaci kin zarafi har ma zuwa kwace.
+309526251150245303.wav: 11.8s  WER 40%
+  Marar lafiya yaje Najeriya idan aka samu wasu sun kammala cutar ta Ebola?
+3165183570881615798.wav: 17.9s  WER 2%
+  La cuestión que dio origen al debate fue la controversia en torno al presupuesto destinado al socorro y reconstrucción posteriores al huracán Katrina, medida que algunos conservadores fiscales etiquet
+3305569645117485833.wav: 12.5s  WER 40%
+  Am bada rahoton kamua da cutar da farko a wannan kakar a ƙarshen yuli.
+3327916977671284207.wav: 12.5s  WER 0%
+  El gobierno local advierte a quienes residen en las cercanías de la planta que no salgan de sus hogares, mantengan apagados los aires acondicionados y no consuman agua del grifo.
+3433014114430458416.wav: 19.5s  WER 23%
+  Lokacin da fada ya barke bayan an kai wadanda suka girowani zuwa asibiti, kusan sauran fursunoni arba'in da suka rage, sun zauna a farfajiyar kuma sun kika komawa dakin su.
+3703943947303327274.wav: 12.1s  WER 10%
+  Wakati mapigano yalipokoma na majeruhi kupelekwa hospitalini takriban arubaini wa wafungwa waliobaki walikaa kwenye yadi na kukata kurudi kwenye seli zao.
+3729119627411807659.wav: 16.9s  WER 17%
+  Baadhi ya ripoti zilionyesha idadi rasmi ya vifuko vinane, na ripoti rasmi zinodhibitisha kulikuwa na majeruhi hadi thelathini, lakini idadi kamili bado hazijajulikana.
+416124317841544182.wav: 9.6s  WER 0%
+  El hospital ha respetado el protocolo de control de infecciones, incluido el distanciamiento del paciente de los demás para prevenir posibles infecciones.
+4226346570515120504.wav: 9.8s  WER 50%
+  የተጣሉ ድርጅት ከመጣላቸው ወይም ከመሸሻቸው በፊት ከባደይ ድርጅት ጥቃቶች ወይም ስምጥቆ ሳቋጥማቸው ይሆናል
+4495752777350300965.wav: 17.1s  WER 35%
+  Yaran marazuciya sun ji tsoron na iya fuskantar mummunan cin zarafi, yara goro ne kafin a watsar da su ko su gudu.
+4593179416611162319.wav: 8.4s  WER 23%
+  Amazon pia ni mtobana zaidi duniani wakati mwingine malili sita kwa upana.
+4645007359104857933.wav: 9.4s  WER 33%
+  በአሁኑ ወቅት በጀማሪዎቹ የበርሽተው አጋጣሚዎች በሐምሌ ወር መጨረሻ ላይ ነበር ሪፖርት የተደረገው።
+4963359825952343829.wav: 12.2s  WER 0%
+  Construimos nuestras casas a partir de las plantas y con ellas también fabricamos ropa. La mayoría de los alimentos que ingerimos son plantas. Sin ellas, los animales no sobrevivirían.
+5461838345498121315.wav: 23.1s  WER 0%
+  Pasados cinco minutos del inicio del espectáculo, se desató un viento que aproximadamente un minuto después había alcanzado los 70 kilómetros por hora. Luego llegó la lluvia, pero tan fuerte y tan den
+5757009952877666440.wav: 10.2s  WER 65%
+  Awasurari mint daya ya isarwa ya tafasa amma awasurari kuma yana bukata minti wadaiwa
+6171923028225215153.wav: 7.7s  WER 50%
+  በተጨማሪም አማዞን በሚል ልጅ እጅ በጣም ሰፊ ወንዝ ነው አንደኛ ስድስት ማይል ይሠፋ ይወናል
+6508274349443622093.wav: 9.7s  WER 118%
+  አንድ አንድ ፊስቲቫሎች ትነሽ ልጅ ልጆች ላሉ አቸው ቤተሰብ እተልዬ ካምፕ ማድረጊ አክባብ ያላችሁ
+6681482295854461262.wav: 16.2s  WER 33%
+  አንድ ዘገባዎች ይፋዊ ውይኔ ሞት በዛten ስምንት ያደረጉ ሲሆን ይፋዊው ሪፖርቶች እስከ 30 የሚደርሱ ሰዎች እንደቆሰሉ አረጋግጧል ግን የመጨረሻው ቁጥሮች ገና አልታወቁም
+6861356578246274326.wav: 9.0s  WER 0%
+  En algunos lugares basta con hervir agua durante un minuto, en otros son necesarios varios más.
+705534160794720130.wav: 11.4s  WER 7%
+  El Dr. Moll cree que algunos pacientes podrían haber contraído el virus dentro del hospital y que al menos dos de los infectados eran trabajadores de salud de ese nosoconio.
+7220161187555486870.wav: 6.8s  WER 44%
+  አብዛኛው የአብራውያን ቤተሰብ ህይወት የሚመረው ከቤት ውጭ ላይ ነበር።
+7328344135348040999.wav: 13.8s  WER 60%
+  ነፍሳት ወደ አየር ይሄዱት የመጀመርያ አንሰሳት ነበር። ለመብረር ችሎታቸው ጥላቶችን በቀላሉ ለማሸሽና ምግቡንና የተዳርጓደኛን በብቃት እንዲያገኙ ረድቷቸዋል።
+7661334745492112123.wav: 16.4s  WER 5%
+  Uno de los mecanismos más comúnment usados para graficar la importancia de socializar es analizar los pocos y lamentables casos de niños que, por negligencia, desgracia o abuso intencional, no fueron 
+8011364361899401277.wav: 16.3s  WER 30%
+  Kwarin yaya da popin da suka fara tashi cikin iska, ya tashin su ya taimaka musu wajen kaucewa abokan gaba cikin sauki, kuma su sami abinci da yimɓallawa sosai.
+849705952634498514.wav: 15.0s  WER 31%
+  Muna gina gida jamiye daga itatuwa kuma muna yin siturun mu daga itatuwa mafi yawa abincin da muke ci daga tsirrai ne idan ba fu tsirai mutanen da daddafi ba za su rayu ba
+9283353535346300316.wav: 12.3s  WER 40%
+  Wadansu bukukuwa na da wurin santsani na musamman domin iyayen dake da ƙananan yara.
+9756970688789077272.wav: 12.5s  WER 14%
+  Baada ya mabawa kujengwa mwaka wa 1963 mafuriko ya misimu ambayo yangeenea kote yalisimamishwa.
+987988606766880060.wav: 11.7s  WER 0%
+  Con la construcción de la presa en 1963, se frenaron las inundaciones estacionales que dejaban sedimentos a lo largo del río.
+jfk.wav: 9.1s
+  And so my fellow Americans ask not what your country can do for you ask what you can do for your country.
+
+=== Scores on reference clips (mean)
+whisper_wer: 0.681  gemma_audio_wer: 0.307  mt_chrf: 55.465  pipeline_chrf: 35.316
+  am: whisper_wer: 1.345  mt_chrf: 59.065  pipeline_chrf: 17.368  from_en_chrf: 39.134  gemma_audio_wer: 0.574
+  es: whisper_wer: 0.02  mt_chrf: 59.431  pipeline_chrf: 57.693  from_en_chrf: 54.506  gemma_audio_wer: 0.023
+  ha: whisper_wer: 0.948  mt_chrf: 39.879  pipeline_chrf: 17.723  from_en_chrf: 36.518  gemma_audio_wer: 0.373
+  sw: whisper_wer: 0.411  mt_chrf: 63.486  pipeline_chrf: 48.479  from_en_chrf: 59.283  gemma_audio_wer: 0.258
+
+=== GPU power during tests
+no GPU
+
+Saved /root/kobo-box-ai/results/20261112-074240-gemma-4-E4B-it-Q4_0.gguf.json

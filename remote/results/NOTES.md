@@ -656,3 +656,33 @@ every run's JSON and log). Extended qual (75 cases) and speed per question on th
   Amharic.
 - Weights deleted before parking (re-fetch with `models.sh fetch`, ~25 min); parked as
   `kobo-box-gpu2-snapshot`.
+
+## 2026-11-12: the Gemma benchmark, phase 2 (`kobo-box-cpu`, `s-8vcpu-32gb-amd`, ams3, offline)
+
+The kit-sized models on 8 CPU cores (`gemma-phase2/`; runner `phase2.sh`, recipes with
+`MODE=cpu`). E4B with Spanish, Swahili, Hausa and Amharic clips and Gemma audio; then each
+model with and without its MTP draft on the Spanish clips only, without Gemma audio.
+
+| Model | Extended qual, of 75 | s / question | First photo question | tokens/s |
+|---|---|---|---|---|
+| E2B Q4_0 | 54 | 4.3 | 22 s | 24.4 |
+| E2B + MTP | 54 | 4.5 | 22 s | 21.3 |
+| E4B Q4_0 | 66 | 8.5 | 31 s | 13.7 |
+| E4B + MTP | 66 | 8.1 | 31 s | 14.2 |
+| 12B Q4_0 | 69 | 26.5 | 53 s | 5.5 |
+| 12B + MTP | 69 | 27.1 | 51 s | 5.3 |
+
+- **Scores match the GPU** within one case (E4B 66 here, 67 on the RTX 6000 Ada): the CPU
+  build answers the same way.
+- **MTP drafts: no gain on a CPU either** (E4B 4% faster, E2B and 12B slightly slower; same
+  answers). Not for the kit.
+- **E4B stays the CPU kit's model:** 12B's 3 more cases cost 3× the time (27 s a question,
+  which staff wait for at each "Generate with AI"); E2B is 2× faster but 12 cases worse.
+- **Gemma audio on a CPU is as fast as Whisper** (11–15 s for a 10–20 s clip, about real
+  time) and far better on Swahili (WER 26% vs 41%), Hausa (37% vs 95%) and Amharic (57% vs
+  134%; Whisper is also 3× slower there, 30 s a clip, as it loops). Spanish the same (2%).
+  Translation 3–4 s a clip. So per-language transcription costs nothing in speed.
+- First try failed: bootstrap ran while the droplet's cloud-init still held apt's lock
+  (fixed: bootstrap waits for cloud-init). The watchdog had exited on that try's done file
+  and was restarted by the 30-minute check.
+- Droplet and firewall deleted afterwards (temporary).

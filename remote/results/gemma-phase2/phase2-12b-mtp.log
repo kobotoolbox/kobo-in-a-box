@@ -1,0 +1,232 @@
+=== 12b-mtp: LLM_MODEL=gemma-4-12B-it-Q4_0.gguf; LLM_MMPROJ=mmproj-gemma-4-12B-it-Q8_0.gguf; LLM_EXTRA_ARGS=-md /models/mtp-gemma-4-12B-it-Q8_0.gguf --spec-type draft-mtp
+ Container kobo-ai-llm-cpu-1 Stopping 
+ Container kobo-ai-whisper-cpu-1 Stopping 
+ Container kobo-ai-whisper-cpu-1 Stopped 
+ Container kobo-ai-whisper-cpu-1 Removing 
+ Container kobo-ai-whisper-cpu-1 Removed 
+ Container kobo-ai-llm-cpu-1 Stopped 
+ Container kobo-ai-llm-cpu-1 Removing 
+ Container kobo-ai-llm-cpu-1 Removed 
+ Container kobo-ai-whisper-cpu-1 Creating 
+ Container kobo-ai-llm-cpu-1 Creating 
+ Container kobo-ai-whisper-cpu-1 Created 
+ Container kobo-ai-llm-cpu-1 Created 
+ Container kobo-ai-llm-cpu-1 Starting 
+ Container kobo-ai-whisper-cpu-1 Starting 
+ Container kobo-ai-llm-cpu-1 Started 
+ Container kobo-ai-whisper-cpu-1 Started 
+Network: kobo-ai. Waiting for LLM to load...
+LLM ready (gemma-4-12B-it-Q4_0.gguf); whisper on :8082 (ggml-large-v3-turbo-q8_0.bin)
+
+=== Environment
+egress: OFFLINE   llm: gemma-4-12B-it-Q4_0.gguf
+gpu: None
+
+=== Transcription (whisper)
+11557638029465577385.wav: 11s audio in 11.6s (0.9x real time)  WER 0%
+  Se acoge a los niños en hogares de guarda por una amplia variedad de motivos,
+ desde negligencia hasta abuso e incluso extorsión.
+12950053679025357827.wav: 13s audio in 11.6s (1.1x real time)  WER 0%
+  Es posible que los niños salvajes hayan sufrido situaciones traumáticas o abuso infantil grave antes de ser abandonados o de que huyeran
+1432166472202574787.wav: 12s audio in 13.3s (0.9x real time)  WER 4%
+  En 2002, la lava del volcán Niragongo destruyó goma y dejó gran parte de sus calles sumergidas, especialmente en el centro de la ciudad.
+14853412566998329397.wav: 15s audio in 12.1s (1.2x real time)  WER 6%
+  Si bien existen informes que señalan que el número oficial de muertos es 8 y las autoridades han confirmado que cerca de 30 personas resultaron heridas, aún se desconocen las cifras oficiales.
+17795496440729368205.wav: 18s audio in 11.7s (1.5x real time)  WER 0%
+  Al día de hoy no se ha demostrado a ciencia cierta que algún fármaco sea adecuado para tratar la infección existente causada por ébola aun cuando existe una vacuna experimental que pareciera ser capaz
+17957000333653026721.wav: 10s audio in 11.5s (0.9x real time)  WER 0%
+  Los cerdos son los portadores de la enfermedad que luego migra a los humanos mediante los mosquitos.
+2027861869427386864.wav: 12s audio in 11.8s (1.0x real time)  WER 4%
+  Según estimaciones realizadas por el cuerpo de ingenieros de los Estados Unidos hasta seis pulgadas de lluvia podrían filtrarse por los diques anteriormente dañados
+3165183570881615798.wav: 20s audio in 13.6s (1.5x real time)  WER 2%
+  La cuestión que dio origen al debate fue la controversia en torno al presupuesto destinado al socorro y reconstrucción posteriores al huracán Katrina, medida que algunos conservadores fiscales etiquet
+3327916977671284207.wav: 13s audio in 12.2s (1.0x real time)  WER 3%
+  El gobierno local advierte a quienes residen en las cercanías de la planta que no salgan de sus hogares, manténgase apagados los aires acondicionados y no consuman agua del grifo.
+416124317841544182.wav: 11s audio in 12.4s (0.9x real time)  WER 0%
+  El hospital ha respetado el protocolo de control de infecciones, incluido el distanciamiento
+ del paciente de los demás para prevenir posibles infecciones.
+4963359825952343829.wav: 13s audio in 12.0s (1.1x real time)  WER 0%
+  Construimos nuestras casas a partir de las plantas y con ellas también fabricamos ropa.
+ La mayoría de los alimentos que ingerimos son plantas. Sin ellas los animales no sobrevivirían.
+5461838345498121315.wav: 27s audio in 12.4s (2.2x real time)  WER 9%
+  Pasados 5 minutos del inicio del espectáculo, se desató un viento que, aproximadamente un minuto después, había alcanzado los 70 km/h.
+ Luego llegó la lluvia, pero tan fuerte y tan densa que porforaba
+6861356578246274326.wav: 11s audio in 13.1s (0.8x real time)  WER 0%
+  En algunos lugares basta con hervir agua durante un minuto, en otros son necesarios varios más.
+705534160794720130.wav: 13s audio in 12.2s (1.1x real time)  WER 3%
+  El Dr. Moll cree que algunos pacientes podrían haber contraído el virus dentro del hospital y que al menos dos de los infectados eran trabajadores de salud de ese nosocomio.
+7661334745492112123.wav: 18s audio in 12.1s (1.5x real time)  WER 0%
+  Uno de los mecanismos más comúnmente usados para graficar la importancia de sociabilizar es analizar los pocos y lamentables casos de niños que, por negligencia, desgracia o abuso intencional, no fuer
+987988606766880060.wav: 14s audio in 12.0s (1.1x real time)  WER 0%
+  Con la construcción de la presa en 1963 se frenaron las inundaciones estacionales que
+ dejaban sedimentos a lo largo del río.
+jfk.wav: 11s audio in 25.1s (0.4x real time)
+  And so, my fellow Americans, ask not what your country can do for you, ask what you can do for your country.
+
+=== Translation (LLM)
+[fr] 4.8s  We need drinking water and medicine for the children.
+[es] 4.9s  The road has been blocked since last week's floods.
+[sw] 6.5s  They need food assistance because the harvest has been destroyed.
+[pt] 4.6s  The nearest clinic is a three-hour walk away.
+
+=== Translation of reference clips (chrF vs reference English)
+11557638029465577385.wav: MT chrF 63, pipeline chrF 63, from English chrF 50  (7.4s + 8.2s + 8.6s)
+  Children are taken into foster homes for a wide variety of reasons, ranging from neglect to abuse and even extortion.
+12950053679025357827.wav: MT chrF 63, pipeline chrF 63, from English chrF 50  (8.9s + 8.2s + 8.7s)
+  It is possible that feral children may have suffered traumatic situations or severe child abuse before being abandoned or fleeing.
+1432166472202574787.wav: MT chrF 48, pipeline chrF 45, from English chrF 53  (10.1s + 10.5s + 10.9s)
+  In 2002, the lava from the Niragongo volcano destroyed Goma and left much of its streets submerged, especially in the city center.
+14853412566998329397.wav: MT chrF 48, pipeline chrF 48, from English chrF 49  (11.2s + 11.0s + 12.3s)
+  Although there are reports indicating that the official death toll is 8 and authorities have confirmed that nearly 30 people were injured, the official figures are still unknown.
+17795496440729368205.wav: MT chrF 52, pipeline chrF 52, from English chrF 52  (11.0s + 11.3s + 10.6s)
+  To date, it has not been scientifically proven that any drug is suitable for treating the existing infection caused by Ebola, even though there is an experimental vaccine that appears to be capable of
+17957000333653026721.wav: MT chrF 75, pipeline chrF 62, from English chrF 57  (7.2s + 6.2s + 7.3s)
+  Pigs are the carriers of the disease that later migrates to humans through mosquitoes.
+2027861869427386864.wav: MT chrF 64, pipeline chrF 51, from English chrF 52  (9.3s + 8.3s + 8.7s)
+  According to estimates made by the United States engineering corps, up to six inches of rain could leak through the previously damaged dikes.
+3165183570881615798.wav: MT chrF 59, pipeline chrF 58, from English chrF 50  (14.0s + 14.4s + 13.4s)
+  The issue that gave rise to the debate was the controversy surrounding the budget allocated for relief and reconstruction following Hurricane Katrina, a measure that some fiscal conservatives jokingly
+3327916977671284207.wav: MT chrF 40, pipeline chrF 40, from English chrF 57  (10.9s + 10.9s + 12.7s)
+  The local government warns those residing near the plant not to leave their homes, to keep air conditioners turned off, and not to consume tap water.
+416124317841544182.wav: MT chrF 73, pipeline chrF 73, from English chrF 72  (7.3s + 7.1s + 8.8s)
+  The hospital has respected the infection control protocol, including the distancing of the patient from others to prevent possible infections.
+4963359825952343829.wav: MT chrF 62, pipeline chrF 62, from English chrF 62  (11.0s + 10.5s + 11.8s)
+  We build our houses from plants and we also make clothes with them. Most of the food we consume comes from plants. Without them, animals would not survive.
+5461838345498121315.wav: MT chrF 53, pipeline chrF 48, from English chrF 48  (24.7s + 22.2s + 26.3s)
+  Five minutes after the start of the show, a wind broke out that, approximately one minute later, had reached 70 km/h.
+Then the rain arrived, but so strong and so dense that it pierced your skin like a
+6861356578246274326.wav: MT chrF 51, pipeline chrF 51, from English chrF 49  (7.7s + 9.1s + 8.5s)
+  In some places, it is enough to boil water for one minute; in others, several more are necessary.
+705534160794720130.wav: MT chrF 54, pipeline chrF 54, from English chrF 62  (11.6s + 11.7s + 11.1s)
+  Dr. Moll believes that some patients could have contracted the virus inside the hospital and that at least two of the infected were healthcare workers at that facility.
+7661334745492112123.wav: MT chrF 63, pipeline chrF 63, from English chrF 59  (12.9s + 7.3s + 16.8s)
+  One of the most commonly used mechanisms to illustrate the importance of socialization is to analyze the few and regrettable cases of children who, due to negligence, misfortune, or intentional abuse,
+987988606766880060.wav: MT chrF 60, pipeline chrF 60, from English chrF 58  (9.4s + 9.9s + 11.4s)
+  With the construction of the dam in 1963, the seasonal floods that left sediment along the river were halted.
+
+=== Qual analysis (LLM, KPI prompts + parsers)
+qualSelectOne: CORRECT in 26.7s  raw='FALSE,TRUE,FALSE,FALSE'  prompt_tokens=371
+qualSelectMultiple: CORRECT in 25.2s  raw='TRUE,FALSE,TRUE,FALSE'  prompt_tokens=340
+qualInteger: CORRECT in 15.9s  raw='5'  prompt_tokens=228
+
+=== Qual on a typed answer (French; KPI text-source prompts)
+qualSelectOne: CORRECT in 25.9s  raw='FALSE,TRUE,FALSE'  prompt_tokens=362
+qualSelectMultiple: CORRECT in 27.8s  raw='TRUE,TRUE,TRUE,FALSE'  prompt_tokens=347
+qualInteger: CORRECT in 17.0s  raw='12000'  prompt_tokens=232
+qualText: CORRECT in 31.9s  raw='The community asks for a replacement part and training for the village repairman.'  prompt_tokens=392
+
+=== Qual on a photo (KPI image prompts, image first)
+qualSelectOne: CORRECT in 54.0s (no prompt cache)  raw='TRUE,FALSE,FALSE,FALSE'  prompt_tokens=766
+qualSelectMultiple: CORRECT in 49.7s  raw='TRUE,FALSE,FALSE'  prompt_tokens=737
+qualText: CORRECT in 61.4s  raw='The water point consists of a weathered, rusty metal hand pump mounted on a concrete platform surrounded by a low brick '  prompt_tokens=800
+
+=== Qual, extended set (eval/qual-cases.json)
+-- en-two-speakers (en, transcript)
+qualInteger: CORRECT in 18.2s  raw='7'  prompt_tokens=246
+qualSelectOne: CORRECT in 25.3s  raw='FALSE,TRUE,FALSE,FALSE'  prompt_tokens=381
+qualSelectOne: CORRECT in 28.2s  raw='FALSE,TRUE,FALSE,FALSE'  prompt_tokens=378
+qualSelectMultiple: CORRECT in 27.6s  raw='TRUE,TRUE,FALSE,FALSE'  prompt_tokens=370
+qualText: CORRECT in 36.6s  raw='The respondent states that water is the main problem because the tap stand has been dry since the rains stopped and they'  prompt_tokens=406
+-- en-negations (en, transcript)
+qualSelectMultiple: CORRECT in 23.4s  raw='FALSE,TRUE,FALSE,FALSE'  prompt_tokens=334
+qualSelectOne: CORRECT in 25.7s  raw='FALSE,TRUE,FALSE'  prompt_tokens=348
+qualInteger: CORRECT in 16.2s  raw='23'  prompt_tokens=223
+qualSelectOne: CORRECT in 24.9s  raw='FALSE,FALSE,TRUE'  prompt_tokens=352
+qualText: CORRECT in 28.4s  raw='The tent leaks and the nights are cold.'  prompt_tokens=382
+-- es-numbers-in-words (es, typed)
+qualInteger: CORRECT in 14.1s  raw='12'  prompt_tokens=210
+qualInteger: CORRECT in 13.8s  raw='3'  prompt_tokens=214
+qualSelectMultiple: CORRECT in 23.8s  raw='TRUE,FALSE,TRUE,FALSE'  prompt_tokens=328
+qualSelectOne: CORRECT in 24.1s  raw='FALSE,FALSE,TRUE'  prompt_tokens=345
+qualText: CORRECT in 26.1s  raw='The money from the goats was used to pay for school.'  prompt_tokens=374
+-- es-mentioned-not-chosen (es, transcript)
+qualSelectOne: CORRECT in 27.0s  raw='FALSE,FALSE,TRUE,FALSE'  prompt_tokens=347
+qualSelectMultiple: CORRECT in 23.2s  raw='TRUE,TRUE,FALSE,FALSE'  prompt_tokens=328
+qualSelectOne: CORRECT in 25.5s  raw='FALSE,TRUE,FALSE,FALSE'  prompt_tokens=346
+qualText: CORRECT in 24.9s  raw='The pharmacy is expensive.'  prompt_tokens=374
+-- fr-water-committee (fr, typed)
+qualSelectOne: CORRECT in 24.3s  raw='FALSE,FALSE,TRUE'  prompt_tokens=353
+qualInteger: CORRECT in 15.9s  raw='0'  prompt_tokens=221
+qualInteger: CORRECT in 14.4s  raw='500'  prompt_tokens=222
+qualSelectMultiple: CORRECT in 22.7s  raw='TRUE,FALSE,TRUE,FALSE'  prompt_tokens=342
+qualText: CORRECT in 29.1s  raw='An NGO visited in May and promised to return, but they have not yet returned.'  prompt_tokens=380
+-- pt-livelihoods (pt, transcript)
+qualSelectMultiple: CORRECT in 23.5s  raw='FALSE,FALSE,TRUE,TRUE'  prompt_tokens=351
+qualSelectOne: CORRECT in 26.2s  raw='FALSE,FALSE,TRUE,FALSE'  prompt_tokens=375
+qualInteger: CORRECT in 15.1s  raw='14'  prompt_tokens=238
+qualInteger: CORRECT in 15.0s  raw='40'  prompt_tokens=235
+qualText: CORRECT in 30.0s  raw='The river took everything, and the farm ended.'  prompt_tokens=397
+-- sw-clinic (sw, typed)
+qualInteger: CORRECT in 15.0s  raw='3'  prompt_tokens=216
+qualInteger: CORRECT in 14.6s  raw='4'  prompt_tokens=217
+qualSelectOne: CORRECT in 23.7s  raw='FALSE,TRUE,FALSE'  prompt_tokens=344
+qualSelectOne: CORRECT in 25.2s  raw='FALSE,TRUE,FALSE,FALSE'  prompt_tokens=355
+qualText: CORRECT in 28.6s  raw="The household's biggest problem is that they do not have a toilet and use their neighbor's instead."  prompt_tokens=379
+-- ar-shelter (ar, typed)
+qualSelectOne: CORRECT in 25.6s  raw='FALSE,TRUE,FALSE,FALSE'  prompt_tokens=356
+qualInteger: CORRECT in 13.9s  raw='50'  prompt_tokens=213
+qualInteger: CORRECT in 14.1s  raw='2'  prompt_tokens=215
+qualSelectMultiple: CORRECT in 23.6s  raw='TRUE,TRUE,TRUE,FALSE'  prompt_tokens=336
+qualText: CORRECT in 24.6s  raw="The respondent's husband works in agriculture two or three days a week."  prompt_tokens=376
+
+=== Qual on photos, extended set (eval/photos.json)
+-- flood-damaged-house.jpg (damage)
+qualSelectOne: CORRECT in 50.9s (no prompt cache)  raw='FALSE,FALSE,TRUE,FALSE'  prompt_tokens=767
+qualSelectMultiple: CORRECT in 51.2s  raw='TRUE,FALSE,FALSE,TRUE'  prompt_tokens=742
+qualText: CORRECT in 58.7s  raw='The house is severely tilted and partially collapsed, with structural damage to the walls, roof, and windows, and debris'  prompt_tokens=799
+-- clinic-weighing.jpg (health)
+qualSelectOne: CORRECT in 52.3s (no prompt cache)  raw='TRUE,FALSE,FALSE,FALSE'  prompt_tokens=761
+qualSelectMultiple: CORRECT in 47.1s  raw='TRUE,TRUE,FALSE,FALSE'  prompt_tokens=739
+qualSelectOne: CORRECT in 47.5s  raw='FALSE,TRUE'  prompt_tokens=741
+qualText: WRONG in 57.2s  raw='The health worker on the right is holding a baby in a white cloth over a small basin or container.'  prompt_tokens=791
+-- ward-mosquito-nets.jpg (health)
+qualSelectOne: CORRECT in 54.5s (no prompt cache)  raw='TRUE,FALSE,FALSE,FALSE'  prompt_tokens=760
+qualSelectMultiple: CORRECT in 50.6s  raw='TRUE,TRUE,FALSE,TRUE'  prompt_tokens=731
+qualSelectOne: CORRECT in 50.1s  raw='FALSE,TRUE,FALSE'  prompt_tokens=765
+-- mnch-building.jpg (health)
+qualSelectOne: CORRECT in 48.9s (no prompt cache)  raw='TRUE,FALSE,FALSE,FALSE'  prompt_tokens=759
+qualSelectMultiple: CORRECT in 46.3s  raw='TRUE,FALSE,TRUE,FALSE'  prompt_tokens=733
+qualText: CORRECT in 54.8s  raw='The sign on the building says MATERNAL NEONATAL AND CHILD HEALTH (MNCH) DEPARTMENT.'  prompt_tokens=790
+-- computer-classroom.jpg (education)
+qualSelectOne: CORRECT in 55.9s (no prompt cache)  raw='TRUE,FALSE,FALSE,FALSE'  prompt_tokens=767
+qualSelectOne: WRONG in 51.3s  raw='FALSE,FALSE'  prompt_tokens=760
+qualSelectMultiple: CORRECT in 50.0s  raw='TRUE,TRUE,FALSE,FALSE'  prompt_tokens=749
+-- latrine-raised.jpg (sanitation)
+qualSelectOne: CORRECT in 52.8s (no prompt cache)  raw='TRUE,FALSE,FALSE,FALSE'  prompt_tokens=767
+qualSelectMultiple: WRONG in 49.3s  raw='TRUE,TRUE,TRUE,FALSE'  prompt_tokens=743
+qualText: CORRECT in 54.1s  raw='People can get up to the doors by using a wooden ladder.'  prompt_tokens=798
+-- water-queue-jerrycans.jpg (water)
+qualSelectOne: WRONG in 48.9s (no prompt cache)  raw='FALSE,FALSE,FALSE,FALSE'  prompt_tokens=751
+qualSelectOne: CORRECT in 51.5s  raw='TRUE,FALSE,FALSE,FALSE'  prompt_tokens=751
+qualSelectMultiple: CORRECT in 51.3s  raw='TRUE,TRUE,FALSE,FALSE'  prompt_tokens=734
+-- earthquake-roof-blurred.jpg (damage)
+qualSelectOne: CORRECT in 48.9s (no prompt cache)  raw='FALSE,TRUE,FALSE'  prompt_tokens=765
+qualSelectOne: CORRECT in 48.6s  raw='FALSE,TRUE'  prompt_tokens=748
+qualText: CORRECT in 59.5s  raw='The roof of the building is severely damaged, with many of its dark, flat tiles collapsed, broken, and missing.'  prompt_tokens=796
+-- tapstand-sign.jpg (water)
+qualInteger: CORRECT in 34.1s (no prompt cache)  raw='3'  prompt_tokens=472
+qualSelectMultiple: CORRECT in 41.4s  raw='TRUE,TRUE,TRUE,FALSE'  prompt_tokens=583
+qualText: CORRECT in 45.4s  raw='The first time period on the sign is 6h00-9h00.'  prompt_tokens=641
+-- well-cattle-carts.jpg (water)
+qualSelectOne: WRONG in 48.8s (no prompt cache)  raw='FALSE,FALSE,TRUE,FALSE'  prompt_tokens=759
+qualSelectMultiple: CORRECT in 47.2s  raw='TRUE,TRUE,TRUE,FALSE'  prompt_tokens=734
+-- latrine-ramp.jpg (sanitation)
+qualSelectOne: CORRECT in 49.9s (no prompt cache)  raw='TRUE,FALSE,FALSE,FALSE'  prompt_tokens=764
+qualSelectMultiple: CORRECT in 51.4s  raw='TRUE,TRUE,FALSE,FALSE'  prompt_tokens=742
+qualSelectOne: CORRECT in 51.8s  raw='TRUE,FALSE'  prompt_tokens=755
+-- distribution-tent.jpg (distribution)
+qualSelectOne: CORRECT in 51.1s (no prompt cache)  raw='TRUE,FALSE,FALSE,FALSE'  prompt_tokens=760
+qualSelectMultiple: WRONG in 47.6s  raw='TRUE,TRUE,FALSE,FALSE'  prompt_tokens=732
+qualText: CORRECT in 54.5s  raw='The banner is written in French.'  prompt_tokens=789
+
+=== Extended set: correct by language (image = photos) and by question type
+{'by_lang': {'ar': '5/5', 'en': '10/10', 'es': '9/9', 'fr': '5/5', 'image': '30/36', 'pt': '5/5', 'sw': '5/5'}, 'by_type': {'qualInteger': '13/13', 'qualSelectMultiple': '16/18', 'qualSelectOne': '26/29', 'qualText': '14/15'}, 'all': '69/75'}
+
+=== Scores on reference clips (mean)
+whisper_wer: 0.02  gemma_audio_wer: None  mt_chrf: 57.977  pipeline_chrf: 55.784
+  es: whisper_wer: 0.02  mt_chrf: 57.977  pipeline_chrf: 55.784  from_en_chrf: 55.013  gemma_audio_wer: None
+
+=== GPU power during tests
+no GPU
+
+Saved /root/kobo-box-ai/results/20261112-105358-gemma-4-12B-it-Q4_0.gguf.json

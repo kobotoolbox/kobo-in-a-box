@@ -1,0 +1,3156 @@
+{
+  "started": "2026-11-12T08:09:48",
+  "llm_model": "gemma-4-E2B-it-Q4_0.gguf",
+  "translation_prompt": "generic",
+  "settings": {
+    "LLM_MODEL": "\"gemma-4-E2B-it-Q4_0.gguf\"",
+    "LLM_MMPROJ": "\"mmproj-gemma-4-E2B-it-Q8_0.gguf\"",
+    "LLM_CTX": "16384",
+    "LLM_THINKING": "false",
+    "LLM_NGL": "99",
+    "LLM_EXTRA_ARGS": "",
+    "LLM_THREADS": "8",
+    "WHISPER_MODEL": "ggml-large-v3-turbo-q8_0.bin",
+    "WHISPER_THREADS": "8"
+  },
+  "recipe": "e2b-q4",
+  "egress": "OFFLINE",
+  "transcription": [
+    {
+      "clip": "11557638029465577385.wav",
+      "audio_s": 10.68,
+      "secs": 12.682926975000555,
+      "x_realtime": 0.8420769134010986,
+      "text": "Se acoge a los niños en hogares de guarda por una amplia variedad de motivos,\n desde negligencia hasta abuso e incluso extorsión.",
+      "wer": 0.0,
+      "lang": "es"
+    },
+    {
+      "clip": "12950053679025357827.wav",
+      "audio_s": 12.72,
+      "secs": 13.050344971000413,
+      "x_realtime": 0.974686878259963,
+      "text": "Es posible que los niños salvajes hayan sufrido situaciones traumáticas o abuso infantil grave antes de ser abandonados o de que huyeran",
+      "wer": 0.0,
+      "lang": "es"
+    },
+    {
+      "clip": "1432166472202574787.wav",
+      "audio_s": 12.12,
+      "secs": 12.197097305999705,
+      "x_realtime": 0.9936790447706126,
+      "text": "En 2002, la lava del volcán Niragongo destruyó goma y dejó gran parte de sus calles sumergidas, especialmente en el centro de la ciudad.",
+      "wer": 0.041666666666666664,
+      "lang": "es"
+    },
+    {
+      "clip": "14853412566998329397.wav",
+      "audio_s": 14.52,
+      "secs": 12.654257391999636,
+      "x_realtime": 1.1474399129244783,
+      "text": "Si bien existen informes que señalan que el número oficial de muertos es 8 y las autoridades han confirmado que cerca de 30 personas resultaron heridas, aún se desconocen las cifras oficiales.",
+      "wer": 0.0625,
+      "lang": "es"
+    },
+    {
+      "clip": "17795496440729368205.wav",
+      "audio_s": 17.88,
+      "secs": 12.714481260999491,
+      "x_realtime": 1.4062705062805247,
+      "text": "Al día de hoy no se ha demostrado a ciencia cierta que algún fármaco sea adecuado para tratar la infección existente causada por ébola aun cuando existe una vacuna experimental que pareciera ser capaz de disminuir la mortalidad causada por esa enfermedad",
+      "wer": 0.0,
+      "lang": "es"
+    },
+    {
+      "clip": "17957000333653026721.wav",
+      "audio_s": 9.84,
+      "secs": 12.846766084999217,
+      "x_realtime": 0.7659515192301876,
+      "text": "Los cerdos son los portadores de la enfermedad que luego migra a los humanos mediante los mosquitos.",
+      "wer": 0.0,
+      "lang": "es"
+    },
+    {
+      "clip": "2027861869427386864.wav",
+      "audio_s": 12.24,
+      "secs": 12.3875535090001,
+      "x_realtime": 0.988088567375883,
+      "text": "Según estimaciones realizadas por el cuerpo de ingenieros de los Estados Unidos hasta seis pulgadas de lluvia podrían filtrarse por los diques anteriormente dañados",
+      "wer": 0.041666666666666664,
+      "lang": "es"
+    },
+    {
+      "clip": "3165183570881615798.wav",
+      "audio_s": 19.92,
+      "secs": 12.1647355289997,
+      "x_realtime": 1.6375201871436011,
+      "text": "La cuestión que dio origen al debate fue la controversia en torno al presupuesto destinado al socorro y reconstrucción posteriores al huracán Katrina, medida que algunos conservadores fiscales etiquetaron en torno de broma como el acuerdo de Nueva Orleans de Bosch.",
+      "wer": 0.024390243902439025,
+      "lang": "es"
+    },
+    {
+      "clip": "3327916977671284207.wav",
+      "audio_s": 12.6,
+      "secs": 12.43869682500008,
+      "x_realtime": 1.0129678516382619,
+      "text": "El gobierno local advierte a quienes residen en las cercanías de la planta que no salgan de sus hogares, manténgase apagados los aires acondicionados y no consuman agua del grifo.",
+      "wer": 0.03333333333333333,
+      "lang": "es"
+    },
+    {
+      "clip": "416124317841544182.wav",
+      "audio_s": 11.4,
+      "secs": 12.160871733999556,
+      "x_realtime": 0.9374327967071391,
+      "text": "El hospital ha respetado el protocolo de control de infecciones, incluido el distanciamiento\n del paciente de los demás para prevenir posibles infecciones.",
+      "wer": 0.0,
+      "lang": "es"
+    },
+    {
+      "clip": "4963359825952343829.wav",
+      "audio_s": 13.44,
+      "secs": 13.513921521000157,
+      "x_realtime": 0.9945299726000861,
+      "text": "Construimos nuestras casas a partir de las plantas y con ellas también fabricamos ropa.\n La mayoría de los alimentos que ingerimos son plantas. Sin ellas los animales no sobrevivirían.",
+      "wer": 0.0,
+      "lang": "es"
+    },
+    {
+      "clip": "5461838345498121315.wav",
+      "audio_s": 26.7,
+      "secs": 13.047215395000421,
+      "x_realtime": 2.046413674616823,
+      "text": "Pasados 5 minutos del inicio del espectáculo, se desató un viento que, aproximadamente un minuto después, había alcanzado los 70 km/h.\n Luego llegó la lluvia, pero tan fuerte y tan densa que porforaba tu piel como una aguja.\n A continuación cayó granizo del cielo. La gente aterrorizada gritaba y corría por encima de otros.",
+      "wer": 0.08928571428571429,
+      "lang": "es"
+    },
+    {
+      "clip": "6861356578246274326.wav",
+      "audio_s": 10.56,
+      "secs": 11.638024793999648,
+      "x_realtime": 0.9073704676625661,
+      "text": "En algunos lugares basta con hervir agua durante un minuto, en otros son necesarios varios más.",
+      "wer": 0.0,
+      "lang": "es"
+    },
+    {
+      "clip": "705534160794720130.wav",
+      "audio_s": 12.84,
+      "secs": 12.113187546000518,
+      "x_realtime": 1.0600017502609755,
+      "text": "El Dr. Moll cree que algunos pacientes podrían haber contraído el virus dentro del hospital y que al menos dos de los infectados eran trabajadores de salud de ese nosocomio.",
+      "wer": 0.03333333333333333,
+      "lang": "es"
+    },
+    {
+      "clip": "7661334745492112123.wav",
+      "audio_s": 18.48,
+      "secs": 11.952372166000714,
+      "x_realtime": 1.5461365947562729,
+      "text": "Uno de los mecanismos más comúnmente usados para graficar la importancia de sociabilizar es analizar los pocos y lamentables casos de niños que, por negligencia, desgracia o abuso intencional, no fueron socializados por adultos durante su crecimiento.",
+      "wer": 0.0,
+      "lang": "es"
+    },
+    {
+      "clip": "987988606766880060.wav",
+      "audio_s": 13.68,
+      "secs": 12.208590739000101,
+      "x_realtime": 1.120522449515775,
+      "text": "Con la construcción de la presa en 1963 se frenaron las inundaciones estacionales que\n dejaban sedimentos a lo largo del río.",
+      "wer": 0.0,
+      "lang": "es"
+    },
+    {
+      "clip": "jfk.wav",
+      "audio_s": 11.0,
+      "secs": 21.9587383650005,
+      "x_realtime": 0.5009395265409525,
+      "text": "And so, my fellow Americans, ask not what your country can do for you, ask what you can do for your country.",
+      "wer": null,
+      "lang": null
+    }
+  ],
+  "translation": [
+    {
+      "lang": "fr",
+      "source": "Nous avons besoin d'eau potable et de médicaments pour les enfants.",
+      "output": "We need drinking water and medicine for the children.",
+      "secs": 0.986190071999772
+    },
+    {
+      "lang": "es",
+      "source": "La carretera está bloqueada desde las inundaciones de la semana pasada.",
+      "output": "The road has been blocked since last week's floods.",
+      "secs": 0.9962318000007144
+    },
+    {
+      "lang": "sw",
+      "source": "Tunahitaji msaada wa chakula kwa sababu mavuno yameharibika.",
+      "output": "We need food help because the harvest is ruined.",
+      "secs": 0.9941581810007847
+    },
+    {
+      "lang": "pt",
+      "source": "A clínica mais próxima fica a três horas de caminhada.",
+      "output": "The nearest clinic is a three-hour walk away.",
+      "secs": 0.9700514440000916
+    }
+  ],
+  "ref_translation": [
+    {
+      "clip": "11557638029465577385.wav",
+      "lang": "es",
+      "mt": "Children are taken into foster homes for a wide variety of reasons, from neglect to abuse and even extortion.",
+      "mt_chrf": 61.91871242395106,
+      "mt_secs": 1.514792084999499,
+      "pipeline": "Children are taken into foster homes for a wide variety of reasons, from neglect to abuse and even extortion.",
+      "pipeline_chrf": 61.91871242395106,
+      "pipeline_secs": 1.5193572429998312,
+      "from_en": "Los niños son colocados en cuidado de acogida por una amplia variedad de razones que van desde el descuido, hasta el abuso, e incluso la extorsión.",
+      "from_en_chrf": 51.323230105385065,
+      "from_en_secs": 2.021055984000668
+    },
+    {
+      "clip": "12950053679025357827.wav",
+      "lang": "es",
+      "mt": "It is possible that the wild children have suffered traumatic situations or severe child abuse before being abandoned or before they ran away.",
+      "mt_chrf": 54.17982628196624,
+      "mt_secs": 1.5331928730001891,
+      "pipeline": "It is possible that the wild children have suffered traumatic situations or severe child abuse before being abandoned or before they ran away.",
+      "pipeline_chrf": 54.17982628196624,
+      "pipeline_secs": 1.5344805240001733,
+      "from_en": "Los niños salvajes pueden haber experimentado maltrato o trauma infantil grave antes de ser abandonados o huir.",
+      "from_en_chrf": 49.67043140330477,
+      "from_en_secs": 1.5355685120002818
+    },
+    {
+      "clip": "1432166472202574787.wav",
+      "lang": "es",
+      "mt": "In 2002, the lava from the Nyiragongo volcano destroyed Goma and left a large part of its streets submerged, especially in the city center.",
+      "mt_chrf": 49.265386003145665,
+      "mt_secs": 2.1596079030005058,
+      "pipeline": "In 2002, the lava from the Niragongo volcano destroyed rubber and left a large part of its streets submerged, especially in the city center.",
+      "pipeline_chrf": 45.08772893139361,
+      "pipeline_secs": 2.080347735999567,
+      "from_en": "En 2002 Goma fue destruida por la lava del volcán Nyiragongo, que sepultó la mayoría de las calles de la ciudad, particularmente el centro de la ciudad.",
+      "from_en_chrf": 55.637940307905765,
+      "from_en_secs": 2.4522043000006306
+    },
+    {
+      "clip": "14853412566998329397.wav",
+      "lang": "es",
+      "mt": "Although there are reports indicating that the official number of dead is eight and the authorities have confirmed that nearly 30 people were injured, the official figures are still unknown.",
+      "mt_chrf": 45.999878881573984,
+      "mt_secs": 2.014179441000124,
+      "pipeline": "Although there are reports indicating that the official number of dead is 8 and the authorities have confirmed that about 30 people were injured, the official figures are still unknown.",
+      "pipeline_chrf": 45.69343372053804,
+      "pipeline_secs": 2.119938935000391,
+      "from_en": "Algunos informes sitúan el número oficial de muertos en ocho, y los informes oficiales confirman que hasta 30 resultaron heridos; pero los números finales aún no se conocen.",
+      "from_en_chrf": 47.6570473023303,
+      "from_en_secs": 2.542831918999582
+    },
+    {
+      "clip": "17795496440729368205.wav",
+      "lang": "es",
+      "mt": "To date, it has not been scientifically proven that any drug is suitable for treating the existing Ebola infection, even though there is an experimental vaccine that appears capable of reducing the mortality caused by that disease.",
+      "mt_chrf": 51.23471028118673,
+      "mt_secs": 2.6342521489996216,
+      "pipeline": "To date, it has not been scientifically proven that any drug is suitable for treating the existing Ebola infection, even though there is an experimental vaccine that appears capable of reducing the mortality caused by that disease.",
+      "pipeline_chrf": 51.23471028118673,
+      "pipeline_secs": 2.6089718809998885,
+      "from_en": "Aunque una vacuna experimental parece capaz de reducir la mortalidad por el ébola, hasta ahora no se han demostrado claramente medicamentos adecuados para tratar la infección existente.",
+      "from_en_chrf": 49.46427669743856,
+      "from_en_secs": 2.0313347579995025
+    },
+    {
+      "clip": "17957000333653026721.wav",
+      "lang": "es",
+      "mt": "Pigs are the carriers of the disease, which then migrates to humans through mosquitoes.",
+      "mt_chrf": 74.9907670823928,
+      "mt_secs": 1.3388892049997594,
+      "pipeline": "Pigs are the carriers of the disease that then migrates to humans through mosquitoes.",
+      "pipeline_chrf": 66.87083293102596,
+      "pipeline_secs": 1.2936769590005497,
+      "from_en": "La enfermedad es transmitida por los cerdos, que luego migran a los humanos a través de los mosquitos.",
+      "from_en_chrf": 61.476078790553096,
+      "from_en_secs": 1.5596687850002127
+    },
+    {
+      "clip": "2027861869427386864.wav",
+      "lang": "es",
+      "mt": "According to estimates made by the United States Corps of Engineers, up to 6 inches of rain could seep through the previously damaged levees.",
+      "mt_chrf": 64.91217197546166,
+      "mt_secs": 1.71861133099992,
+      "pipeline": "According to estimates made by the body of engineers in the United States, up to six inches of rain could seep through the previously damaged dikes.",
+      "pipeline_chrf": 50.286433218041,
+      "pipeline_secs": 1.813672408000457,
+      "from_en": "El Cuerpo de Ingenieros de los Estados Unidos estimó que 6 pulgadas de lluvia podrían romper los diques previamente dañados.",
+      "from_en_chrf": 60.3034020641577,
+      "from_en_secs": 1.7732936379998137
+    },
+    {
+      "clip": "3165183570881615798.wav",
+      "lang": "es",
+      "mt": "The issue that gave rise to the debate was the controversy surrounding the budget allocated for relief and reconstruction after Hurricane Katrina, a measure that some fiscal conservatives jokingly labeled the \"Bush New Orleans Agreement.\"",
+      "mt_chrf": 58.98164297227682,
+      "mt_secs": 2.4654109599996445,
+      "pipeline": "The issue that gave rise to the debate was the controversy surrounding the budget allocated for relief and reconstruction after Hurricane Katrina, a measure that some fiscal conservatives jokingly labeled the New Orleans Bosch agreement.",
+      "pipeline_chrf": 57.89091256046497,
+      "pipeline_secs": 2.414786921999621,
+      "from_en": "El debate se desató por la controversia sobre el gasto en ayuda y reconstrucción a raíz del huracán Katrina; que algunos conservadores fiscales han etiquetado con humor como el \"Acuerdo de Bush para Nueva Orleans\".",
+      "from_en_chrf": 51.83403384956503,
+      "from_en_secs": 2.587735591000637
+    },
+    {
+      "clip": "3327916977671284207.wav",
+      "lang": "es",
+      "mt": "The local government warns those who live near the plant not to leave their homes, to keep air conditioners off, and not to consume tap water.",
+      "mt_chrf": 36.95522952596863,
+      "mt_secs": 1.9940396239999245,
+      "pipeline": "The local government warns those who live near the plant not to leave their homes, to keep air conditioners off, and not to use tap water.",
+      "pipeline_chrf": 36.92627193653605,
+      "pipeline_secs": 1.9407955269998638,
+      "from_en": "Las autoridades locales están advirtiendo a los residentes en las cercanías de la planta que permanezcan en interiores, apaguen los aires acondicionados y no beban agua del grifo.",
+      "from_en_chrf": 57.80005891044854,
+      "from_en_secs": 2.245988915000453
+    },
+    {
+      "clip": "416124317841544182.wav",
+      "lang": "es",
+      "mt": "The hospital has respected the infection control protocol, including the patient's distancing from others to prevent possible infections.",
+      "mt_chrf": 71.52258555129718,
+      "mt_secs": 1.5301903709996623,
+      "pipeline": "The hospital has respected the infection control protocol, including the patient's distancing from others to prevent possible infections.",
+      "pipeline_chrf": 71.52258555129718,
+      "pipeline_secs": 1.4965057060007894,
+      "from_en": "El hospital ha seguido el protocolo de control de infecciones, incluyendo la separación del paciente de los demás para prevenir una posible infección de otros.",
+      "from_en_chrf": 71.79741529704656,
+      "from_en_secs": 1.6672281049995945
+    },
+    {
+      "clip": "4963359825952343829.wav",
+      "lang": "es",
+      "mt": "We build our houses from plants and with them we also make clothes. Most of the food we eat is plants. Without them, animals would not survive.",
+      "mt_chrf": 60.59206775223573,
+      "mt_secs": 1.925962373999937,
+      "pipeline": "We build our houses from plants and with them we also make clothes. Most of the food we eat is plants. Without them, animals would not survive.",
+      "pipeline_chrf": 60.59206775223573,
+      "pipeline_secs": 1.924231754000175,
+      "from_en": "Hacemos nuestras casas de plantas y hacemos ropa de plantas. La mayoría de los alimentos que comemos son plantas. Sin plantas, los animales no podrían sobrevivir.",
+      "from_en_chrf": 60.1964478569831,
+      "from_en_secs": 1.953429430000142
+    },
+    {
+      "clip": "5461838345498121315.wav",
+      "lang": "es",
+      "mt": "Five minutes after the start of the show, a wind broke out that, approximately a minute later, reached 70 kilometers per hour (...) then the rain came, but so strong and so dense that it pierced your skin like a needle. Next, hail fell from the sky; people, terrified, screamed and ran over others.",
+      "mt_chrf": 48.053974035342286,
+      "mt_secs": 3.7891431819998616,
+      "pipeline": "Five minutes after the start of the show, a wind broke out that, approximately a minute later, reached 70 km/h.\nThen the rain came, but so strong and so dense that it pierced your skin like a needle.\nNext, hail fell from the sky. Terrified people screamed and ran over others.",
+      "pipeline_chrf": 48.713681651303816,
+      "pipeline_secs": 3.794507204999718,
+      "from_en": "Cinco minutos después la pantalla comienza a tener viento, aproximadamente un minuto después el viento alcanza los 70 km/h... luego viene la lluvia, pero tan fuerte y tan grande que te golpea la piel como una aguja, luego cae granizo del cielo, la gente entra en pánico y grita y corre entre sí.",
+      "from_en_chrf": 48.26524297372494,
+      "from_en_secs": 3.6543803340000522
+    },
+    {
+      "clip": "6861356578246274326.wav",
+      "lang": "es",
+      "mt": "For some, boiling water for a minute is enough, in others, several more are necessary.",
+      "mt_chrf": 68.64386912483239,
+      "mt_secs": 1.2843700610001179,
+      "pipeline": "In some places it is enough to boil water for a minute, in others several more are necessary.",
+      "pipeline_chrf": 60.089075155229516,
+      "pipeline_secs": 1.2773309539998081,
+      "from_en": "En algunas zonas hervir agua durante un minuto es suficiente, en otras se necesitan varios minutos.",
+      "from_en_chrf": 52.20258682561349,
+      "from_en_secs": 1.356995757999357
+    },
+    {
+      "clip": "705534160794720130.wav",
+      "lang": "es",
+      "mt": "Dr. Moll believes that some patients might have contracted the virus inside the hospital and that at least two of the infected were healthcare workers at that medical center.",
+      "mt_chrf": 59.96981918752463,
+      "mt_secs": 2.1545783430001393,
+      "pipeline": "Dr. Moll believes that some patients might have contracted the virus within the hospital and that at least two of the infected were healthcare workers at that medical center.",
+      "pipeline_chrf": 61.947820955944415,
+      "pipeline_secs": 2.4839045669996267,
+      "from_en": "Algunos pacientes podrían haber contraído el bicho en el hospital, piensa el Dr. Moll, y al menos dos eran trabajadores de la salud del hospital.",
+      "from_en_chrf": 57.071697595507075,
+      "from_en_secs": 2.282820589000039
+    },
+    {
+      "clip": "7661334745492112123.wav",
+      "lang": "es",
+      "mt": "One of the most commonly used mechanisms to illustrate the importance of socialization is to analyze the few and regrettable cases of children who, due to neglect, misfortune, or intentional abuse, were not socialized by adults during their growth.",
+      "mt_chrf": 65.8155013950557,
+      "mt_secs": 3.1237128570001005,
+      "pipeline": "One of the most commonly used mechanisms to illustrate the importance of socialization is to analyze the few and regrettable cases of children who, due to neglect, misfortune, or intentional abuse, were not socialized by adults during their growth.",
+      "pipeline_chrf": 65.8155013950557,
+      "pipeline_secs": 2.135378791000221,
+      "from_en": "Uno de los métodos más comunes utilizados para ilustrar la importancia de la socialización es recurrir a los pocos casos desafortunados de niños que no fueron socializados por los adultos debido al descuido, la desgracia o el abuso deliberado mientras crecían.",
+      "from_en_chrf": 53.313149738713506,
+      "from_en_secs": 3.4408324790001643
+    },
+    {
+      "clip": "987988606766880060.wav",
+      "lang": "es",
+      "mt": "With the construction of the dam in 1963, the seasonal floods that left sediment along the river were stopped.",
+      "mt_chrf": 53.597889111096926,
+      "mt_secs": 1.8004417000001922,
+      "pipeline": "With the construction of the dam in 1963, the seasonal floods that left sediment along the river were stopped.",
+      "pipeline_chrf": 53.597889111096926,
+      "pipeline_secs": 1.8011552590005522,
+      "from_en": "Después de que se construyó la presa en 1963, las inundaciones estacionales que esparcían sedimentos por todo el río se detuvieron.",
+      "from_en_chrf": 58.281616643637655,
+      "from_en_secs": 2.2078851490005036
+    }
+  ],
+  "qual": [
+    {
+      "type": "qualSelectOne",
+      "raw": "1,0,1,0",
+      "value": null,
+      "status": "PARSE FAIL (unparseable: '1,0,1,0')",
+      "secs": 4.811015371999929,
+      "usage": {
+        "completion_tokens": 8,
+        "prompt_tokens": 367,
+        "total_tokens": 375,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      }
+    },
+    {
+      "type": "qualSelectMultiple",
+      "raw": "TRUE,FALSE,TRUE,FALSE",
+      "value": [
+        0,
+        2
+      ],
+      "status": "CORRECT",
+      "secs": 4.383084910999969,
+      "usage": {
+        "completion_tokens": 8,
+        "prompt_tokens": 336,
+        "total_tokens": 344,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      }
+    },
+    {
+      "type": "qualInteger",
+      "raw": "5",
+      "value": 5,
+      "status": "CORRECT",
+      "secs": 2.8481047089999265,
+      "usage": {
+        "completion_tokens": 2,
+        "prompt_tokens": 224,
+        "total_tokens": 226,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      }
+    }
+  ],
+  "typed_qual": [
+    {
+      "type": "qualSelectOne",
+      "raw": "FALSE,TRUE,FALSE",
+      "value": [
+        1
+      ],
+      "status": "CORRECT",
+      "secs": 4.668749045999903,
+      "cached": true,
+      "usage": {
+        "completion_tokens": 6,
+        "prompt_tokens": 358,
+        "total_tokens": 364,
+        "prompt_tokens_details": {
+          "cached_tokens": 1
+        }
+      },
+      "timings": {
+        "cache_n": 1,
+        "prompt_n": 357,
+        "prompt_ms": 4452.025,
+        "prompt_per_token_ms": 12.470658263305321,
+        "prompt_per_second": 80.18822895199376,
+        "predicted_n": 6,
+        "predicted_ms": 206.691,
+        "predicted_per_token_ms": 41.3382,
+        "predicted_per_second": 24.190700127243083
+      }
+    },
+    {
+      "type": "qualSelectMultiple",
+      "raw": "FALSE,TRUE,TRUE,FALSE",
+      "value": [
+        1,
+        2
+      ],
+      "status": "WRONG",
+      "secs": 4.608256989999973,
+      "cached": true,
+      "usage": {
+        "completion_tokens": 8,
+        "prompt_tokens": 343,
+        "total_tokens": 351,
+        "prompt_tokens_details": {
+          "cached_tokens": 1
+        }
+      },
+      "timings": {
+        "cache_n": 1,
+        "prompt_n": 342,
+        "prompt_ms": 4286.494,
+        "prompt_per_token_ms": 12.533608187134503,
+        "prompt_per_second": 79.78548436087861,
+        "predicted_n": 8,
+        "predicted_ms": 304.277,
+        "predicted_per_token_ms": 43.46814285714286,
+        "predicted_per_second": 23.005353674447953
+      }
+    },
+    {
+      "type": "qualInteger",
+      "raw": "12000",
+      "value": 12000,
+      "status": "CORRECT",
+      "secs": 3.1188663870007076,
+      "cached": true,
+      "usage": {
+        "completion_tokens": 6,
+        "prompt_tokens": 228,
+        "total_tokens": 234,
+        "prompt_tokens_details": {
+          "cached_tokens": 1
+        }
+      },
+      "timings": {
+        "cache_n": 1,
+        "prompt_n": 227,
+        "prompt_ms": 2906.585,
+        "prompt_per_token_ms": 12.804339207048459,
+        "prompt_per_second": 78.09852455716933,
+        "predicted_n": 6,
+        "predicted_ms": 201.283,
+        "predicted_per_token_ms": 40.2566,
+        "predicted_per_second": 24.840647247904695
+      }
+    },
+    {
+      "type": "qualText",
+      "raw": "The community asks for a replacement part and training for the village repairman.",
+      "value": "The community asks for a replacement part and training for the village repairman.",
+      "status": "CORRECT",
+      "secs": 5.588792792000277,
+      "cached": true,
+      "usage": {
+        "completion_tokens": 16,
+        "prompt_tokens": 388,
+        "total_tokens": 404,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "cache_n": 0,
+        "prompt_n": 388,
+        "prompt_ms": 4876.616,
+        "prompt_per_token_ms": 12.56859793814433,
+        "prompt_per_second": 79.56336935284632,
+        "predicted_n": 16,
+        "predicted_ms": 699.616,
+        "predicted_per_token_ms": 46.64106666666667,
+        "predicted_per_second": 21.440332982664778
+      }
+    }
+  ],
+  "photo_qual": [
+    {
+      "type": "qualSelectOne",
+      "raw": "1,FALSE,FALSE,FALSE",
+      "value": null,
+      "status": "PARSE FAIL (LLM returned unexpected response 1,FALSE,FALSE,FALSE)",
+      "secs": 53.43222968800001,
+      "cached": false,
+      "usage": {
+        "completion_tokens": 8,
+        "prompt_tokens": 1240,
+        "total_tokens": 1248,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "cache_n": 0,
+        "prompt_n": 1240,
+        "prompt_ms": 52905.172,
+        "prompt_per_token_ms": 42.66546129032258,
+        "prompt_per_second": 23.438162151707967,
+        "predicted_n": 8,
+        "predicted_ms": 332.848,
+        "predicted_per_token_ms": 47.54971428571429,
+        "predicted_per_second": 21.030620583569675
+      }
+    },
+    {
+      "type": "qualSelectMultiple",
+      "raw": "TRUE,FALSE,FALSE",
+      "value": [
+        0
+      ],
+      "status": "CORRECT",
+      "secs": 3.520455763999962,
+      "cached": true,
+      "usage": {
+        "completion_tokens": 6,
+        "prompt_tokens": 1211,
+        "total_tokens": 1217,
+        "prompt_tokens_details": {
+          "cached_tokens": 990
+        }
+      },
+      "timings": {
+        "cache_n": 990,
+        "prompt_n": 221,
+        "prompt_ms": 3121.831,
+        "prompt_per_token_ms": 14.125932126696833,
+        "prompt_per_second": 70.79178853691951,
+        "predicted_n": 6,
+        "predicted_ms": 213.285,
+        "predicted_per_token_ms": 42.657,
+        "predicted_per_second": 23.442811261926533
+      }
+    },
+    {
+      "type": "qualText",
+      "raw": "The water point consists of a metal structure with a long metal pipe extending from it, situated within a concrete basin in a dirt area.",
+      "value": "The water point consists of a metal structure with a long metal pipe extending from it, situated within a concrete basin in a dirt area.",
+      "status": "CORRECT",
+      "secs": 5.436856160000389,
+      "cached": true,
+      "usage": {
+        "completion_tokens": 28,
+        "prompt_tokens": 1274,
+        "total_tokens": 1302,
+        "prompt_tokens_details": {
+          "cached_tokens": 978
+        }
+      },
+      "timings": {
+        "cache_n": 978,
+        "prompt_n": 296,
+        "prompt_ms": 4065.947,
+        "prompt_per_token_ms": 13.736307432432433,
+        "prompt_per_second": 72.79976841803398,
+        "predicted_n": 28,
+        "predicted_ms": 1167.323,
+        "predicted_per_token_ms": 43.23418518518519,
+        "predicted_per_second": 23.12984495293933
+      }
+    }
+  ],
+  "qual_extended": [
+    {
+      "answer": "en-two-speakers",
+      "lang": "en",
+      "source": "transcript",
+      "question": "According to the respondent, how many people live in the household?",
+      "review": false,
+      "type": "qualInteger",
+      "raw": "8",
+      "value": 8,
+      "status": "WRONG",
+      "secs": 2.9802369189992532,
+      "cached": true,
+      "usage": {
+        "completion_tokens": 2,
+        "prompt_tokens": 242,
+        "total_tokens": 244,
+        "prompt_tokens_details": {
+          "cached_tokens": 1
+        }
+      },
+      "timings": {
+        "cache_n": 1,
+        "prompt_n": 241,
+        "prompt_ms": 2922.22,
+        "prompt_per_token_ms": 12.125394190871368,
+        "prompt_per_second": 82.4715456057381,
+        "predicted_n": 2,
+        "predicted_ms": 41.292,
+        "predicted_per_token_ms": 41.292,
+        "predicted_per_second": 24.21776615325002
+      }
+    },
+    {
+      "answer": "en-two-speakers",
+      "lang": "en",
+      "source": "transcript",
+      "question": "What does the respondent say is the household's main problem?",
+      "review": false,
+      "type": "qualSelectOne",
+      "raw": "FALSE,TRUE,FALSE,FALSE",
+      "value": [
+        1
+      ],
+      "status": "CORRECT",
+      "secs": 4.817004542999712,
+      "cached": true,
+      "usage": {
+        "completion_tokens": 8,
+        "prompt_tokens": 377,
+        "total_tokens": 385,
+        "prompt_tokens_details": {
+          "cached_tokens": 1
+        }
+      },
+      "timings": {
+        "cache_n": 1,
+        "prompt_n": 376,
+        "prompt_ms": 4470.402,
+        "prompt_per_token_ms": 11.889367021276597,
+        "prompt_per_second": 84.10876695205488,
+        "predicted_n": 8,
+        "predicted_ms": 334.076,
+        "predicted_per_token_ms": 47.72514285714286,
+        "predicted_per_second": 20.953316011925427
+      }
+    },
+    {
+      "answer": "en-two-speakers",
+      "lang": "en",
+      "source": "transcript",
+      "question": "Where does the household get water now?",
+      "review": false,
+      "type": "qualSelectOne",
+      "raw": "FALSE,TRUE,FALSE,FALSE",
+      "value": [
+        1
+      ],
+      "status": "CORRECT",
+      "secs": 5.138203321999754,
+      "cached": true,
+      "usage": {
+        "completion_tokens": 8,
+        "prompt_tokens": 374,
+        "total_tokens": 382,
+        "prompt_tokens_details": {
+          "cached_tokens": 1
+        }
+      },
+      "timings": {
+        "cache_n": 1,
+        "prompt_n": 373,
+        "prompt_ms": 4832.092,
+        "prompt_per_token_ms": 12.954670241286863,
+        "prompt_per_second": 77.19223888949135,
+        "predicted_n": 8,
+        "predicted_ms": 298.284,
+        "predicted_per_token_ms": 42.612,
+        "predicted_per_second": 23.467567821271004
+      }
+    },
+    {
+      "answer": "en-two-speakers",
+      "lang": "en",
+      "source": "transcript",
+      "question": "Which people are mentioned as living in the household?",
+      "review": false,
+      "type": "qualSelectMultiple",
+      "raw": "TRUE,TRUE,TRUE,FALSE",
+      "value": [
+        0,
+        1,
+        2
+      ],
+      "status": "WRONG",
+      "secs": 4.75221720799982,
+      "cached": true,
+      "usage": {
+        "completion_tokens": 8,
+        "prompt_tokens": 366,
+        "total_tokens": 374,
+        "prompt_tokens_details": {
+          "cached_tokens": 1
+        }
+      },
+      "timings": {
+        "cache_n": 1,
+        "prompt_n": 365,
+        "prompt_ms": 4453.015,
+        "prompt_per_token_ms": 12.200041095890413,
+        "prompt_per_second": 81.96693700784748,
+        "predicted_n": 8,
+        "predicted_ms": 287.459,
+        "predicted_per_token_ms": 41.06557142857143,
+        "predicted_per_second": 24.351298793914957
+      }
+    },
+    {
+      "answer": "en-two-speakers",
+      "lang": "en",
+      "source": "transcript",
+      "question": "Why is water the main problem for the respondent?",
+      "review": false,
+      "type": "qualText",
+      "raw": "The respondent states that water is the main problem because the tap stand has been dry since the rains stopped, and they buy water from a truck which costs more every week.",
+      "value": "The respondent states that water is the main problem because the tap stand has been dry since the rains stopped, and they buy water from a truck which costs more every week.",
+      "status": "CORRECT",
+      "secs": 6.161768891000065,
+      "cached": true,
+      "usage": {
+        "completion_tokens": 35,
+        "prompt_tokens": 402,
+        "total_tokens": 437,
+        "prompt_tokens_details": {
+          "cached_tokens": 1
+        }
+      },
+      "timings": {
+        "cache_n": 1,
+        "prompt_n": 401,
+        "prompt_ms": 4775.442,
+        "prompt_per_token_ms": 11.908832917705736,
+        "prompt_per_second": 83.97128475228052,
+        "predicted_n": 35,
+        "predicted_ms": 1370.353,
+        "predicted_per_token_ms": 40.304500000000004,
+        "predicted_per_second": 24.81112530858837
+      }
+    },
+    {
+      "answer": "en-negations",
+      "lang": "en",
+      "source": "transcript",
+      "question": "Which needs does the respondent ask for?",
+      "review": false,
+      "type": "qualSelectMultiple",
+      "raw": "FALSE,TRUE,FALSE,FALSE",
+      "value": [
+        1
+      ],
+      "status": "CORRECT",
+      "secs": 4.107177478999802,
+      "cached": true,
+      "usage": {
+        "completion_tokens": 8,
+        "prompt_tokens": 330,
+        "total_tokens": 338,
+        "prompt_tokens_details": {
+          "cached_tokens": 1
+        }
+      },
+      "timings": {
+        "cache_n": 1,
+        "prompt_n": 329,
+        "prompt_ms": 3813.074,
+        "prompt_per_token_ms": 11.5898905775076,
+        "prompt_per_second": 86.28209156182125,
+        "predicted_n": 8,
+        "predicted_ms": 279.8,
+        "predicted_per_token_ms": 39.971428571428575,
+        "predicted_per_second": 25.017869907076484
+      }
+    },
+    {
+      "answer": "en-negations",
+      "lang": "en",
+      "source": "transcript",
+      "question": "Are the respondent's children sick?",
+      "review": false,
+      "type": "qualSelectOne",
+      "raw": "2",
+      "value": null,
+      "status": "PARSE FAIL (LLM returned unexpected response 2)",
+      "secs": 4.130729561999942,
+      "cached": true,
+      "usage": {
+        "completion_tokens": 2,
+        "prompt_tokens": 344,
+        "total_tokens": 346,
+        "prompt_tokens_details": {
+          "cached_tokens": 1
+        }
+      },
+      "timings": {
+        "cache_n": 1,
+        "prompt_n": 343,
+        "prompt_ms": 4079.35,
+        "prompt_per_token_ms": 11.893148688046647,
+        "prompt_per_second": 84.08202287129076,
+        "predicted_n": 2,
+        "predicted_ms": 39.118,
+        "predicted_per_token_ms": 39.118,
+        "predicted_per_second": 25.563679124699625
+      }
+    },
+    {
+      "answer": "en-negations",
+      "lang": "en",
+      "source": "transcript",
+      "question": "How many families arrived in the same week as the respondent?",
+      "review": false,
+      "type": "qualInteger",
+      "raw": "23",
+      "value": 23,
+      "status": "CORRECT",
+      "secs": 2.6162135470003705,
+      "cached": true,
+      "usage": {
+        "completion_tokens": 3,
+        "prompt_tokens": 219,
+        "total_tokens": 222,
+        "prompt_tokens_details": {
+          "cached_tokens": 1
+        }
+      },
+      "timings": {
+        "cache_n": 1,
+        "prompt_n": 218,
+        "prompt_ms": 2533.025,
+        "prompt_per_token_ms": 11.619380733944954,
+        "prompt_per_second": 86.06310636491942,
+        "predicted_n": 3,
+        "predicted_ms": 71.66,
+        "predicted_per_token_ms": 35.83,
+        "predicted_per_second": 27.909572983533355
+      }
+    },
+    {
+      "answer": "en-negations",
+      "lang": "en",
+      "source": "transcript",
+      "question": "Has the household received a food distribution?",
+      "review": false,
+      "type": "qualSelectOne",
+      "raw": "3",
+      "value": null,
+      "status": "PARSE FAIL (LLM returned unexpected response 3)",
+      "secs": 4.160649022999678,
+      "cached": true,
+      "usage": {
+        "completion_tokens": 2,
+        "prompt_tokens": 348,
+        "total_tokens": 350,
+        "prompt_tokens_details": {
+          "cached_tokens": 1
+        }
+      },
+      "timings": {
+        "cache_n": 1,
+        "prompt_n": 347,
+        "prompt_ms": 4105.285,
+        "prompt_per_token_ms": 11.830792507204611,
+        "prompt_per_second": 84.52519130827702,
+        "predicted_n": 2,
+        "predicted_ms": 42.145,
+        "predicted_per_token_ms": 42.145,
+        "predicted_per_second": 23.727607070826906
+      }
+    },
+    {
+      "answer": "en-negations",
+      "lang": "en",
+      "source": "transcript",
+      "question": "What is wrong with the current shelter?",
+      "review": false,
+      "type": "qualText",
+      "raw": "The tent leaks and the nights are cold.",
+      "value": "The tent leaks and the nights are cold.",
+      "status": "CORRECT",
+      "secs": 4.897727477000444,
+      "cached": true,
+      "usage": {
+        "completion_tokens": 10,
+        "prompt_tokens": 378,
+        "total_tokens": 388,
+        "prompt_tokens_details": {
+          "cached_tokens": 1
+        }
+      },
+      "timings": {
+        "cache_n": 1,
+        "prompt_n": 377,
+        "prompt_ms": 4537.969,
+        "prompt_per_token_ms": 12.037053050397878,
+        "prompt_per_second": 83.07681255645421,
+        "predicted_n": 10,
+        "predicted_ms": 346.035,
+        "predicted_per_token_ms": 38.44833333333334,
+        "predicted_per_second": 26.008929732541503
+      }
+    },
+    {
+      "answer": "es-numbers-in-words",
+      "lang": "es",
+      "source": "typed",
+      "question": "How many people live in the household now?",
+      "review": false,
+      "type": "qualInteger",
+      "raw": "12",
+      "value": 12,
+      "status": "CORRECT",
+      "secs": 2.4067274749995704,
+      "cached": true,
+      "usage": {
+        "completion_tokens": 3,
+        "prompt_tokens": 206,
+        "total_tokens": 209,
+        "prompt_tokens_details": {
+          "cached_tokens": 1
+        }
+      },
+      "timings": {
+        "cache_n": 1,
+        "prompt_n": 205,
+        "prompt_ms": 2319.773,
+        "prompt_per_token_ms": 11.315965853658538,
+        "prompt_per_second": 88.37071558294713,
+        "predicted_n": 3,
+        "predicted_ms": 78.492,
+        "predicted_per_token_ms": 39.246,
+        "predicted_per_second": 25.480303725220402
+      }
+    },
+    {
+      "answer": "es-numbers-in-words",
+      "lang": "es",
+      "source": "typed",
+      "question": "How many quintals of maize did the household harvest this year?",
+      "review": false,
+      "type": "qualInteger",
+      "raw": "3",
+      "value": 3,
+      "status": "CORRECT",
+      "secs": 2.4744783690002805,
+      "cached": true,
+      "usage": {
+        "completion_tokens": 2,
+        "prompt_tokens": 210,
+        "total_tokens": 212,
+        "prompt_tokens_details": {
+          "cached_tokens": 1
+        }
+      },
+      "timings": {
+        "cache_n": 1,
+        "prompt_n": 209,
+        "prompt_ms": 2425.564,
+        "prompt_per_token_ms": 11.60556937799043,
+        "prompt_per_second": 86.16552686303062,
+        "predicted_n": 2,
+        "predicted_ms": 42.18,
+        "predicted_per_token_ms": 42.18,
+        "predicted_per_second": 23.70791844476055
+      }
+    },
+    {
+      "answer": "es-numbers-in-words",
+      "lang": "es",
+      "source": "typed",
+      "question": "Which coping strategies are mentioned, done or planned?",
+      "review": false,
+      "type": "qualSelectMultiple",
+      "raw": "TRUE,FALSE,TRUE,FALSE",
+      "value": [
+        0,
+        2
+      ],
+      "status": "CORRECT",
+      "secs": 4.078326286999982,
+      "cached": true,
+      "usage": {
+        "completion_tokens": 8,
+        "prompt_tokens": 324,
+        "total_tokens": 332,
+        "prompt_tokens_details": {
+          "cached_tokens": 1
+        }
+      },
+      "timings": {
+        "cache_n": 1,
+        "prompt_n": 323,
+        "prompt_ms": 3780.864,
+        "prompt_per_token_ms": 11.705461300309597,
+        "prompt_per_second": 85.43020854492518,
+        "predicted_n": 8,
+        "predicted_ms": 287.463,
+        "predicted_per_token_ms": 41.06614285714286,
+        "predicted_per_second": 24.350959949628297
+      }
+    },
+    {
+      "answer": "es-numbers-in-words",
+      "lang": "es",
+      "source": "typed",
+      "question": "How does this year's harvest compare with last year's?",
+      "review": false,
+      "type": "qualSelectOne",
+      "raw": "3",
+      "value": null,
+      "status": "PARSE FAIL (LLM returned unexpected response 3)",
+      "secs": 4.0455234640003255,
+      "cached": true,
+      "usage": {
+        "completion_tokens": 2,
+        "prompt_tokens": 341,
+        "total_tokens": 343,
+        "prompt_tokens_details": {
+          "cached_tokens": 1
+        }
+      },
+      "timings": {
+        "cache_n": 1,
+        "prompt_n": 340,
+        "prompt_ms": 3996.831,
+        "prompt_per_token_ms": 11.755385294117648,
+        "prompt_per_second": 85.06739464340623,
+        "predicted_n": 2,
+        "predicted_ms": 36.523,
+        "predicted_per_token_ms": 36.523,
+        "predicted_per_second": 27.38000711880185
+      }
+    },
+    {
+      "answer": "es-numbers-in-words",
+      "lang": "es",
+      "source": "typed",
+      "question": "What was the money from the goats used for?",
+      "review": false,
+      "type": "qualText",
+      "raw": "The money from the goats was used to pay for school.",
+      "value": "The money from the goats was used to pay for school.",
+      "status": "CORRECT",
+      "secs": 4.8339047730005404,
+      "cached": true,
+      "usage": {
+        "completion_tokens": 13,
+        "prompt_tokens": 370,
+        "total_tokens": 383,
+        "prompt_tokens_details": {
+          "cached_tokens": 1
+        }
+      },
+      "timings": {
+        "cache_n": 1,
+        "prompt_n": 369,
+        "prompt_ms": 4344.925,
+        "prompt_per_token_ms": 11.774864498644988,
+        "prompt_per_second": 84.92666731876845,
+        "predicted_n": 13,
+        "predicted_ms": 474.342,
+        "predicted_per_token_ms": 39.5285,
+        "predicted_per_second": 25.29820256270792
+      }
+    },
+    {
+      "answer": "es-mentioned-not-chosen",
+      "lang": "es",
+      "source": "transcript",
+      "question": "Where did the household take the sick child?",
+      "review": false,
+      "type": "qualSelectOne",
+      "raw": "FALSE,FALSE,TRUE,FALSE",
+      "value": [
+        2
+      ],
+      "status": "CORRECT",
+      "secs": 4.151932425999803,
+      "cached": true,
+      "usage": {
+        "completion_tokens": 8,
+        "prompt_tokens": 343,
+        "total_tokens": 351,
+        "prompt_tokens_details": {
+          "cached_tokens": 1
+        }
+      },
+      "timings": {
+        "cache_n": 1,
+        "prompt_n": 342,
+        "prompt_ms": 3861.433,
+        "prompt_per_token_ms": 11.290739766081872,
+        "prompt_per_second": 88.5681559151745,
+        "predicted_n": 8,
+        "predicted_ms": 278.381,
+        "predicted_per_token_ms": 39.76871428571428,
+        "predicted_per_second": 25.145394261821032
+      }
+    },
+    {
+      "answer": "es-mentioned-not-chosen",
+      "lang": "es",
+      "source": "transcript",
+      "question": "Which reasons are given for not using the health centre?",
+      "review": false,
+      "type": "qualSelectMultiple",
+      "raw": "TRUE,TRUE,TRUE,FALSE",
+      "value": [
+        0,
+        1,
+        2
+      ],
+      "status": "WRONG",
+      "secs": 4.517387245999998,
+      "cached": true,
+      "usage": {
+        "completion_tokens": 8,
+        "prompt_tokens": 324,
+        "total_tokens": 332,
+        "prompt_tokens_details": {
+          "cached_tokens": 1
+        }
+      },
+      "timings": {
+        "cache_n": 1,
+        "prompt_n": 323,
+        "prompt_ms": 4197.555,
+        "prompt_per_token_ms": 12.995526315789474,
+        "prompt_per_second": 76.94955754004414,
+        "predicted_n": 8,
+        "predicted_ms": 302.3,
+        "predicted_per_token_ms": 43.18571428571429,
+        "predicted_per_second": 23.155805491233874
+      }
+    },
+    {
+      "answer": "es-mentioned-not-chosen",
+      "lang": "es",
+      "source": "transcript",
+      "question": "What was the child's illness?",
+      "review": false,
+      "type": "qualSelectOne",
+      "raw": "FALSE,TRUE,FALSE,FALSE",
+      "value": [
+        1
+      ],
+      "status": "CORRECT",
+      "secs": 4.592246318000434,
+      "cached": true,
+      "usage": {
+        "completion_tokens": 8,
+        "prompt_tokens": 342,
+        "total_tokens": 350,
+        "prompt_tokens_details": {
+          "cached_tokens": 1
+        }
+      },
+      "timings": {
+        "cache_n": 1,
+        "prompt_n": 341,
+        "prompt_ms": 4294.7,
+        "prompt_per_token_ms": 12.594428152492668,
+        "prompt_per_second": 79.40019093301045,
+        "predicted_n": 8,
+        "predicted_ms": 284.348,
+        "predicted_per_token_ms": 40.62114285714286,
+        "predicted_per_second": 24.617721946347434
+      }
+    },
+    {
+      "answer": "es-mentioned-not-chosen",
+      "lang": "es",
+      "source": "transcript",
+      "question": "Why does the household not use the pharmacy?",
+      "review": false,
+      "type": "qualText",
+      "raw": "The interview response states that the pharmacy is expensive.",
+      "value": "The interview response states that the pharmacy is expensive.",
+      "status": "CORRECT",
+      "secs": 4.870463002000179,
+      "cached": true,
+      "usage": {
+        "completion_tokens": 11,
+        "prompt_tokens": 370,
+        "total_tokens": 381,
+        "prompt_tokens_details": {
+          "cached_tokens": 1
+        }
+      },
+      "timings": {
+        "cache_n": 1,
+        "prompt_n": 369,
+        "prompt_ms": 4455.355,
+        "prompt_per_token_ms": 12.074132791327912,
+        "prompt_per_second": 82.82168312064921,
+        "predicted_n": 11,
+        "predicted_ms": 404.101,
+        "predicted_per_token_ms": 40.4101,
+        "predicted_per_second": 24.746288675355913
+      }
+    },
+    {
+      "answer": "fr-water-committee",
+      "lang": "fr",
+      "source": "typed",
+      "question": "Is the water point working?",
+      "review": false,
+      "type": "qualSelectOne",
+      "raw": "FALSE,FALSE,TRUE",
+      "value": [
+        2
+      ],
+      "status": "CORRECT",
+      "secs": 4.149480973000209,
+      "cached": true,
+      "usage": {
+        "completion_tokens": 6,
+        "prompt_tokens": 349,
+        "total_tokens": 355,
+        "prompt_tokens_details": {
+          "cached_tokens": 1
+        }
+      },
+      "timings": {
+        "cache_n": 1,
+        "prompt_n": 348,
+        "prompt_ms": 3948.114,
+        "prompt_per_token_ms": 11.345155172413794,
+        "prompt_per_second": 88.14335148377175,
+        "predicted_n": 6,
+        "predicted_ms": 187.442,
+        "predicted_per_token_ms": 37.4884,
+        "predicted_per_second": 26.674918108001407
+      }
+    },
+    {
+      "answer": "fr-water-committee",
+      "lang": "fr",
+      "source": "typed",
+      "question": "How much has the committee collected, in francs?",
+      "review": false,
+      "type": "qualInteger",
+      "raw": "0",
+      "value": 0,
+      "status": "CORRECT",
+      "secs": 2.4545712610006376,
+      "cached": true,
+      "usage": {
+        "completion_tokens": 2,
+        "prompt_tokens": 217,
+        "total_tokens": 219,
+        "prompt_tokens_details": {
+          "cached_tokens": 1
+        }
+      },
+      "timings": {
+        "cache_n": 1,
+        "prompt_n": 216,
+        "prompt_ms": 2404.865,
+        "prompt_per_token_ms": 11.133634259259258,
+        "prompt_per_second": 89.81793156788427,
+        "predicted_n": 2,
+        "predicted_ms": 37.492,
+        "predicted_per_token_ms": 37.492,
+        "predicted_per_second": 26.67235676944415
+      }
+    },
+    {
+      "answer": "fr-water-committee",
+      "lang": "fr",
+      "source": "typed",
+      "question": "How much per household is being discussed, in francs?",
+      "review": false,
+      "type": "qualInteger",
+      "raw": "500",
+      "value": 500,
+      "status": "CORRECT",
+      "secs": 2.547900615999424,
+      "cached": true,
+      "usage": {
+        "completion_tokens": 4,
+        "prompt_tokens": 218,
+        "total_tokens": 222,
+        "prompt_tokens_details": {
+          "cached_tokens": 1
+        }
+      },
+      "timings": {
+        "cache_n": 1,
+        "prompt_n": 217,
+        "prompt_ms": 2423.386,
+        "prompt_per_token_ms": 11.167677419354838,
+        "prompt_per_second": 89.54413370383422,
+        "predicted_n": 4,
+        "predicted_ms": 117.381,
+        "predicted_per_token_ms": 39.127,
+        "predicted_per_second": 25.55779896235336
+      }
+    },
+    {
+      "answer": "fr-water-committee",
+      "lang": "fr",
+      "source": "typed",
+      "question": "Which problems are mentioned?",
+      "review": false,
+      "type": "qualSelectMultiple",
+      "raw": "TRUE,FALSE,TRUE,FALSE",
+      "value": [
+        0,
+        2
+      ],
+      "status": "CORRECT",
+      "secs": 4.090795373999754,
+      "cached": true,
+      "usage": {
+        "completion_tokens": 8,
+        "prompt_tokens": 338,
+        "total_tokens": 346,
+        "prompt_tokens_details": {
+          "cached_tokens": 1
+        }
+      },
+      "timings": {
+        "cache_n": 1,
+        "prompt_n": 337,
+        "prompt_ms": 3796.839,
+        "prompt_per_token_ms": 11.266584569732938,
+        "prompt_per_second": 88.7580432038335,
+        "predicted_n": 8,
+        "predicted_ms": 284.543,
+        "predicted_per_token_ms": 40.649,
+        "predicted_per_second": 24.600851189451156
+      }
+    },
+    {
+      "answer": "fr-water-committee",
+      "lang": "fr",
+      "source": "typed",
+      "question": "What happened with the NGO?",
+      "review": false,
+      "type": "qualText",
+      "raw": "An NGO passed by in May and promised to return, but they have not returned yet.",
+      "value": "An NGO passed by in May and promised to return, but they have not returned yet.",
+      "status": "CORRECT",
+      "secs": 4.925974951000171,
+      "cached": true,
+      "usage": {
+        "completion_tokens": 19,
+        "prompt_tokens": 376,
+        "total_tokens": 395,
+        "prompt_tokens_details": {
+          "cached_tokens": 1
+        }
+      },
+      "timings": {
+        "cache_n": 1,
+        "prompt_n": 375,
+        "prompt_ms": 4217.526,
+        "prompt_per_token_ms": 11.246736,
+        "prompt_per_second": 88.91468600312126,
+        "predicted_n": 19,
+        "predicted_ms": 690.67,
+        "predicted_per_token_ms": 38.370555555555555,
+        "predicted_per_second": 26.06165028161061
+      }
+    },
+    {
+      "answer": "pt-livelihoods",
+      "lang": "pt",
+      "source": "transcript",
+      "question": "Which sources of income does the household have now?",
+      "review": false,
+      "type": "qualSelectMultiple",
+      "raw": "FALSE,FALSE,TRUE,TRUE",
+      "value": [
+        2,
+        3
+      ],
+      "status": "CORRECT",
+      "secs": 4.249760392000098,
+      "cached": true,
+      "usage": {
+        "completion_tokens": 8,
+        "prompt_tokens": 347,
+        "total_tokens": 355,
+        "prompt_tokens_details": {
+          "cached_tokens": 1
+        }
+      },
+      "timings": {
+        "cache_n": 1,
+        "prompt_n": 346,
+        "prompt_ms": 3948.571,
+        "prompt_per_token_ms": 11.412054913294797,
+        "prompt_per_second": 87.62663758610394,
+        "predicted_n": 8,
+        "predicted_ms": 286.586,
+        "predicted_per_token_ms": 40.94085714285715,
+        "predicted_per_second": 24.425477867027695
+      }
+    },
+    {
+      "answer": "pt-livelihoods",
+      "lang": "pt",
+      "source": "transcript",
+      "question": "Where is the household staying now?",
+      "review": false,
+      "type": "qualSelectOne",
+      "raw": "FALSE,FALSE,TRUE,FALSE",
+      "value": [
+        2
+      ],
+      "status": "CORRECT",
+      "secs": 4.5621882420000475,
+      "cached": true,
+      "usage": {
+        "completion_tokens": 8,
+        "prompt_tokens": 371,
+        "total_tokens": 379,
+        "prompt_tokens_details": {
+          "cached_tokens": 1
+        }
+      },
+      "timings": {
+        "cache_n": 1,
+        "prompt_n": 370,
+        "prompt_ms": 4255.236,
+        "prompt_per_token_ms": 11.500637837837838,
+        "prompt_per_second": 86.95169903619917,
+        "predicted_n": 8,
+        "predicted_ms": 292.586,
+        "predicted_per_token_ms": 41.798,
+        "predicted_per_second": 23.92458969328676
+      }
+    },
+    {
+      "answer": "pt-livelihoods",
+      "lang": "pt",
+      "source": "transcript",
+      "question": "On what day of March did the household move into the shelter?",
+      "review": false,
+      "type": "qualInteger",
+      "raw": "14",
+      "value": 14,
+      "status": "CORRECT",
+      "secs": 2.7578496530004486,
+      "cached": true,
+      "usage": {
+        "completion_tokens": 3,
+        "prompt_tokens": 234,
+        "total_tokens": 237,
+        "prompt_tokens_details": {
+          "cached_tokens": 1
+        }
+      },
+      "timings": {
+        "cache_n": 1,
+        "prompt_n": 233,
+        "prompt_ms": 2672.589,
+        "prompt_per_token_ms": 11.47033905579399,
+        "prompt_per_second": 87.18138105035978,
+        "predicted_n": 3,
+        "predicted_ms": 75.619,
+        "predicted_per_token_ms": 37.8095,
+        "predicted_per_second": 26.448379375553763
+      }
+    },
+    {
+      "answer": "pt-livelihoods",
+      "lang": "pt",
+      "source": "transcript",
+      "question": "About how many other families are in the shelter?",
+      "review": false,
+      "type": "qualInteger",
+      "raw": "40",
+      "value": 40,
+      "status": "CORRECT",
+      "secs": 2.6804038479995143,
+      "cached": true,
+      "usage": {
+        "completion_tokens": 3,
+        "prompt_tokens": 231,
+        "total_tokens": 234,
+        "prompt_tokens_details": {
+          "cached_tokens": 1
+        }
+      },
+      "timings": {
+        "cache_n": 1,
+        "prompt_n": 230,
+        "prompt_ms": 2598.764,
+        "prompt_per_token_ms": 11.29897391304348,
+        "prompt_per_second": 88.50361171695468,
+        "predicted_n": 3,
+        "predicted_ms": 74.441,
+        "predicted_per_token_ms": 37.2205,
+        "predicted_per_second": 26.866914737846077
+      }
+    },
+    {
+      "answer": "pt-livelihoods",
+      "lang": "pt",
+      "source": "transcript",
+      "question": "What happened to the household's farm?",
+      "review": false,
+      "type": "qualText",
+      "raw": "The roça acabou, and the river took everything.",
+      "value": "The roça acabou, and the river took everything.",
+      "status": "CORRECT",
+      "secs": 5.016041924000092,
+      "cached": true,
+      "usage": {
+        "completion_tokens": 12,
+        "prompt_tokens": 393,
+        "total_tokens": 405,
+        "prompt_tokens_details": {
+          "cached_tokens": 1
+        }
+      },
+      "timings": {
+        "cache_n": 1,
+        "prompt_n": 392,
+        "prompt_ms": 4572.237,
+        "prompt_per_token_ms": 11.663869897959184,
+        "prompt_per_second": 85.73483832968414,
+        "predicted_n": 12,
+        "predicted_ms": 423.61,
+        "predicted_per_token_ms": 38.51,
+        "predicted_per_second": 25.967281225655675
+      }
+    },
+    {
+      "answer": "sw-clinic",
+      "lang": "sw",
+      "source": "typed",
+      "question": "How old is the child, in years?",
+      "review": true,
+      "type": "qualInteger",
+      "raw": "3",
+      "value": 3,
+      "status": "CORRECT",
+      "secs": 2.4541089029999057,
+      "cached": true,
+      "usage": {
+        "completion_tokens": 2,
+        "prompt_tokens": 212,
+        "total_tokens": 214,
+        "prompt_tokens_details": {
+          "cached_tokens": 1
+        }
+      },
+      "timings": {
+        "cache_n": 1,
+        "prompt_n": 211,
+        "prompt_ms": 2407.354,
+        "prompt_per_token_ms": 11.409260663507109,
+        "prompt_per_second": 87.64809828550351,
+        "predicted_n": 2,
+        "predicted_ms": 38.975,
+        "predicted_per_token_ms": 38.975,
+        "predicted_per_second": 25.657472738935216
+      }
+    },
+    {
+      "answer": "sw-clinic",
+      "lang": "sw",
+      "source": "typed",
+      "question": "For how many days did the child have diarrhoea?",
+      "review": true,
+      "type": "qualInteger",
+      "raw": "4",
+      "value": 4,
+      "status": "CORRECT",
+      "secs": 2.3735768149999785,
+      "cached": true,
+      "usage": {
+        "completion_tokens": 2,
+        "prompt_tokens": 213,
+        "total_tokens": 215,
+        "prompt_tokens_details": {
+          "cached_tokens": 1
+        }
+      },
+      "timings": {
+        "cache_n": 1,
+        "prompt_n": 212,
+        "prompt_ms": 2329.178,
+        "prompt_per_token_ms": 10.986688679245283,
+        "prompt_per_second": 91.01923511212969,
+        "predicted_n": 2,
+        "predicted_ms": 38.208,
+        "predicted_per_token_ms": 38.208,
+        "predicted_per_second": 26.172529313232832
+      }
+    },
+    {
+      "answer": "sw-clinic",
+      "lang": "sw",
+      "source": "typed",
+      "question": "Is the child still sick?",
+      "review": true,
+      "type": "qualSelectOne",
+      "raw": "FALSE,TRUE,FALSE",
+      "value": [
+        1
+      ],
+      "status": "CORRECT",
+      "secs": 4.045711996000136,
+      "cached": true,
+      "usage": {
+        "completion_tokens": 6,
+        "prompt_tokens": 340,
+        "total_tokens": 346,
+        "prompt_tokens_details": {
+          "cached_tokens": 1
+        }
+      },
+      "timings": {
+        "cache_n": 1,
+        "prompt_n": 339,
+        "prompt_ms": 3847.441,
+        "prompt_per_token_ms": 11.349383480825958,
+        "prompt_per_second": 88.11051293574093,
+        "predicted_n": 6,
+        "predicted_ms": 189.37,
+        "predicted_per_token_ms": 37.874,
+        "predicted_per_second": 26.403337381845063
+      }
+    },
+    {
+      "answer": "sw-clinic",
+      "lang": "sw",
+      "source": "typed",
+      "question": "Where did the household get the treatment?",
+      "review": true,
+      "type": "qualSelectOne",
+      "raw": "FALSE,FALSE,TRUE,FALSE",
+      "value": [
+        2
+      ],
+      "status": "WRONG",
+      "secs": 4.685477042999992,
+      "cached": true,
+      "usage": {
+        "completion_tokens": 8,
+        "prompt_tokens": 351,
+        "total_tokens": 359,
+        "prompt_tokens_details": {
+          "cached_tokens": 1
+        }
+      },
+      "timings": {
+        "cache_n": 1,
+        "prompt_n": 350,
+        "prompt_ms": 4380.022,
+        "prompt_per_token_ms": 12.514348571428572,
+        "prompt_per_second": 79.90827443332476,
+        "predicted_n": 8,
+        "predicted_ms": 294.362,
+        "predicted_per_token_ms": 42.05171428571429,
+        "predicted_per_second": 23.780243373805042
+      }
+    },
+    {
+      "answer": "sw-clinic",
+      "lang": "sw",
+      "source": "typed",
+      "question": "What is the household's biggest problem?",
+      "review": true,
+      "type": "qualText",
+      "raw": "The biggest problem is that they do not have a toilet; they use the neighbor's.",
+      "value": "The biggest problem is that they do not have a toilet; they use the neighbor's.",
+      "status": "CORRECT",
+      "secs": 5.340730269999767,
+      "cached": true,
+      "usage": {
+        "completion_tokens": 20,
+        "prompt_tokens": 375,
+        "total_tokens": 395,
+        "prompt_tokens_details": {
+          "cached_tokens": 1
+        }
+      },
+      "timings": {
+        "cache_n": 1,
+        "prompt_n": 374,
+        "prompt_ms": 4530.022,
+        "prompt_per_token_ms": 12.112358288770054,
+        "prompt_per_second": 82.56030544664021,
+        "predicted_n": 20,
+        "predicted_ms": 795.519,
+        "predicted_per_token_ms": 41.86942105263158,
+        "predicted_per_second": 23.883779017220206
+      }
+    },
+    {
+      "answer": "ar-shelter",
+      "lang": "ar",
+      "source": "typed",
+      "question": "Where does the household live now?",
+      "review": true,
+      "type": "qualSelectOne",
+      "raw": "TRUE,FALSE,FALSE,FALSE",
+      "value": [
+        0
+      ],
+      "status": "WRONG",
+      "secs": 4.625739535999855,
+      "cached": true,
+      "usage": {
+        "completion_tokens": 8,
+        "prompt_tokens": 352,
+        "total_tokens": 360,
+        "prompt_tokens_details": {
+          "cached_tokens": 1
+        }
+      },
+      "timings": {
+        "cache_n": 1,
+        "prompt_n": 351,
+        "prompt_ms": 4309.276,
+        "prompt_per_token_ms": 12.2771396011396,
+        "prompt_per_second": 81.45219753851923,
+        "predicted_n": 8,
+        "predicted_ms": 305.624,
+        "predicted_per_token_ms": 43.66057142857143,
+        "predicted_per_second": 22.90396042195639
+      }
+    },
+    {
+      "answer": "ar-shelter",
+      "lang": "ar",
+      "source": "typed",
+      "question": "How much is the monthly rent, in dollars?",
+      "review": true,
+      "type": "qualInteger",
+      "raw": "50",
+      "value": 50,
+      "status": "CORRECT",
+      "secs": 2.5807929599995987,
+      "cached": true,
+      "usage": {
+        "completion_tokens": 3,
+        "prompt_tokens": 209,
+        "total_tokens": 212,
+        "prompt_tokens_details": {
+          "cached_tokens": 1
+        }
+      },
+      "timings": {
+        "cache_n": 1,
+        "prompt_n": 208,
+        "prompt_ms": 2488.2,
+        "prompt_per_token_ms": 11.962499999999999,
+        "prompt_per_second": 83.59456635318705,
+        "predicted_n": 3,
+        "predicted_ms": 80.457,
+        "predicted_per_token_ms": 40.2285,
+        "predicted_per_second": 24.857998682526073
+      }
+    },
+    {
+      "answer": "ar-shelter",
+      "lang": "ar",
+      "source": "typed",
+      "question": "For how many years did the household live in the camp?",
+      "review": true,
+      "type": "qualInteger",
+      "raw": "2",
+      "value": 2,
+      "status": "CORRECT",
+      "secs": 2.426910455000325,
+      "cached": true,
+      "usage": {
+        "completion_tokens": 2,
+        "prompt_tokens": 211,
+        "total_tokens": 213,
+        "prompt_tokens_details": {
+          "cached_tokens": 1
+        }
+      },
+      "timings": {
+        "cache_n": 1,
+        "prompt_n": 210,
+        "prompt_ms": 2384.189,
+        "prompt_per_token_ms": 11.35328095238095,
+        "prompt_per_second": 88.08026544875428,
+        "predicted_n": 2,
+        "predicted_ms": 34.998,
+        "predicted_per_token_ms": 34.998,
+        "predicted_per_second": 28.57306131778959
+      }
+    },
+    {
+      "answer": "ar-shelter",
+      "lang": "ar",
+      "source": "typed",
+      "question": "What does the respondent say about the room?",
+      "review": true,
+      "type": "qualSelectMultiple",
+      "raw": "TRUE,TRUE,TRUE,FALSE",
+      "value": [
+        0,
+        1,
+        2
+      ],
+      "status": "CORRECT",
+      "secs": 4.0876464819994,
+      "cached": true,
+      "usage": {
+        "completion_tokens": 8,
+        "prompt_tokens": 332,
+        "total_tokens": 340,
+        "prompt_tokens_details": {
+          "cached_tokens": 1
+        }
+      },
+      "timings": {
+        "cache_n": 1,
+        "prompt_n": 331,
+        "prompt_ms": 3801.792,
+        "prompt_per_token_ms": 11.485776435045317,
+        "prompt_per_second": 87.06420551150616,
+        "predicted_n": 8,
+        "predicted_ms": 276.921,
+        "predicted_per_token_ms": 39.56014285714286,
+        "predicted_per_second": 25.277967362532998
+      }
+    },
+    {
+      "answer": "ar-shelter",
+      "lang": "ar",
+      "source": "typed",
+      "question": "What work does the respondent's husband do?",
+      "review": true,
+      "type": "qualText",
+      "raw": "The respondent's husband works in agriculture two or three days a week.",
+      "value": "The respondent's husband works in agriculture two or three days a week.",
+      "status": "CORRECT",
+      "secs": 4.939023728999928,
+      "cached": true,
+      "usage": {
+        "completion_tokens": 16,
+        "prompt_tokens": 372,
+        "total_tokens": 388,
+        "prompt_tokens_details": {
+          "cached_tokens": 1
+        }
+      },
+      "timings": {
+        "cache_n": 1,
+        "prompt_n": 371,
+        "prompt_ms": 4337.041,
+        "prompt_per_token_ms": 11.690137466307277,
+        "prompt_per_second": 85.54219339867896,
+        "predicted_n": 16,
+        "predicted_ms": 592.898,
+        "predicted_per_token_ms": 39.52653333333333,
+        "predicted_per_second": 25.299461290137597
+      }
+    }
+  ],
+  "photo_extended": [
+    {
+      "photo": "flood-damaged-house.jpg",
+      "scene": "damage",
+      "lang": "image",
+      "question": "What condition is the house in?",
+      "type": "qualSelectOne",
+      "raw": "3",
+      "value": null,
+      "status": "PARSE FAIL (LLM returned unexpected response 3)",
+      "secs": 21.837541380999937,
+      "cached": false,
+      "usage": {
+        "completion_tokens": 2,
+        "prompt_tokens": 809,
+        "total_tokens": 811,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "cache_n": 0,
+        "prompt_n": 809,
+        "prompt_ms": 21720.566,
+        "prompt_per_token_ms": 26.848660074165636,
+        "prompt_per_second": 37.24580657796855,
+        "predicted_n": 2,
+        "predicted_ms": 44.678,
+        "predicted_per_token_ms": 44.678,
+        "predicted_per_second": 22.382380589999553
+      }
+    },
+    {
+      "photo": "flood-damaged-house.jpg",
+      "scene": "damage",
+      "lang": "image",
+      "question": "What can you see in the photo?",
+      "type": "qualSelectMultiple",
+      "raw": "TRUE,FALSE,FALSE,TRUE",
+      "value": [
+        0,
+        3
+      ],
+      "status": "CORRECT",
+      "secs": 3.212051284000154,
+      "cached": true,
+      "usage": {
+        "completion_tokens": 8,
+        "prompt_tokens": 784,
+        "total_tokens": 792,
+        "prompt_tokens_details": {
+          "cached_tokens": 558
+        }
+      },
+      "timings": {
+        "cache_n": 558,
+        "prompt_n": 226,
+        "prompt_ms": 2828.569,
+        "prompt_per_token_ms": 12.51579203539823,
+        "prompt_per_second": 79.89905849919164,
+        "predicted_n": 8,
+        "predicted_ms": 287.075,
+        "predicted_per_token_ms": 41.010714285714286,
+        "predicted_per_second": 24.383871810502484
+      }
+    },
+    {
+      "photo": "flood-damaged-house.jpg",
+      "scene": "damage",
+      "lang": "image",
+      "question": "Describe the damage to the house in one sentence.",
+      "type": "qualText",
+      "raw": "The house is severely damaged with parts of the structure collapsed and the roof is partially missing.",
+      "value": "The house is severely damaged with parts of the structure collapsed and the roof is partially missing.",
+      "status": "CORRECT",
+      "secs": 4.623158463999971,
+      "cached": true,
+      "usage": {
+        "completion_tokens": 19,
+        "prompt_tokens": 841,
+        "total_tokens": 860,
+        "prompt_tokens_details": {
+          "cached_tokens": 546
+        }
+      },
+      "timings": {
+        "cache_n": 546,
+        "prompt_n": 295,
+        "prompt_ms": 3800.12,
+        "prompt_per_token_ms": 12.881762711864406,
+        "prompt_per_second": 77.6291275012368,
+        "predicted_n": 19,
+        "predicted_ms": 724.718,
+        "predicted_per_token_ms": 40.26211111111111,
+        "predicted_per_second": 24.83724703953814
+      }
+    },
+    {
+      "photo": "clinic-weighing.jpg",
+      "scene": "health",
+      "lang": "image",
+      "question": "Where was this photo taken?",
+      "type": "qualSelectOne",
+      "raw": "FALSE,TRUE,FALSE,FALSE",
+      "value": [
+        1
+      ],
+      "status": "WRONG",
+      "secs": 24.852562466000563,
+      "cached": false,
+      "usage": {
+        "completion_tokens": 8,
+        "prompt_tokens": 784,
+        "total_tokens": 792,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "cache_n": 0,
+        "prompt_n": 784,
+        "prompt_ms": 24474.424,
+        "prompt_per_token_ms": 31.217377551020405,
+        "prompt_per_second": 32.033440296695034,
+        "predicted_n": 8,
+        "predicted_ms": 294.311,
+        "predicted_per_token_ms": 42.04442857142857,
+        "predicted_per_second": 23.784364159001875
+      }
+    },
+    {
+      "photo": "clinic-weighing.jpg",
+      "scene": "health",
+      "lang": "image",
+      "question": "What can you see in the photo?",
+      "type": "qualSelectMultiple",
+      "raw": "FALSE,TRUE,FALSE,FALSE",
+      "value": [
+        1
+      ],
+      "status": "WRONG",
+      "secs": 3.2828373599995757,
+      "cached": true,
+      "usage": {
+        "completion_tokens": 8,
+        "prompt_tokens": 762,
+        "total_tokens": 770,
+        "prompt_tokens_details": {
+          "cached_tokens": 531
+        }
+      },
+      "timings": {
+        "cache_n": 531,
+        "prompt_n": 231,
+        "prompt_ms": 2904.052,
+        "prompt_per_token_ms": 12.57165367965368,
+        "prompt_per_second": 79.54403020331591,
+        "predicted_n": 8,
+        "predicted_ms": 290.508,
+        "predicted_per_token_ms": 41.50114285714285,
+        "predicted_per_second": 24.095721976675343
+      }
+    },
+    {
+      "photo": "clinic-weighing.jpg",
+      "scene": "health",
+      "lang": "image",
+      "question": "Is the photo in colour?",
+      "type": "qualSelectOne",
+      "raw": "FALSE,TRUE",
+      "value": [
+        1
+      ],
+      "status": "CORRECT",
+      "secs": 3.2947589980003613,
+      "cached": true,
+      "usage": {
+        "completion_tokens": 4,
+        "prompt_tokens": 764,
+        "total_tokens": 768,
+        "prompt_tokens_details": {
+          "cached_tokens": 531
+        }
+      },
+      "timings": {
+        "cache_n": 531,
+        "prompt_n": 233,
+        "prompt_ms": 3068.514,
+        "prompt_per_token_ms": 13.169587982832619,
+        "prompt_per_second": 75.93251977993256,
+        "predicted_n": 4,
+        "predicted_ms": 139.27,
+        "predicted_per_token_ms": 46.42333333333334,
+        "predicted_per_second": 21.540891792920227
+      }
+    },
+    {
+      "photo": "clinic-weighing.jpg",
+      "scene": "health",
+      "lang": "image",
+      "question": "What is the health worker on the right doing?",
+      "type": "qualText",
+      "raw": "The health worker on the right is standing and appears to be interacting with a basket containing what looks like fruit or produce.",
+      "value": "The health worker on the right is standing and appears to be interacting with a basket containing what looks like fruit or produce.",
+      "status": "WRONG",
+      "secs": 5.3364439749993835,
+      "cached": true,
+      "usage": {
+        "completion_tokens": 25,
+        "prompt_tokens": 814,
+        "total_tokens": 839,
+        "prompt_tokens_details": {
+          "cached_tokens": 519
+        }
+      },
+      "timings": {
+        "cache_n": 519,
+        "prompt_n": 295,
+        "prompt_ms": 4148.906,
+        "prompt_per_token_ms": 14.06408813559322,
+        "prompt_per_second": 71.10308114958498,
+        "predicted_n": 25,
+        "predicted_ms": 1118.73,
+        "predicted_per_token_ms": 46.61375,
+        "predicted_per_second": 21.452897481966158
+      }
+    },
+    {
+      "photo": "ward-mosquito-nets.jpg",
+      "scene": "health",
+      "lang": "image",
+      "question": "What kind of room is this?",
+      "type": "qualSelectOne",
+      "raw": "TRUE,FALSE,FALSE,FALSE",
+      "value": [
+        0
+      ],
+      "status": "CORRECT",
+      "secs": 21.218766789000256,
+      "cached": false,
+      "usage": {
+        "completion_tokens": 8,
+        "prompt_tokens": 756,
+        "total_tokens": 764,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "cache_n": 0,
+        "prompt_n": 756,
+        "prompt_ms": 20833.973,
+        "prompt_per_token_ms": 27.558165343915345,
+        "prompt_per_second": 36.28688584745694,
+        "predicted_n": 8,
+        "predicted_ms": 291.952,
+        "predicted_per_token_ms": 41.70742857142857,
+        "predicted_per_second": 23.97654408943936
+      }
+    },
+    {
+      "photo": "ward-mosquito-nets.jpg",
+      "scene": "health",
+      "lang": "image",
+      "question": "What is in the room?",
+      "type": "qualSelectMultiple",
+      "raw": "FALSE,TRUE,FALSE,TRUE",
+      "value": [
+        1,
+        3
+      ],
+      "status": "WRONG",
+      "secs": 21.485674904000007,
+      "cached": true,
+      "usage": {
+        "completion_tokens": 8,
+        "prompt_tokens": 727,
+        "total_tokens": 735,
+        "prompt_tokens_details": {
+          "cached_tokens": 1
+        }
+      },
+      "timings": {
+        "cache_n": 1,
+        "prompt_n": 726,
+        "prompt_ms": 21100.095,
+        "prompt_per_token_ms": 29.06349173553719,
+        "prompt_per_second": 34.40742802342833,
+        "predicted_n": 8,
+        "predicted_ms": 301.608,
+        "predicted_per_token_ms": 43.08685714285714,
+        "predicted_per_second": 23.208933450041112
+      }
+    },
+    {
+      "photo": "ward-mosquito-nets.jpg",
+      "scene": "health",
+      "lang": "image",
+      "question": "Are the mosquito nets in use over the beds?",
+      "type": "qualSelectOne",
+      "raw": "FALSE,TRUE,FALSE",
+      "value": [
+        1
+      ],
+      "status": "CORRECT",
+      "secs": 20.050249012000677,
+      "cached": true,
+      "usage": {
+        "completion_tokens": 6,
+        "prompt_tokens": 761,
+        "total_tokens": 767,
+        "prompt_tokens_details": {
+          "cached_tokens": 1
+        }
+      },
+      "timings": {
+        "cache_n": 1,
+        "prompt_n": 760,
+        "prompt_ms": 19745.931,
+        "prompt_per_token_ms": 25.981488157894738,
+        "prompt_per_second": 38.48894235475653,
+        "predicted_n": 6,
+        "predicted_ms": 209.728,
+        "predicted_per_token_ms": 41.9456,
+        "predicted_per_second": 23.840402807445834
+      }
+    },
+    {
+      "photo": "mnch-building.jpg",
+      "scene": "health",
+      "lang": "image",
+      "question": "What kind of building is this?",
+      "type": "qualSelectOne",
+      "raw": "TRUE,FALSE,FALSE,FALSE",
+      "value": [
+        0
+      ],
+      "status": "CORRECT",
+      "secs": 20.10862687700046,
+      "cached": false,
+      "usage": {
+        "completion_tokens": 8,
+        "prompt_tokens": 755,
+        "total_tokens": 763,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "cache_n": 0,
+        "prompt_n": 755,
+        "prompt_ms": 19763.691,
+        "prompt_per_token_ms": 26.177074172185428,
+        "prompt_per_second": 38.20136633384928,
+        "predicted_n": 8,
+        "predicted_ms": 275.041,
+        "predicted_per_token_ms": 39.29157142857143,
+        "predicted_per_second": 25.450750978944956
+      }
+    },
+    {
+      "photo": "mnch-building.jpg",
+      "scene": "health",
+      "lang": "image",
+      "question": "What can you see in front of the building?",
+      "type": "qualSelectMultiple",
+      "raw": "TRUE,FALSE,TRUE,FALSE",
+      "value": [
+        0,
+        2
+      ],
+      "status": "CORRECT",
+      "secs": 21.201598175999607,
+      "cached": true,
+      "usage": {
+        "completion_tokens": 8,
+        "prompt_tokens": 729,
+        "total_tokens": 737,
+        "prompt_tokens_details": {
+          "cached_tokens": 1
+        }
+      },
+      "timings": {
+        "cache_n": 1,
+        "prompt_n": 728,
+        "prompt_ms": 20835.176,
+        "prompt_per_token_ms": 28.619747252747253,
+        "prompt_per_second": 34.94090954643244,
+        "predicted_n": 8,
+        "predicted_ms": 282.979,
+        "predicted_per_token_ms": 40.42557142857142,
+        "predicted_per_second": 24.736817926418567
+      }
+    },
+    {
+      "photo": "mnch-building.jpg",
+      "scene": "health",
+      "lang": "image",
+      "question": "What does the sign on the building say?",
+      "type": "qualText",
+      "raw": "The sign on the building says MATERNAL AND CHILD HEALTH (MNCH) DEPARTME",
+      "value": "The sign on the building says MATERNAL AND CHILD HEALTH (MNCH) DEPARTME",
+      "status": "CORRECT",
+      "secs": 20.193194030000086,
+      "cached": true,
+      "usage": {
+        "completion_tokens": 19,
+        "prompt_tokens": 786,
+        "total_tokens": 805,
+        "prompt_tokens_details": {
+          "cached_tokens": 1
+        }
+      },
+      "timings": {
+        "cache_n": 1,
+        "prompt_n": 785,
+        "prompt_ms": 19393.575,
+        "prompt_per_token_ms": 24.70519108280255,
+        "prompt_per_second": 40.477323030952256,
+        "predicted_n": 19,
+        "predicted_ms": 733.17,
+        "predicted_per_token_ms": 40.73166666666666,
+        "predicted_per_second": 24.550922705511685
+      }
+    },
+    {
+      "photo": "computer-classroom.jpg",
+      "scene": "education",
+      "lang": "image",
+      "question": "What kind of room is this?",
+      "type": "qualSelectOne",
+      "raw": "1,FALSE,FALSE,FALSE",
+      "value": null,
+      "status": "PARSE FAIL (LLM returned unexpected response 1,FALSE,FALSE,FALSE)",
+      "secs": 22.092631327000163,
+      "cached": false,
+      "usage": {
+        "completion_tokens": 8,
+        "prompt_tokens": 809,
+        "total_tokens": 817,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "cache_n": 0,
+        "prompt_n": 809,
+        "prompt_ms": 21749.708,
+        "prompt_per_token_ms": 26.884682323856612,
+        "prompt_per_second": 37.1959016645189,
+        "predicted_n": 8,
+        "predicted_ms": 285.859,
+        "predicted_per_token_ms": 40.836999999999996,
+        "predicted_per_second": 24.487597032103242
+      }
+    },
+    {
+      "photo": "computer-classroom.jpg",
+      "scene": "education",
+      "lang": "image",
+      "question": "Which way do the computer screens face?",
+      "type": "qualSelectOne",
+      "raw": "FALSE,TRUE",
+      "value": [
+        1
+      ],
+      "status": "CORRECT",
+      "secs": 2.3938925789998393,
+      "cached": true,
+      "usage": {
+        "completion_tokens": 4,
+        "prompt_tokens": 802,
+        "total_tokens": 806,
+        "prompt_tokens_details": {
+          "cached_tokens": 661
+        }
+      },
+      "timings": {
+        "cache_n": 661,
+        "prompt_n": 141,
+        "prompt_ms": 2195.628,
+        "prompt_per_token_ms": 15.571829787234044,
+        "prompt_per_second": 64.21852882182228,
+        "predicted_n": 4,
+        "predicted_ms": 126.338,
+        "predicted_per_token_ms": 42.11266666666666,
+        "predicted_per_second": 23.74582469249157
+      }
+    },
+    {
+      "photo": "computer-classroom.jpg",
+      "scene": "education",
+      "lang": "image",
+      "question": "Who is in the room?",
+      "type": "qualSelectMultiple",
+      "raw": "FALSE,TRUE,FALSE,FALSE",
+      "value": [
+        1
+      ],
+      "status": "WRONG",
+      "secs": 3.432971285000349,
+      "cached": true,
+      "usage": {
+        "completion_tokens": 8,
+        "prompt_tokens": 791,
+        "total_tokens": 799,
+        "prompt_tokens_details": {
+          "cached_tokens": 558
+        }
+      },
+      "timings": {
+        "cache_n": 558,
+        "prompt_n": 233,
+        "prompt_ms": 3084.062,
+        "prompt_per_token_ms": 13.236317596566524,
+        "prompt_per_second": 75.54971333261135,
+        "predicted_n": 8,
+        "predicted_ms": 296.478,
+        "predicted_per_token_ms": 42.354,
+        "predicted_per_second": 23.61052084808991
+      }
+    },
+    {
+      "photo": "latrine-raised.jpg",
+      "scene": "sanitation",
+      "lang": "image",
+      "question": "What is the structure behind the boy?",
+      "type": "qualSelectOne",
+      "raw": "1,FALSE,FALSE,FALSE",
+      "value": null,
+      "status": "PARSE FAIL (LLM returned unexpected response 1,FALSE,FALSE,FALSE)",
+      "secs": 45.92107441999997,
+      "cached": false,
+      "usage": {
+        "completion_tokens": 8,
+        "prompt_tokens": 1241,
+        "total_tokens": 1249,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "cache_n": 0,
+        "prompt_n": 1241,
+        "prompt_ms": 45441.19,
+        "prompt_per_token_ms": 36.61659145850121,
+        "prompt_per_second": 27.310024231319645,
+        "predicted_n": 8,
+        "predicted_ms": 331.286,
+        "predicted_per_token_ms": 47.32657142857143,
+        "predicted_per_second": 21.129779103252176
+      }
+    },
+    {
+      "photo": "latrine-raised.jpg",
+      "scene": "sanitation",
+      "lang": "image",
+      "question": "What can you see in the photo?",
+      "type": "qualSelectMultiple",
+      "raw": "TRUE,TRUE,FALSE,FALSE",
+      "value": [
+        0,
+        1
+      ],
+      "status": "CORRECT",
+      "secs": 3.3623415359998035,
+      "cached": true,
+      "usage": {
+        "completion_tokens": 8,
+        "prompt_tokens": 1217,
+        "total_tokens": 1225,
+        "prompt_tokens_details": {
+          "cached_tokens": 990
+        }
+      },
+      "timings": {
+        "cache_n": 990,
+        "prompt_n": 227,
+        "prompt_ms": 2921.86,
+        "prompt_per_token_ms": 12.871629955947137,
+        "prompt_per_second": 77.69023840978006,
+        "predicted_n": 8,
+        "predicted_ms": 302.227,
+        "predicted_per_token_ms": 43.175285714285714,
+        "predicted_per_second": 23.16139855141996
+      }
+    },
+    {
+      "photo": "latrine-raised.jpg",
+      "scene": "sanitation",
+      "lang": "image",
+      "question": "How do people get up to the doors?",
+      "type": "qualText",
+      "raw": "The image shows a structure with wooden doors. There is a wooden ladder leaning against the side of the structure, but there is no visible information in the image indicating how people get up to the doors.",
+      "value": "The image shows a structure with wooden doors. There is a wooden ladder leaning against the side of the structure, but there is no visible information in the image indicating how people get up to the doors.",
+      "status": "CORRECT",
+      "secs": 5.6314379719997305,
+      "cached": true,
+      "usage": {
+        "completion_tokens": 41,
+        "prompt_tokens": 1272,
+        "total_tokens": 1313,
+        "prompt_tokens_details": {
+          "cached_tokens": 978
+        }
+      },
+      "timings": {
+        "cache_n": 978,
+        "prompt_n": 294,
+        "prompt_ms": 3727.704,
+        "prompt_per_token_ms": 12.67926530612245,
+        "prompt_per_second": 78.86892306899904,
+        "predicted_n": 41,
+        "predicted_ms": 1769.435,
+        "predicted_per_token_ms": 44.235875,
+        "predicted_per_second": 22.60608612353661
+      }
+    },
+    {
+      "photo": "water-queue-jerrycans.jpg",
+      "scene": "water",
+      "lang": "image",
+      "question": "What are the people waiting for?",
+      "type": "qualSelectOne",
+      "raw": "FALSE,FALSE,FALSE,FALSE",
+      "value": [],
+      "status": "WRONG",
+      "secs": 32.47617198500029,
+      "cached": false,
+      "usage": {
+        "completion_tokens": 8,
+        "prompt_tokens": 992,
+        "total_tokens": 1000,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "cache_n": 0,
+        "prompt_n": 992,
+        "prompt_ms": 32033.794,
+        "prompt_per_token_ms": 32.2921310483871,
+        "prompt_per_second": 30.967296599335064,
+        "predicted_n": 8,
+        "predicted_ms": 302.238,
+        "predicted_per_token_ms": 43.176857142857145,
+        "predicted_per_second": 23.16055558864206
+      }
+    },
+    {
+      "photo": "water-queue-jerrycans.jpg",
+      "scene": "water",
+      "lang": "image",
+      "question": "What colour are most of the containers?",
+      "type": "qualSelectOne",
+      "raw": "TRUE,FALSE,FALSE,FALSE",
+      "value": [
+        0
+      ],
+      "status": "CORRECT",
+      "secs": 2.2653428820003683,
+      "cached": true,
+      "usage": {
+        "completion_tokens": 8,
+        "prompt_tokens": 992,
+        "total_tokens": 1000,
+        "prompt_tokens_details": {
+          "cached_tokens": 851
+        }
+      },
+      "timings": {
+        "cache_n": 851,
+        "prompt_n": 141,
+        "prompt_ms": 1878.439,
+        "prompt_per_token_ms": 13.322262411347518,
+        "prompt_per_second": 75.06232568638109,
+        "predicted_n": 8,
+        "predicted_ms": 280.914,
+        "predicted_per_token_ms": 40.13057142857143,
+        "predicted_per_second": 24.918658379432852
+      }
+    },
+    {
+      "photo": "water-queue-jerrycans.jpg",
+      "scene": "water",
+      "lang": "image",
+      "question": "What can you see in the photo?",
+      "type": "qualSelectMultiple",
+      "raw": "TRUE,TRUE,FALSE,FALSE",
+      "value": [
+        0,
+        1
+      ],
+      "status": "CORRECT",
+      "secs": 3.0813498380002784,
+      "cached": true,
+      "usage": {
+        "completion_tokens": 8,
+        "prompt_tokens": 975,
+        "total_tokens": 983,
+        "prompt_tokens_details": {
+          "cached_tokens": 747
+        }
+      },
+      "timings": {
+        "cache_n": 747,
+        "prompt_n": 228,
+        "prompt_ms": 2689.44,
+        "prompt_per_token_ms": 11.795789473684211,
+        "prompt_per_second": 84.7760128502588,
+        "predicted_n": 8,
+        "predicted_ms": 286.669,
+        "predicted_per_token_ms": 40.952714285714286,
+        "predicted_per_second": 24.418405896696193
+      }
+    },
+    {
+      "photo": "earthquake-roof-blurred.jpg",
+      "scene": "damage",
+      "lang": "image",
+      "question": "What condition is the roof in?",
+      "type": "qualSelectOne",
+      "raw": "FALSE,TRUE,FALSE",
+      "value": [
+        1
+      ],
+      "status": "CORRECT",
+      "secs": 22.33429743599936,
+      "cached": false,
+      "usage": {
+        "completion_tokens": 6,
+        "prompt_tokens": 807,
+        "total_tokens": 813,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "cache_n": 0,
+        "prompt_n": 807,
+        "prompt_ms": 22016.023,
+        "prompt_per_token_ms": 27.281317224287484,
+        "prompt_per_second": 36.6551215903072,
+        "predicted_n": 6,
+        "predicted_ms": 263.864,
+        "predicted_per_token_ms": 52.7728,
+        "predicted_per_second": 18.949155625625323
+      }
+    },
+    {
+      "photo": "earthquake-roof-blurred.jpg",
+      "scene": "damage",
+      "lang": "image",
+      "question": "Is the photo sharp or blurred?",
+      "type": "qualSelectOne",
+      "raw": "FALSE,TRUE",
+      "value": [
+        1
+      ],
+      "status": "CORRECT",
+      "secs": 2.5352213059995847,
+      "cached": true,
+      "usage": {
+        "completion_tokens": 4,
+        "prompt_tokens": 790,
+        "total_tokens": 794,
+        "prompt_tokens_details": {
+          "cached_tokens": 661
+        }
+      },
+      "timings": {
+        "cache_n": 661,
+        "prompt_n": 129,
+        "prompt_ms": 2284.809,
+        "prompt_per_token_ms": 17.711697674418605,
+        "prompt_per_second": 56.45986163394839,
+        "predicted_n": 4,
+        "predicted_ms": 145.151,
+        "predicted_per_token_ms": 48.38366666666667,
+        "predicted_per_second": 20.668131807565914
+      }
+    },
+    {
+      "photo": "earthquake-roof-blurred.jpg",
+      "scene": "damage",
+      "lang": "image",
+      "question": "Describe the damage in one sentence.",
+      "type": "qualText",
+      "raw": "The roof of the structure appears damaged with some sections of the roofing material missing or uneven.",
+      "value": "The roof of the structure appears damaged with some sections of the roofing material missing or uneven.",
+      "status": "CORRECT",
+      "secs": 5.1671236259999205,
+      "cached": true,
+      "usage": {
+        "completion_tokens": 19,
+        "prompt_tokens": 838,
+        "total_tokens": 857,
+        "prompt_tokens_details": {
+          "cached_tokens": 546
+        }
+      },
+      "timings": {
+        "cache_n": 546,
+        "prompt_n": 292,
+        "prompt_ms": 4245.007,
+        "prompt_per_token_ms": 14.537695205479451,
+        "prompt_per_second": 68.78669458024451,
+        "predicted_n": 19,
+        "predicted_ms": 864.941,
+        "predicted_per_token_ms": 48.05227777777778,
+        "predicted_per_second": 20.810668010881667
+      }
+    },
+    {
+      "photo": "tapstand-sign.jpg",
+      "scene": "water",
+      "lang": "image",
+      "question": "How many opening time periods are listed on the sign?",
+      "type": "qualInteger",
+      "raw": "3",
+      "value": 3,
+      "status": "CORRECT",
+      "secs": 12.756392104000042,
+      "cached": false,
+      "usage": {
+        "completion_tokens": 2,
+        "prompt_tokens": 468,
+        "total_tokens": 470,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "cache_n": 0,
+        "prompt_n": 468,
+        "prompt_ms": 12648.134,
+        "prompt_per_token_ms": 27.02592735042735,
+        "prompt_per_second": 37.00150551852155,
+        "predicted_n": 2,
+        "predicted_ms": 41.143,
+        "predicted_per_token_ms": 41.143,
+        "predicted_per_second": 24.305471161558465
+      }
+    },
+    {
+      "photo": "tapstand-sign.jpg",
+      "scene": "water",
+      "lang": "image",
+      "question": "Which organisations' names or logos can you see?",
+      "type": "qualSelectMultiple",
+      "raw": "TRUE,TRUE,TRUE,FALSE",
+      "value": [
+        0,
+        1,
+        2
+      ],
+      "status": "CORRECT",
+      "secs": 13.492078617000516,
+      "cached": true,
+      "usage": {
+        "completion_tokens": 8,
+        "prompt_tokens": 579,
+        "total_tokens": 587,
+        "prompt_tokens_details": {
+          "cached_tokens": 1
+        }
+      },
+      "timings": {
+        "cache_n": 1,
+        "prompt_n": 578,
+        "prompt_ms": 13157.339,
+        "prompt_per_token_ms": 22.763562283737024,
+        "prompt_per_second": 43.92985542137358,
+        "predicted_n": 8,
+        "predicted_ms": 278.834,
+        "predicted_per_token_ms": 39.83342857142857,
+        "predicted_per_second": 25.104542487644977
+      }
+    },
+    {
+      "photo": "tapstand-sign.jpg",
+      "scene": "water",
+      "lang": "image",
+      "question": "What is the first time period on the sign?",
+      "type": "qualText",
+      "raw": "The first time period on the sign is 6h00-9h00.",
+      "value": "The first time period on the sign is 6h00-9h00.",
+      "status": "CORRECT",
+      "secs": 14.934136747999219,
+      "cached": true,
+      "usage": {
+        "completion_tokens": 20,
+        "prompt_tokens": 637,
+        "total_tokens": 657,
+        "prompt_tokens_details": {
+          "cached_tokens": 1
+        }
+      },
+      "timings": {
+        "cache_n": 1,
+        "prompt_n": 636,
+        "prompt_ms": 14110.724,
+        "prompt_per_token_ms": 22.186672955974842,
+        "prompt_per_second": 45.07210260791721,
+        "predicted_n": 20,
+        "predicted_ms": 784.319,
+        "predicted_per_token_ms": 41.27994736842105,
+        "predicted_per_second": 24.224837087970585
+      }
+    },
+    {
+      "photo": "well-cattle-carts.jpg",
+      "scene": "water",
+      "lang": "image",
+      "question": "What kind of water point is this?",
+      "type": "qualSelectOne",
+      "raw": "FALSE,FALSE,FALSE,FALSE",
+      "value": [],
+      "status": "WRONG",
+      "secs": 21.092652526000165,
+      "cached": false,
+      "usage": {
+        "completion_tokens": 8,
+        "prompt_tokens": 755,
+        "total_tokens": 763,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "cache_n": 0,
+        "prompt_n": 755,
+        "prompt_ms": 20732.268,
+        "prompt_per_token_ms": 27.45995761589404,
+        "prompt_per_second": 36.41666218090563,
+        "predicted_n": 8,
+        "predicted_ms": 289.007,
+        "predicted_per_token_ms": 41.28671428571429,
+        "predicted_per_second": 24.22086662260776
+      }
+    },
+    {
+      "photo": "well-cattle-carts.jpg",
+      "scene": "water",
+      "lang": "image",
+      "question": "What can you see near the water point?",
+      "type": "qualSelectMultiple",
+      "raw": "TRUE,TRUE,TRUE,FALSE",
+      "value": [
+        0,
+        1,
+        2
+      ],
+      "status": "CORRECT",
+      "secs": 19.411743651000506,
+      "cached": true,
+      "usage": {
+        "completion_tokens": 8,
+        "prompt_tokens": 730,
+        "total_tokens": 738,
+        "prompt_tokens_details": {
+          "cached_tokens": 1
+        }
+      },
+      "timings": {
+        "cache_n": 1,
+        "prompt_n": 729,
+        "prompt_ms": 19075.734,
+        "prompt_per_token_ms": 26.166987654320987,
+        "prompt_per_second": 38.21609171107125,
+        "predicted_n": 8,
+        "predicted_ms": 275.053,
+        "predicted_per_token_ms": 39.293285714285716,
+        "predicted_per_second": 25.449640614717893
+      }
+    },
+    {
+      "photo": "latrine-ramp.jpg",
+      "scene": "sanitation",
+      "lang": "image",
+      "question": "What is this building?",
+      "type": "qualSelectOne",
+      "raw": "1,FALSE,FALSE,FALSE",
+      "value": null,
+      "status": "PARSE FAIL (LLM returned unexpected response 1,FALSE,FALSE,FALSE)",
+      "secs": 22.476111462999143,
+      "cached": false,
+      "usage": {
+        "completion_tokens": 8,
+        "prompt_tokens": 806,
+        "total_tokens": 814,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "cache_n": 0,
+        "prompt_n": 806,
+        "prompt_ms": 22114.571,
+        "prompt_per_token_ms": 27.437433002481388,
+        "prompt_per_second": 36.446558244335826,
+        "predicted_n": 8,
+        "predicted_ms": 285.305,
+        "predicted_per_token_ms": 40.75785714285714,
+        "predicted_per_second": 24.53514659750092
+      }
+    },
+    {
+      "photo": "latrine-ramp.jpg",
+      "scene": "sanitation",
+      "lang": "image",
+      "question": "Which features does it have?",
+      "type": "qualSelectMultiple",
+      "raw": "TRUE,TRUE,FALSE,FALSE",
+      "value": [
+        0,
+        1
+      ],
+      "status": "CORRECT",
+      "secs": 3.199201076999998,
+      "cached": true,
+      "usage": {
+        "completion_tokens": 8,
+        "prompt_tokens": 784,
+        "total_tokens": 792,
+        "prompt_tokens_details": {
+          "cached_tokens": 558
+        }
+      },
+      "timings": {
+        "cache_n": 558,
+        "prompt_n": 226,
+        "prompt_ms": 2858.971,
+        "prompt_per_token_ms": 12.650314159292035,
+        "prompt_per_second": 79.04942022846681,
+        "predicted_n": 8,
+        "predicted_ms": 270.45,
+        "predicted_per_token_ms": 38.635714285714286,
+        "predicted_per_second": 25.8827879460159
+      }
+    },
+    {
+      "photo": "latrine-ramp.jpg",
+      "scene": "sanitation",
+      "lang": "image",
+      "question": "Could someone in a wheelchair reach the entrance?",
+      "type": "qualSelectOne",
+      "raw": "TRUE,FALSE",
+      "value": [
+        0
+      ],
+      "status": "CORRECT",
+      "secs": 3.131864197000141,
+      "cached": true,
+      "usage": {
+        "completion_tokens": 4,
+        "prompt_tokens": 797,
+        "total_tokens": 801,
+        "prompt_tokens_details": {
+          "cached_tokens": 558
+        }
+      },
+      "timings": {
+        "cache_n": 558,
+        "prompt_n": 239,
+        "prompt_ms": 2946.072,
+        "prompt_per_token_ms": 12.326661087866109,
+        "prompt_per_second": 81.12496911141342,
+        "predicted_n": 4,
+        "predicted_ms": 128.752,
+        "predicted_per_token_ms": 42.91733333333334,
+        "predicted_per_second": 23.30060892257984
+      }
+    },
+    {
+      "photo": "distribution-tent.jpg",
+      "scene": "distribution",
+      "lang": "image",
+      "question": "What is happening in this photo?",
+      "type": "qualSelectOne",
+      "raw": "FALSE,FALSE,FALSE,FALSE",
+      "value": [],
+      "status": "WRONG",
+      "secs": 21.125491588999466,
+      "cached": false,
+      "usage": {
+        "completion_tokens": 8,
+        "prompt_tokens": 756,
+        "total_tokens": 764,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "cache_n": 0,
+        "prompt_n": 756,
+        "prompt_ms": 20787.428,
+        "prompt_per_token_ms": 27.496597883597882,
+        "prompt_per_second": 36.368135586567035,
+        "predicted_n": 8,
+        "predicted_ms": 273.079,
+        "predicted_per_token_ms": 39.01128571428571,
+        "predicted_per_second": 25.633607857067002
+      }
+    },
+    {
+      "photo": "distribution-tent.jpg",
+      "scene": "distribution",
+      "lang": "image",
+      "question": "What can you see?",
+      "type": "qualSelectMultiple",
+      "raw": "TRUE,TRUE,FALSE,FALSE",
+      "value": [
+        0,
+        1
+      ],
+      "status": "WRONG",
+      "secs": 19.026233929999762,
+      "cached": true,
+      "usage": {
+        "completion_tokens": 8,
+        "prompt_tokens": 728,
+        "total_tokens": 736,
+        "prompt_tokens_details": {
+          "cached_tokens": 1
+        }
+      },
+      "timings": {
+        "cache_n": 1,
+        "prompt_n": 727,
+        "prompt_ms": 18688.883,
+        "prompt_per_token_ms": 25.70685419532325,
+        "prompt_per_second": 38.90013116353716,
+        "predicted_n": 8,
+        "predicted_ms": 277.185,
+        "predicted_per_token_ms": 39.597857142857144,
+        "predicted_per_second": 25.25389180511211
+      }
+    },
+    {
+      "photo": "distribution-tent.jpg",
+      "scene": "distribution",
+      "lang": "image",
+      "question": "What language is the banner written in?",
+      "type": "qualText",
+      "raw": "The banner is written in a language that appears to be French.",
+      "value": "The banner is written in a language that appears to be French.",
+      "status": "CORRECT",
+      "secs": 20.3262182819999,
+      "cached": true,
+      "usage": {
+        "completion_tokens": 14,
+        "prompt_tokens": 785,
+        "total_tokens": 799,
+        "prompt_tokens_details": {
+          "cached_tokens": 1
+        }
+      },
+      "timings": {
+        "cache_n": 1,
+        "prompt_n": 784,
+        "prompt_ms": 19715.762,
+        "prompt_per_token_ms": 25.147655612244897,
+        "prompt_per_second": 39.76513816711726,
+        "predicted_n": 14,
+        "predicted_ms": 541.091,
+        "predicted_per_token_ms": 41.62238461538462,
+        "predicted_per_second": 24.02553359786062
+      }
+    }
+  ],
+  "extended_scores": {
+    "by_lang": {
+      "ar": "4/5",
+      "en": "6/10",
+      "es": "7/9",
+      "fr": "5/5",
+      "image": "23/36",
+      "pt": "5/5",
+      "sw": "4/5"
+    },
+    "by_type": {
+      "qualInteger": "12/13",
+      "qualSelectMultiple": "12/18",
+      "qualSelectOne": "16/29",
+      "qualText": "14/15"
+    },
+    "all": "54/75"
+  },
+  "scores": {
+    "whisper_wer": 0.02,
+    "gemma_audio_wer": null,
+    "mt_chrf": 57.915,
+    "pipeline_chrf": 55.773
+  },
+  "scores_by_lang": {
+    "es": {
+      "whisper_wer": 0.02,
+      "mt_chrf": 57.915,
+      "pipeline_chrf": 55.773,
+      "from_en_chrf": 55.393,
+      "gemma_audio_wer": null
+    }
+  },
+  "gpu_power": null,
+  "gpu_after": null
+}

@@ -165,7 +165,17 @@ what it says so far, for the kit:
   25–56%), and from English poor at every size: to be judged by native speakers.
 - **Settings:** image budget 560 is safe (280 isn't); thinking helps E4B on photos only, at 20×
   the time; projector BF16, TranslateGemma and drafts on a GPU add nothing.
-- Left for phase 2 (CPU rig): whether the MTP drafts speed up E2B/E4B/12B on a CPU.
+
+**Phase 2, done 2026-11-12** (8 CPU cores, offline; NOTES.md, `remote/results/gemma-phase2/`):
+the same scores as on the GPU (within one case); E4B 8.5 s a question (31 s for the first on
+a photo), E2B 4.3 s, 12B 26.5 s; MTP drafts give nothing on a CPU either; Gemma audio is as
+fast as Whisper (about real time), so transcribing Swahili, Hausa and Amharic with it costs
+nothing. **E4B Q4_0 stays the kit's model on every tier without a 24 GB card.**
+
+Next: the Hausa and Amharic qual cases (native speakers), the agent and dashboard tasks on
+26B and 31B (phase 3, a GPU), EmbeddingGemma 2 against bge-m3 (knowledge base), and choosing
+the transcriber per language in KPI's local backend (Whisper for es/fr/pt, Gemma for
+sw/ha/am).
 
 ## 7. Open decisions
 
