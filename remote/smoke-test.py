@@ -26,6 +26,7 @@ Results are appended to results/<timestamp>.json for comparing tiers.
 import argparse
 import base64
 import json
+import os
 import re
 import shutil
 import socket
@@ -248,12 +249,41 @@ def chat(content, max_tokens=1000):
     return body['choices'][0]['message']['content'].strip(), secs, body.get('usage', {})
 
 
-def translate(lang, text):
+LANG_NAMES = {'en': 'English', 'es': 'Spanish', 'fr': 'French', 'pt': 'Portuguese', 'sw': 'Swahili',
+              'ar': 'Arabic', 'ha': 'Hausa', 'am': 'Amharic'}
+TRANSLATEGEMMA = False  # set in main() from the model's name
+
+
+def translategemma(src, tgt, text):
+    """TranslateGemma's own prompt, as its chat template writes it. llama-server drops the
+    template's source_lang_code / target_lang_code fields (its template then falls back to
+    English to English), so the prompt goes to /completion as text."""
+    s, t = LANG_NAMES.get(src, src), LANG_NAMES.get(tgt, tgt)
+    prompt = (f'<start_of_turn>user\nYou are a professional {s} ({src}) to {t} ({tgt}) translator. '
+              f'Your goal is to accurately convey the meaning and nuances of the original {s} text while '
+              f'adhering to {t} grammar, vocabulary, and cultural sensitivities.\n'
+              f'Produce only the {t} translation, without any additional explanations or commentary. '
+              f'Please translate the following {s} text into {t}:\n\n\n{text}<end_of_turn>\n'
+              '<start_of_turn>model\n')
+    body, secs = post_json(f'{LLM}/completion', {'prompt': prompt, 'temperature': 0, 'n_predict': 1000})
+    return body['content'].strip(), secs
+
+
+def translate(lang, text, to='English'):
+    if TRANSLATEGEMMA:
+        return translategemma(lang, 'en' if to == 'English' else to, text)
     out, secs, _ = chat(
-        f'Translate the following text from language code "{lang}" to English. '
+        f'Translate the following text from language code "{lang}" to {to}. '
         f'Respond with the translation only.\n\n{text}'
     )
     return out, secs
+
+
+def translate_from_english(lang, text):
+    """English into the language (questions and messages out to respondents)"""
+    if TRANSLATEGEMMA:
+        return translategemma('en', lang, text)
+    return translate('en', text, to=f'the language with code "{lang}"')
 
 
 def post_multipart(url, fields, file_field, path, timeout=1800):
@@ -367,7 +397,34 @@ def qual_case(source, case, response='', image=None, cache=True):
     print(f'{qtype}: {status} in {secs:.1f}s' + ('' if cache else ' (no prompt cache)')
           + f'  raw={out[:120]!r}  prompt_tokens={usage.get("prompt_tokens")}')
     return {'type': qtype, 'raw': out, 'value': value, 'status': status, 'secs': secs,
-            'cached': cache, 'usage': usage}
+            'cached': cache, 'usage': usage, 'timings': body.get('timings')}
+
+
+def load_extended():
+    """eval/qual-cases.json (answers and their questions) and eval/photos.json (photos and
+    theirs), the benchmark's larger set (MODELS-PLAN.md); empty lists without them"""
+    def read(name, key):
+        f = HERE / 'eval' / name
+        return json.loads(f.read_text(encoding='utf-8'))[key] if f.exists() else []
+    return read('qual-cases.json', 'answers'), read('photos.json', 'photos')
+
+
+def accuracy(rows, key):
+    """{value of key: 'correct/total'} over qual results"""
+    out = {}
+    for r in rows:
+        right, total = out.get(r[key], (0, 0))
+        out[r[key]] = (right + (r['status'] == 'CORRECT'), total + 1)
+    return {k: f'{right}/{total}' for k, (right, total) in sorted(out.items())}
+
+
+def ai_settings():
+    """The LLM_ / WHISPER_ lines of ai.env (models and server flags), for the results"""
+    env = HERE / 'ai.env'
+    if not env.exists():
+        return {}
+    pairs = (line.split('=', 1) for line in env.read_text().splitlines() if '=' in line and not line.startswith('#'))
+    return {k: v for k, v in pairs if k.startswith(('LLM_', 'WHISPER_'))}
 
 
 def check_egress():
@@ -383,9 +440,15 @@ def section(title):
 
 
 def main():
+    # gpu-tiers.sh pipes this through tee: line by line, so a log that stops growing means a
+    # stuck run (eval/watchdog.sh), not Python's block buffering
+    sys.stdout.reconfigure(line_buffering=True)
     ap = argparse.ArgumentParser()
     ap.add_argument('--audio-dir', default='/opt/models/audio')
-    ap.add_argument('--skip-gemma-audio', action='store_true')
+    ap.add_argument('--skip-gemma-audio', action='store_true',
+                    default=os.environ.get('BENCH_SKIP_GEMMA_AUDIO') == '1')
+    ap.add_argument('--langs', default=os.environ.get('BENCH_LANGS', ''),
+                    help='only the reference clips in these languages, e.g. es,fr (default: all)')
     args = ap.parse_args()
 
     results = {'started': datetime.now().isoformat(timespec='seconds')}
@@ -396,6 +459,17 @@ def main():
         print(f'LLM not reachable on {LLM}: {e}')
         raise SystemExit(1)
     results['llm_model'] = Path(props.get('model_path', '?')).name
+    global TRANSLATEGEMMA
+    TRANSLATEGEMMA = 'translategemma' in results['llm_model'].lower()
+    results['translation_prompt'] = 'translategemma' if TRANSLATEGEMMA else 'generic'
+    results['settings'] = ai_settings()
+    if results['settings'].get('LLM_THINKING', '').strip('"') == 'true':
+        # thinking is about the analysis questions (and agents): one language of clips and no
+        # Gemma audio, or a run takes hours
+        args.langs = args.langs or 'es'
+        args.skip_gemma_audio = True
+        results['thinking_run'] = {'langs': args.langs, 'gemma_audio': False}
+    results['recipe'] = os.environ.get('BENCH_RECIPE')
     results['egress'] = check_egress()
     section('Environment')
     print(f"egress: {results['egress']}   llm: {results['llm_model']}")
@@ -407,6 +481,9 @@ def main():
     results['transcription'] = []
     refs = load_references()
     clips = sorted(p for p in Path(args.audio_dir).glob('*') if p.is_file())
+    if args.langs:  # clips with no reference (e.g. jfk.wav) always run
+        keep = set(args.langs.split(','))
+        clips = [c for c in clips if c.name not in refs or refs[c.name]['lang'] in keep]
     for clip in clips:
         dur = audio_duration(clip)
         ref = refs.get(clip.name)
@@ -426,7 +503,7 @@ def main():
                   + (f'  WER {score:.0%}' if ref else '') + f'\n  {text[:200]}')
             results['transcription'].append(
                 {'clip': clip.name, 'audio_s': dur, 'secs': secs, 'x_realtime': rtf, 'text': text,
-                 'wer': score}
+                 'wer': score, 'lang': ref['lang'] if ref else None}
             )
         except Exception as e:  # noqa
             print(f'{clip.name}: FAILED {e}')
@@ -449,12 +526,17 @@ def main():
             # (from whisper's transcript, so transcription errors carry through)
             mt, mt_secs = translate(ref['lang'], ref['transcript'])
             pipe, pipe_secs = translate(ref['lang'], t['text'])
+            # and the other way: FLEURS's English into the language, against its transcript
+            back, back_secs = translate_from_english(ref['lang'], ref['english'])
             mt_score, pipe_score = chrf(mt, ref['english']), chrf(pipe, ref['english'])
-            print(f"{t['clip']}: MT chrF {mt_score:.0f}, pipeline chrF {pipe_score:.0f}"
-                  f'  ({mt_secs:.1f}s + {pipe_secs:.1f}s)\n  {pipe[:200]}')
+            back_score = chrf(back, ref['transcript'])
+            print(f"{t['clip']}: MT chrF {mt_score:.0f}, pipeline chrF {pipe_score:.0f}, "
+                  f"from English chrF {back_score:.0f}"
+                  f'  ({mt_secs:.1f}s + {pipe_secs:.1f}s + {back_secs:.1f}s)\n  {pipe[:200]}')
             results['ref_translation'].append({
-                'clip': t['clip'], 'mt': mt, 'mt_chrf': mt_score, 'mt_secs': mt_secs,
+                'clip': t['clip'], 'lang': ref['lang'], 'mt': mt, 'mt_chrf': mt_score, 'mt_secs': mt_secs,
                 'pipeline': pipe, 'pipeline_chrf': pipe_score, 'pipeline_secs': pipe_secs,
+                'from_en': back, 'from_en_chrf': back_score, 'from_en_secs': back_secs,
             })
 
     section('Qual analysis (LLM, KPI prompts + parsers)')
@@ -496,6 +578,35 @@ def main():
         results['photo_qual'] = [qual_case('image', case, image=image, cache=i > 0)
                                  for i, case in enumerate(PHOTO_CASES)]
 
+    answers, photos = load_extended()
+    if answers:
+        section('Qual, extended set (eval/qual-cases.json)')
+        results['qual_extended'] = []
+        for a in answers:
+            print(f"-- {a['id']} ({a['lang']}, {a['source']})")
+            source = 'text' if a['source'] == 'typed' else 'transcript'
+            for case in a['cases']:
+                r = qual_case(source, case, a['text'])
+                results['qual_extended'].append({'answer': a['id'], 'lang': a['lang'], 'source': a['source'],
+                                                 'question': case['question'], 'review': bool(a.get('review')), **r})
+    if photos and props.get('modalities', {}).get('vision'):
+        section('Qual on photos, extended set (eval/photos.json)')
+        results['photo_extended'] = []
+        for ph in photos:
+            print(f"-- {ph['file']} ({ph['scene']})")
+            image = {'type': 'image_url', 'image_url': {'url': 'data:image/jpeg;base64,' + base64.b64encode(
+                (HERE / 'eval' / 'photos' / ph['file']).read_bytes()).decode()}}
+            for i, case in enumerate(ph['cases']):
+                r = qual_case('image', case, image=image, cache=i > 0)
+                results['photo_extended'].append({'photo': ph['file'], 'scene': ph['scene'], 'lang': 'image',
+                                                  'question': case['question'], **r})
+    extended = results.get('qual_extended', []) + results.get('photo_extended', [])
+    if extended:
+        results['extended_scores'] = {'by_lang': accuracy(extended, 'lang'), 'by_type': accuracy(extended, 'type'),
+                                      'all': accuracy([dict(r, all='all') for r in extended], 'all')['all']}
+        section('Extended set: correct by language (image = photos) and by question type')
+        print(results['extended_scores'])
+
     if props.get('modalities', {}).get('audio') and clips and not args.skip_gemma_audio:
         section('Transcription via Gemma audio input (first 30s of each clip)')
         results['gemma_audio'] = []
@@ -505,8 +616,9 @@ def main():
                  '-ar', '16000', '-f', 'wav', '-'], capture_output=True,
             ).stdout
             try:
+                # 30 s of speech is well under 400 tokens; some models loop without a cap
                 body, secs = post_json(f'{LLM}/v1/chat/completions', {
-                    'temperature': 0,
+                    'temperature': 0, 'max_tokens': 400,
                     'messages': [{'role': 'user', 'content': [
                         {'type': 'input_audio', 'input_audio': {
                             'data': base64.b64encode(wav).decode(), 'format': 'wav'}},
@@ -515,6 +627,7 @@ def main():
                     ]}],
                 })
                 text = body['choices'][0]['message']['content'].strip()
+                hit_cap = body['choices'][0].get('finish_reason') == 'length'
                 ref = refs.get(clip.name)
                 # Only scored when the clip fits in the 30s cut
                 score = (wer(text, ref['transcript'])
@@ -522,7 +635,8 @@ def main():
                 print(f'{clip.name}: {secs:.1f}s'
                       + (f'  WER {score:.0%}' if score is not None else '') + f'\n  {text[:200]}')
                 results['gemma_audio'].append(
-                    {'clip': clip.name, 'secs': secs, 'text': text, 'wer': score})
+                    {'clip': clip.name, 'secs': secs, 'text': text, 'wer': score,
+                     'lang': ref['lang'] if ref else None, 'hit_cap': hit_cap})
             except Exception as e:  # noqa
                 print(f'{clip.name}: FAILED {e}')
                 results['gemma_audio'].append({'clip': clip.name, 'error': str(e)})
@@ -537,6 +651,20 @@ def main():
         results['scores'] = scores
         section('Scores on reference clips (mean)')
         print('  '.join(f'{k}: {v}' for k, v in scores.items()))
+        # per language: the clips' language from their manifest
+        by_lang = {}
+        for lang in sorted({t['lang'] for t in results['transcription'] if t.get('lang')}):
+            trs = [t for t in results.get('ref_translation', []) if t['lang'] == lang]
+            by_lang[lang] = {
+                'whisper_wer': mean(t.get('wer') for t in results['transcription'] if t.get('lang') == lang),
+                'mt_chrf': mean(t['mt_chrf'] for t in trs),
+                'pipeline_chrf': mean(t['pipeline_chrf'] for t in trs),
+                'from_en_chrf': mean(t['from_en_chrf'] for t in trs),
+                'gemma_audio_wer': mean(t.get('wer') for t in results.get('gemma_audio', []) if t.get('lang') == lang),
+            }
+        results['scores_by_lang'] = by_lang
+        for lang, sc in by_lang.items():
+            print(f'  {lang}: ' + '  '.join(f'{k}: {v}' for k, v in sc.items()))
 
     results['gpu_power'] = sampler.stop()
     results['gpu_after'] = gpu_stats()

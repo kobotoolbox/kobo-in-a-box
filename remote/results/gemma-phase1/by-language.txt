@@ -1,0 +1,37 @@
+
+chrF into English (reference text):    es     fr     pt     sw     ar     ha     am
+  e2b-q4           -      -      -      -      -      -      -
+  e4b-q4           -      -      -      -      -      -      -
+  12b-q4           -      -      -      -      -      -      -
+  26b-q4           -      -      -      -      -      -      -
+  31b-q4           -      -      -      -      -      -      -
+  tg4-q4           -      -      -      -      -      -      -
+  tg12-q4          -      -      -      -      -      -      -
+  tg27-q4          -      -      -      -      -      -      -
+  tg27-q8          -      -      -      -      -      -      -
+
+chrF from English:    es     fr     pt     sw     ar     ha     am
+  e2b-q4           -      -      -      -      -      -      -
+  e4b-q4           -      -      -      -      -      -      -
+  12b-q4           -      -      -      -      -      -      -
+  26b-q4           -      -      -      -      -      -      -
+  31b-q4           -      -      -      -      -      -      -
+  tg4-q4           -      -      -      -      -      -      -
+  tg12-q4          -      -      -      -      -      -      -
+  tg27-q4          -      -      -      -      -      -      -
+  tg27-q8          -      -      -      -      -      -      -
+
+Gemma audio WER:    es     fr     pt     sw     ar     ha     am
+  e2b-q4           -      -      -      -      -      -      -
+  e4b-q4           -      -      -      -      -      -      -
+  e4b-q8           -      -      -      -      -      -      -
+  12b-q4           -      -      -      -      -      -      -
+  12b-q8           -      -      -      -      -      -      -
+
+Whisper WER:    es     fr     pt     sw     ar     ha     am
+  e4b-q4           -      -      -      -      -      -      -
+Traceback (most recent call last):
+  File "/tmp/sumlang.py", line 18, in <module>
+    ga = newest[rc].get('gemma_audio', [])
+         ~~~~~~^^^^
+KeyError: '12b-q4'

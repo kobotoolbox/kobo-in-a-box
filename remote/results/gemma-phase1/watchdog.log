@@ -1,0 +1,6 @@
+2026-11-11T20:27:22Z watchdog started (stall 15 min, max 45 min per recipe)
+2026-11-11T21:42:23Z stopping 12b-think (pid 567372): log idle 15 min, running 16 min
+2026-11-11T21:59:26Z watchdog started (stall 30 min, max 60 min per recipe)
+2026-11-11T21:59:34Z stopping 31b-think (pid 603808): log idle 15 min, running 16 min
+2026-11-11T23:59:12Z watchdog started (stall 30 min, max 120 min per recipe)
+2026-11-12T00:56:13Z follow-ups done; watchdog ends

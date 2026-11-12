@@ -1,0 +1,12 @@
+# Weights for the Gemma benchmark's CPU runs (MODELS-PLAN.md phase 2), on top of
+# bootstrap.sh's E4B kit files: E2B and 12B at Q4_0 with their projectors, and the MTP
+# drafts for all three. `./models.sh fetch eval/models-cpu.txt`
+ggml-org/gemma-4-E2B-it-GGUF gemma-4-E2B-it-Q4_0.gguf
+ggml-org/gemma-4-E2B-it-GGUF mmproj-gemma-4-E2B-it-Q8_0.gguf
+ggml-org/gemma-4-12B-it-GGUF gemma-4-12B-it-Q4_0.gguf
+ggml-org/gemma-4-12B-it-GGUF mmproj-gemma-4-12B-it-Q8_0.gguf
+ggml-org/gemma-4-E4B-it-GGUF gemma-4-E4B-it-Q4_0.gguf
+ggml-org/gemma-4-E4B-it-GGUF mmproj-gemma-4-E4B-it-Q8_0.gguf
+ggml-org/gemma-4-E2B-it-GGUF mtp-gemma-4-E2B-it-Q8_0.gguf
+ggml-org/gemma-4-E4B-it-GGUF mtp-gemma-4-E4B-it-Q8_0.gguf
+ggml-org/gemma-4-12B-it-GGUF mtp-gemma-4-12B-it-Q8_0.gguf

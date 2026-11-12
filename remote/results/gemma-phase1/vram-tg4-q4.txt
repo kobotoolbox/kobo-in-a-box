@@ -1,0 +1,1 @@
+NVIDIA RTX 6000 Ada Generation, 5307 MiB, 49140 MiB

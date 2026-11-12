@@ -1,0 +1,494 @@
+{
+  "about": "Extended qual set for the model benchmark (MODELS-PLAN.md section 3): answers as KPI gets them (a transcript or a typed answer), each with KoboToolbox analysis questions and their expected answers, written by hand. Questions are in English, as on most projects. Each answer is hard on purpose in a way noted in 'why'. 'review' marks text a native speaker should check before scores are published. Hausa and Amharic answers are still to be written by native speakers (FLEURS covers their transcription and translation). Choice indexes count from 0; qualText passes when the answer has a word from each group in expect_words. A qualText answer may quote the respondent's own language (KPI's prompt doesn't say which language to answer in), so expect_words include the source-language words too.",
+  "answers": [
+    {
+      "id": "en-two-speakers",
+      "lang": "en",
+      "source": "transcript",
+      "why": "two speakers who disagree; the respondent's view is the one asked for",
+      "text": "Interviewer: How many people live in this household? Respondent: Seven, with my mother. My husband says eight because his brother stays with us sometimes, but he is not here most of the year. Interviewer: And your main problem now? Respondent: Water. The tap stand has been dry since the rains stopped. My husband thinks food is worse, but for me it is water, because we buy it from the truck and it costs more every week.",
+      "cases": [
+        {
+          "type": "qualInteger",
+          "question": "According to the respondent, how many people live in the household?",
+          "expect": 7
+        },
+        {
+          "type": "qualSelectOne",
+          "question": "What does the respondent say is the household's main problem?",
+          "choices": [
+            "Food",
+            "Water",
+            "Shelter",
+            "Health care"
+          ],
+          "expect": [
+            1
+          ]
+        },
+        {
+          "type": "qualSelectOne",
+          "question": "Where does the household get water now?",
+          "choices": [
+            "Tap stand",
+            "Water truck",
+            "River",
+            "Borehole"
+          ],
+          "expect": [
+            1
+          ]
+        },
+        {
+          "type": "qualSelectMultiple",
+          "question": "Which people are mentioned as living in the household?",
+          "choices": [
+            "The respondent's mother",
+            "The respondent's husband",
+            "The husband's brother, all year",
+            "A lodger"
+          ],
+          "expect": [
+            0,
+            1
+          ]
+        },
+        {
+          "type": "qualText",
+          "question": "Why is water the main problem for the respondent?",
+          "expect_words": [
+            [
+              "truck",
+              "buy",
+              "bought",
+              "cost",
+              "expensive",
+              "price"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "en-negations",
+      "lang": "en",
+      "source": "transcript",
+      "why": "options mentioned only to be ruled out",
+      "text": "No, we have not received any food distribution since we arrived, and nobody from the clinic has come. The children are not sick, thank God. What we need most is a proper shelter: the tent leaks and the nights are cold. We do not need cooking pots, we brought ours. Twenty-three families arrived with us in the same week.",
+      "cases": [
+        {
+          "type": "qualSelectMultiple",
+          "question": "Which needs does the respondent ask for?",
+          "choices": [
+            "Food",
+            "Shelter",
+            "Health care for the children",
+            "Cooking pots"
+          ],
+          "expect": [
+            1
+          ]
+        },
+        {
+          "type": "qualSelectOne",
+          "question": "Are the respondent's children sick?",
+          "choices": [
+            "Yes",
+            "No",
+            "Not mentioned"
+          ],
+          "expect": [
+            1
+          ]
+        },
+        {
+          "type": "qualInteger",
+          "question": "How many families arrived in the same week as the respondent?",
+          "expect": 23
+        },
+        {
+          "type": "qualSelectOne",
+          "question": "Has the household received a food distribution?",
+          "choices": [
+            "Yes, once",
+            "Yes, several times",
+            "No"
+          ],
+          "expect": [
+            2
+          ]
+        },
+        {
+          "type": "qualText",
+          "question": "What is wrong with the current shelter?",
+          "expect_words": [
+            [
+              "leak",
+              "rain",
+              "water"
+            ],
+            [
+              "cold",
+              "night"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "es-numbers-in-words",
+      "lang": "es",
+      "source": "typed",
+      "why": "numbers written as words; a number corrected mid-answer",
+      "text": "Somos once en la casa, bueno, doce desde que nació la bebé en septiembre. La cosecha de maíz fue mala: sacamos unos tres quintales cuando el año pasado fueron diez. Vendimos dos cabras para pagar la escuela. Si no llueve en abril tendremos que irnos a la ciudad.",
+      "cases": [
+        {
+          "type": "qualInteger",
+          "question": "How many people live in the household now?",
+          "expect": 12
+        },
+        {
+          "type": "qualInteger",
+          "question": "How many quintals of maize did the household harvest this year?",
+          "expect": 3
+        },
+        {
+          "type": "qualSelectMultiple",
+          "question": "Which coping strategies are mentioned, done or planned?",
+          "choices": [
+            "Selling livestock",
+            "Borrowing money",
+            "Moving to the city",
+            "Skipping meals"
+          ],
+          "expect": [
+            0,
+            2
+          ]
+        },
+        {
+          "type": "qualSelectOne",
+          "question": "How does this year's harvest compare with last year's?",
+          "choices": [
+            "Better",
+            "About the same",
+            "Worse"
+          ],
+          "expect": [
+            2
+          ]
+        },
+        {
+          "type": "qualText",
+          "question": "What was the money from the goats used for?",
+          "expect_words": [
+            [
+              "school",
+              "fees",
+              "education",
+              "escuela"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "es-mentioned-not-chosen",
+      "lang": "es",
+      "source": "transcript",
+      "why": "several services named; only one used",
+      "text": "En el barrio hay un centro de salud, una farmacia y un curandero. Al centro de salud no vamos porque queda lejos y siempre falta el médico. La farmacia es cara. Cuando mi hijo tuvo fiebre la semana pasada lo llevamos donde el curandero, que vive aquí al lado.",
+      "cases": [
+        {
+          "type": "qualSelectOne",
+          "question": "Where did the household take the sick child?",
+          "choices": [
+            "Health centre",
+            "Pharmacy",
+            "Traditional healer",
+            "Hospital"
+          ],
+          "expect": [
+            2
+          ]
+        },
+        {
+          "type": "qualSelectMultiple",
+          "question": "Which reasons are given for not using the health centre?",
+          "choices": [
+            "Distance",
+            "No doctor there",
+            "Cost",
+            "Bad treatment by staff"
+          ],
+          "expect": [
+            0,
+            1
+          ]
+        },
+        {
+          "type": "qualSelectOne",
+          "question": "What was the child's illness?",
+          "choices": [
+            "Diarrhoea",
+            "Fever",
+            "Cough",
+            "Injury"
+          ],
+          "expect": [
+            1
+          ]
+        },
+        {
+          "type": "qualText",
+          "question": "Why does the household not use the pharmacy?",
+          "expect_words": [
+            [
+              "expensive",
+              "cost",
+              "price",
+              "money",
+              "afford"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fr-water-committee",
+      "lang": "fr",
+      "source": "typed",
+      "why": "the October answer's harder sibling: an amount in words and a hedge",
+      "text": "La pompe marche encore, mais l'eau a un goût de rouille depuis la saison des pluies et certaines familles ne la boivent plus. Le comité n'a pas encore collecté d'argent ; on parle de cinq cents francs par ménage. Une ONG est passée en mai, elle a promis de revenir, on attend toujours.",
+      "cases": [
+        {
+          "type": "qualSelectOne",
+          "question": "Is the water point working?",
+          "choices": [
+            "Working",
+            "Broken",
+            "Working, but the water is unsafe or unpleasant"
+          ],
+          "expect": [
+            2
+          ]
+        },
+        {
+          "type": "qualInteger",
+          "question": "How much has the committee collected, in francs?",
+          "expect": 0
+        },
+        {
+          "type": "qualInteger",
+          "question": "How much per household is being discussed, in francs?",
+          "expect": 500
+        },
+        {
+          "type": "qualSelectMultiple",
+          "question": "Which problems are mentioned?",
+          "choices": [
+            "Taste or quality of the water",
+            "Long walk to water",
+            "No money collected yet",
+            "Queues at the water point"
+          ],
+          "expect": [
+            0,
+            2
+          ]
+        },
+        {
+          "type": "qualText",
+          "question": "What happened with the NGO?",
+          "expect_words": [
+            [
+              "promis",
+              "return",
+              "come back",
+              "visit"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pt-livelihoods",
+      "lang": "pt",
+      "source": "transcript",
+      "why": "two former incomes said to be over, two new ones; a date as a number",
+      "text": "Antes da enchente a gente vivia da pesca e da roça. A roça acabou, o rio levou tudo, e o barco afundou, então pesca também não tem mais. Agora meu marido faz bico na construção e eu vendo salgado na feira aos sábados. Desde o dia 14 de março estamos na escola que virou abrigo, com mais umas quarenta famílias.",
+      "cases": [
+        {
+          "type": "qualSelectMultiple",
+          "question": "Which sources of income does the household have now?",
+          "choices": [
+            "Fishing",
+            "Farming",
+            "Casual construction work",
+            "Selling food at the market"
+          ],
+          "expect": [
+            2,
+            3
+          ]
+        },
+        {
+          "type": "qualSelectOne",
+          "question": "Where is the household staying now?",
+          "choices": [
+            "Its own house",
+            "With relatives",
+            "A school used as a shelter",
+            "A camp"
+          ],
+          "expect": [
+            2
+          ]
+        },
+        {
+          "type": "qualInteger",
+          "question": "On what day of March did the household move into the shelter?",
+          "expect": 14
+        },
+        {
+          "type": "qualInteger",
+          "question": "About how many other families are in the shelter?",
+          "expect": 40
+        },
+        {
+          "type": "qualText",
+          "question": "What happened to the household's farm?",
+          "expect_words": [
+            [
+              "flood",
+              "river",
+              "water",
+              "washed",
+              "destroyed",
+              "lost",
+              "rio",
+              "enchente",
+              "acabou",
+              "levou"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sw-clinic",
+      "lang": "sw",
+      "source": "typed",
+      "review": "native-speaker check before publishing",
+      "why": "Swahili; a cause and an outcome to tell apart",
+      "text": "Mtoto wangu wa miaka mitatu aliharisha kwa siku nne. Tulimpeleka zahanati, lakini dawa zilikuwa zimeisha, kwa hiyo tukanunua ORS dukani. Sasa amepona. Tatizo kubwa ni kwamba hatuna choo; tunatumia cha jirani.",
+      "cases": [
+        {
+          "type": "qualInteger",
+          "question": "How old is the child, in years?",
+          "expect": 3
+        },
+        {
+          "type": "qualInteger",
+          "question": "For how many days did the child have diarrhoea?",
+          "expect": 4
+        },
+        {
+          "type": "qualSelectOne",
+          "question": "Is the child still sick?",
+          "choices": [
+            "Yes",
+            "No, recovered",
+            "Not said"
+          ],
+          "expect": [
+            1
+          ]
+        },
+        {
+          "type": "qualSelectOne",
+          "question": "Where did the household get the treatment?",
+          "choices": [
+            "The clinic",
+            "A shop",
+            "A hospital",
+            "A community health worker"
+          ],
+          "expect": [
+            1
+          ]
+        },
+        {
+          "type": "qualText",
+          "question": "What is the household's biggest problem?",
+          "expect_words": [
+            [
+              "latrine",
+              "toilet",
+              "sanitation"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ar-shelter",
+      "lang": "ar",
+      "source": "typed",
+      "review": "native-speaker check before publishing",
+      "why": "Arabic (Modern Standard); a rent amount and a past vs present location",
+      "text": "كنا نسكن في خيمة في المخيم لمدة سنتين، والآن نستأجر غرفة في القرية بخمسين دولاراً في الشهر. الغرفة صغيرة وليس فيها نافذة، لكنها أدفأ من الخيمة. زوجي يعمل في الزراعة يومين أو ثلاثة في الأسبوع فقط.",
+      "cases": [
+        {
+          "type": "qualSelectOne",
+          "question": "Where does the household live now?",
+          "choices": [
+            "A tent in the camp",
+            "A rented room in the village",
+            "With relatives",
+            "Its own house"
+          ],
+          "expect": [
+            1
+          ]
+        },
+        {
+          "type": "qualInteger",
+          "question": "How much is the monthly rent, in dollars?",
+          "expect": 50
+        },
+        {
+          "type": "qualInteger",
+          "question": "For how many years did the household live in the camp?",
+          "expect": 2
+        },
+        {
+          "type": "qualSelectMultiple",
+          "question": "What does the respondent say about the room?",
+          "choices": [
+            "It is small",
+            "It has no window",
+            "It is warmer than the tent",
+            "It is far from work"
+          ],
+          "expect": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "type": "qualText",
+          "question": "What work does the respondent's husband do?",
+          "expect_words": [
+            [
+              "farm",
+              "agricultur",
+              "field"
+            ]
+          ]
+        }
+      ]
+    }
+  ]
+}
