@@ -13,6 +13,9 @@ mkdir -p "$MODELS_DIR" /root/kobo-box-ai/results
 HAS_GPU=false
 command -v nvidia-smi >/dev/null && nvidia-smi >/dev/null 2>&1 && HAS_GPU=true
 echo "GPU present: $HAS_GPU"
+# A new droplet's first-boot setup runs apt too, and DPkg::Lock::Timeout below doesn't cover
+# apt-get update's lock on the package lists: wait for it to finish
+command -v cloud-init >/dev/null && cloud-init status --wait >/dev/null || true
 
 # A fresh droplet runs apt on first boot; wait for its lock instead of failing
 apt() { DEBIAN_FRONTEND=noninteractive apt-get -o DPkg::Lock::Timeout=600 "$@"; }
