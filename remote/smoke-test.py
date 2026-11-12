@@ -445,7 +445,8 @@ def main():
     sys.stdout.reconfigure(line_buffering=True)
     ap = argparse.ArgumentParser()
     ap.add_argument('--audio-dir', default='/opt/models/audio')
-    ap.add_argument('--skip-gemma-audio', action='store_true')
+    ap.add_argument('--skip-gemma-audio', action='store_true',
+                    default=os.environ.get('BENCH_SKIP_GEMMA_AUDIO') == '1')
     ap.add_argument('--langs', default=os.environ.get('BENCH_LANGS', ''),
                     help='only the reference clips in these languages, e.g. es,fr (default: all)')
     args = ap.parse_args()

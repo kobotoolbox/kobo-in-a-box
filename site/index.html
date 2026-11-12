@@ -434,6 +434,7 @@
 <ul>
   <li><strong>CPU only:</strong> an 8-core computer with 32 GB of memory and no graphics card, the slowest hardware we'd consider for the kit.</li>
   <li><strong>H100 graphics card:</strong> a data-centre card standing in for the recommended tier, which was out of stock. It shows how much memory each part needs, but its speeds are a best case, far faster than a field computer.</li>
+  <li><strong>RTX 6000 Ada graphics card</strong> (48 GB): a workstation card, closer to field hardware than the H100; used to compare the Gemma models.</li>
 </ul>
 
 <h3>Transcription</h3>
@@ -476,6 +477,41 @@
 </table></div>
 <p>The first question on a photo is slow because the model has to read the picture (about 1,200 tokens of it); the box sends the photo first, so later questions on the same photo reuse that work. On the GPU that reading is part of the 0.4 seconds.</p>
 <p>One setting matters: Gemma 4 must run with its thinking turned off. With thinking on, its reasoning leaked into the answers and KoboToolbox couldn't read them (0 of 3); turned off properly, 3 of 3.</p>
+
+<h3 id="gemma">Choosing a Gemma model</h3>
+<p>Every size of Gemma 4 was run through KoboToolbox's analysis prompts on a harder, wider test set than the one above: 39 questions on interview answers and typed answers in English, Spanish, French, Portuguese, Swahili and Arabic (answers that mention an option without choosing it, numbers written in words, two speakers who disagree), and 36 questions on 12 photos (a collapsed house, mosquito nets tied up rather than in use, a blurred photo, signs to read, latrines that look like sheds). Offline, on the RTX 6000 Ada, November 2026:</p>
+<div class="table-scroll"><table>
+  <thead><tr><th>Model</th><th>Correct, of 75</th><th>Memory in use, with Whisper</th><th>Per question</th><th>First question on a photo</th></tr></thead>
+  <tbody>
+    <tr><td>Gemma 4 E2B</td><td>54</td><td>4.9 GB</td><td>0.07 s</td><td>0.2 s</td></tr>
+    <tr><td><strong>Gemma 4 E4B</strong> (the kit's)</td><td><strong>67</strong></td><td>6.5 GB</td><td>0.1 s</td><td>0.3 s</td></tr>
+    <tr><td>Gemma 4 12B</td><td>69</td><td>11.2 GB</td><td>0.4 s</td><td>0.6 s</td></tr>
+    <tr><td><strong>Gemma 4 26B-A4B</strong></td><td><strong>70</strong></td><td>18.6 GB</td><td>0.2 s</td><td>0.5 s</td></tr>
+    <tr><td>Gemma 4 31B</td><td>70</td><td>25.5 GB</td><td>0.6 s</td><td>1.3 s</td></tr>
+  </tbody>
+</table></div>
+<ul>
+  <li><strong>The kit keeps E4B.</strong> It answers 37 of the 39 text questions; the larger models gain mostly on photos. Its 4-bit version scores the same as the full-size one, in half the memory.</li>
+  <li><strong>Above it, 26B-A4B</strong> for a computer with a 24 GB graphics card: the best score, and faster than 12B and 31B. <strong>12B is not used:</strong> on Swahili, Hausa and Amharic recordings it repeats itself instead of transcribing.</li>
+  <li><strong>Settings that didn't help:</strong> letting the model "think" first (2 more photo questions right on E4B, nothing on the larger ones, at 20 times the time), a higher-precision image encoder, and Google's TranslateGemma translation models (no better than Gemma of the same size). Gemma can read a photo in less detail to save time: half the usual detail lost nothing, a quarter lost 4 photo questions.</li>
+</ul>
+<p>Transcription by language, word error rate on 16 FLEURS recordings each (the same sentences in every language):</p>
+<div class="table-scroll"><table>
+  <thead><tr><th></th><th>Spanish</th><th>French</th><th>Portuguese</th><th>Arabic</th><th>Swahili</th><th>Hausa</th><th>Amharic</th></tr></thead>
+  <tbody>
+    <tr><td>Whisper large-v3-turbo</td><td><strong>2%</strong></td><td><strong>2%</strong></td><td><strong>2%</strong></td><td>10%</td><td>41%</td><td>104%</td><td>124%</td></tr>
+    <tr><td>Gemma 4 E4B, listening directly</td><td>2%</td><td>7%</td><td>3%</td><td><strong>8%</strong></td><td><strong>27%</strong></td><td><strong>37%</strong></td><td><strong>56%</strong></td></tr>
+  </tbody>
+</table></div>
+<p>Whisper is the better choice for Spanish, French and Portuguese, and Gemma for Swahili, Hausa and Amharic, where Whisper produces mostly wrong words (above 100% means more wrong words than the recording has). Hausa and Amharic stay weak either way, and translating into them is poor at every model size:</p>
+<div class="table-scroll"><table>
+  <thead><tr><th>chrF, E4B / 31B</th><th>Spanish</th><th>French</th><th>Portuguese</th><th>Arabic</th><th>Swahili</th><th>Hausa</th><th>Amharic</th></tr></thead>
+  <tbody>
+    <tr><td>Into English</td><td>59 / 58</td><td>65 / 69</td><td>74 / 74</td><td>67 / 71</td><td>65 / 66</td><td>40 / 53</td><td>60 / 63</td></tr>
+    <tr><td>From English</td><td>54 / 58</td><td>69 / 74</td><td>75 / 73</td><td>63 / 66</td><td>59 / 70</td><td>40 / 52</td><td>39 / 42</td></tr>
+  </tbody>
+</table></div>
+<p class="note">FLEURS is read speech, so these are best cases. The Swahili and Arabic analysis questions are still to be checked by native speakers, and Hausa and Amharic ones to be written by them. Speeds on the CPU-only kit are being measured.</p>
 
 <h3 id="memory">Memory per tier</h3>
 <p>GPU memory in use for each recipe, including Whisper (about 1.5 GB), measured on the H100. Each recipe scored the same on transcription, translation and analysis, so this decides which hardware can run which model.</p>
@@ -608,7 +644,7 @@
     <tr><td>gpt-oss-120b</td><td>Apache 2.0</td><td>The assistant, including changes; the same model KoboToolbox online uses for analysis</td><td>Recommended</td></tr>
   </tbody>
 </table></div>
-<p>For languages these handle badly, two openly licensed candidates will be tested on real field recordings: Meta's Omnilingual speech recognition (1,600+ languages) and the MADLAD-400 translation models.</p>
+<p>Gemma 4 E4B also transcribes Swahili, Hausa and Amharic better than Whisper (<a href="#gemma">Choosing a Gemma model</a>), so the kit can use it for those. For languages these handle badly, two openly licensed candidates will be tested on real field recordings: Meta's Omnilingual speech recognition (1,600+ languages) and the MADLAD-400 translation models.</p>
 </section>
 
 <section id="hardware">
